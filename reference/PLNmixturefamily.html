@@ -19,7 +19,7 @@ See the documentation for getBestModel(), getModel() and plot()."><meta property
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -94,7 +94,7 @@ See the documentation for <code><a href="getBestModel.html">getBestModel()</a></
     </div>
     <div id="super-class">
     <h2>Super class</h2>
-    <p><code><a href="PLNfamily.html">PLNmodels::PLNfamily</a></code> -&gt; <code>PLNmixturefamily</code></p>
+    <p><code><a href="PLNfamily.html">PLNfamily</a></code> -&gt; <code>PLNmixturefamily</code></p>
     </div>
     <div id="active-bindings">
     <h2>Active bindings</h2>
@@ -109,8 +109,7 @@ See the documentation for <code><a href="getBestModel.html">getBestModel()</a></
 
 <div class="section">
 <h3 id="public-methods">Public methods<a class="anchor" aria-label="anchor" href="#public-methods"></a></h3>
-
-<ul><li><p><a href="#method-PLNmixturefamily-new"><code>PLNmixturefamily$new()</code></a></p></li>
+<p></p><ul><li><p><a href="#method-PLNmixturefamily-initialize"><code>PLNmixturefamily$new()</code></a></p></li>
 <li><p><a href="#method-PLNmixturefamily-optimize"><code>PLNmixturefamily$optimize()</code></a></p></li>
 <li><p><a href="#method-PLNmixturefamily-smooth"><code>PLNmixturefamily$smooth()</code></a></p></li>
 <li><p><a href="#method-PLNmixturefamily-plot"><code>PLNmixturefamily$plot()</code></a></p></li>
@@ -119,10 +118,10 @@ See the documentation for <code><a href="getBestModel.html">getBestModel()</a></
 <li><p><a href="#method-PLNmixturefamily-show"><code>PLNmixturefamily$show()</code></a></p></li>
 <li><p><a href="#method-PLNmixturefamily-print"><code>PLNmixturefamily$print()</code></a></p></li>
 <li><p><a href="#method-PLNmixturefamily-clone"><code>PLNmixturefamily$clone()</code></a></p></li>
-</ul></div><p><details open><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="getModel"><a href="PLNfamily.html#method-getModel"><code>PLNmodels::PLNfamily$getModel()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment"><a href="PLNfamily.html#method-postTreatment"><code>PLNmodels::PLNfamily$postTreatment()</code></a></span></li>
-</ul></details></p><hr><a id="method-PLNmixturefamily-new"></a><div class="section">
-<h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
+</ul></div><p><details open><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="getModel"><a href="PLNfamily.html#method-getModel"><code>PLNfamily$getModel()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment"><a href="PLNfamily.html#method-postTreatment"><code>PLNfamily$postTreatment()</code></a></span></li>
+</ul></details></p><hr><a id="method-PLNmixturefamily-initialize"></a><div class="section">
+<h3 id="plnmixturefamily-new-"><code>PLNmixturefamily$new()</code><a class="anchor" aria-label="anchor" href="#plnmixturefamily-new-"></a></h3>
 <p>helper function for forward smoothing: split a group</p>
 
 <p>Initialize all models in the collection.</p><div class="section">
@@ -135,49 +134,41 @@ See the documentation for <code><a href="getBestModel.html">getBestModel()</a></
 <span>  <span class="va">formula</span>,</span>
 <span>  <span class="va">control</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>clusters</code></dt>
 <dd><p>the dimensions of the successively fitted models</p></dd>
 
-
-<dt><code>responses</code></dt>
+      <dt><code>responses</code></dt>
 <dd><p>the matrix of responses common to every models</p></dd>
 
-
-<dt><code>covariates</code></dt>
+      <dt><code>covariates</code></dt>
 <dd><p>the matrix of covariates common to every models</p></dd>
 
-
-<dt><code>offsets</code></dt>
+      <dt><code>offsets</code></dt>
 <dd><p>the matrix of offsets common to every models</p></dd>
 
-
-<dt><code>formula</code></dt>
+      <dt><code>formula</code></dt>
 <dd><p>model formula used for fitting, extracted from the formula in the upper-level call</p></dd>
 
-
-<dt><code>control</code></dt>
+      <dt><code>control</code></dt>
 <dd><p>a list for controlling the optimization. See details.</p></dd>
 
-
-<dt><code>control</code></dt>
+      <dt><code>control</code></dt>
 <dd><p>a list for controlling the optimization. See details.</p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-PLNmixturefamily-optimize"></a><div class="section">
-<h3 id="method-optimize-">Method <code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize()</a></code><a class="anchor" aria-label="anchor" href="#method-optimize-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-PLNmixturefamily-optimize"></a><div class="section">
+<h3 id="plnmixturefamily-optimize-"><code>PLNmixturefamily$optimize()</code><a class="anchor" aria-label="anchor" href="#plnmixturefamily-optimize-"></a></h3>
 <p>Call to the optimizer on all models of the collection</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNmixturefamily</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span><span class="va">config</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>config</code></dt>
 <dd><p>a list for controlling the optimization</p></dd>
@@ -186,14 +177,14 @@ See the documentation for <code><a href="getBestModel.html">getBestModel()</a></
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-PLNmixturefamily-smooth"></a><div class="section">
-<h3 id="method-smooth-">Method <code><a href="https://rdrr.io/r/stats/smooth.html" class="external-link">smooth()</a></code><a class="anchor" aria-label="anchor" href="#method-smooth-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-PLNmixturefamily-smooth"></a><div class="section">
+<h3 id="plnmixturefamily-smooth-"><code>PLNmixturefamily$smooth()</code><a class="anchor" aria-label="anchor" href="#plnmixturefamily-smooth-"></a></h3>
 <p>function to restart clustering to avoid local minima by smoothing the loglikelihood values as a function of the number of clusters</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNmixturefamily</span><span class="op">$</span><span class="fu">smooth</span><span class="op">(</span><span class="va">control</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>control</code></dt>
 <dd><p>a list to control the smoothing process</p></dd>
@@ -202,52 +193,50 @@ See the documentation for <code><a href="getBestModel.html">getBestModel()</a></
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-PLNmixturefamily-plot"></a><div class="section">
-<h3 id="method-plot-">Method <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code><a class="anchor" aria-label="anchor" href="#method-plot-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-PLNmixturefamily-plot"></a><div class="section">
+<h3 id="plnmixturefamily-plot-"><code>PLNmixturefamily$plot()</code><a class="anchor" aria-label="anchor" href="#plnmixturefamily-plot-"></a></h3>
 <p>Lineplot of selected criteria for all models in the collection</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNmixturefamily</span><span class="op">$</span><span class="fu">plot</span><span class="op">(</span>criteria <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"loglik"</span>, <span class="st">"BIC"</span>, <span class="st">"ICL"</span><span class="op">)</span>, reverse <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>criteria</code></dt>
 <dd><p>A valid model selection criteria for the collection of models. Any of "loglik", "BIC" or "ICL" (all).</p></dd>
 
-
-<dt><code>reverse</code></dt>
+      <dt><code>reverse</code></dt>
 <dd><p>A logical indicating whether to plot the value of the criteria in the "natural" direction
 (loglik - 0.5 penalty) or in the "reverse" direction (-2 loglik + penalty). Default to FALSE, i.e use the
 natural direction, on the same scale as the log-likelihood..</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="returns">Returns<a class="anchor" aria-label="anchor" href="#returns"></a></h4>
 <p>A <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot2::ggplot</a></code> object</p>
 </div>
 
-</div><p></p><hr><a id="method-PLNmixturefamily-plot_objective"></a><div class="section">
-<h3 id="method-plot-objective-">Method <code>plot_objective()</code><a class="anchor" aria-label="anchor" href="#method-plot-objective-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-PLNmixturefamily-plot_objective"></a><div class="section">
+<h3 id="plnmixturefamily-plot-objective-"><code>PLNmixturefamily$plot_objective()</code><a class="anchor" aria-label="anchor" href="#plnmixturefamily-plot-objective-"></a></h3>
 <p>Plot objective value of the optimization problem along the penalty path</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNmixturefamily</span><span class="op">$</span><span class="fu">plot_objective</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="returns-1">Returns<a class="anchor" aria-label="anchor" href="#returns-1"></a></h4>
 <p>a <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot2::ggplot</a></code> graph</p>
 </div>
 
-</div><p></p><hr><a id="method-PLNmixturefamily-getBestModel"></a><div class="section">
-<h3 id="method-getbestmodel-">Method <code><a href="getBestModel.html">getBestModel()</a></code><a class="anchor" aria-label="anchor" href="#method-getbestmodel-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-PLNmixturefamily-getBestModel"></a><div class="section">
+<h3 id="plnmixturefamily-getbestmodel-"><code>PLNmixturefamily$getBestModel()</code><a class="anchor" aria-label="anchor" href="#plnmixturefamily-getbestmodel-"></a></h3>
 <p>Extract best model in the collection</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNmixturefamily</span><span class="op">$</span><span class="fu">getBestModel</span><span class="op">(</span>crit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BIC"</span>, <span class="st">"ICL"</span>, <span class="st">"loglik"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>crit</code></dt>
 <dd><p>a character for the criterion used to performed the selection. Either
@@ -255,36 +244,37 @@ natural direction, on the same scale as the log-likelihood..</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="returns-2">Returns<a class="anchor" aria-label="anchor" href="#returns-2"></a></h4>
 <p>a <code><a href="PLNmixturefit.html">PLNmixturefit</a></code> object</p>
 </div>
 
-</div><p></p><hr><a id="method-PLNmixturefamily-show"></a><div class="section">
-<h3 id="method-show-">Method <code>show()</code><a class="anchor" aria-label="anchor" href="#method-show-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-PLNmixturefamily-show"></a><div class="section">
+<h3 id="plnmixturefamily-show-"><code>PLNmixturefamily$show()</code><a class="anchor" aria-label="anchor" href="#plnmixturefamily-show-"></a></h3>
 <p>User friendly print method</p><div class="section">
 <h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNmixturefamily</span><span class="op">$</span><span class="fu">show</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+</div>
 
-</div><p></p><hr><a id="method-PLNmixturefamily-print"></a><div class="section">
-<h3 id="method-print-">Method <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code><a class="anchor" aria-label="anchor" href="#method-print-"></a></h3>
+<p></p><hr><a id="method-PLNmixturefamily-print"></a><div class="section">
+<h3 id="plnmixturefamily-print-"><code>PLNmixturefamily$print()</code><a class="anchor" aria-label="anchor" href="#plnmixturefamily-print-"></a></h3>
 <p>User friendly print method</p><div class="section">
 <h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNmixturefamily</span><span class="op">$</span><span class="fu">print</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+</div>
 
-</div><p></p><hr><a id="method-PLNmixturefamily-clone"></a><div class="section">
-<h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
+<p></p><hr><a id="method-PLNmixturefamily-clone"></a><div class="section">
+<h3 id="plnmixturefamily-clone-"><code>PLNmixturefamily$clone()</code><a class="anchor" aria-label="anchor" href="#plnmixturefamily-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
 <h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNmixturefamily</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
@@ -294,6 +284,7 @@ natural direction, on the same scale as the log-likelihood..</p></dd>
 </div>
 
 </div>
+
 
     </div>
 

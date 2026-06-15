@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -94,23 +94,23 @@
 <dd><p>the matrix of responses common to every models</p></dd>
 
 
-<dt><code>covariates</code></dt>
+    <dt><code>covariates</code></dt>
 <dd><p>the matrix of covariates common to every models</p></dd>
 
 
-<dt><code>offsets</code></dt>
+    <dt><code>offsets</code></dt>
 <dd><p>the matrix of offsets common to every models</p></dd>
 
 
-<dt><code>weights</code></dt>
+    <dt><code>weights</code></dt>
 <dd><p>the vector of observation weights</p></dd>
 
 
-<dt><code>inception</code></dt>
+    <dt><code>inception</code></dt>
 <dd><p>a <a href="PLNfit.html">PLNfit</a> object, obtained when no sparsifying penalty is applied.</p></dd>
 
 
-<dt><code>models</code></dt>
+    <dt><code>models</code></dt>
 <dd><p>a list of <a href="PLNfit.html">PLNfit</a> object, one per penalty.</p></dd>
 
 
@@ -123,7 +123,7 @@
 BIC and ICL are defined so that they are on the same scale as the model log-likelihood, i.e. with the form, loglik - 0.5 penalty</p></dd>
 
 
-<dt><code>convergence</code></dt>
+    <dt><code>convergence</code></dt>
 <dd><p>sends back a data frame with some convergence diagnostics associated with the optimization process (method, optimal value, etc)</p></dd>
 
 
@@ -134,144 +134,133 @@ BIC and ICL are defined so that they are on the same scale as the model log-like
 
 <div class="section">
 <h3 id="public-methods">Public methods<a class="anchor" aria-label="anchor" href="#public-methods"></a></h3>
-
-<ul><li><p><a href="#method-PLNfamily-new"><code>PLNfamily$new()</code></a></p></li>
+<p></p><ul><li><p><a href="#method-PLNfamily-initialize"><code>PLNfamily$new()</code></a></p></li>
 <li><p><a href="#method-PLNfamily-postTreatment"><code>PLNfamily$postTreatment()</code></a></p></li>
 <li><p><a href="#method-PLNfamily-getModel"><code>PLNfamily$getModel()</code></a></p></li>
 <li><p><a href="#method-PLNfamily-plot"><code>PLNfamily$plot()</code></a></p></li>
 <li><p><a href="#method-PLNfamily-show"><code>PLNfamily$show()</code></a></p></li>
 <li><p><a href="#method-PLNfamily-print"><code>PLNfamily$print()</code></a></p></li>
 <li><p><a href="#method-PLNfamily-clone"><code>PLNfamily$clone()</code></a></p></li>
-</ul></div><p></p><hr><a id="method-PLNfamily-new"></a><div class="section">
-<h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
+</ul></div><p></p><hr><a id="method-PLNfamily-initialize"></a><div class="section">
+<h3 id="plnfamily-new-"><code>PLNfamily$new()</code><a class="anchor" aria-label="anchor" href="#plnfamily-new-"></a></h3>
 <p>Create a new <code>PLNfamily</code> object.</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/PLNfamily.html">PLNfamily</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">responses</span>, <span class="va">covariates</span>, <span class="va">offsets</span>, <span class="va">weights</span>, <span class="va">control</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>responses</code></dt>
 <dd><p>the matrix of responses common to every models</p></dd>
 
-
-<dt><code>covariates</code></dt>
+      <dt><code>covariates</code></dt>
 <dd><p>the matrix of covariates common to every models</p></dd>
 
-
-<dt><code>offsets</code></dt>
+      <dt><code>offsets</code></dt>
 <dd><p>the matrix of offsets common to every models</p></dd>
 
-
-<dt><code>weights</code></dt>
+      <dt><code>weights</code></dt>
 <dd><p>the vector of observation weights</p></dd>
 
-
-<dt><code>control</code></dt>
+      <dt><code>control</code></dt>
 <dd><p>list controlling the optimization and the model</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="returns">Returns<a class="anchor" aria-label="anchor" href="#returns"></a></h4>
 <p>A new <code>PLNfamily</code> object</p>
 </div>
 
-</div><p></p><hr><a id="method-PLNfamily-postTreatment"></a><div class="section">
-<h3 id="method-posttreatment-">Method <code>postTreatment()</code><a class="anchor" aria-label="anchor" href="#method-posttreatment-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-PLNfamily-postTreatment"></a><div class="section">
+<h3 id="plnfamily-posttreatment-"><code>PLNfamily$postTreatment()</code><a class="anchor" aria-label="anchor" href="#plnfamily-posttreatment-"></a></h3>
 <p>Update fields after optimization</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfamily</span><span class="op">$</span><span class="fu">postTreatment</span><span class="op">(</span><span class="va">config_post</span>, <span class="va">config_optim</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>config_post</code></dt>
 <dd><p>a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.).</p></dd>
 
-
-<dt><code>config_optim</code></dt>
+      <dt><code>config_optim</code></dt>
 <dd><p>a list for controlling the optimization parameters used during post_treatments</p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-PLNfamily-getModel"></a><div class="section">
-<h3 id="method-getmodel-">Method <code><a href="getModel.html">getModel()</a></code><a class="anchor" aria-label="anchor" href="#method-getmodel-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-PLNfamily-getModel"></a><div class="section">
+<h3 id="plnfamily-getmodel-"><code>PLNfamily$getModel()</code><a class="anchor" aria-label="anchor" href="#plnfamily-getmodel-"></a></h3>
 <p>Extract a model from a collection of models</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfamily</span><span class="op">$</span><span class="fu">getModel</span><span class="op">(</span><span class="va">var</span>, index <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>var</code></dt>
 <dd><p>value of the parameter (<code>rank</code> for PLNPCA, <code>sparsity</code> for PLNnetwork) that identifies the model to be extracted from the collection. If no exact match is found, the model with closest parameter value is returned with a warning.</p></dd>
 
-
-<dt><code>index</code></dt>
+      <dt><code>index</code></dt>
 <dd><p>Integer index of the model to be returned. Only the first value is taken into account.</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="returns-1">Returns<a class="anchor" aria-label="anchor" href="#returns-1"></a></h4>
 <p>A <code><a href="PLNfit.html">PLNfit</a></code> object</p>
 </div>
 
-</div><p></p><hr><a id="method-PLNfamily-plot"></a><div class="section">
-<h3 id="method-plot-">Method <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code><a class="anchor" aria-label="anchor" href="#method-plot-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-PLNfamily-plot"></a><div class="section">
+<h3 id="plnfamily-plot-"><code>PLNfamily$plot()</code><a class="anchor" aria-label="anchor" href="#plnfamily-plot-"></a></h3>
 <p>Lineplot of selected criteria for all models in the collection</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfamily</span><span class="op">$</span><span class="fu">plot</span><span class="op">(</span><span class="va">criteria</span>, <span class="va">reverse</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>criteria</code></dt>
 <dd><p>A valid model selection criteria for the collection of models. Includes loglik, BIC (all), ICL (PLNPCA) and pen_loglik, EBIC (PLNnetwork)</p></dd>
 
-
-<dt><code>reverse</code></dt>
+      <dt><code>reverse</code></dt>
 <dd><p>A logical indicating whether to plot the value of the criteria in the "natural" direction
 (loglik - penalty) or in the "reverse" direction (-2 loglik + penalty). Default to FALSE, i.e use the natural direction, on
 the same scale as the log-likelihood.</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="returns-2">Returns<a class="anchor" aria-label="anchor" href="#returns-2"></a></h4>
 <p>A <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot2::ggplot</a></code> object</p>
 </div>
 
-</div><p></p><hr><a id="method-PLNfamily-show"></a><div class="section">
-<h3 id="method-show-">Method <code>show()</code><a class="anchor" aria-label="anchor" href="#method-show-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-PLNfamily-show"></a><div class="section">
+<h3 id="plnfamily-show-"><code>PLNfamily$show()</code><a class="anchor" aria-label="anchor" href="#plnfamily-show-"></a></h3>
 <p>User friendly print method</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfamily</span><span class="op">$</span><span class="fu">show</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+</div>
 
-</div><p></p><hr><a id="method-PLNfamily-print"></a><div class="section">
-<h3 id="method-print-">Method <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code><a class="anchor" aria-label="anchor" href="#method-print-"></a></h3>
+<p></p><hr><a id="method-PLNfamily-print"></a><div class="section">
+<h3 id="plnfamily-print-"><code>PLNfamily$print()</code><a class="anchor" aria-label="anchor" href="#plnfamily-print-"></a></h3>
 <p>User friendly print method</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfamily</span><span class="op">$</span><span class="fu">print</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+</div>
 
-</div><p></p><hr><a id="method-PLNfamily-clone"></a><div class="section">
-<h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
+<p></p><hr><a id="method-PLNfamily-clone"></a><div class="section">
+<h3 id="plnfamily-clone-"><code>PLNfamily$clone()</code><a class="anchor" aria-label="anchor" href="#plnfamily-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
 <h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNfamily</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
@@ -281,6 +270,7 @@ the same scale as the log-likelihood.</p></dd>
 </div>
 
 </div>
+
 
     </div>
 

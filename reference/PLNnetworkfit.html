@@ -19,7 +19,7 @@ See the documentation for plot() and methods inherited from PLNfit."><meta prope
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -94,7 +94,7 @@ See the documentation for <code><a href="plot.PLNnetworkfit.html">plot()</a></co
     </div>
     <div id="super-classes">
     <h2>Super classes</h2>
-    <p><code><a href="PLNfit.html">PLNmodels::PLNfit</a></code> -&gt; <code><a href="PLNfit_fixedcov.html">PLNmodels::PLNfit_fixedcov</a></code> -&gt; <code>PLNnetworkfit</code></p>
+    <p><code><a href="PLNfit.html">PLNfit</a></code> -&gt; <code><a href="PLNfit_fixedcov.html">PLNfit_fixedcov</a></code> -&gt; <code>PLNnetworkfit</code></p>
     </div>
     <div id="active-bindings">
     <h2>Active bindings</h2>
@@ -102,35 +102,35 @@ See the documentation for <code><a href="plot.PLNnetworkfit.html">plot()</a></co
 <dd><p>character: the model used for the residual covariance</p></dd>
 
 
-<dt><code>penalty</code></dt>
+    <dt><code>penalty</code></dt>
 <dd><p>the global level of sparsity in the current model</p></dd>
 
 
-<dt><code>penalty_weights</code></dt>
+    <dt><code>penalty_weights</code></dt>
 <dd><p>a matrix of weights controlling the amount of penalty element-wise.</p></dd>
 
 
-<dt><code>n_edges</code></dt>
+    <dt><code>n_edges</code></dt>
 <dd><p>number of edges if the network (non null coefficient of the sparse precision matrix)</p></dd>
 
 
-<dt><code>nb_param</code></dt>
+    <dt><code>nb_param</code></dt>
 <dd><p>number of parameters in the current PLN model</p></dd>
 
 
-<dt><code>pen_loglik</code></dt>
+    <dt><code>pen_loglik</code></dt>
 <dd><p>variational lower bound of the l1-penalized loglikelihood</p></dd>
 
 
-<dt><code>EBIC</code></dt>
+    <dt><code>EBIC</code></dt>
 <dd><p>variational lower bound of the EBIC</p></dd>
 
 
-<dt><code>density</code></dt>
+    <dt><code>density</code></dt>
 <dd><p>proportion of non-null edges in the network</p></dd>
 
 
-<dt><code>criteria</code></dt>
+    <dt><code>criteria</code></dt>
 <dd><p>a vector with loglik, penalized loglik, BIC, EBIC, ICL, R_squared, number of parameters, number of edges and graph density</p></dd>
 
 
@@ -141,81 +141,77 @@ See the documentation for <code><a href="plot.PLNnetworkfit.html">plot()</a></co
 
 <div class="section">
 <h3 id="public-methods">Public methods<a class="anchor" aria-label="anchor" href="#public-methods"></a></h3>
-
-<ul><li><p><a href="#method-PLNnetworkfit-new"><code>PLNnetworkfit$new()</code></a></p></li>
+<p></p><ul><li><p><a href="#method-PLNnetworkfit-initialize"><code>PLNnetworkfit$new()</code></a></p></li>
 <li><p><a href="#method-PLNnetworkfit-optimize"><code>PLNnetworkfit$optimize()</code></a></p></li>
 <li><p><a href="#method-PLNnetworkfit-latent_network"><code>PLNnetworkfit$latent_network()</code></a></p></li>
 <li><p><a href="#method-PLNnetworkfit-plot_network"><code>PLNnetworkfit$plot_network()</code></a></p></li>
 <li><p><a href="#method-PLNnetworkfit-show"><code>PLNnetworkfit$show()</code></a></p></li>
 <li><p><a href="#method-PLNnetworkfit-clone"><code>PLNnetworkfit$clone()</code></a></p></li>
-</ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_vestep"><a href="PLNfit.html#method-optimize_vestep"><code>PLNmodels::PLNfit$optimize_vestep()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="postTreatment"><a href="PLNfit.html#method-postTreatment"><code>PLNmodels::PLNfit$postTreatment()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict"><a href="PLNfit.html#method-predict"><code>PLNmodels::PLNfit$predict()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href="PLNfit.html#method-predict_cond"><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href="PLNfit.html#method-print"><code>PLNmodels::PLNfit$print()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update"><a href="PLNfit.html#method-update"><code>PLNmodels::PLNfit$update()</code></a></span></li>
-</ul></details></p><hr><a id="method-PLNnetworkfit-new"></a><div class="section">
-<h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
+</ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="optimize_vestep"><a href="PLNfit.html#method-optimize_vestep"><code>PLNfit$optimize_vestep()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="postTreatment"><a href="PLNfit.html#method-postTreatment"><code>PLNfit$postTreatment()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict"><a href="PLNfit.html#method-predict"><code>PLNfit$predict()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href="PLNfit.html#method-predict_cond"><code>PLNfit$predict_cond()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href="PLNfit.html#method-print"><code>PLNfit$print()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="update"><a href="PLNfit.html#method-update"><code>PLNfit$update()</code></a></span></li>
+</ul></details></p><hr><a id="method-PLNnetworkfit-initialize"></a><div class="section">
+<h3 id="plnnetworkfit-new-"><code>PLNnetworkfit$new()</code><a class="anchor" aria-label="anchor" href="#plnnetworkfit-new-"></a></h3>
 <p>Initialize a <code>PLNnetworkfit</code> object</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/PLNnetworkfit.html">PLNnetworkfit</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">data</span>, <span class="va">control</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>data</code></dt>
 <dd><p>a named list used internally to carry the data matrices</p></dd>
 
-
-<dt><code>control</code></dt>
+      <dt><code>control</code></dt>
 <dd><p>a list for controlling the optimization.</p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-PLNnetworkfit-optimize"></a><div class="section">
-<h3 id="method-optimize-">Method <code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize()</a></code><a class="anchor" aria-label="anchor" href="#method-optimize-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-PLNnetworkfit-optimize"></a><div class="section">
+<h3 id="plnnetworkfit-optimize-"><code>PLNnetworkfit$optimize()</code><a class="anchor" aria-label="anchor" href="#plnnetworkfit-optimize-"></a></h3>
 <p>Call to the C++ optimizer and update of the relevant fields</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNnetworkfit</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span><span class="va">data</span>, <span class="va">config</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>data</code></dt>
 <dd><p>a named list used internally to carry the data matrices</p></dd>
 
-
-<dt><code>config</code></dt>
+      <dt><code>config</code></dt>
 <dd><p>a list for controlling the optimization</p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-PLNnetworkfit-latent_network"></a><div class="section">
-<h3 id="method-latent-network-">Method <code>latent_network()</code><a class="anchor" aria-label="anchor" href="#method-latent-network-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-PLNnetworkfit-latent_network"></a><div class="section">
+<h3 id="plnnetworkfit-latent-network-"><code>PLNnetworkfit$latent_network()</code><a class="anchor" aria-label="anchor" href="#plnnetworkfit-latent-network-"></a></h3>
 <p>Extract interaction network in the latent space</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNnetworkfit</span><span class="op">$</span><span class="fu">latent_network</span><span class="op">(</span>type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"partial_cor"</span>, <span class="st">"support"</span>, <span class="st">"precision"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>type</code></dt>
 <dd><p>edge value in the network. Can be "support" (binary edges), "precision" (coefficient of the precision matrix) or "partial_cor" (partial correlation between species)</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="returns">Returns<a class="anchor" aria-label="anchor" href="#returns"></a></h4>
 <p>a square matrix of size <code>PLNnetworkfit$n</code></p>
 </div>
 
-</div><p></p><hr><a id="method-PLNnetworkfit-plot_network"></a><div class="section">
-<h3 id="method-plot-network-">Method <code>plot_network()</code><a class="anchor" aria-label="anchor" href="#method-plot-network-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-PLNnetworkfit-plot_network"></a><div class="section">
+<h3 id="plnnetworkfit-plot-network-"><code>PLNnetworkfit$plot_network()</code><a class="anchor" aria-label="anchor" href="#plnnetworkfit-plot-network-"></a></h3>
 <p>plot the latent network.</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNnetworkfit</span><span class="op">$</span><span class="fu">plot_network</span><span class="op">(</span></span>
@@ -227,57 +223,50 @@ See the documentation for <code><a href="plot.PLNnetworkfit.html">plot()</a></co
 <span>  layout <span class="op">=</span> <span class="va">layout_in_circle</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>type</code></dt>
 <dd><p>edge value in the network. Either "precision" (coefficient of the precision matrix) or "partial_cor" (partial correlation between species).</p></dd>
 
-
-<dt><code>output</code></dt>
+      <dt><code>output</code></dt>
 <dd><p>Output type. Either <code>igraph</code> (for the network) or <code>corrplot</code> (for the adjacency matrix)</p></dd>
 
-
-<dt><code>edge.color</code></dt>
+      <dt><code>edge.color</code></dt>
 <dd><p>Length 2 color vector. Color for positive/negative edges. Default is <code>c("#F8766D", "#00BFC4")</code>. Only relevant for igraph output.</p></dd>
 
-
-<dt><code>remove.isolated</code></dt>
+      <dt><code>remove.isolated</code></dt>
 <dd><p>if <code>TRUE</code>, isolated node are remove before plotting. Only relevant for igraph output.</p></dd>
 
-
-<dt><code>node.labels</code></dt>
+      <dt><code>node.labels</code></dt>
 <dd><p>vector of character. The labels of the nodes. The default will use the column names ot the response matrix.</p></dd>
 
-
-<dt><code>layout</code></dt>
+      <dt><code>layout</code></dt>
 <dd><p>an optional igraph layout. Only relevant for igraph output.</p></dd>
 
-
-<dt><code>plot</code></dt>
+      <dt><code>plot</code></dt>
 <dd><p>logical. Should the final network be displayed or only sent back to the user. Default is <code>TRUE</code>.</p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-PLNnetworkfit-show"></a><div class="section">
-<h3 id="method-show-">Method <code>show()</code><a class="anchor" aria-label="anchor" href="#method-show-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-PLNnetworkfit-show"></a><div class="section">
+<h3 id="plnnetworkfit-show-"><code>PLNnetworkfit$show()</code><a class="anchor" aria-label="anchor" href="#plnnetworkfit-show-"></a></h3>
 <p>User friendly print method</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNnetworkfit</span><span class="op">$</span><span class="fu">show</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+</div>
 
-</div><p></p><hr><a id="method-PLNnetworkfit-clone"></a><div class="section">
-<h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
+<p></p><hr><a id="method-PLNnetworkfit-clone"></a><div class="section">
+<h3 id="plnnetworkfit-clone-"><code>PLNnetworkfit$clone()</code><a class="anchor" aria-label="anchor" href="#plnnetworkfit-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNnetworkfit</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
@@ -287,6 +276,7 @@ See the documentation for <code><a href="plot.PLNnetworkfit.html">plot()</a></co
 </div>
 
 </div>
+
 
     </div>
 

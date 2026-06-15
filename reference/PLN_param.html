@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -85,13 +85,14 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">PLN_param</span><span class="op">(</span></span>
-<span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nlopt"</span>, <span class="st">"torch"</span><span class="op">)</span>,</span>
+<span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"builtin"</span>, <span class="st">"nlopt"</span>, <span class="st">"torch"</span><span class="op">)</span>,</span>
 <span>  trace <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  covariance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"full"</span>, <span class="st">"diagonal"</span>, <span class="st">"spherical"</span>, <span class="st">"fixed"</span><span class="op">)</span>,</span>
 <span>  Omega <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  config_post <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  config_optim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  inception <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  inception <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  init_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"LM"</span>, <span class="st">"GLM"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -100,7 +101,8 @@
 
 
 <dl><dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
-<dd><p>optimization back used, either "nlopt" or "torch". Default is "nlopt"</p></dd>
+<dd><p>optimization back used, either "builtin" (default), "nlopt" or "torch".
+"builtin" is the built-in envelope-theorem Newton optimizer (does not depend on NLOPT).</p></dd>
 
 
 <dt id="arg-trace">trace<a class="anchor" aria-label="anchor" href="#arg-trace"></a></dt>
@@ -128,6 +130,10 @@
 log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
 which sometimes speeds up the inference.</p></dd>
 
+
+<dt id="arg-init-method">init_method<a class="anchor" aria-label="anchor" href="#arg-init-method"></a></dt>
+<dd><p>character: strategy for the starting-point computation (ignored when <code>inception</code> is a PLNfit). Either <code>"LM"</code> (default) or <code>"GLM"</code> (p independent Poisson GLMs, better for complex or unbalanced designs). See <code><a href="compute_PLN_starting_point.html">compute_PLN_starting_point()</a></code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -154,6 +160,10 @@ which sometimes speeds up the inference.</p></dd>
 <li><p>"step_sizes" pair of minimal (default: 1e-6) and maximal (default: 50) allowed step sizes. Only used in RPROP</p></li>
 <li><p>"etas" pair of multiplicative increase and decrease factors. Default is (0.5, 1.2). Only used in RPROP</p></li>
 <li><p>"centered" if TRUE, compute the centered RMSProp where the gradient is normalized by an estimation of its variance weight_decay (L2 penalty). Default to FALSE. Only used in RMSPROP</p></li>
+</ul><p>When "builtin" backend is used, the following entries are relevant</p><ul><li><p>"maxeval" stop when the number of Newton steps in the inner loop exceeds maxeval. Default is 10000</p></li>
+<li><p>"ftol_in" stop the inner loop when the objective changes by less than ftol_in (relative). Default is 1e-8</p></li>
+<li><p>"maxit_em" stop the EM outer loop when the number of EM iterations exceeds maxit_em. Default is 50</p></li>
+<li><p>"ftol_em" stop the EM outer loop when the ELBO changes by less than ftol_em (relative). Default is 1e-8</p></li>
 </ul><p>The list of parameters <code>config_post</code> controls the post-treatment processing (for most <code>PLN*()</code> functions), with the following entries (defaults may vary depending on the specific function, check <code>config_post_default_*</code> for defaults values):</p><ul><li><p>jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.</p></li>
 <li><p>bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).</p></li>
 <li><p>variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.</p></li>

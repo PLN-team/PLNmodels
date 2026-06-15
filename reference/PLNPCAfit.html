@@ -19,7 +19,7 @@ See the documentation for the methods inherited by  PLNfit and the plot() method
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -94,63 +94,67 @@ See the documentation for the methods inherited by  <code><a href="PLNfit.html">
     </div>
     <div id="super-class">
     <h2>Super class</h2>
-    <p><code><a href="PLNfit.html">PLNmodels::PLNfit</a></code> -&gt; <code>PLNPCAfit</code></p>
+    <p><code><a href="PLNfit.html">PLNfit</a></code> -&gt; <code>PLNPCAfit</code></p>
     </div>
     <div id="active-bindings">
     <h2>Active bindings</h2>
-    <p></p><div class="r6-active-bindings"><dl><dt><code>rank</code></dt>
+    <p></p><div class="r6-active-bindings"><dl><dt><code>var_par</code></dt>
+<dd><p>variational parameters (M, S2) in the rank-q latent space</p></dd>
+
+
+    <dt><code>rank</code></dt>
 <dd><p>the dimension of the current model</p></dd>
 
 
-<dt><code>vcov_model</code></dt>
+    <dt><code>vcov_model</code></dt>
 <dd><p>character: the model used for the residual covariance</p></dd>
 
 
-<dt><code>nb_param</code></dt>
+    <dt><code>nb_param</code></dt>
 <dd><p>number of parameters in the current PLN model</p></dd>
 
 
-<dt><code>entropy</code></dt>
+    <dt><code>entropy</code></dt>
 <dd><p>entropy of the variational distribution</p></dd>
 
 
-<dt><code>latent_pos</code></dt>
+    <dt><code>latent_pos</code></dt>
 <dd><p>a matrix: values of the latent position vector (Z) without covariates effects or offset</p></dd>
 
 
-<dt><code>model_par</code></dt>
+    <dt><code>model_par</code></dt>
 <dd><p>a list with the matrices associated with the estimated parameters of the pPCA model: B (covariates), Sigma (covariance), Omega (precision) and C (loadings)</p></dd>
 
 
-<dt><code>percent_var</code></dt>
+    <dt><code>percent_var</code></dt>
 <dd><p>the percent of variance explained by each axis</p></dd>
 
 
-<dt><code>corr_circle</code></dt>
+    <dt><code>corr_circle</code></dt>
 <dd><p>a matrix of correlations to plot the correlation circles</p></dd>
 
 
-<dt><code>scores</code></dt>
+    <dt><code>scores</code></dt>
 <dd><p>a matrix of scores to plot the individual factor maps (a.k.a. principal components)</p></dd>
 
 
-<dt><code>rotation</code></dt>
+    <dt><code>rotation</code></dt>
 <dd><p>a matrix of rotation of the latent space</p></dd>
 
 
-<dt><code>eig</code></dt>
+    <dt><code>eig</code></dt>
 <dd><p>description of the eigenvalues, similar to percent_var but for use with external methods</p></dd>
 
 
-<dt><code>var</code></dt>
+    <dt><code>var</code></dt>
 <dd><p>a list of data frames with PCA results for the variables: <code>coord</code> (coordinates of the variables), <code>cor</code> (correlation between variables and dimensions), <code>cos2</code> (Cosine of the variables) and <code>contrib</code> (contributions of the variable to the axes)</p></dd>
 
 
-<dt><code>ind</code></dt>
+    <dt><code>ind</code></dt>
 <dd><p>a list of data frames with PCA results for the individuals: <code>coord</code> (coordinates of the individuals), <code>cos2</code> (Cosine of the individuals), <code>contrib</code> (contributions of individuals to an axis inertia) and <code>dist</code> (distance of individuals to the origin).</p></dd>
 
 
-<dt><code>call</code></dt>
+    <dt><code>call</code></dt>
 <dd><p>Hacky binding for compatibility with factoextra functions</p></dd>
 
 
@@ -161,8 +165,8 @@ See the documentation for the methods inherited by  <code><a href="PLNfit.html">
 
 <div class="section">
 <h3 id="public-methods">Public methods<a class="anchor" aria-label="anchor" href="#public-methods"></a></h3>
-
-<ul><li><p><a href="#method-PLNPCAfit-new"><code>PLNPCAfit$new()</code></a></p></li>
+<p></p><ul><li><p><a href="#method-PLNPCAfit-initialize"><code>PLNPCAfit$new()</code></a></p></li>
+<li><p><a href="#method-PLNPCAfit-warm_start_from"><code>PLNPCAfit$warm_start_from()</code></a></p></li>
 <li><p><a href="#method-PLNPCAfit-update"><code>PLNPCAfit$update()</code></a></p></li>
 <li><p><a href="#method-PLNPCAfit-optimize"><code>PLNPCAfit$optimize()</code></a></p></li>
 <li><p><a href="#method-PLNPCAfit-optimize_vestep"><code>PLNPCAfit$optimize_vestep()</code></a></p></li>
@@ -174,157 +178,160 @@ See the documentation for the methods inherited by  <code><a href="PLNfit.html">
 <li><p><a href="#method-PLNPCAfit-plot_PCA"><code>PLNPCAfit$plot_PCA()</code></a></p></li>
 <li><p><a href="#method-PLNPCAfit-show"><code>PLNPCAfit$show()</code></a></p></li>
 <li><p><a href="#method-PLNPCAfit-clone"><code>PLNPCAfit$clone()</code></a></p></li>
-</ul></div><p><details open><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict"><a href="PLNfit.html#method-predict"><code>PLNmodels::PLNfit$predict()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href="PLNfit.html#method-predict_cond"><code>PLNmodels::PLNfit$predict_cond()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href="PLNfit.html#method-print"><code>PLNmodels::PLNfit$print()</code></a></span></li>
-</ul></details></p><hr><a id="method-PLNPCAfit-new"></a><div class="section">
-<h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
-<p>Initialize a <code>PLNPCAfit</code> object</p><div class="section">
+</ul></div><p><details open><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict"><a href="PLNfit.html#method-predict"><code>PLNfit$predict()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="predict_cond"><a href="PLNfit.html#method-predict_cond"><code>PLNfit$predict_cond()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfit" data-id="print"><a href="PLNfit.html#method-print"><code>PLNfit$print()</code></a></span></li>
+</ul></details></p><hr><a id="method-PLNPCAfit-initialize"></a><div class="section">
+<h3 id="plnpcafit-new-"><code>PLNPCAfit$new()</code><a class="anchor" aria-label="anchor" href="#plnpcafit-new-"></a></h3>
+<p>Initialize a <code>PLNPCAfit</code> object.
+Uses the shared SVD from <code>control$svdM</code> (computed once in <code><a href="PLNPCAfamily.html">PLNPCAfamily</a></code>) to set
+the starting loadings <code>C</code> and scores <code>M</code>. The regression coefficients <code>B</code> are
+initialised by the parent <code><a href="PLNfit.html">PLNfit</a></code> constructor (LM or user-provided inception).</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/PLNPCAfit.html">PLNPCAfit</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">rank</span>, <span class="va">responses</span>, <span class="va">covariates</span>, <span class="va">offsets</span>, <span class="va">weights</span>, <span class="va">formula</span>, <span class="va">control</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>rank</code></dt>
 <dd><p>rank of the PCA (or equivalently, dimension of the latent space)</p></dd>
 
-
-<dt><code>responses</code></dt>
+      <dt><code>responses</code></dt>
 <dd><p>the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in <code><a href="PLNfamily.html">PLNfamily</a></code></p></dd>
 
-
-<dt><code>covariates</code></dt>
+      <dt><code>covariates</code></dt>
 <dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in <code><a href="PLNfamily.html">PLNfamily</a></code></p></dd>
 
-
-<dt><code>offsets</code></dt>
+      <dt><code>offsets</code></dt>
 <dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in <code><a href="PLNfamily.html">PLNfamily</a></code></p></dd>
 
-
-<dt><code>weights</code></dt>
+      <dt><code>weights</code></dt>
 <dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
 
-
-<dt><code>formula</code></dt>
+      <dt><code>formula</code></dt>
 <dd><p>model formula used for fitting, extracted from the formula in the upper-level call</p></dd>
 
-
-<dt><code>control</code></dt>
+      <dt><code>control</code></dt>
 <dd><p>a list for controlling the optimization. See details.</p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-PLNPCAfit-update"></a><div class="section">
-<h3 id="method-update-">Method <code><a href="https://rdrr.io/r/stats/update.html" class="external-link">update()</a></code><a class="anchor" aria-label="anchor" href="#method-update-"></a></h3>
-<p>Update a <code>PLNPCAfit</code> object</p><div class="section">
+</div>
+
+<p></p><hr><a id="method-PLNPCAfit-warm_start_from"></a><div class="section">
+<h3 id="plnpcafit-warm-start-from-"><code>PLNPCAfit$warm_start_from()</code><a class="anchor" aria-label="anchor" href="#plnpcafit-warm-start-from-"></a></h3>
+<p>Reinitialize parameters for sequential warm-starting from a lower-rank fit.
+Fitted loadings C, scores M, variances S, and regression coefficients B from <code>prev_fit</code>
+are carried over; new columns are padded using the inception SVD (C) or zeros/0.1 (M/S).</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfit</span><span class="op">$</span><span class="fu">warm_start_from</span><span class="op">(</span><span class="va">prev_fit</span>, <span class="va">svdM</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div><p></p><div class="section">
+<h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>prev_fit</code></dt>
+<dd><p>a converged <code>PLNPCAfit</code> of rank <code>self$rank - k</code> (k &gt;= 1)</p></dd>
+
+      <dt><code>svdM</code></dt>
+<dd><p>the inception SVD (from <code>PLNPCAfamily</code>)</p></dd>
+
+
+</dl><p></p></div>
+</div>
+
+</div>
+
+<p></p><hr><a id="method-PLNPCAfit-update"></a><div class="section">
+<h3 id="plnpcafit-update-"><code>PLNPCAfit$update()</code><a class="anchor" aria-label="anchor" href="#plnpcafit-update-"></a></h3>
+<p>Update a <code>PLNPCAfit</code> object</p><div class="section">
+<h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfit</span><span class="op">$</span><span class="fu">update</span><span class="op">(</span></span>
 <span>  B <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  Sigma <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  Omega <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  C <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  M <span class="op">=</span> <span class="cn">NA</span>,</span>
-<span>  S <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  S2 <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  Z <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  A <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  Ji <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  R2 <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  monitoring <span class="op">=</span> <span class="cn">NA</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
-<h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
+</div><p></p><div class="section">
+<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>B</code></dt>
 <dd><p>matrix of regression matrix</p></dd>
 
-
-<dt><code>Sigma</code></dt>
+      <dt><code>Sigma</code></dt>
 <dd><p>variance-covariance matrix of the latent variables</p></dd>
 
-
-<dt><code>Omega</code></dt>
+      <dt><code>Omega</code></dt>
 <dd><p>precision matrix of the latent variables. Inverse of Sigma.</p></dd>
 
-
-<dt><code>C</code></dt>
+      <dt><code>C</code></dt>
 <dd><p>matrix of PCA loadings (in the latent space)</p></dd>
 
-
-<dt><code>M</code></dt>
+      <dt><code>M</code></dt>
 <dd><p>matrix of mean vectors for the variational approximation</p></dd>
 
+      <dt><code>S2</code></dt>
+<dd><p>matrix of variational variances (n × q)</p></dd>
 
-<dt><code>S</code></dt>
-<dd><p>matrix of variance vectors for the variational approximation</p></dd>
-
-
-<dt><code>Z</code></dt>
+      <dt><code>Z</code></dt>
 <dd><p>matrix of latent vectors (includes covariates and offset effects)</p></dd>
 
-
-<dt><code>A</code></dt>
+      <dt><code>A</code></dt>
 <dd><p>matrix of fitted values</p></dd>
 
-
-<dt><code>Ji</code></dt>
+      <dt><code>Ji</code></dt>
 <dd><p>vector of variational lower bounds of the log-likelihoods (one value per sample)</p></dd>
 
-
-<dt><code>R2</code></dt>
+      <dt><code>R2</code></dt>
 <dd><p>approximate R^2 goodness-of-fit criterion</p></dd>
 
-
-<dt><code>monitoring</code></dt>
+      <dt><code>monitoring</code></dt>
 <dd><p>a list with optimization monitoring quantities</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="returns">Returns<a class="anchor" aria-label="anchor" href="#returns"></a></h4>
 <p>Update the current <code>PLNPCAfit</code> object</p>
 </div>
 
-</div><p></p><hr><a id="method-PLNPCAfit-optimize"></a><div class="section">
-<h3 id="method-optimize-">Method <code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize()</a></code><a class="anchor" aria-label="anchor" href="#method-optimize-"></a></h3>
-<p>Call to the C++ optimizer and update of the relevant fields</p><div class="section">
-<h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfit</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span><span class="va">responses</span>, <span class="va">covariates</span>, <span class="va">offsets</span>, <span class="va">weights</span>, <span class="va">config</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
-<div class="section">
-<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
+<p></p><hr><a id="method-PLNPCAfit-optimize"></a><div class="section">
+<h3 id="plnpcafit-optimize-"><code>PLNPCAfit$optimize()</code><a class="anchor" aria-label="anchor" href="#plnpcafit-optimize-"></a></h3>
+<p>Call to the C++ optimizer and update of the relevant fields</p><div class="section">
+<h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfit</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span><span class="va">responses</span>, <span class="va">covariates</span>, <span class="va">offsets</span>, <span class="va">weights</span>, <span class="va">config</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div><p></p><div class="section">
+<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>responses</code></dt>
 <dd><p>the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in <code><a href="PLNfamily.html">PLNfamily</a></code></p></dd>
 
-
-<dt><code>covariates</code></dt>
+      <dt><code>covariates</code></dt>
 <dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in <code><a href="PLNfamily.html">PLNfamily</a></code></p></dd>
 
-
-<dt><code>offsets</code></dt>
+      <dt><code>offsets</code></dt>
 <dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in <code><a href="PLNfamily.html">PLNfamily</a></code></p></dd>
 
-
-<dt><code>weights</code></dt>
+      <dt><code>weights</code></dt>
 <dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
 
-
-<dt><code>config</code></dt>
+      <dt><code>config</code></dt>
 <dd><p>part of the <code>control</code> argument which configures the optimizer</p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-PLNPCAfit-optimize_vestep"></a><div class="section">
-<h3 id="method-optimize-vestep-">Method <code>optimize_vestep()</code><a class="anchor" aria-label="anchor" href="#method-optimize-vestep-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-PLNPCAfit-optimize_vestep"></a><div class="section">
+<h3 id="plnpcafit-optimize-vestep-"><code>PLNPCAfit$optimize_vestep()</code><a class="anchor" aria-label="anchor" href="#plnpcafit-optimize-vestep-"></a></h3>
 <p>Result of one call to the VE step of the optimization procedure: optimal variational parameters (M, S) and corresponding log likelihood values for fixed model parameters (C, B). Intended to position new data in the latent space for further use with PCA.</p><div class="section">
-<h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
+<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfit</span><span class="op">$</span><span class="fu">optimize_vestep</span><span class="op">(</span></span>
 <span>  <span class="va">covariates</span>,</span>
 <span>  <span class="va">offsets</span>,</span>
@@ -332,77 +339,68 @@ See the documentation for the methods inherited by  <code><a href="PLNfit.html">
 <span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">self</span><span class="op">$</span><span class="va">n</span><span class="op">)</span>,</span>
 <span>  control <span class="op">=</span> <span class="fu"><a href="../reference/PLNPCA_param.html">PLNPCA_param</a></span><span class="op">(</span>backend <span class="op">=</span> <span class="st">"nlopt"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
-<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
+</div><p></p><div class="section">
+<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>covariates</code></dt>
 <dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in <code><a href="PLNfamily.html">PLNfamily</a></code></p></dd>
 
-
-<dt><code>offsets</code></dt>
+      <dt><code>offsets</code></dt>
 <dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in <code><a href="PLNfamily.html">PLNfamily</a></code></p></dd>
 
-
-<dt><code>responses</code></dt>
+      <dt><code>responses</code></dt>
 <dd><p>the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in <code><a href="PLNfamily.html">PLNfamily</a></code></p></dd>
 
-
-<dt><code>weights</code></dt>
+      <dt><code>weights</code></dt>
 <dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
 
-
-<dt><code>control</code></dt>
+      <dt><code>control</code></dt>
 <dd><p>a list for controlling the optimization. See details.</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="returns-1">Returns<a class="anchor" aria-label="anchor" href="#returns-1"></a></h4>
 <p>A list with three components:</p><ul><li><p>the matrix <code>M</code> of variational means,</p></li>
 <li><p>the matrix <code>S2</code> of variational variances</p></li>
 <li><p>the vector <code>log.lik</code> of (variational) log-likelihood of each new observation</p></li>
-</ul></div>
-
-</div><p></p><hr><a id="method-PLNPCAfit-project"></a><div class="section">
-<h3 id="method-project-">Method <code>project()</code><a class="anchor" aria-label="anchor" href="#method-project-"></a></h3>
-<p>Project new samples into the PCA space using one VE step</p><div class="section">
-<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfit</span><span class="op">$</span><span class="fu">project</span><span class="op">(</span><span class="va">newdata</span>, control <span class="op">=</span> <span class="fu"><a href="../reference/PLNPCA_param.html">PLNPCA_param</a></span><span class="op">(</span><span class="op">)</span>, envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</ul><p></p>
 </div>
 
-<div class="section">
-<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
+</div>
+
+<p></p><hr><a id="method-PLNPCAfit-project"></a><div class="section">
+<h3 id="plnpcafit-project-"><code>PLNPCAfit$project()</code><a class="anchor" aria-label="anchor" href="#plnpcafit-project-"></a></h3>
+<p>Project new samples into the PCA space using one VE step</p><div class="section">
+<h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfit</span><span class="op">$</span><span class="fu">project</span><span class="op">(</span><span class="va">newdata</span>, control <span class="op">=</span> <span class="fu"><a href="../reference/PLNPCA_param.html">PLNPCA_param</a></span><span class="op">(</span><span class="op">)</span>, envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div><p></p><div class="section">
+<h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>newdata</code></dt>
 <dd><p>A data frame in which to look for variables, offsets and counts  with which to predict.</p></dd>
 
-
-<dt><code>control</code></dt>
+      <dt><code>control</code></dt>
 <dd><p>a list for controlling the optimization. See <code><a href="PLN.html">PLN()</a></code> for details.</p></dd>
 
-
-<dt><code>envir</code></dt>
+      <dt><code>envir</code></dt>
 <dd><p>Environment in which the projection is evaluated</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="returns-2">Returns<a class="anchor" aria-label="anchor" href="#returns-2"></a></h4>
-
-<ul><li><p>the named matrix of scores for the newdata, expressed in the same coordinate system as <code>self$scores</code></p></li>
-</ul></div>
-
-</div><p></p><hr><a id="method-PLNPCAfit-setVisualization"></a><div class="section">
-<h3 id="method-setvisualization-">Method <code>setVisualization()</code><a class="anchor" aria-label="anchor" href="#method-setvisualization-"></a></h3>
-<p>Compute PCA scores in the latent space and update corresponding fields.</p><div class="section">
-<h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfit</span><span class="op">$</span><span class="fu">setVisualization</span><span class="op">(</span>scale.unit <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><ul><li><p>the named matrix of scores for the newdata, expressed in the same coordinate system as <code>self$scores</code></p></li>
+</ul><p></p>
 </div>
 
-<div class="section">
-<h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
+</div>
+
+<p></p><hr><a id="method-PLNPCAfit-setVisualization"></a><div class="section">
+<h3 id="plnpcafit-setvisualization-"><code>PLNPCAfit$setVisualization()</code><a class="anchor" aria-label="anchor" href="#plnpcafit-setvisualization-"></a></h3>
+<p>Compute PCA scores in the latent space and update corresponding fields.</p><div class="section">
+<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfit</span><span class="op">$</span><span class="fu">setVisualization</span><span class="op">(</span>scale.unit <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div><p></p><div class="section">
+<h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>scale.unit</code></dt>
 <dd><p>Logical. Should PCA scores be rescaled to have unit variance</p></dd>
 
@@ -410,191 +408,173 @@ See the documentation for the methods inherited by  <code><a href="PLNfit.html">
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-PLNPCAfit-postTreatment"></a><div class="section">
-<h3 id="method-posttreatment-">Method <code>postTreatment()</code><a class="anchor" aria-label="anchor" href="#method-posttreatment-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-PLNPCAfit-postTreatment"></a><div class="section">
+<h3 id="plnpcafit-posttreatment-"><code>PLNPCAfit$postTreatment()</code><a class="anchor" aria-label="anchor" href="#plnpcafit-posttreatment-"></a></h3>
 <p>Update R2, fisher, std_err fields and set up visualization</p><div class="section">
-<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
+<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfit</span><span class="op">$</span><span class="fu">postTreatment</span><span class="op">(</span></span>
 <span>  <span class="va">responses</span>,</span>
 <span>  <span class="va">covariates</span>,</span>
 <span>  <span class="va">offsets</span>,</span>
-<span>  <span class="va">weights</span>,</span>
+<span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">responses</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  <span class="va">config_post</span>,</span>
 <span>  <span class="va">config_optim</span>,</span>
-<span>  <span class="va">nullModel</span></span>
+<span>  nullModel <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
-<h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
+</div><p></p><div class="section">
+<h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>responses</code></dt>
 <dd><p>the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in <code><a href="PLNfamily.html">PLNfamily</a></code></p></dd>
 
-
-<dt><code>covariates</code></dt>
+      <dt><code>covariates</code></dt>
 <dd><p>design matrix (called X in the model). Will usually be extracted from the corresponding field in <code><a href="PLNfamily.html">PLNfamily</a></code></p></dd>
 
-
-<dt><code>offsets</code></dt>
+      <dt><code>offsets</code></dt>
 <dd><p>offset matrix (called O in the model). Will usually be extracted from the corresponding field in <code><a href="PLNfamily.html">PLNfamily</a></code></p></dd>
 
-
-<dt><code>weights</code></dt>
+      <dt><code>weights</code></dt>
 <dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
 
-
-<dt><code>config_post</code></dt>
+      <dt><code>config_post</code></dt>
 <dd><p>a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details</p></dd>
 
-
-<dt><code>config_optim</code></dt>
+      <dt><code>config_optim</code></dt>
 <dd><p>a list for controlling the optimizer (either "nlopt" or "torch" backend). See details</p></dd>
 
-
-<dt><code>nullModel</code></dt>
+      <dt><code>nullModel</code></dt>
 <dd><p>null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h4>
 <p>The list of parameters <code>config_post</code> controls the post-treatment processing, with the following entries:</p><ul><li><p>jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.</p></li>
 <li><p>bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).</p></li>
 <li><p>variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.</p></li>
 <li><p>rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE</p></li>
 <li><p>trace integer for verbosity. should be &gt; 1 to see output in post-treatments</p></li>
-</ul></div>
+</ul><p></p>
+</div>
 
+</div>
 
-</div><p></p><hr><a id="method-PLNPCAfit-plot_individual_map"></a><div class="section">
-<h3 id="method-plot-individual-map-">Method <code>plot_individual_map()</code><a class="anchor" aria-label="anchor" href="#method-plot-individual-map-"></a></h3>
+<p></p><hr><a id="method-PLNPCAfit-plot_individual_map"></a><div class="section">
+<h3 id="plnpcafit-plot-individual-map-"><code>PLNPCAfit$plot_individual_map()</code><a class="anchor" aria-label="anchor" href="#plnpcafit-plot-individual-map-"></a></h3>
 <p>Plot the factorial map of the PCA</p><div class="section">
-<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
+<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfit</span><span class="op">$</span><span class="fu">plot_individual_map</span><span class="op">(</span></span>
 <span>  axes <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fl">2</span>, <span class="va">self</span><span class="op">$</span><span class="va">rank</span><span class="op">)</span>,</span>
 <span>  main <span class="op">=</span> <span class="st">"Individual Factor Map"</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  cols <span class="op">=</span> <span class="st">"default"</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
-<h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
+</div><p></p><div class="section">
+<h4 id="arguments-8">Arguments<a class="anchor" aria-label="anchor" href="#arguments-8"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>axes</code></dt>
 <dd><p>numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))</p></dd>
 
-
-<dt><code>main</code></dt>
+      <dt><code>main</code></dt>
 <dd><p>character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.</p></dd>
 
-
-<dt><code>plot</code></dt>
+      <dt><code>plot</code></dt>
 <dd><p>logical. Should the plot be displayed or sent back as ggplot object</p></dd>
 
-
-<dt><code>cols</code></dt>
+      <dt><code>cols</code></dt>
 <dd><p>a character, factor or numeric to define the color associated with the individuals. By default, all individuals receive the default color of the current palette.</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="returns-3">Returns<a class="anchor" aria-label="anchor" href="#returns-3"></a></h4>
 <p>a <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot2::ggplot</a></code> graphic</p>
 </div>
 
-</div><p></p><hr><a id="method-PLNPCAfit-plot_correlation_circle"></a><div class="section">
-<h3 id="method-plot-correlation-circle-">Method <code>plot_correlation_circle()</code><a class="anchor" aria-label="anchor" href="#method-plot-correlation-circle-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-PLNPCAfit-plot_correlation_circle"></a><div class="section">
+<h3 id="plnpcafit-plot-correlation-circle-"><code>PLNPCAfit$plot_correlation_circle()</code><a class="anchor" aria-label="anchor" href="#plnpcafit-plot-correlation-circle-"></a></h3>
 <p>Plot the correlation circle of a specified axis for a <code><a href="PLNLDAfit.html">PLNLDAfit</a></code> object</p><div class="section">
-<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
+<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfit</span><span class="op">$</span><span class="fu">plot_correlation_circle</span><span class="op">(</span></span>
 <span>  axes <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fl">2</span>, <span class="va">self</span><span class="op">$</span><span class="va">rank</span><span class="op">)</span>,</span>
 <span>  main <span class="op">=</span> <span class="st">"Variable Factor Map"</span>,</span>
 <span>  cols <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
-<h4 id="arguments-8">Arguments<a class="anchor" aria-label="anchor" href="#arguments-8"></a></h4>
+</div><p></p><div class="section">
+<h4 id="arguments-9">Arguments<a class="anchor" aria-label="anchor" href="#arguments-9"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>axes</code></dt>
 <dd><p>numeric, the axes to use for the plot when map = "individual" or "variable". Default it c(1,min(rank))</p></dd>
 
-
-<dt><code>main</code></dt>
+      <dt><code>main</code></dt>
 <dd><p>character. A title for the single plot (individual or variable factor map). If NULL (the default), an hopefully appropriate title will be used.</p></dd>
 
-
-<dt><code>cols</code></dt>
+      <dt><code>cols</code></dt>
 <dd><p>a character, factor or numeric to define the color associated with the variables. By default, all variables receive the default color of the current palette.</p></dd>
 
-
-<dt><code>plot</code></dt>
+      <dt><code>plot</code></dt>
 <dd><p>logical. Should the plot be displayed or sent back as ggplot object</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="returns-4">Returns<a class="anchor" aria-label="anchor" href="#returns-4"></a></h4>
 <p>a <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot2::ggplot</a></code> graphic</p>
 </div>
 
-</div><p></p><hr><a id="method-PLNPCAfit-plot_PCA"></a><div class="section">
-<h3 id="method-plot-pca-">Method <code>plot_PCA()</code><a class="anchor" aria-label="anchor" href="#method-plot-pca-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-PLNPCAfit-plot_PCA"></a><div class="section">
+<h3 id="plnpcafit-plot-pca-"><code>PLNPCAfit$plot_PCA()</code><a class="anchor" aria-label="anchor" href="#plnpcafit-plot-pca-"></a></h3>
 <p>Plot a summary of the <code>PLNPCAfit</code> object</p><div class="section">
-<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
+<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfit</span><span class="op">$</span><span class="fu">plot_PCA</span><span class="op">(</span></span>
 <span>  nb_axes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fl">3</span>, <span class="va">self</span><span class="op">$</span><span class="va">rank</span><span class="op">)</span>,</span>
 <span>  ind_cols <span class="op">=</span> <span class="st">"ind_cols"</span>,</span>
 <span>  var_cols <span class="op">=</span> <span class="st">"var_cols"</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
-<h4 id="arguments-9">Arguments<a class="anchor" aria-label="anchor" href="#arguments-9"></a></h4>
+</div><p></p><div class="section">
+<h4 id="arguments-10">Arguments<a class="anchor" aria-label="anchor" href="#arguments-10"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>nb_axes</code></dt>
 <dd><p>scalar: the number of axes to be considered when map = "both". The default is min(3,rank).</p></dd>
 
-
-<dt><code>ind_cols</code></dt>
+      <dt><code>ind_cols</code></dt>
 <dd><p>a character, factor or numeric to define the color associated with the individuals. By default, all variables receive the default color of the current palette.</p></dd>
 
-
-<dt><code>var_cols</code></dt>
+      <dt><code>var_cols</code></dt>
 <dd><p>a character, factor or numeric to define the color associated with the variables. By default, all variables receive the default color of the current palette.</p></dd>
 
-
-<dt><code>plot</code></dt>
+      <dt><code>plot</code></dt>
 <dd><p>logical. Should the plot be displayed or sent back as ggplot object</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="returns-5">Returns<a class="anchor" aria-label="anchor" href="#returns-5"></a></h4>
 <p>a <code>grob</code> object</p>
 </div>
 
-</div><p></p><hr><a id="method-PLNPCAfit-show"></a><div class="section">
-<h3 id="method-show-">Method <code>show()</code><a class="anchor" aria-label="anchor" href="#method-show-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-PLNPCAfit-show"></a><div class="section">
+<h3 id="plnpcafit-show-"><code>PLNPCAfit$show()</code><a class="anchor" aria-label="anchor" href="#plnpcafit-show-"></a></h3>
 <p>User friendly print method</p><div class="section">
-<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
+<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfit</span><span class="op">$</span><span class="fu">show</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
-
-</div><p></p><hr><a id="method-PLNPCAfit-clone"></a><div class="section">
-<h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
-<p>The objects of this class are cloneable with this method.</p><div class="section">
-<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfit</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
-<div class="section">
-<h4 id="arguments-10">Arguments<a class="anchor" aria-label="anchor" href="#arguments-10"></a></h4>
+<p></p><hr><a id="method-PLNPCAfit-clone"></a><div class="section">
+<h3 id="plnpcafit-clone-"><code>PLNPCAfit$clone()</code><a class="anchor" aria-label="anchor" href="#plnpcafit-clone-"></a></h3>
+<p>The objects of this class are cloneable with this method.</p><div class="section">
+<h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNPCAfit</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div><p></p><div class="section">
+<h4 id="arguments-11">Arguments<a class="anchor" aria-label="anchor" href="#arguments-11"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 
@@ -603,6 +583,7 @@ See the documentation for the methods inherited by  <code><a href="PLNfit.html">
 </div>
 
 </div>
+
 
     </div>
 
@@ -624,8 +605,8 @@ See the documentation for the methods inherited by  <code><a href="PLNfit.html">
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">myPCA</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Poisson Lognormal with rank constrained for PCA (rank = 3)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ==================================================================</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  nb_param   loglik      BIC      AIC      ICL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        65 -641.558 -768.043 -706.558 -825.183</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  nb_param   loglik     BIC      AIC      ICL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        65 -640.496 -766.98 -705.496 -826.862</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ==================================================================</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> * Useful fields</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     $model_par, $latent, $latent_pos, $var_par, $optim_par</span>

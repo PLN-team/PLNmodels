@@ -1,5 +1,7 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://pln-team.github.io/PLNmodels/404.html</loc></url>
+<url><loc>https://pln-team.github.io/PLNmodels/DEVLOG_2026-06-08-09.html</loc></url>
+<url><loc>https://pln-team.github.io/PLNmodels/DEVLOG_2026-06-11-12.html</loc></url>
 <url><loc>https://pln-team.github.io/PLNmodels/LICENSE-text.html</loc></url>
 <url><loc>https://pln-team.github.io/PLNmodels/articles/Import_data.html</loc></url>
 <url><loc>https://pln-team.github.io/PLNmodels/articles/PLN.html</loc></url>
@@ -12,6 +14,11 @@
 <url><loc>https://pln-team.github.io/PLNmodels/authors.html</loc></url>
 <url><loc>https://pln-team.github.io/PLNmodels/index.html</loc></url>
 <url><loc>https://pln-team.github.io/PLNmodels/news/index.html</loc></url>
+<url><loc>https://pln-team.github.io/PLNmodels/reference/AIC.PLNfit.html</loc></url>
+<url><loc>https://pln-team.github.io/PLNmodels/reference/AIC.ZIPLNfit.html</loc></url>
+<url><loc>https://pln-team.github.io/PLNmodels/reference/BIC.PLNfit.html</loc></url>
+<url><loc>https://pln-team.github.io/PLNmodels/reference/BIC.ZIPLNfit.html</loc></url>
+<url><loc>https://pln-team.github.io/PLNmodels/reference/ICL.html</loc></url>
 <url><loc>https://pln-team.github.io/PLNmodels/reference/Networkfamily.html</loc></url>
 <url><loc>https://pln-team.github.io/PLNmodels/reference/PLN.html</loc></url>
 <url><loc>https://pln-team.github.io/PLNmodels/reference/PLNLDA.html</loc></url>
@@ -62,6 +69,8 @@
 <url><loc>https://pln-team.github.io/PLNmodels/reference/getBestModel.html</loc></url>
 <url><loc>https://pln-team.github.io/PLNmodels/reference/getModel.html</loc></url>
 <url><loc>https://pln-team.github.io/PLNmodels/reference/index.html</loc></url>
+<url><loc>https://pln-team.github.io/PLNmodels/reference/logLik.PLNfit.html</loc></url>
+<url><loc>https://pln-team.github.io/PLNmodels/reference/logLik.ZIPLNfit.html</loc></url>
 <url><loc>https://pln-team.github.io/PLNmodels/reference/microcosm.html</loc></url>
 <url><loc>https://pln-team.github.io/PLNmodels/reference/mollusk.html</loc></url>
 <url><loc>https://pln-team.github.io/PLNmodels/reference/oaks.html</loc></url>

@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -102,7 +102,7 @@
 with PLN-PCA</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2026-04-10</h4>
+            <h4 data-toc-skip class="date">2026-06-15</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/PLNPCA.Rmd" class="external-link"><code>vignettes/PLNPCA.Rmd</code></a></small>
       <div class="hidden name"><code>PLNPCA.Rmd</code></div>
@@ -153,14 +153,15 @@ etc.)</p>
 <div class="section level3">
 <h3 id="mathematical-background">Mathematical background<a class="anchor" aria-label="anchor" href="#mathematical-background"></a>
 </h3>
-<p>In the vein of <span class="citation">Tipping and Bishop (<a href="#ref-TiB99">1999</a>)</span>, we introduce in <span class="citation">Chiquet, Mariadassou, and Robin (<a href="#ref-PLNPCA">2018</a>)</span> a probabilistic PCA model for
-multivariate count data which is a variant of the Poisson Lognormal
-model of <span class="citation">Aitchison and Ho (<a href="#ref-AiH89">1989</a>)</span> (see <a href="PLN.html">the PLN
-vignette</a> as a reminder). Indeed, it can be viewed as a PLN model
+<p>In the vein of <span class="citation">Tipping and Bishop (<a href="#ref-TiB99">1999</a>)</span>, we introduce in <span class="citation">Chiquet et al. (<a href="#ref-PLNPCA">2018</a>)</span>
+a probabilistic PCA model for multivariate count data which is a variant
+of the Poisson Lognormal model of <span class="citation">Aitchison and
+Ho (<a href="#ref-AiH89">1989</a>)</span> (see <a href="PLN.html">the
+PLN vignette</a> as a reminder). Indeed, it can be viewed as a PLN model
 with an additional rank constraint on the covariance matrix
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝚺</mi><annotation encoding="application/x-tex">\boldsymbol\Sigma</annotation></semantics></math>
 such that
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">r</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">k</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝚺</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>q</mi></mrow><annotation encoding="application/x-tex">\mathrm{rank}(\boldsymbol\Sigma)= q</annotation></semantics></math>.</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">r</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">k</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>𝚺</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>q</mi></mrow><annotation encoding="application/x-tex">\mathrm{rank}(\boldsymbol\Sigma)= q</annotation></semantics></math>.</p>
 <p>This PLN-PCA model can be written in a hierarchical framework where a
 sample of
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-dimensional
@@ -171,7 +172,7 @@ is related to some
 vectors of latent variables
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐖</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\mathbf{W}_i</annotation></semantics></math>
 as follows:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">latent space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>𝐖</mi><mi>i</mi></msub><mspace width="1.0em"></mspace><mtext mathvariant="normal">i.i.d.</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>𝐖</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒩</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mn>𝟎</mn><mi>q</mi></msub><mo>,</mo><msub><mi>𝐈</mi><mi>q</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">parameter space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>𝐙</mi><mi>i</mi></msub><mo>=</mo><mi>𝛍</mi><mo>+</mo><msup><mi>𝐂</mi><mi>⊤</mi></msup><msub><mi>𝐖</mi><mi>i</mi></msub></mtd><mtd columnalign="left" style="text-align: left"></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">observation space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mspace width="1.0em"></mspace><mtext mathvariant="normal">indep.</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>∼</mo><mi>𝒫</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>exp</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="postfix">}</mo><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{equation} 
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">latent space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>𝐖</mi><mi>i</mi></msub><mspace width="1.0em"></mspace><mtext mathvariant="normal">i.i.d.</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>𝐖</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒩</mi><mo stretchy="false" form="prefix">(</mo><msub><mn>𝟎</mn><mi>q</mi></msub><mo>,</mo><msub><mi>𝐈</mi><mi>q</mi></msub><mo stretchy="false" form="postfix">)</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">parameter space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>𝐙</mi><mi>i</mi></msub><mo>=</mo><mi>𝛍</mi><mo>+</mo><msup><mi>𝐂</mi><mi>⊤</mi></msup><msub><mi>𝐖</mi><mi>i</mi></msub></mtd><mtd columnalign="left" style="text-align: left"></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">observation space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mspace width="1.0em"></mspace><mtext mathvariant="normal">indep.</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>∼</mo><mi>𝒫</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi mathvariant="normal">exp</mi><mo stretchy="false" form="prefix">{</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="postfix">}</mo><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{equation} 
   \begin{array}{rcl}
     \text{latent space }  &amp; \mathbf{W}_i \quad \text{i.i.d.} &amp; \mathbf{W}_i \sim      \mathcal{N}(\mathbf{0}_q, \mathbf{I}_q)  \\
 \text{parameter space } &amp;   \mathbf{Z}_i = {\boldsymbol\mu} + \mathbf{C}^\top \mathbf{W}_i &amp; \\
@@ -195,7 +196,7 @@ corresponds to the number of axes in the PCA or, in other words, to the
 rank of
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝐂</mi><msup><mi>𝐂</mi><mo>⊺</mo></msup></mrow><annotation encoding="application/x-tex">\mathbf{C}\mathbf{C}^\intercal</annotation></semantics></math>.
 An hopefully more intuitive way of writing this model is the following:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">latent space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>𝐙</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒩</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝛍</mi><mo>,</mo><mi>𝚺</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="2.0em"></mspace><mi>𝚺</mi><mo>=</mo><mi>𝐂</mi><msup><mi>𝐂</mi><mi>⊤</mi></msup></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">observation space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mspace width="1.0em"></mspace><mtext mathvariant="normal">indep.</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>∼</mo><mi>𝒫</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>exp</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="postfix">}</mo><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{equation} 
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">latent space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>𝐙</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒩</mi><mo stretchy="false" form="prefix">(</mo><mi>𝛍</mi><mo>,</mo><mi>𝚺</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="2.0em"></mspace><mi>𝚺</mi><mo>=</mo><mi>𝐂</mi><msup><mi>𝐂</mi><mi>⊤</mi></msup></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">observation space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mspace width="1.0em"></mspace><mtext mathvariant="normal">indep.</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>∼</mo><mi>𝒫</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi mathvariant="normal">exp</mi><mo stretchy="false" form="prefix">{</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="postfix">}</mo><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{equation} 
   \begin{array}{rcl}
   \text{latent space } &amp;   \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu},\boldsymbol\Sigma), \qquad \boldsymbol\Sigma = \mathbf{C}\mathbf{C}^\top \\
   \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.} &amp; Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right),
@@ -218,7 +219,7 @@ of
 offsets in sample
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>.
 The latent layer then reads
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝐙</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒩</mi><mrow><mo stretchy="true" form="prefix">(</mo><mrow><msub><mi>𝐨</mi><mi>i</mi></msub><mo>+</mo><msubsup><mi>𝐱</mi><mi>i</mi><mi>⊤</mi></msubsup><mi>𝐁</mi></mrow><mo>,</mo><mi>𝚺</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="2.0em"></mspace><mi>𝚺</mi><mo>=</mo><mi>𝐂</mi><msup><mi>𝐂</mi><mi>⊤</mi></msup><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation} 
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝐙</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒩</mi><mo stretchy="false" form="prefix">(</mo><mrow><msub><mi>𝐨</mi><mi>i</mi></msub><mo>+</mo><msubsup><mi>𝐱</mi><mi>i</mi><mi>⊤</mi></msubsup><mi>𝐁</mi></mrow><mo>,</mo><mi>𝚺</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="2.0em"></mspace><mi>𝚺</mi><mo>=</mo><mi>𝐂</mi><msup><mi>𝐂</mi><mi>⊤</mi></msup><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation} 
   \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{x}_i^\top\mathbf{B}},\boldsymbol\Sigma), \qquad \boldsymbol\Sigma = \mathbf{C}\mathbf{C}^\top,
 \end{equation}</annotation></semantics></math> where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐁</mi><annotation encoding="application/x-tex">\mathbf{B}</annotation></semantics></math>
@@ -240,7 +241,7 @@ log-likelihood function and optimize the consecutive variational
 surrogate of the log-likelihood with a gradient-ascent-based approach.
 To this end, we rely on the CCSA algorithm of <span class="citation">Svanberg (<a href="#ref-Svan02">2002</a>)</span>
 implemented in the C++ library <span class="citation">(<a href="#ref-nlopt">Johnson 2011</a>)</span>, which we link to the
-package. Technical details can be found in <span class="citation">Chiquet, Mariadassou, and Robin (<a href="#ref-PLNPCA">2018</a>)</span>.</p>
+package. Technical details can be found in <span class="citation">Chiquet et al. (<a href="#ref-PLNPCA">2018</a>)</span>.</p>
 </div>
 </div>
 </div>
@@ -316,34 +317,34 @@ the collection</p>
 <tr class="odd">
 <td align="right">1</td>
 <td align="right">34</td>
-<td align="right">-1042.0944</td>
-<td align="right">-1108.2554</td>
-<td align="right">-1076.0944</td>
-<td align="right">-1119.8953</td>
+<td align="right">-1042.0294</td>
+<td align="right">-1108.1904</td>
+<td align="right">-1076.0294</td>
+<td align="right">-1120.8000</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
 <td align="right">50</td>
-<td align="right">-730.9417</td>
-<td align="right">-828.2372</td>
-<td align="right">-780.9417</td>
-<td align="right">-859.4936</td>
+<td align="right">-731.7657</td>
+<td align="right">-829.0612</td>
+<td align="right">-781.7657</td>
+<td align="right">-862.0169</td>
 </tr>
 <tr class="odd">
 <td align="right">3</td>
 <td align="right">65</td>
-<td align="right">-641.5585</td>
-<td align="right">-768.0427</td>
-<td align="right">-706.5585</td>
-<td align="right">-825.1834</td>
+<td align="right">-640.4956</td>
+<td align="right">-766.9797</td>
+<td align="right">-705.4956</td>
+<td align="right">-826.8616</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
 <td align="right">79</td>
-<td align="right">-597.1265</td>
-<td align="right">-750.8534</td>
-<td align="right">-676.1265</td>
-<td align="right">-838.3269</td>
+<td align="right">-599.6612</td>
+<td align="right">-753.3881</td>
+<td align="right">-678.6612</td>
+<td align="right">-845.4320</td>
 </tr>
 </tbody>
 </table>
@@ -368,8 +369,8 @@ the collection</p>
 <td align="left">34</td>
 <td align="left">3</td>
 <td align="left">nlopt</td>
-<td align="left">-36014.22</td>
-<td align="left">620</td>
+<td align="left">-36014.28</td>
+<td align="left">597</td>
 </tr>
 <tr class="even">
 <td align="left">elt</td>
@@ -377,8 +378,8 @@ the collection</p>
 <td align="left">50</td>
 <td align="left">3</td>
 <td align="left">nlopt</td>
-<td align="left">-36325.37</td>
-<td align="left">1546</td>
+<td align="left">-36324.54</td>
+<td align="left">989</td>
 </tr>
 <tr class="odd">
 <td align="left">elt.1</td>
@@ -386,8 +387,8 @@ the collection</p>
 <td align="left">65</td>
 <td align="left">3</td>
 <td align="left">nlopt</td>
-<td align="left">-36414.75</td>
-<td align="left">1603</td>
+<td align="left">-36415.81</td>
+<td align="left">919</td>
 </tr>
 <tr class="even">
 <td align="left">elt.2</td>
@@ -395,8 +396,8 @@ the collection</p>
 <td align="left">79</td>
 <td align="left">3</td>
 <td align="left">nlopt</td>
-<td align="left">-36459.18</td>
-<td align="left">3936</td>
+<td align="left">-36456.65</td>
+<td align="left">1043</td>
 </tr>
 </tbody>
 </table>
@@ -417,7 +418,7 @@ for model selection:</p>
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="monospace">𝚕𝚘𝚐𝚕𝚒𝚔</mtext><mo>−</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mtext mathvariant="monospace">𝚙𝚎𝚗</mtext></mrow><annotation encoding="application/x-tex">\texttt{loglik} - \frac{1}{2}\texttt{pen}</annotation></semantics></math>),
 which is on the same scale as the log-likelihood. A <a href="https://en.wikipedia.org/wiki/Bayesian_information_criterion" class="external-link">popular
 alternative</a> consists in using
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo><mn>2</mn><mtext mathvariant="monospace">𝚕𝚘𝚐𝚕𝚒𝚔</mtext><mo>+</mo><mtext mathvariant="monospace">𝚙𝚎𝚗</mtext></mrow><annotation encoding="application/x-tex">-2\texttt{loglik} + \texttt{pen}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>2</mn><mtext mathvariant="monospace">𝚕𝚘𝚐𝚕𝚒𝚔</mtext><mo>+</mo><mtext mathvariant="monospace">𝚙𝚎𝚗</mtext></mrow><annotation encoding="application/x-tex">-2\texttt{loglik} + \texttt{pen}</annotation></semantics></math>
 instead. You can do so by specifying <code>reverse = TRUE</code>:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">PCA_models</span>, reverse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
@@ -429,8 +430,8 @@ dimension). Also note the (approximated)
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mn>2</mn></msup><annotation encoding="application/x-tex">R^2</annotation></semantics></math>
 which is displayed for each value of
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>q</mi><annotation encoding="application/x-tex">q</annotation></semantics></math>
-(see <span class="citation">(<a href="#ref-PLNPCA">Chiquet, Mariadassou,
-and Robin 2018</a>)</span> for details on its computation).</p>
+(see <span class="citation">(<a href="#ref-PLNPCA">Chiquet et al.
+2018</a>)</span> for details on its computation).</p>
 <p>From this plot, we can see that the best model in terms of BIC or ICL
 is obtained for a rank
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">q=4</annotation></semantics></math>
@@ -469,7 +470,7 @@ context of PCA are</p>
 <table style="width:100%;" class="table">
 <colgroup>
 <col width="6%">
-<col width="5%">
+<col width="4%">
 <col width="5%">
 <col width="5%">
 <col width="5%">
@@ -478,7 +479,7 @@ context of PCA are</p>
 <col width="5%">
 <col width="5%">
 <col width="5%">
-<col width="5%">
+<col width="4%">
 <col width="5%">
 <col width="5%">
 <col width="5%">
@@ -509,23 +510,23 @@ context of PCA are</p>
 </tr></thead>
 <tbody><tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">-7.531837</td>
-<td align="right">-8.097227</td>
-<td align="right">-3.02245</td>
-<td align="right">-6.857669</td>
-<td align="right">-0.5341478</td>
-<td align="right">-3.822246</td>
-<td align="right">-6.420954</td>
-<td align="right">-5.835662</td>
-<td align="right">-7.338919</td>
-<td align="right">-3.520808</td>
-<td align="right">-4.10688</td>
-<td align="right">-5.043439</td>
-<td align="right">-4.287134</td>
-<td align="right">-5.92698</td>
-<td align="right">-3.968952</td>
-<td align="right">-7.508541</td>
-<td align="right">-2.58199</td>
+<td align="right">-7.42378</td>
+<td align="right">-8.060129</td>
+<td align="right">-3.010881</td>
+<td align="right">-6.861167</td>
+<td align="right">-0.5366863</td>
+<td align="right">-3.823598</td>
+<td align="right">-6.380158</td>
+<td align="right">-5.795466</td>
+<td align="right">-7.315758</td>
+<td align="right">-3.51031</td>
+<td align="right">-4.097931</td>
+<td align="right">-5.028511</td>
+<td align="right">-4.322046</td>
+<td align="right">-5.882444</td>
+<td align="right">-3.961694</td>
+<td align="right">-7.133423</td>
+<td align="right">-2.577414</td>
 </tr></tbody>
 </table>
 <ul>
@@ -551,39 +552,39 @@ with fixed rank</li>
 <tbody>
 <tr class="odd">
 <td align="left">Che</td>
-<td align="right">-0.2125878</td>
-<td align="right">0.3244357</td>
-<td align="right">0.0837944</td>
+<td align="right">-0.2044836</td>
+<td align="right">0.3237222</td>
+<td align="right">-0.0303893</td>
 </tr>
 <tr class="even">
 <td align="left">Hyc</td>
-<td align="right">-0.4293180</td>
-<td align="right">-0.2913743</td>
-<td align="right">0.1208345</td>
+<td align="right">-0.4359616</td>
+<td align="right">-0.2317668</td>
+<td align="right">0.1979504</td>
 </tr>
 <tr class="odd">
 <td align="left">Hym</td>
-<td align="right">-0.1216711</td>
-<td align="right">0.0502426</td>
-<td align="right">0.3402535</td>
+<td align="right">-0.1369197</td>
+<td align="right">0.1666862</td>
+<td align="right">0.2931084</td>
 </tr>
 <tr class="even">
 <td align="left">Hys</td>
-<td align="right">-0.4131226</td>
-<td align="right">0.2224998</td>
-<td align="right">0.4133234</td>
+<td align="right">-0.4404468</td>
+<td align="right">0.3617186</td>
+<td align="right">0.2705113</td>
 </tr>
 <tr class="odd">
 <td align="left">Psy</td>
-<td align="right">0.0493377</td>
-<td align="right">0.0406783</td>
-<td align="right">-0.0591903</td>
+<td align="right">0.0521214</td>
+<td align="right">0.0181627</td>
+<td align="right">-0.0701578</td>
 </tr>
 <tr class="even">
 <td align="left">Aga</td>
-<td align="right">0.0739228</td>
-<td align="right">0.1922036</td>
-<td align="right">0.2943898</td>
+<td align="right">0.0630665</td>
+<td align="right">0.2921908</td>
+<td align="right">0.2009195</td>
 </tr>
 </tbody>
 </table>
@@ -600,34 +601,34 @@ with fixed rank</li>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">-1.633034</td>
-<td align="right">-0.7710650</td>
-<td align="right">0.6035349</td>
+<td align="right">-1.713069</td>
+<td align="right">-0.4631221</td>
+<td align="right">0.7048986</td>
 </tr>
 <tr class="even">
-<td align="right">3.649119</td>
-<td align="right">0.0528356</td>
-<td align="right">2.2294052</td>
+<td align="right">3.352748</td>
+<td align="right">0.9627216</td>
+<td align="right">2.0621309</td>
 </tr>
 <tr class="odd">
-<td align="right">7.337716</td>
-<td align="right">-1.1818361</td>
-<td align="right">-0.0672552</td>
+<td align="right">7.232454</td>
+<td align="right">-1.0926857</td>
+<td align="right">0.6351595</td>
 </tr>
 <tr class="even">
-<td align="right">6.216267</td>
-<td align="right">-0.5361981</td>
-<td align="right">-2.2674210</td>
+<td align="right">6.351589</td>
+<td align="right">-1.3391501</td>
+<td align="right">-1.5809225</td>
 </tr>
 <tr class="odd">
-<td align="right">4.559548</td>
-<td align="right">0.4572301</td>
-<td align="right">-1.1220578</td>
+<td align="right">4.610843</td>
+<td align="right">-0.0032454</td>
+<td align="right">-0.9558904</td>
 </tr>
 <tr class="even">
-<td align="right">4.024298</td>
-<td align="right">0.6161398</td>
-<td align="right">0.5979205</td>
+<td align="right">3.890591</td>
+<td align="right">0.8178325</td>
+<td align="right">0.4877876</td>
 </tr>
 </tbody>
 </table>
@@ -638,8 +639,8 @@ vignette</a>). Most are recalled via the show method:</p>
 <code class="sourceCode R"><span><span class="va">myPCA_ICL</span></span></code></pre></div>
 <pre><code><span><span class="co">## Poisson Lognormal with rank constrained for PCA (rank = 3)</span></span>
 <span><span class="co">## ==================================================================</span></span>
-<span><span class="co">##  nb_param   loglik      BIC      AIC      ICL</span></span>
-<span><span class="co">##        65 -641.558 -768.043 -706.558 -825.183</span></span>
+<span><span class="co">##  nb_param   loglik     BIC      AIC      ICL</span></span>
+<span><span class="co">##        65 -640.496 -766.98 -705.496 -826.862</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">## * Useful fields</span></span>
 <span><span class="co">##     $model_par, $latent, $latent_pos, $var_par, $optim_par</span></span>
@@ -664,39 +665,39 @@ bindings allow you to use widely popular tools to make your own plots:
 <code class="sourceCode R"><span><span class="co">## All summaries associated to the individuals</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">$</span><span class="va">ind</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## List of 4</span></span>
-<span><span class="co">##  $ coord  : num [1:49, 1:3] -1.63 3.65 7.34 6.22 4.56 ...</span></span>
+<span><span class="co">##  $ coord  : num [1:49, 1:3] -1.71 3.35 7.23 6.35 4.61 ...</span></span>
 <span><span class="co">##   ..- attr(*, "dimnames")=List of 2</span></span>
 <span><span class="co">##   .. ..$ : chr [1:49] "1" "2" "3" "4" ...</span></span>
 <span><span class="co">##   .. ..$ : chr [1:3] "Dim.1" "Dim.2" "Dim.3"</span></span>
-<span><span class="co">##  $ cos2   : num [1:49, 1:3] 0.736 0.728 0.975 0.877 0.934 ...</span></span>
+<span><span class="co">##  $ cos2   : num [1:49, 1:3] 0.805 0.685 0.97 0.904 0.959 ...</span></span>
 <span><span class="co">##   ..- attr(*, "dimnames")=List of 2</span></span>
 <span><span class="co">##   .. ..$ : chr [1:49] "1" "2" "3" "4" ...</span></span>
 <span><span class="co">##   .. ..$ : chr [1:3] "Dim.1" "Dim.2" "Dim.3"</span></span>
-<span><span class="co">##  $ contrib: num [1:49, 1:3] 0.539 2.693 10.891 7.816 4.205 ...</span></span>
+<span><span class="co">##  $ contrib: num [1:49, 1:3] 0.606 2.32 10.796 8.326 4.388 ...</span></span>
 <span><span class="co">##   ..- attr(*, "dimnames")=List of 2</span></span>
 <span><span class="co">##   .. ..$ : chr [1:49] "1" "2" "3" "4" ...</span></span>
 <span><span class="co">##   .. ..$ : chr [1:3] "Dim.1" "Dim.2" "Dim.3"</span></span>
-<span><span class="co">##  $ dist   : Named num [1:49] 1.9 4.28 7.43 6.64 4.72 ...</span></span>
+<span><span class="co">##  $ dist   : Named num [1:49] 1.91 4.05 7.34 6.68 4.71 ...</span></span>
 <span><span class="co">##   ..- attr(*, "names")= chr [1:49] "1" "2" "3" "4" ...</span></span></code></pre>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Coordinates of the individuals in the principal plane</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">$</span><span class="va">ind</span><span class="op">$</span><span class="va">coord</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##       Dim.1       Dim.2       Dim.3</span></span>
-<span><span class="co">## 1 -1.633034 -0.77106503  0.60353486</span></span>
-<span><span class="co">## 2  3.649119  0.05283557  2.22940524</span></span>
-<span><span class="co">## 3  7.337717 -1.18183606 -0.06725525</span></span>
-<span><span class="co">## 4  6.216267 -0.53619809 -2.26742098</span></span>
-<span><span class="co">## 5  4.559548  0.45723009 -1.12205783</span></span>
-<span><span class="co">## 6  4.024298  0.61613976  0.59792051</span></span></code></pre>
+<pre><code><span><span class="co">##       Dim.1        Dim.2      Dim.3</span></span>
+<span><span class="co">## 1 -1.713068 -0.463122140  0.7048986</span></span>
+<span><span class="co">## 2  3.352748  0.962721577  2.0621309</span></span>
+<span><span class="co">## 3  7.232454 -1.092685733  0.6351595</span></span>
+<span><span class="co">## 4  6.351589 -1.339150110 -1.5809225</span></span>
+<span><span class="co">## 5  4.610843 -0.003245387 -0.9558904</span></span>
+<span><span class="co">## 6  3.890591  0.817832460  0.4877876</span></span></code></pre>
 <p>You can also use high level functions from the <a href="https://cran.r-project.org/package=factoextra" class="external-link">factoextra</a>
 package to extract relevant informations</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Eigenvalues</span></span>
 <span><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/eigenvalue.html" class="external-link">get_eig</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##       eigenvalue variance.percent cumulative.variance.percent</span></span>
-<span><span class="co">## Dim.1   494.3890         38.50373                    38.50373</span></span>
-<span><span class="co">## Dim.2   300.5322         23.40588                    61.90962</span></span>
-<span><span class="co">## Dim.3   236.7462         18.43814                    80.34775</span></span></code></pre>
+<span><span class="co">## Dim.1   484.5369         39.59538                    39.59538</span></span>
+<span><span class="co">## Dim.2   285.5630         23.33563                    62.93101</span></span>
+<span><span class="co">## Dim.3   212.5751         17.37121                    80.30222</span></span></code></pre>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Variables</span></span>
 <span><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/get_pca.html" class="external-link">get_pca_var</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></span></code></pre></div>
@@ -815,7 +816,7 @@ sequential plan with <em>future</em>.</p>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-AiH89" class="csl-entry">
 Aitchison, J., and C. H. Ho. 1989. <span>“The Multivariate Poisson-Log
 Normal Distribution.”</span> <em>Biometrika</em> 76 (4): 643–53.

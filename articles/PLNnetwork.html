@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -102,7 +102,7 @@
 count data with PLN-network</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2026-04-10</h4>
+            <h4 data-toc-skip class="date">2026-06-15</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/PLNnetwork.Rmd" class="external-link"><code>vignettes/PLNnetwork.Rmd</code></a></small>
       <div class="hidden name"><code>PLNnetwork.Rmd</code></div>
@@ -146,18 +146,18 @@ etc.)</p>
 <h3 id="mathematical-background">Mathematical background<a class="anchor" aria-label="anchor" href="#mathematical-background"></a>
 </h3>
 <p>The network model for multivariate count data that we introduce in
-<span class="citation">Chiquet, Robin, and Mariadassou (<a href="#ref-PLNnetwork">2019</a>)</span> is a variant of the Poisson
+<span class="citation">Chiquet et al. (<a href="#ref-PLNnetwork">2019</a>)</span> is a variant of the Poisson
 Lognormal model of <span class="citation">Aitchison and Ho (<a href="#ref-AiH89">1989</a>)</span>, see <a href="PLN.html">the PLN
 vignette</a> as a reminder. Compare to the standard PLN model we add a
 sparsity constraint on the inverse covariance matrix
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>𝚺</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>≜</mo><mi>𝛀</mi></mrow><annotation encoding="application/x-tex">{\boldsymbol\Sigma}^{-1}\triangleq \boldsymbol\Omega</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>𝚺</mi><mrow><mi>−</mi><mn>1</mn></mrow></msup><mo>≜</mo><mi>𝛀</mi></mrow><annotation encoding="application/x-tex">{\boldsymbol\Sigma}^{-1}\triangleq \boldsymbol\Omega</annotation></semantics></math>
 by means of the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>ℓ</mo><mn>1</mn></msub><annotation encoding="application/x-tex">\ell_1</annotation></semantics></math>-norm,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>ℓ</mi><mn>1</mn></msub><annotation encoding="application/x-tex">\ell_1</annotation></semantics></math>-norm,
 such that
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="postfix">∥</mo><mi>𝛀</mi><msub><mo stretchy="false" form="postfix">∥</mo><mn>1</mn></msub><mo>&lt;</mo><mi>c</mi></mrow><annotation encoding="application/x-tex">\|\boldsymbol\Omega\|_1 &lt; c</annotation></semantics></math>.
 PLN-network is the equivalent of the sparse multivariate Gaussian model
-<span class="citation">(<a href="#ref-banerjee2008">Banerjee, Ghaoui,
-and d’Aspremont 2008</a>)</span> in the PLN framework. It relates some
+<span class="citation">(<a href="#ref-banerjee2008"><span class="nocase">Banerjee et al.</span> 2008</a>)</span> in the PLN
+framework. It relates some
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-dimensional
 observation vectors
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐘</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\mathbf{Y}_i</annotation></semantics></math>
@@ -166,7 +166,7 @@ to some
 vectors of Gaussian latent variables
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐙</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\mathbf{Z}_i</annotation></semantics></math>
 as follows
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">latent space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>𝐙</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒩</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝛍</mi><mo>,</mo><msup><mi>𝛀</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo stretchy="false" form="postfix">∥</mo><mi>𝛀</mi><msub><mo stretchy="false" form="postfix">∥</mo><mn>1</mn></msub><mo>&lt;</mo><mi>c</mi></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">observation space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mspace width="1.0em"></mspace><mtext mathvariant="normal">indep.</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>∼</mo><mi>𝒫</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>exp</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="postfix">}</mo><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{equation} 
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">latent space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>𝐙</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒩</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝛍</mi><mo>,</mo><msup><mi>𝛀</mi><mrow><mi>−</mi><mn>1</mn></mrow></msup><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo stretchy="false" form="postfix">∥</mo><mi>𝛀</mi><msub><mo stretchy="false" form="postfix">∥</mo><mn>1</mn></msub><mo>&lt;</mo><mi>c</mi></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">observation space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mspace width="1.0em"></mspace><mtext mathvariant="normal">indep.</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>∼</mo><mi>𝒫</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi mathvariant="normal">exp</mi><mo stretchy="false" form="prefix">{</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="postfix">}</mo><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{equation}
   \begin{array}{rcl}
   \text{latent space } &amp;   \mathbf{Z}_i \sim \mathcal{N}\left({\boldsymbol\mu},\boldsymbol\Omega^{-1}\right) &amp;  \|\boldsymbol\Omega\|_1 &lt; c \\
   \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.} &amp; Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right)
@@ -180,7 +180,7 @@ describes the underlying structure of dependence between the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>
 variables.</p>
 <p>The
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>ℓ</mo><mn>1</mn></msub><annotation encoding="application/x-tex">\ell_1</annotation></semantics></math>-penalty
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>ℓ</mi><mn>1</mn></msub><annotation encoding="application/x-tex">\ell_1</annotation></semantics></math>-penalty
 on
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝛀</mi><annotation encoding="application/x-tex">\boldsymbol\Omega</annotation></semantics></math>
 induces sparsity and selection of important direct relationships between
@@ -192,8 +192,8 @@ in the above mathematical model), which corresponds to the number of
 edges in the network, is controlled by a penalty parameter in the
 optimization process sometimes referred to as
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>.
-All mathematical details can be found in <span class="citation">Chiquet,
-Robin, and Mariadassou (<a href="#ref-PLNnetwork">2019</a>)</span>.</p>
+All mathematical details can be found in <span class="citation">Chiquet
+et al. (<a href="#ref-PLNnetwork">2019</a>)</span>.</p>
 <div class="section level4">
 <h4 id="covariates-and-offsets">Covariates and offsets<a class="anchor" aria-label="anchor" href="#covariates-and-offsets"></a>
 </h4>
@@ -210,7 +210,7 @@ of
 offsets in sample
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>.
 The latent layer then reads
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝐙</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒩</mi><mrow><mo stretchy="true" form="prefix">(</mo><mrow><msub><mi>𝐨</mi><mi>i</mi></msub><mo>+</mo><msubsup><mi>𝐱</mi><mi>i</mi><mi>⊤</mi></msubsup><mi>𝐁</mi></mrow><mo>,</mo><msup><mi>𝛀</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="2.0em"></mspace><mo stretchy="false" form="postfix">∥</mo><mi>𝛀</mi><msub><mo stretchy="false" form="postfix">∥</mo><mn>1</mn></msub><mo>&lt;</mo><mi>c</mi><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation} 
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝐙</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒩</mi><mrow><mo stretchy="true" form="prefix">(</mo><mrow><msub><mi>𝐨</mi><mi>i</mi></msub><mo>+</mo><msubsup><mi>𝐱</mi><mi>i</mi><mi>⊤</mi></msubsup><mi>𝐁</mi></mrow><mo>,</mo><msup><mi>𝛀</mi><mrow><mi>−</mi><mn>1</mn></mrow></msup><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="2.0em"></mspace><mo stretchy="false" form="postfix">∥</mo><mi>𝛀</mi><msub><mo stretchy="false" form="postfix">∥</mo><mn>1</mn></msub><mo>&lt;</mo><mi>c</mi><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation}
   \mathbf{Z}_i \sim \mathcal{N}\left({\mathbf{o}_i + \mathbf{x}_i^\top\mathbf{B}},\boldsymbol\Omega^{-1}\right), \qquad \|\boldsymbol\Omega\|_1 &lt; c ,
 \end{equation}</annotation></semantics></math> where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐁</mi><annotation encoding="application/x-tex">\mathbf{B}</annotation></semantics></math>
@@ -231,7 +231,7 @@ parameters
 and the inverse covariance
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝛀</mi><annotation encoding="application/x-tex">\boldsymbol\Omega</annotation></semantics></math>.
 Technically speaking, we adopt a variational strategy to approximate the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>ℓ</mo><mn>1</mn></msub><annotation encoding="application/x-tex">\ell_1</annotation></semantics></math>-penalized
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>ℓ</mi><mn>1</mn></msub><annotation encoding="application/x-tex">\ell_1</annotation></semantics></math>-penalized
 log-likelihood function and optimize the consecutive sparse variational
 surrogate with an optimization scheme that alternates between two
 step</p>
@@ -240,10 +240,11 @@ step</p>
 implemented in the C++ library <span class="citation">(<a href="#ref-nlopt">Johnson 2011</a>)</span>, which we link to the
 package.</li>
 <li>a penalized log-likelihood step, performed with the graphical-Lasso
-of <span class="citation">Friedman, Hastie, and Tibshirani (<a href="#ref-FHT08">2008</a>)</span>, implemented in the package
+of <span class="citation">Friedman et al. (<a href="#ref-FHT08">2008</a>)</span>, implemented in the package
 <strong>fastglasso</strong> <span class="citation">(<a href="#ref-glassofast">Sustik and Calderhead 2012</a>)</span>.</li>
 </ol>
-<p>More technical details can be found in <span class="citation">Chiquet, Robin, and Mariadassou (<a href="#ref-PLNnetwork">2019</a>)</span></p>
+<p>More technical details can be found in <span class="citation">Chiquet
+et al. (<a href="#ref-PLNnetwork">2019</a>)</span></p>
 </div>
 </div>
 </div>
@@ -271,7 +272,7 @@ of models is fitted as follows:</p>
 <span><span class="co">##  Initialization...</span></span>
 <span><span class="co">##  Adjusting 30 PLN with sparse inverse covariance estimation</span></span>
 <span><span class="co">##  Joint optimization alternating gradient descent and graphical-lasso</span></span>
-<span><span class="co">##  sparsifying penalty = 3.665314  sparsifying penalty = 3.385544  sparsifying penalty = 3.127128  sparsifying penalty = 2.888437  sparsifying penalty = 2.667965  sparsifying penalty = 2.464322  sparsifying penalty = 2.276222  sparsifying penalty = 2.10248   sparsifying penalty = 1.942     sparsifying penalty = 1.793768  sparsifying penalty = 1.656852  sparsifying penalty = 1.530386  sparsifying penalty = 1.413573  sparsifying penalty = 1.305676  sparsifying penalty = 1.206015  sparsifying penalty = 1.113961  sparsifying penalty = 1.028933  sparsifying penalty = 0.9503954     sparsifying penalty = 0.8778525     sparsifying penalty = 0.8108468     sparsifying penalty = 0.7489555     sparsifying penalty = 0.6917884     sparsifying penalty = 0.6389848     sparsifying penalty = 0.5902116     sparsifying penalty = 0.5451613     sparsifying penalty = 0.5035496     sparsifying penalty = 0.4651141     sparsifying penalty = 0.4296123     sparsifying penalty = 0.3968204     sparsifying penalty = 0.3665314 </span></span>
+<span><span class="co">##  sparsifying penalty = 3.43579   sparsifying penalty = 3.173539  sparsifying penalty = 2.931305  sparsifying penalty = 2.707561  sparsifying penalty = 2.500895  sparsifying penalty = 2.310004  sparsifying penalty = 2.133683  sparsifying penalty = 1.970821  sparsifying penalty = 1.82039   sparsifying penalty = 1.681441  sparsifying penalty = 1.553098  sparsifying penalty = 1.434552  sparsifying penalty = 1.325054  sparsifying penalty = 1.223913  sparsifying penalty = 1.130493  sparsifying penalty = 1.044204  sparsifying penalty = 0.9645004     sparsifying penalty = 0.8908809     sparsifying penalty = 0.8228807     sparsifying penalty = 0.760071  sparsifying penalty = 0.7020554     sparsifying penalty = 0.6484681     sparsifying penalty = 0.5989711     sparsifying penalty = 0.5532521     sparsifying penalty = 0.5110229     sparsifying penalty = 0.4720169     sparsifying penalty = 0.4359883     sparsifying penalty = 0.4027097     sparsifying penalty = 0.3719712     sparsifying penalty = 0.343579 </span></span>
 <span><span class="co">##  Post-treatments</span></span>
 <span><span class="co">##  DONE!</span></span></code></pre>
 <p>Note the use of the <code>formula</code> object to specify the model,
@@ -291,9 +292,9 @@ sends a very basic summary of the estimation process:</p>
 <span><span class="co">## --------------------------------------------------------</span></span>
 <span><span class="co">##  Task: Network Inference </span></span>
 <span><span class="co">## ========================================================</span></span>
-<span><span class="co">##  - 30 penalties considered: from 0.3665314 to 3.665314 </span></span>
-<span><span class="co">##  - Best model (greater BIC): lambda = 0.504 </span></span>
-<span><span class="co">##  - Best model (greater EBIC): lambda = 0.95</span></span></code></pre>
+<span><span class="co">##  - 30 penalties considered: from 0.343579 to 3.43579 </span></span>
+<span><span class="co">##  - Best model (greater BIC): lambda = 0.472 </span></span>
+<span><span class="co">##  - Best model (greater EBIC): lambda = 0.823</span></span></code></pre>
 <p>One can also easily access the successive values of the criteria in
 the collection</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
@@ -327,80 +328,80 @@ the collection</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">3.665314</td>
+<td align="right">3.435789</td>
 <td align="right">34</td>
-<td align="right">-1283.296</td>
-<td align="right">-1349.457</td>
-<td align="right">-1317.296</td>
-<td align="right">-2762.110</td>
+<td align="right">-1285.807</td>
+<td align="right">-1351.968</td>
+<td align="right">-1319.807</td>
+<td align="right">-2808.294</td>
 <td align="right">0</td>
-<td align="right">-1349.457</td>
-<td align="right">-1290.187</td>
+<td align="right">-1351.968</td>
+<td align="right">-1291.998</td>
 <td align="right">0.0000000</td>
 <td align="left">NA</td>
 </tr>
 <tr class="even">
-<td align="right">3.385544</td>
-<td align="right">34</td>
-<td align="right">-1281.405</td>
-<td align="right">-1347.566</td>
-<td align="right">-1315.405</td>
-<td align="right">-2788.820</td>
-<td align="right">0</td>
-<td align="right">-1347.566</td>
-<td align="right">-1287.717</td>
-<td align="right">0.0000000</td>
-<td align="left">NA</td>
-</tr>
-<tr class="odd">
-<td align="right">3.127128</td>
-<td align="right">34</td>
-<td align="right">-1275.936</td>
-<td align="right">-1342.097</td>
-<td align="right">-1309.936</td>
-<td align="right">-2783.349</td>
-<td align="right">0</td>
-<td align="right">-1342.097</td>
-<td align="right">-1281.981</td>
-<td align="right">0.0000000</td>
-<td align="left">NA</td>
-</tr>
-<tr class="even">
-<td align="right">2.888437</td>
-<td align="right">34</td>
-<td align="right">-1270.814</td>
-<td align="right">-1336.975</td>
-<td align="right">-1304.814</td>
-<td align="right">-2778.224</td>
-<td align="right">0</td>
-<td align="right">-1336.975</td>
-<td align="right">-1276.599</td>
-<td align="right">0.0000000</td>
-<td align="left">NA</td>
-</tr>
-<tr class="odd">
-<td align="right">2.667965</td>
+<td align="right">3.173539</td>
 <td align="right">35</td>
-<td align="right">-1265.745</td>
-<td align="right">-1333.852</td>
-<td align="right">-1300.745</td>
-<td align="right">-2774.926</td>
+<td align="right">-1280.370</td>
+<td align="right">-1348.477</td>
+<td align="right">-1315.370</td>
+<td align="right">-2804.824</td>
 <td align="right">1</td>
-<td align="right">-1336.309</td>
-<td align="right">-1271.287</td>
+<td align="right">-1350.933</td>
+<td align="right">-1286.302</td>
+<td align="right">0.0069204</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">2.931305</td>
+<td align="right">35</td>
+<td align="right">-1275.074</td>
+<td align="right">-1343.181</td>
+<td align="right">-1310.074</td>
+<td align="right">-2799.504</td>
+<td align="right">1</td>
+<td align="right">-1345.637</td>
+<td align="right">-1280.761</td>
 <td align="right">0.0069204</td>
 <td align="left">NA</td>
 </tr>
 <tr class="even">
-<td align="right">2.464322</td>
+<td align="right">2.707561</td>
 <td align="right">35</td>
-<td align="right">-1261.031</td>
-<td align="right">-1329.138</td>
-<td align="right">-1296.031</td>
-<td align="right">-2770.207</td>
+<td align="right">-1266.454</td>
+<td align="right">-1334.561</td>
+<td align="right">-1301.454</td>
+<td align="right">-2783.456</td>
 <td align="right">1</td>
-<td align="right">-1331.594</td>
-<td align="right">-1266.334</td>
+<td align="right">-1337.017</td>
+<td align="right">-1272.031</td>
+<td align="right">0.0069204</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">2.500895</td>
+<td align="right">35</td>
+<td align="right">-1261.622</td>
+<td align="right">-1329.728</td>
+<td align="right">-1296.622</td>
+<td align="right">-2778.581</td>
+<td align="right">1</td>
+<td align="right">-1332.185</td>
+<td align="right">-1266.962</td>
+<td align="right">0.0069204</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="right">2.310004</td>
+<td align="right">35</td>
+<td align="right">-1251.158</td>
+<td align="right">-1319.265</td>
+<td align="right">-1286.158</td>
+<td align="right">-2752.545</td>
+<td align="right">1</td>
+<td align="right">-1321.721</td>
+<td align="right">-1256.477</td>
 <td align="right">0.0069204</td>
 <td align="left">NA</td>
 </tr>
@@ -434,63 +435,63 @@ the collection</p>
 <tbody>
 <tr class="odd">
 <td align="left">out</td>
-<td align="right">3.665314</td>
+<td align="right">3.435789</td>
 <td align="left">34</td>
-<td align="left">3</td>
+<td align="left">4</td>
 <td align="left">nlopt</td>
-<td align="left">1283.296</td>
-<td align="left">5</td>
-<td align="left">2.896165e-07</td>
+<td align="left">1285.807</td>
+<td align="left">9</td>
+<td align="left">8.52936e-07</td>
 </tr>
 <tr class="even">
 <td align="left">elt</td>
-<td align="right">3.385544</td>
-<td align="left">34</td>
+<td align="right">3.173539</td>
+<td align="left">35</td>
 <td align="left">3</td>
 <td align="left">nlopt</td>
-<td align="left">1281.405</td>
-<td align="left">4</td>
-<td align="left">3.185496e-06</td>
+<td align="left">1280.37</td>
+<td align="left">3</td>
+<td align="left">2.30986e-07</td>
 </tr>
 <tr class="odd">
 <td align="left">elt.1</td>
-<td align="right">3.127128</td>
-<td align="left">34</td>
-<td align="left">4</td>
+<td align="right">2.931305</td>
+<td align="left">35</td>
+<td align="left">3</td>
 <td align="left">nlopt</td>
-<td align="left">1275.936</td>
+<td align="left">1275.074</td>
 <td align="left">2</td>
-<td align="left">9.480179e-08</td>
+<td align="left">6.990419e-06</td>
 </tr>
 <tr class="even">
 <td align="left">elt.2</td>
-<td align="right">2.888437</td>
-<td align="left">34</td>
-<td align="left">4</td>
+<td align="right">2.707561</td>
+<td align="left">35</td>
+<td align="left">3</td>
 <td align="left">nlopt</td>
-<td align="left">1270.814</td>
-<td align="left">2</td>
-<td align="left">3.110594e-07</td>
+<td align="left">1266.454</td>
+<td align="left">4</td>
+<td align="left">1.791866e-06</td>
 </tr>
 <tr class="odd">
 <td align="left">elt.3</td>
-<td align="right">2.667965</td>
+<td align="right">2.500895</td>
 <td align="left">35</td>
-<td align="left">3</td>
+<td align="left">4</td>
 <td align="left">nlopt</td>
-<td align="left">1265.745</td>
-<td align="left">3</td>
-<td align="left">1.003533e-06</td>
+<td align="left">1261.622</td>
+<td align="left">2</td>
+<td align="left">2.915967e-06</td>
 </tr>
 <tr class="even">
 <td align="left">elt.4</td>
-<td align="right">2.464322</td>
+<td align="right">2.310004</td>
 <td align="left">35</td>
-<td align="left">3</td>
+<td align="left">4</td>
 <td align="left">nlopt</td>
-<td align="left">1261.031</td>
-<td align="left">2</td>
-<td align="left">4.578202e-07</td>
+<td align="left">1251.158</td>
+<td align="left">8</td>
+<td align="left">4.631252e-07</td>
 </tr>
 </tbody>
 </table>
@@ -513,7 +514,7 @@ mentioned above, and is a good starting point for model selection:</p>
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="monospace">𝚕𝚘𝚐𝚕𝚒𝚔</mtext><mo>−</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mtext mathvariant="monospace">𝚙𝚎𝚗</mtext></mrow><annotation encoding="application/x-tex">\texttt{loglik} - \frac{1}{2}\texttt{pen}</annotation></semantics></math>),
 which is on the same scale as the log-likelihood. A <a href="https://en.wikipedia.org/wiki/Bayesian_information_criterion" class="external-link">popular
 alternative</a> consists in using
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo><mn>2</mn><mtext mathvariant="monospace">𝚕𝚘𝚐𝚕𝚒𝚔</mtext><mo>+</mo><mtext mathvariant="monospace">𝚙𝚎𝚗</mtext></mrow><annotation encoding="application/x-tex">-2\texttt{loglik} + \texttt{pen}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>2</mn><mtext mathvariant="monospace">𝚕𝚘𝚐𝚕𝚒𝚔</mtext><mo>+</mo><mtext mathvariant="monospace">𝚙𝚎𝚗</mtext></mrow><annotation encoding="application/x-tex">-2\texttt{loglik} + \texttt{pen}</annotation></semantics></math>
 instead. You can do so by specifying <code>reverse = TRUE</code>:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network_models</span>, reverse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
@@ -537,9 +538,9 @@ path, which can be obtained with the options <code>corr = TRUE</code>.
 To this end, we provide the S3 function
 <code>coefficient_path</code>:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/coefficient_path.html">coefficient_path</a></span><span class="op">(</span><span class="va">network_models</span>, corr <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Penalty</span>, y <span class="op">=</span> <span class="va">Coeff</span>, group <span class="op">=</span> <span class="va">Edge</span>, colour <span class="op">=</span> <span class="va">Edge</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>show.legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_transform.html" class="external-link">coord_trans</a></span><span class="op">(</span>x<span class="op">=</span><span class="st">"log10"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/coefficient_path.html">coefficient_path</a></span><span class="op">(</span><span class="va">network_models</span>, corr <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Penalty</span>, y <span class="op">=</span> <span class="va">Coeff</span>, group <span class="op">=</span> <span class="va">Edge</span>, colour <span class="op">=</span> <span class="va">Edge</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>show.legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_transform.html" class="external-link">coord_transform</a></span><span class="op">(</span>x<span class="op">=</span><span class="st">"log10"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="PLNnetwork_files/figure-html/path_coeff-1.png" class="r-plt" alt="" width="672"></p>
 </div>
 <div class="section level3">
@@ -552,10 +553,9 @@ model according to the BIC or EBIC with the method
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">model_pen</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getModel.html">getModel</a></span><span class="op">(</span><span class="va">network_models</span>, <span class="va">network_models</span><span class="op">$</span><span class="va">penalties</span><span class="op">[</span><span class="fl">20</span><span class="op">]</span><span class="op">)</span> <span class="co"># give some sparsity</span></span>
 <span><span class="va">model_BIC</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBestModel.html">getBestModel</a></span><span class="op">(</span><span class="va">network_models</span>, <span class="st">"BIC"</span><span class="op">)</span>   <span class="co"># if no criteria is specified, the best BIC is used</span></span></code></pre></div>
-<p>An alternative strategy is to use StARS <span class="citation">(<a href="#ref-stars">Liu, Roeder, and Wasserman 2010</a>)</span>, which
-performs resampling to evaluate the robustness of the network along the
-path of solutions in a similar fashion as the stability selection
-approach of <span class="citation">Meinshausen and Bühlmann (<a href="#ref-stabilitySelection">2010</a>)</span>, but in a network
+<p>An alternative strategy is to use StARS <span class="citation">(<a href="#ref-stars">Liu et al. 2010</a>)</span>, which performs resampling
+to evaluate the robustness of the network along the path of solutions in
+a similar fashion as the stability selection approach of <span class="citation">Meinshausen and Bühlmann (<a href="#ref-stabilitySelection">2010</a>)</span>, but in a network
 inference context.</p>
 <p>Resampling can be computationally demanding but is easily
 parallelized: the function <code>stability_selection</code> integrates
@@ -604,10 +604,10 @@ specific one, mostly for network visualization purposes. Most fields and
 methods are recalled when such an object is printed:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">model_StARS</span></span></code></pre></div>
-<pre><code><span><span class="co">## Poisson Lognormal with sparse inverse covariance (penalty = 1.31)</span></span>
+<pre><code><span><span class="co">## Poisson Lognormal with sparse inverse covariance (penalty = 1.22)</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">##  nb_param    loglik       BIC       AIC       ICL n_edges      EBIC pen_loglik</span></span>
-<span><span class="co">##        35 -1209.015 -1277.122 -1244.015 -2663.038       1 -1279.578  -1213.259</span></span>
+<span><span class="co">##        35 -1202.237 -1270.344 -1237.237 -2639.833       1 -1272.801  -1206.452</span></span>
 <span><span class="co">##  density</span></span>
 <span><span class="co">##    0.007</span></span>
 <span><span class="co">## ==================================================================</span></span>
@@ -628,11 +628,11 @@ additional analyses).</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my_graph</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_StARS</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">my_graph</span></span></code></pre></div>
-<pre><code><span><span class="co">## IGRAPH 12259dd UNW- 17 1 -- </span></span>
+<pre><code><span><span class="co">## IGRAPH f81140b UNW- 17 1 -- </span></span>
 <span><span class="co">## + attr: name (v/c), label (v/c), label.cex (v/n), size (v/n),</span></span>
 <span><span class="co">## | label.color (v/c), frame.color (v/l), weight (e/n), color (e/c),</span></span>
 <span><span class="co">## | width (e/n)</span></span>
-<span><span class="co">## + edge from 12259dd (vertex names):</span></span>
+<span><span class="co">## + edge from f81140b (vertex names):</span></span>
 <span><span class="co">## [1] Hfo--Hsp</span></span></code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_StARS</span><span class="op">)</span></span></code></pre></div>
@@ -647,11 +647,11 @@ observed ones:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  fitted   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/fitted.values.html" class="external-link">fitted</a></span><span class="op">(</span><span class="va">model_StARS</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  observed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span><span class="op">)</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">observed</span>, y <span class="op">=</span> <span class="va">fitted</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">.5</span>, alpha <span class="op">=</span><span class="fl">.25</span> <span class="op">)</span> <span class="op">+</span> </span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_log10</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1000</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_log10</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1000</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">observed</span>, y <span class="op">=</span> <span class="va">fitted</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">.5</span>, alpha <span class="op">=</span><span class="fl">.25</span> <span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_log10</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1000</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_log10</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1000</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/annotation_logticks.html" class="external-link">annotation_logticks</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="PLNnetwork_files/figure-html/fitted-1.png" class="r-plt" alt="fitted value vs. observation" width="672"><p class="caption">
@@ -663,24 +663,25 @@ fitted value vs. observation
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-AiH89" class="csl-entry">
 Aitchison, J., and C. H. Ho. 1989. <span>“The Multivariate Poisson-Log
 Normal Distribution.”</span> <em>Biometrika</em> 76 (4): 643–53.
 </div>
 <div id="ref-banerjee2008" class="csl-entry">
-Banerjee, Onureena, Laurent El Ghaoui, and Alexandre d’Aspremont. 2008.
-<span>“Model Selection Through Sparse Maximum Likelihood Estimation for
-Multivariate Gaussian or Binary Data.”</span> <em>Journal of Machine
-Learning Research</em> 9 (Mar): 485–516.
+<span class="nocase">Banerjee, Onureena, Laurent El Ghaoui, and
+Alexandre d’Aspremont</span>. 2008. <span>“Model Selection Through
+Sparse Maximum Likelihood Estimation for Multivariate Gaussian or Binary
+Data.”</span> <em>Journal of Machine Learning Research</em> 9 (Mar):
+485–516.
 </div>
 <div id="ref-PLNnetwork" class="csl-entry">
 Chiquet, Julien, Stephane Robin, and Mahendra Mariadassou. 2019.
 <span>“Variational Inference for Sparse Network Reconstruction from
 Count Data.”</span> In <em>Proceedings of the 36th International
 Conference on Machine Learning</em>, edited by Kamalika Chaudhuri and
-Ruslan Salakhutdinov, 97:1162–71. Proceedings of Machine Learning
-Research. Long Beach, California, USA: PMLR. <a href="http://proceedings.mlr.press/v97/chiquet19a.html" class="external-link">http://proceedings.mlr.press/v97/chiquet19a.html</a>.
+Ruslan Salakhutdinov, vol. 97. Proceedings of Machine Learning Research.
+PMLR. <a href="http://proceedings.mlr.press/v97/chiquet19a.html" class="external-link">http://proceedings.mlr.press/v97/chiquet19a.html</a>.
 </div>
 <div id="ref-FHT08" class="csl-entry">
 Friedman, J., T. Hastie, and R. Tibshirani. 2008. <span>“Sparse Inverse
@@ -694,9 +695,9 @@ Package</em>. <a href="https://nlopt.readthedocs.io/en/latest/" class="external-
 <div id="ref-stars" class="csl-entry">
 Liu, Han, Kathryn Roeder, and Larry Wasserman. 2010. <span>“Stability
 Approach to Regularization Selection (StARS) for High Dimensional
-Graphical Models.”</span> In <em>Proceedings of the 23rd International
-Conference on Neural Information Processing Systems - Volume 2</em>,
-1432–40. USA.
+Graphical Models.”</span> <em>Proceedings of the 23rd International
+Conference on Neural Information Processing Systems - Volume 2</em>
+(USA), 1432–40.
 </div>
 <div id="ref-stabilitySelection" class="csl-entry">
 Meinshausen, Nicolai, and Peter Bühlmann. 2010. <span>“Stability

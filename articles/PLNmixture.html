@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -102,7 +102,7 @@
 PLN-mixture</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2026-04-10</h4>
+            <h4 data-toc-skip class="date">2026-06-15</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/PLNmixture.Rmd" class="external-link"><code>vignettes/PLNmixture.Rmd</code></a></small>
       <div class="hidden name"><code>PLNmixture.Rmd</code></div>
@@ -161,18 +161,18 @@ the first layer are assumed to be drawn from a mixture of
 multivariate Gaussian components. Each component
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
 has a prior probability
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mo>∈</mo><mi>k</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>π</mi><mi>k</mi></msub></mrow><annotation encoding="application/x-tex">p(i \in k) = \pi_k</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>∈</mo><mi>k</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>π</mi><mi>k</mi></msub></mrow><annotation encoding="application/x-tex">p(i \in k) = \pi_k</annotation></semantics></math>
 such that
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∑</mo><mi>k</mi></msub><msub><mi>π</mi><mi>k</mi></msub><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\sum_k \pi_k = 1</annotation></semantics></math>.
 We denote by
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>C</mi><mi>i</mi></msub><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>K</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">C_i\in \{1,\dots,K\}</annotation></semantics></math>
 the multinomial variable
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ℳ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>,</mo><mi>𝛑</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>π</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>π</mi><mi>K</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mathcal{M}(1,\boldsymbol{\pi} = (\pi_1,\dots,\pi_K))</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ℳ</mi><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>,</mo><mi>𝛑</mi><mo>=</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>π</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>π</mi><mi>K</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathcal{M}(1,\boldsymbol{\pi} = (\pi_1,\dots,\pi_K))</annotation></semantics></math>
 describing the component to which observation
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
 belongs to. Introducing this additional layer, our PLN mixture model is
 as follows</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mtext mathvariant="normal">layer 2 (clustering)</mtext></mtd><mtd columnalign="center" style="text-align: center"><mi>𝐂</mi><mi>_</mi><mi>i</mi><mo>∼</mo><mi>ℳ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>,</mo><mi>𝛑</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mtext mathvariant="normal">layer 1 (Gaussian)</mtext></mtd><mtd columnalign="center" style="text-align: center"><mi>𝐙</mi><mi>_</mi><mi>i</mi><mo stretchy="false" form="prefix">|</mo><mspace width="0.167em"></mspace><mi>𝐂</mi><mi>_</mi><mi>i</mi><mo>=</mo><mi>k</mi><mo>∼</mo><mi>𝒩</mi><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>𝛍</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>k</mi><mo stretchy="true" form="postfix">)</mo></mrow></msup><mo>,</mo><msup><mi>𝚺</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>k</mi><mo stretchy="true" form="postfix">)</mo></mrow></msup><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">observation space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="postfix">∥</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mspace width="1.0em"></mspace><mtext mathvariant="normal">indep.</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>𝐘</mi><mi>i</mi></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>𝐙</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒫</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>exp</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>𝐙</mi><mi>i</mi></msub><mo stretchy="false" form="postfix">}</mo><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mtd></mtr></mtable><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mtext mathvariant="normal">layer 2 (clustering)</mtext></mtd><mtd columnalign="center" style="text-align: center"><mi>𝐂</mi><mi>_</mi><mi>i</mi><mo>∼</mo><mi>ℳ</mi><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>,</mo><mi>𝛑</mi><mo stretchy="false" form="postfix">)</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mtext mathvariant="normal">layer 1 (Gaussian)</mtext></mtd><mtd columnalign="center" style="text-align: center"><mi>𝐙</mi><mi>_</mi><mi>i</mi><mo stretchy="false" form="prefix">|</mo><mspace width="0.167em"></mspace><mi>𝐂</mi><mi>_</mi><mi>i</mi><mo>=</mo><mi>k</mi><mo>∼</mo><mi>𝒩</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>𝛍</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>k</mi><mo stretchy="false" form="postfix">)</mo></mrow></msup><mo>,</mo><msup><mi>𝚺</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>k</mi><mo stretchy="false" form="postfix">)</mo></mrow></msup><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">observation space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="postfix">∥</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mspace width="1.0em"></mspace><mtext mathvariant="normal">indep.</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>𝐘</mi><mi>i</mi></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>𝐙</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒫</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi mathvariant="normal">exp</mi><mo stretchy="false" form="prefix">{</mo><msub><mi>𝐙</mi><mi>i</mi></msub><mo stretchy="false" form="postfix">}</mo><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mtd></mtr></mtable><annotation encoding="application/x-tex">
 \begin{array}{rcl}
 \text{layer 2 (clustering)} &amp; \mathbf{C}\_i \sim \mathcal{M}(1,\boldsymbol{\pi}) \\
 \text{layer 1 (Gaussian)} &amp; \mathbf{Z}\_i | \, \mathbf{C}\_i = k
@@ -197,7 +197,7 @@ of
 offsets in sample
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
 in each mixture component. The latent layer then reads</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝐙</mi><mi>i</mi></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>𝐂</mi><mi>i</mi></msub><mo>=</mo><mi>k</mi><mspace width="0.167em"></mspace><mo>∼</mo><mi>𝒩</mi><mrow><mo stretchy="true" form="prefix">(</mo><msup><mrow><msub><mi>𝐨</mi><mi>i</mi></msub><mo>+</mo><msubsup><mi>𝐱</mi><mi>i</mi><mi>⊤</mi></msubsup><mi>𝐁</mi><mo>+</mo><mi>𝛍</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>k</mi><mo stretchy="true" form="postfix">)</mo></mrow></msup><mo>,</mo><msup><mi>𝚺</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>k</mi><mo stretchy="true" form="postfix">)</mo></mrow></msup><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝐙</mi><mi>i</mi></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>𝐂</mi><mi>i</mi></msub><mo>=</mo><mi>k</mi><mspace width="0.167em"></mspace><mo>∼</mo><mi>𝒩</mi><mo stretchy="false" form="prefix">(</mo><msup><mrow><msub><mi>𝐨</mi><mi>i</mi></msub><mo>+</mo><msubsup><mi>𝐱</mi><mi>i</mi><mi>⊤</mi></msubsup><mi>𝐁</mi><mo>+</mo><mi>𝛍</mi></mrow><mrow><mo stretchy="false" form="prefix">(</mo><mi>k</mi><mo stretchy="false" form="postfix">)</mo></mrow></msup><mo>,</mo><msup><mi>𝚺</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>k</mi><mo stretchy="false" form="postfix">)</mo></mrow></msup><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">
 \mathbf{Z}_i | \mathbf{C}_i = k \, \sim
 \mathcal{N}({\mathbf{o}_i +
 \mathbf{x}_i^{\top}{\mathbf{B}} + \boldsymbol\mu}^{(k)},{\boldsymbol\Sigma}^{(k)}),
@@ -214,7 +214,7 @@ components.</p>
 </h4>
 <p>When using parametric mixture models like Gaussian mixture models, it
 is generally not recommended to have covariances matrices
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>𝚺</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>k</mi><mo stretchy="true" form="postfix">)</mo></mrow></msup><annotation encoding="application/x-tex">{\boldsymbol\Sigma}^{(k)}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>𝚺</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>k</mi><mo stretchy="false" form="postfix">)</mo></mrow></msup><annotation encoding="application/x-tex">{\boldsymbol\Sigma}^{(k)}</annotation></semantics></math>
 with no special restriction, especially when dealing with a large number
 of variables. Indeed, the total number of parameters to estimate in such
 unrestricted model can become prohibitive.</p>
@@ -222,8 +222,8 @@ unrestricted model can become prohibitive.</p>
 two different, more constrained parametrizations of the covariance
 matrices of each component are currently implemented in the
 <code>PLNmodels</code> package (on top of the general form of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>Σ</mi><mi>k</mi></msub><annotation encoding="application/x-tex">\Sigma_k</annotation></semantics></math>):</p>
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mtext mathvariant="normal">diagonal covariances:</mtext></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>Σ</mi><mi>k</mi></msub></mtd><mtd columnalign="center" style="text-align: center"><mo>=</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mi mathvariant="normal">d</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">g</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>d</mi><mi>k</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">(</mtext><mrow><mn>2</mn><mi>K</mi><mi>p</mi></mrow><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> parameters),</mtext></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mtext mathvariant="normal">spherical covariances:</mtext></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>Σ</mi><mi>k</mi></msub></mtd><mtd columnalign="center" style="text-align: center"><mo>=</mo></mtd><mtd columnalign="left" style="text-align: left"><msubsup><mi>σ</mi><mi>k</mi><mn>2</mn></msubsup><mi>I</mi></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">(</mtext><mrow><mi>K</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>p</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> parameters).</mtext></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{equation*}
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi mathvariant="normal">Σ</mi><mi>k</mi></msub><annotation encoding="application/x-tex">\Sigma_k</annotation></semantics></math>):</p>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mtext mathvariant="normal">diagonal covariances:</mtext></mtd><mtd columnalign="right" style="text-align: right"><msub><mi mathvariant="normal">Σ</mi><mi>k</mi></msub></mtd><mtd columnalign="center" style="text-align: center"><mo>=</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mi mathvariant="normal">d</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">g</mi></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>d</mi><mi>k</mi></msub><mo stretchy="false" form="postfix">)</mo></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">(</mtext><mrow><mn>2</mn><mi>K</mi><mi>p</mi></mrow><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> parameters),</mtext></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mtext mathvariant="normal">spherical covariances:</mtext></mtd><mtd columnalign="right" style="text-align: right"><msub><mi mathvariant="normal">Σ</mi><mi>k</mi></msub></mtd><mtd columnalign="center" style="text-align: center"><mo>=</mo></mtd><mtd columnalign="left" style="text-align: left"><msubsup><mi>σ</mi><mi>k</mi><mn>2</mn></msubsup><mi>I</mi></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">(</mtext><mrow><mi>K</mi><mo stretchy="false" form="prefix">(</mo><mi>p</mi><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo></mrow><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> parameters).</mtext></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{equation*}
 \begin{array}{rrcll}
     \text{diagonal covariances:} &amp; \Sigma_k &amp; = &amp;\mathrm{diag}({d}_k) &amp; \text{($2 K p$ parameters),} \\[1.5ex]
     \text{spherical covariances:} &amp; \Sigma_k &amp; = &amp;  \sigma_k^2 {I} &amp; \text{($K (p + 1)$ parameters).} 
@@ -335,30 +335,30 @@ the collection</p>
 <tr class="odd">
 <td align="right">1</td>
 <td align="right">18</td>
-<td align="right">-1158.503</td>
-<td align="right">-1193.529</td>
-<td align="right">-2152.660</td>
+<td align="right">-1158.757</td>
+<td align="right">-1193.783</td>
+<td align="right">-2179.848</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
 <td align="right">37</td>
-<td align="right">-1104.237</td>
-<td align="right">-1176.236</td>
-<td align="right">-1982.233</td>
+<td align="right">-1104.906</td>
+<td align="right">-1176.905</td>
+<td align="right">-2030.161</td>
 </tr>
 <tr class="odd">
 <td align="right">3</td>
 <td align="right">56</td>
-<td align="right">-1070.278</td>
-<td align="right">-1179.249</td>
-<td align="right">-1887.761</td>
+<td align="right">-1071.244</td>
+<td align="right">-1180.215</td>
+<td align="right">-1950.705</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
 <td align="right">75</td>
-<td align="right">-1041.141</td>
-<td align="right">-1187.084</td>
-<td align="right">-1790.660</td>
+<td align="right">-1039.963</td>
+<td align="right">-1185.906</td>
+<td align="right">-1842.635</td>
 </tr>
 </tbody>
 </table>
@@ -380,33 +380,33 @@ the collection</p>
 <td align="left">out</td>
 <td align="right">1</td>
 <td align="left">18</td>
-<td align="left">1158.503</td>
-<td align="left">1.609567e-07</td>
-<td align="left">2</td>
+<td align="left">1158.757</td>
+<td align="left">0.000453989</td>
+<td align="left">3</td>
 </tr>
 <tr class="even">
 <td align="left">elt</td>
 <td align="right">2</td>
 <td align="left">37</td>
-<td align="left">1104.237</td>
-<td align="left">9.873515e-07</td>
-<td align="left">2</td>
+<td align="left">1104.906</td>
+<td align="left">0.0006176149</td>
+<td align="left">5</td>
 </tr>
 <tr class="odd">
 <td align="left">elt.1</td>
 <td align="right">3</td>
 <td align="left">56</td>
-<td align="left">1070.278</td>
-<td align="left">9.705434e-07</td>
-<td align="left">2</td>
+<td align="left">1071.244</td>
+<td align="left">0.0006503615</td>
+<td align="left">5</td>
 </tr>
 <tr class="even">
 <td align="left">elt.2</td>
 <td align="right">4</td>
 <td align="left">75</td>
-<td align="left">1041.141</td>
-<td align="left">1.378327e-07</td>
-<td align="left">2</td>
+<td align="left">1039.963</td>
+<td align="left">0.0006969976</td>
+<td align="left">7</td>
 </tr>
 </tbody>
 </table>
@@ -431,7 +431,7 @@ starting point for model selection:</p>
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="monospace">𝚕𝚘𝚐𝚕𝚒𝚔</mtext><mo>−</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mtext mathvariant="monospace">𝚙𝚎𝚗</mtext></mrow><annotation encoding="application/x-tex">\texttt{loglik} - \frac{1}{2}\texttt{pen}</annotation></semantics></math>),
 which is on the same scale as the log-likelihood. A <a href="https://en.wikipedia.org/wiki/Bayesian_information_criterion" class="external-link">popular
 alternative</a> consists in using
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo><mn>2</mn><mtext mathvariant="monospace">𝚕𝚘𝚐𝚕𝚒𝚔</mtext><mo>+</mo><mtext mathvariant="monospace">𝚙𝚎𝚗</mtext></mrow><annotation encoding="application/x-tex">-2\texttt{loglik} + \texttt{pen}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>2</mn><mtext mathvariant="monospace">𝚕𝚘𝚐𝚕𝚒𝚔</mtext><mo>+</mo><mtext mathvariant="monospace">𝚙𝚎𝚗</mtext></mrow><annotation encoding="application/x-tex">-2\texttt{loglik} + \texttt{pen}</annotation></semantics></math>
 instead. You can do so by specifying <code>reverse = TRUE</code>:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mixture_models</span>, reverse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
@@ -523,20 +523,20 @@ covariance matrices
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/sigma.html" class="external-link">sigma</a></span><span class="op">(</span><span class="va">myMix_BIC</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">as.matrix</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">diag</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [[1]]</span></span>
-<span><span class="co">##       Che       Hyc       Hym       Hys       Psy       Aga       Glo       Ath </span></span>
-<span><span class="co">## 0.9623077 0.9623077 0.9623077 0.9623077 0.9623077 0.9623077 0.9623077 0.9623077 </span></span>
-<span><span class="co">##       Cea       Ced       Set       All       Han       Hfo       Hsp       Hve </span></span>
-<span><span class="co">## 0.9623077 0.9623077 0.9623077 0.9623077 0.9623077 0.9623077 0.9623077 0.9623077 </span></span>
-<span><span class="co">##       Sta </span></span>
-<span><span class="co">## 0.9623077 </span></span>
+<span><span class="co">##      Che      Hyc      Hym      Hys      Psy      Aga      Glo      Ath </span></span>
+<span><span class="co">## 1.014094 1.014094 1.014094 1.014094 1.014094 1.014094 1.014094 1.014094 </span></span>
+<span><span class="co">##      Cea      Ced      Set      All      Han      Hfo      Hsp      Hve </span></span>
+<span><span class="co">## 1.014094 1.014094 1.014094 1.014094 1.014094 1.014094 1.014094 1.014094 </span></span>
+<span><span class="co">##      Sta </span></span>
+<span><span class="co">## 1.014094 </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## [[2]]</span></span>
 <span><span class="co">##       Che       Hyc       Hym       Hys       Psy       Aga       Glo       Ath </span></span>
-<span><span class="co">## 0.7188196 0.7188196 0.7188196 0.7188196 0.7188196 0.7188196 0.7188196 0.7188196 </span></span>
+<span><span class="co">## 0.8397138 0.8397138 0.8397138 0.8397138 0.8397138 0.8397138 0.8397138 0.8397138 </span></span>
 <span><span class="co">##       Cea       Ced       Set       All       Han       Hfo       Hsp       Hve </span></span>
-<span><span class="co">## 0.7188196 0.7188196 0.7188196 0.7188196 0.7188196 0.7188196 0.7188196 0.7188196 </span></span>
+<span><span class="co">## 0.8397138 0.8397138 0.8397138 0.8397138 0.8397138 0.8397138 0.8397138 0.8397138 </span></span>
 <span><span class="co">##       Sta </span></span>
-<span><span class="co">## 0.7188196</span></span></code></pre>
+<span><span class="co">## 0.8397138</span></span></code></pre>
 <ul>
 <li>the regression coefficient matrix and other model of parameters
 (results not shown here, redundant with other fields)</li>
@@ -564,13 +564,13 @@ matrix of group means
 <tbody>
 <tr class="odd">
 <td align="left">Che</td>
-<td align="right">-26.20</td>
-<td align="right">-7.16</td>
+<td align="right">-13.43</td>
+<td align="right">-7.23</td>
 </tr>
 <tr class="even">
 <td align="left">Hyc</td>
 <td align="right">-7.71</td>
-<td align="right">-8.33</td>
+<td align="right">-8.44</td>
 </tr>
 <tr class="odd">
 <td align="left">Hym</td>
@@ -579,18 +579,18 @@ matrix of group means
 </tr>
 <tr class="even">
 <td align="left">Hys</td>
-<td align="right">-8.40</td>
-<td align="right">-6.59</td>
+<td align="right">-8.38</td>
+<td align="right">-6.64</td>
 </tr>
 <tr class="odd">
 <td align="left">Psy</td>
-<td align="right">-0.82</td>
-<td align="right">-0.53</td>
+<td align="right">-0.93</td>
+<td align="right">-0.51</td>
 </tr>
 <tr class="even">
 <td align="left">Aga</td>
-<td align="right">-6.97</td>
-<td align="right">-3.72</td>
+<td align="right">-6.96</td>
+<td align="right">-3.76</td>
 </tr>
 </tbody>
 </table>
@@ -600,8 +600,8 @@ matrix of group means
 <code class="sourceCode R"><span><span class="va">myMix_BIC</span><span class="op">$</span><span class="va">components</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">## A multivariate Poisson Lognormal fit with spherical covariance model.</span></span>
 <span><span class="co">## ==================================================================</span></span>
-<span><span class="co">##  nb_param   loglik      BIC      AIC     ICL</span></span>
-<span><span class="co">##        18 -252.659 -287.686 -270.659 167.509</span></span>
+<span><span class="co">##  nb_param  loglik      BIC     AIC      ICL</span></span>
+<span><span class="co">##        18 -252.65 -287.676 -270.65 -1019.17</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">## * Useful fields</span></span>
 <span><span class="co">##     $model_par, $latent, $latent_pos, $var_par, $optim_par</span></span>
@@ -671,7 +671,7 @@ probabilities
 </tbody></table>
 <p>Setting <code>type = "response"</code>, we can predict the most
 likely cluster
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>k</mi><mo accent="true">̂</mo></mover><mo>=</mo><mo>arg</mo><msub><mo>max</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn><mi>…</mi><mi>K</mi></mrow></msub><mo stretchy="false" form="prefix">{</mo><mover><msub><mi>π</mi><mi>k</mi></msub><mo accent="true">̂</mo></mover><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\hat{k} = \arg\max_{k = 1\dots K} \{ \hat{\pi_k}\}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>k</mi><mo accent="true">̂</mo></mover><mo>=</mo><mrow><mi mathvariant="normal">arg</mi><mo>⁡</mo></mrow><msub><mrow><mi mathvariant="normal">max</mi><mo>⁡</mo></mrow><mrow><mi>k</mi><mo>=</mo><mn>1</mn><mi>…</mi><mi>K</mi></mrow></msub><mo stretchy="false" form="prefix">{</mo><mover><msub><mi>π</mi><mi>k</mi></msub><mo accent="true">̂</mo></mover><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\hat{k} = \arg\max_{k = 1\dots K} \{ \hat{\pi_k}\}</annotation></semantics></math>
 instead:</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">predicted.class</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, newdata <span class="op">=</span> <span class="va">trichoptera</span>, </span>
@@ -712,7 +712,7 @@ sequential plan with <em>future</em>.</p>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-AiH89" class="csl-entry">
 Aitchison, J., and C. H. Ho. 1989. <span>“The Multivariate Poisson-Log
 Normal Distribution.”</span> <em>Biometrika</em> 76 (4): 643–53.

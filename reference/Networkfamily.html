@@ -22,7 +22,7 @@ getModel() and plot() for the user-facing ones."><meta property="og:image" conte
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -100,7 +100,7 @@ See the documentation for <code><a href="getBestModel.html">getBestModel()</a></
     </div>
     <div id="super-class">
     <h2>Super class</h2>
-    <p><code><a href="PLNfamily.html">PLNmodels::PLNfamily</a></code> -&gt; <code>Networkfamily</code></p>
+    <p><code><a href="PLNfamily.html">PLNfamily</a></code> -&gt; <code>Networkfamily</code></p>
     </div>
     <div id="active-bindings">
     <h2>Active bindings</h2>
@@ -108,15 +108,15 @@ See the documentation for <code><a href="getBestModel.html">getBestModel()</a></
 <dd><p>the sparsity level of the network in the successively fitted models</p></dd>
 
 
-<dt><code>stability_path</code></dt>
+    <dt><code>stability_path</code></dt>
 <dd><p>the stability path of each edge as returned by the stars procedure</p></dd>
 
 
-<dt><code>stability</code></dt>
+    <dt><code>stability</code></dt>
 <dd><p>mean edge stability along the penalty path</p></dd>
 
 
-<dt><code>criteria</code></dt>
+    <dt><code>criteria</code></dt>
 <dd><p>a data frame with the values of some criteria (variational log-likelihood, (E)BIC, ICL and R2, stability) for the collection of models / fits
 BIC, ICL and EBIC are defined so that they are on the same scale as the model log-likelihood, i.e. with the form, loglik - 0.5 penalty</p></dd>
 
@@ -128,8 +128,7 @@ BIC, ICL and EBIC are defined so that they are on the same scale as the model lo
 
 <div class="section">
 <h3 id="public-methods">Public methods<a class="anchor" aria-label="anchor" href="#public-methods"></a></h3>
-
-<ul><li><p><a href="#method-Networkfamily-new"><code>Networkfamily$new()</code></a></p></li>
+<p></p><ul><li><p><a href="#method-Networkfamily-initialize"><code>Networkfamily$new()</code></a></p></li>
 <li><p><a href="#method-Networkfamily-optimize"><code>Networkfamily$optimize()</code></a></p></li>
 <li><p><a href="#method-Networkfamily-coefficient_path"><code>Networkfamily$coefficient_path()</code></a></p></li>
 <li><p><a href="#method-Networkfamily-getBestModel"><code>Networkfamily$getBestModel()</code></a></p></li>
@@ -138,104 +137,96 @@ BIC, ICL and EBIC are defined so that they are on the same scale as the model lo
 <li><p><a href="#method-Networkfamily-plot_objective"><code>Networkfamily$plot_objective()</code></a></p></li>
 <li><p><a href="#method-Networkfamily-show"><code>Networkfamily$show()</code></a></p></li>
 <li><p><a href="#method-Networkfamily-clone"><code>Networkfamily$clone()</code></a></p></li>
-</ul></div><p><details open><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="getModel"><a href="PLNfamily.html#method-getModel"><code>PLNmodels::PLNfamily$getModel()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment"><a href="PLNfamily.html#method-postTreatment"><code>PLNmodels::PLNfamily$postTreatment()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="print"><a href="PLNfamily.html#method-print"><code>PLNmodels::PLNfamily$print()</code></a></span></li>
-</ul></details></p><hr><a id="method-Networkfamily-new"></a><div class="section">
-<h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
+</ul></div><p><details open><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="getModel"><a href="PLNfamily.html#method-getModel"><code>PLNfamily$getModel()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment"><a href="PLNfamily.html#method-postTreatment"><code>PLNfamily$postTreatment()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="print"><a href="PLNfamily.html#method-print"><code>PLNfamily$print()</code></a></span></li>
+</ul></details></p><hr><a id="method-Networkfamily-initialize"></a><div class="section">
+<h3 id="networkfamily-new-"><code>Networkfamily$new()</code><a class="anchor" aria-label="anchor" href="#networkfamily-new-"></a></h3>
 <p>Initialize all models in the collection</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/Networkfamily.html">Networkfamily</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">penalties</span>, <span class="va">data</span>, <span class="va">control</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>penalties</code></dt>
 <dd><p>a vector of positive real number controlling the level of sparsity of the underlying network.</p></dd>
 
-
-<dt><code>data</code></dt>
+      <dt><code>data</code></dt>
 <dd><p>a named list used internally to carry the data matrices</p></dd>
 
-
-<dt><code>control</code></dt>
+      <dt><code>control</code></dt>
 <dd><p>a list for controlling the optimization.</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="returns">Returns<a class="anchor" aria-label="anchor" href="#returns"></a></h4>
 <p>Update all network fits in the family with smart starting values</p>
 </div>
 
-</div><p></p><hr><a id="method-Networkfamily-optimize"></a><div class="section">
-<h3 id="method-optimize-">Method <code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize()</a></code><a class="anchor" aria-label="anchor" href="#method-optimize-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-Networkfamily-optimize"></a><div class="section">
+<h3 id="networkfamily-optimize-"><code>Networkfamily$optimize()</code><a class="anchor" aria-label="anchor" href="#networkfamily-optimize-"></a></h3>
 <p>Call to the C++ optimizer on all models of the collection</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Networkfamily</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span><span class="va">data</span>, <span class="va">config</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>data</code></dt>
 <dd><p>a named list used internally to carry the data matrices</p></dd>
 
-
-<dt><code>config</code></dt>
+      <dt><code>config</code></dt>
 <dd><p>a list for controlling the optimization.</p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-Networkfamily-coefficient_path"></a><div class="section">
-<h3 id="method-coefficient-path-">Method <code><a href="coefficient_path.html">coefficient_path()</a></code><a class="anchor" aria-label="anchor" href="#method-coefficient-path-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-Networkfamily-coefficient_path"></a><div class="section">
+<h3 id="networkfamily-coefficient-path-"><code>Networkfamily$coefficient_path()</code><a class="anchor" aria-label="anchor" href="#networkfamily-coefficient-path-"></a></h3>
 <p>Extract the regularization path of a <code>Networkfamily</code></p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Networkfamily</span><span class="op">$</span><span class="fu">coefficient_path</span><span class="op">(</span>precision <span class="op">=</span> <span class="cn">TRUE</span>, corr <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>precision</code></dt>
 <dd><p>Logical. Should the regularization path be extracted from the precision matrix Omega (<code>TRUE</code>, default) or from the variance matrix Sigma (<code>FALSE</code>)</p></dd>
 
-
-<dt><code>corr</code></dt>
+      <dt><code>corr</code></dt>
 <dd><p>Logical. Should the matrix be transformed to (partial) correlation matrix before extraction? Defaults to <code>TRUE</code></p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-Networkfamily-getBestModel"></a><div class="section">
-<h3 id="method-getbestmodel-">Method <code><a href="getBestModel.html">getBestModel()</a></code><a class="anchor" aria-label="anchor" href="#method-getbestmodel-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-Networkfamily-getBestModel"></a><div class="section">
+<h3 id="networkfamily-getbestmodel-"><code>Networkfamily$getBestModel()</code><a class="anchor" aria-label="anchor" href="#networkfamily-getbestmodel-"></a></h3>
 <p>Extract the best network in the family according to some criteria</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Networkfamily</span><span class="op">$</span><span class="fu">getBestModel</span><span class="op">(</span>crit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BIC"</span>, <span class="st">"EBIC"</span>, <span class="st">"StARS"</span><span class="op">)</span>, stability <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>crit</code></dt>
 <dd><p>character. Criterion used to perform the selection. If "StARS" is chosen but <code>$stability</code> field is empty, will compute stability path.</p></dd>
 
-
-<dt><code>stability</code></dt>
+      <dt><code>stability</code></dt>
 <dd><p>Only used for "StARS" criterion. A scalar indicating the target stability (= 1 - 2 beta) at which the network is selected. Default is <code>0.9</code>.</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h4>
 <p>For BIC and EBIC criteria, higher is better.</p>
 </div>
 
+</div>
 
-</div><p></p><hr><a id="method-Networkfamily-plot"></a><div class="section">
-<h3 id="method-plot-">Method <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code><a class="anchor" aria-label="anchor" href="#method-plot-"></a></h3>
+<p></p><hr><a id="method-Networkfamily-plot"></a><div class="section">
+<h3 id="networkfamily-plot-"><code>Networkfamily$plot()</code><a class="anchor" aria-label="anchor" href="#networkfamily-plot-"></a></h3>
 <p>Display various outputs (goodness-of-fit criteria, robustness, diagnostic) associated with a collection of network fits (a <code>Networkfamily</code>)</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Networkfamily</span><span class="op">$</span><span class="fu">plot</span><span class="op">(</span></span>
@@ -243,83 +234,77 @@ BIC, ICL and EBIC are defined so that they are on the same scale as the model lo
 <span>  reverse <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  log.x <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>criteria</code></dt>
 <dd><p>vector of characters. The criteria to plot in <code>c("loglik", "pen_loglik", "BIC", "EBIC")</code>. Defaults to all of them.</p></dd>
 
-
-<dt><code>reverse</code></dt>
+      <dt><code>reverse</code></dt>
 <dd><p>A logical indicating whether to plot the value of the criteria in the "natural" direction
 (loglik - 0.5 penalty) or in the "reverse" direction (-2 loglik + penalty). Default to FALSE, i.e use the
 natural direction, on the same scale as the log-likelihood.</p></dd>
 
-
-<dt><code>log.x</code></dt>
+      <dt><code>log.x</code></dt>
 <dd><p>logical: should the x-axis be represented in log-scale? Default is <code>TRUE</code>.</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="returns-1">Returns<a class="anchor" aria-label="anchor" href="#returns-1"></a></h4>
 <p>a <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot2::ggplot</a></code> graph</p>
 </div>
 
-</div><p></p><hr><a id="method-Networkfamily-plot_stars"></a><div class="section">
-<h3 id="method-plot-stars-">Method <code>plot_stars()</code><a class="anchor" aria-label="anchor" href="#method-plot-stars-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-Networkfamily-plot_stars"></a><div class="section">
+<h3 id="networkfamily-plot-stars-"><code>Networkfamily$plot_stars()</code><a class="anchor" aria-label="anchor" href="#networkfamily-plot-stars-"></a></h3>
 <p>Plot stability path</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Networkfamily</span><span class="op">$</span><span class="fu">plot_stars</span><span class="op">(</span>stability <span class="op">=</span> <span class="fl">0.9</span>, log.x <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>stability</code></dt>
 <dd><p>scalar: the targeted level of stability using stability selection. Default is <code>0.9</code>.</p></dd>
 
-
-<dt><code>log.x</code></dt>
+      <dt><code>log.x</code></dt>
 <dd><p>logical: should the x-axis be represented in log-scale? Default is <code>TRUE</code>.</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="returns-2">Returns<a class="anchor" aria-label="anchor" href="#returns-2"></a></h4>
 <p>a <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot2::ggplot</a></code> graph</p>
 </div>
 
-</div><p></p><hr><a id="method-Networkfamily-plot_objective"></a><div class="section">
-<h3 id="method-plot-objective-">Method <code>plot_objective()</code><a class="anchor" aria-label="anchor" href="#method-plot-objective-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-Networkfamily-plot_objective"></a><div class="section">
+<h3 id="networkfamily-plot-objective-"><code>Networkfamily$plot_objective()</code><a class="anchor" aria-label="anchor" href="#networkfamily-plot-objective-"></a></h3>
 <p>Plot objective value of the optimization problem along the penalty path</p><div class="section">
 <h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Networkfamily</span><span class="op">$</span><span class="fu">plot_objective</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="returns-3">Returns<a class="anchor" aria-label="anchor" href="#returns-3"></a></h4>
 <p>a <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot2::ggplot</a></code> graph</p>
 </div>
 
-</div><p></p><hr><a id="method-Networkfamily-show"></a><div class="section">
-<h3 id="method-show-">Method <code>show()</code><a class="anchor" aria-label="anchor" href="#method-show-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-Networkfamily-show"></a><div class="section">
+<h3 id="networkfamily-show-"><code>Networkfamily$show()</code><a class="anchor" aria-label="anchor" href="#networkfamily-show-"></a></h3>
 <p>User friendly print method</p><div class="section">
 <h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Networkfamily</span><span class="op">$</span><span class="fu">show</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+</div>
 
-</div><p></p><hr><a id="method-Networkfamily-clone"></a><div class="section">
-<h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
+<p></p><hr><a id="method-Networkfamily-clone"></a><div class="section">
+<h3 id="networkfamily-clone-"><code>Networkfamily$clone()</code><a class="anchor" aria-label="anchor" href="#networkfamily-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
 <h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Networkfamily</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
@@ -329,6 +314,7 @@ natural direction, on the same scale as the log-likelihood.</p></dd>
 </div>
 
 </div>
+
 
     </div>
 

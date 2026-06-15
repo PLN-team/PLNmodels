@@ -20,7 +20,7 @@ See the documentation for ..."><meta property="og:image" content="https://pln-te
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -100,99 +100,99 @@ See the documentation for ...</p>
 <dd><p>number of samples</p></dd>
 
 
-<dt><code>p</code></dt>
+    <dt><code>p</code></dt>
 <dd><p>number of dimensions of the latent space</p></dd>
 
 
-<dt><code>k</code></dt>
+    <dt><code>k</code></dt>
 <dd><p>number of components</p></dd>
 
 
-<dt><code>d</code></dt>
+    <dt><code>d</code></dt>
 <dd><p>number of covariates</p></dd>
 
 
-<dt><code>components</code></dt>
+    <dt><code>components</code></dt>
 <dd><p>components of the mixture (PLNfits)</p></dd>
 
 
-<dt><code>latent</code></dt>
+    <dt><code>latent</code></dt>
 <dd><p>a matrix: values of the latent vector (Z in the model)</p></dd>
 
 
-<dt><code>latent_pos</code></dt>
+    <dt><code>latent_pos</code></dt>
 <dd><p>a matrix: values of the latent position vector (Z) without covariates effects or offset</p></dd>
 
 
-<dt><code>posteriorProb</code></dt>
+    <dt><code>posteriorProb</code></dt>
 <dd><p>matrix ofposterior probability for cluster belonging</p></dd>
 
 
-<dt><code>memberships</code></dt>
+    <dt><code>memberships</code></dt>
 <dd><p>vector for cluster index</p></dd>
 
 
-<dt><code>mixtureParam</code></dt>
+    <dt><code>mixtureParam</code></dt>
 <dd><p>vector of cluster proportions</p></dd>
 
 
-<dt><code>optim_par</code></dt>
+    <dt><code>optim_par</code></dt>
 <dd><p>a list with parameters useful for monitoring the optimization</p></dd>
 
 
-<dt><code>nb_param</code></dt>
+    <dt><code>nb_param</code></dt>
 <dd><p>number of parameters in the current PLN model</p></dd>
 
 
-<dt><code>entropy_clustering</code></dt>
+    <dt><code>entropy_clustering</code></dt>
 <dd><p>Entropy of the variational distribution of the cluster (multinomial)</p></dd>
 
 
-<dt><code>entropy_latent</code></dt>
+    <dt><code>entropy_latent</code></dt>
 <dd><p>Entropy of the variational distribution of the latent vector (Gaussian)</p></dd>
 
 
-<dt><code>entropy</code></dt>
+    <dt><code>entropy</code></dt>
 <dd><p>Full entropy of the variational distribution (latent vector + clustering)</p></dd>
 
 
-<dt><code>loglik</code></dt>
+    <dt><code>loglik</code></dt>
 <dd><p>variational lower bound of the loglikelihood</p></dd>
 
 
-<dt><code>loglik_vec</code></dt>
+    <dt><code>loglik_vec</code></dt>
 <dd><p>element-wise variational lower bound of the loglikelihood</p></dd>
 
 
-<dt><code>BIC</code></dt>
+    <dt><code>BIC</code></dt>
 <dd><p>variational lower bound of the BIC</p></dd>
 
 
-<dt><code>ICL</code></dt>
+    <dt><code>ICL</code></dt>
 <dd><p>variational lower bound of the ICL (include entropy of both the clustering and latent distributions)</p></dd>
 
 
-<dt><code>R_squared</code></dt>
+    <dt><code>R_squared</code></dt>
 <dd><p>approximated goodness-of-fit criterion</p></dd>
 
 
-<dt><code>criteria</code></dt>
+    <dt><code>criteria</code></dt>
 <dd><p>a vector with loglik, BIC, ICL, and number of parameters</p></dd>
 
 
-<dt><code>model_par</code></dt>
+    <dt><code>model_par</code></dt>
 <dd><p>a list with the matrices of parameters found in the model (Theta, Sigma, Mu and Pi)</p></dd>
 
 
-<dt><code>vcov_model</code></dt>
+    <dt><code>vcov_model</code></dt>
 <dd><p>character: the model used for the covariance (either "spherical", "diagonal" or "full")</p></dd>
 
 
-<dt><code>fitted</code></dt>
+    <dt><code>fitted</code></dt>
 <dd><p>a matrix: fitted values of the observations (A in the model)</p></dd>
 
 
-<dt><code>group_means</code></dt>
+    <dt><code>group_means</code></dt>
 <dd><p>a matrix of group mean vectors in the latent space.</p></dd>
 
 
@@ -203,8 +203,7 @@ See the documentation for ...</p>
 
 <div class="section">
 <h3 id="public-methods">Public methods<a class="anchor" aria-label="anchor" href="#public-methods"></a></h3>
-
-<ul><li><p><a href="#method-PLNmixturefit-new"><code>PLNmixturefit$new()</code></a></p></li>
+<p></p><ul><li><p><a href="#method-PLNmixturefit-initialize"><code>PLNmixturefit$new()</code></a></p></li>
 <li><p><a href="#method-PLNmixturefit-optimize"><code>PLNmixturefit$optimize()</code></a></p></li>
 <li><p><a href="#method-PLNmixturefit-predict"><code>PLNmixturefit$predict()</code></a></p></li>
 <li><p><a href="#method-PLNmixturefit-plot_clustering_data"><code>PLNmixturefit$plot_clustering_data()</code></a></p></li>
@@ -213,8 +212,8 @@ See the documentation for ...</p>
 <li><p><a href="#method-PLNmixturefit-show"><code>PLNmixturefit$show()</code></a></p></li>
 <li><p><a href="#method-PLNmixturefit-print"><code>PLNmixturefit$print()</code></a></p></li>
 <li><p><a href="#method-PLNmixturefit-clone"><code>PLNmixturefit$clone()</code></a></p></li>
-</ul></div><p></p><hr><a id="method-PLNmixturefit-new"></a><div class="section">
-<h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
+</ul></div><p></p><hr><a id="method-PLNmixturefit-initialize"></a><div class="section">
+<h3 id="plnmixturefit-new-"><code>PLNmixturefit$new()</code><a class="anchor" aria-label="anchor" href="#plnmixturefit-new-"></a></h3>
 <p>Optimize a the</p>
 
 <p>Initialize a <code>PLNmixturefit</code> model</p><div class="section">
@@ -227,67 +226,59 @@ See the documentation for ...</p>
 <span>  <span class="va">formula</span>,</span>
 <span>  <span class="va">control</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>responses</code></dt>
 <dd><p>the matrix of responses common to every models</p></dd>
 
-
-<dt><code>covariates</code></dt>
+      <dt><code>covariates</code></dt>
 <dd><p>the matrix of covariates common to every models</p></dd>
 
-
-<dt><code>offsets</code></dt>
+      <dt><code>offsets</code></dt>
 <dd><p>the matrix of offsets common to every models</p></dd>
 
-
-<dt><code>posteriorProb</code></dt>
+      <dt><code>posteriorProb</code></dt>
 <dd><p>matrix ofposterior probability for cluster belonging</p></dd>
 
-
-<dt><code>formula</code></dt>
+      <dt><code>formula</code></dt>
 <dd><p>model formula used for fitting, extracted from the formula in the upper-level call</p></dd>
 
-
-<dt><code>control</code></dt>
+      <dt><code>control</code></dt>
 <dd><p>a list for controlling the optimization.</p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-PLNmixturefit-optimize"></a><div class="section">
-<h3 id="method-optimize-">Method <code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize()</a></code><a class="anchor" aria-label="anchor" href="#method-optimize-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-PLNmixturefit-optimize"></a><div class="section">
+<h3 id="plnmixturefit-optimize-"><code>PLNmixturefit$optimize()</code><a class="anchor" aria-label="anchor" href="#plnmixturefit-optimize-"></a></h3>
 <p>Optimize a <code>PLNmixturefit</code> model</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNmixturefit</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span><span class="va">responses</span>, <span class="va">covariates</span>, <span class="va">offsets</span>, <span class="va">config</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>responses</code></dt>
 <dd><p>the matrix of responses common to every models</p></dd>
 
-
-<dt><code>covariates</code></dt>
+      <dt><code>covariates</code></dt>
 <dd><p>the matrix of covariates common to every models</p></dd>
 
-
-<dt><code>offsets</code></dt>
+      <dt><code>offsets</code></dt>
 <dd><p>the matrix of offsets common to every models</p></dd>
 
-
-<dt><code>config</code></dt>
+      <dt><code>config</code></dt>
 <dd><p>a list for controlling the optimization</p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-PLNmixturefit-predict"></a><div class="section">
-<h3 id="method-predict-">Method <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code><a class="anchor" aria-label="anchor" href="#method-predict-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-PLNmixturefit-predict"></a><div class="section">
+<h3 id="plnmixturefit-predict-"><code>PLNmixturefit$predict()</code><a class="anchor" aria-label="anchor" href="#plnmixturefit-predict-"></a></h3>
 <p>Predict group of new samples</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNmixturefit</span><span class="op">$</span><span class="fu">predict</span><span class="op">(</span></span>
@@ -297,38 +288,34 @@ See the documentation for ...</p>
 <span>  control <span class="op">=</span> <span class="fu"><a href="../reference/PLNmixture_param.html">PLNmixture_param</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>newdata</code></dt>
 <dd><p>A data frame in which to look for variables, offsets and counts with which to predict.</p></dd>
 
-
-<dt><code>type</code></dt>
+      <dt><code>type</code></dt>
 <dd><p>The type of prediction required. The default <code>posterior</code> are posterior probabilities for each group ,
 <code>response</code> is the group with maximal posterior probability and <code>latent</code> is the averaged latent coordinate (without
 offset and nor covariate effects),
 with weights equal to the posterior probabilities.</p></dd>
 
-
-<dt><code>prior</code></dt>
+      <dt><code>prior</code></dt>
 <dd><p>User-specified prior group probabilities in the new data. The default uses a uniform prior.</p></dd>
 
-
-<dt><code>control</code></dt>
+      <dt><code>control</code></dt>
 <dd><p>a list-like structure for controlling the fit. See <code><a href="PLNmixture_param.html">PLNmixture_param()</a></code> for details.</p></dd>
 
-
-<dt><code>envir</code></dt>
+      <dt><code>envir</code></dt>
 <dd><p>Environment in which the prediction is evaluated</p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-PLNmixturefit-plot_clustering_data"></a><div class="section">
-<h3 id="method-plot-clustering-data-">Method <code>plot_clustering_data()</code><a class="anchor" aria-label="anchor" href="#method-plot-clustering-data-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-PLNmixturefit-plot_clustering_data"></a><div class="section">
+<h3 id="plnmixturefit-plot-clustering-data-"><code>PLNmixturefit$plot_clustering_data()</code><a class="anchor" aria-label="anchor" href="#plnmixturefit-plot-clustering-data-"></a></h3>
 <p>Plot the matrix of expected mean counts (without offsets, without covariate effects) reordered according the inferred clustering</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNmixturefit</span><span class="op">$</span><span class="fu">plot_clustering_data</span><span class="op">(</span></span>
@@ -336,58 +323,53 @@ with weights equal to the posterior probabilities.</p></dd>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  log_scale <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>main</code></dt>
 <dd><p>character. A title for the plot.  An hopefully appropriate title will be used by default.</p></dd>
 
-
-<dt><code>plot</code></dt>
+      <dt><code>plot</code></dt>
 <dd><p>logical. Should the plot be displayed or sent back as <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot2::ggplot</a></code> object</p></dd>
 
-
-<dt><code>log_scale</code></dt>
+      <dt><code>log_scale</code></dt>
 <dd><p>logical. Should the color scale values be log-transform before plotting? Default is <code>TRUE</code>.</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="returns">Returns<a class="anchor" aria-label="anchor" href="#returns"></a></h4>
 <p>a <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot2::ggplot</a></code> graphic</p>
 </div>
 
-</div><p></p><hr><a id="method-PLNmixturefit-plot_clustering_pca"></a><div class="section">
-<h3 id="method-plot-clustering-pca-">Method <code>plot_clustering_pca()</code><a class="anchor" aria-label="anchor" href="#method-plot-clustering-pca-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-PLNmixturefit-plot_clustering_pca"></a><div class="section">
+<h3 id="plnmixturefit-plot-clustering-pca-"><code>PLNmixturefit$plot_clustering_pca()</code><a class="anchor" aria-label="anchor" href="#plnmixturefit-plot-clustering-pca-"></a></h3>
 <p>Plot the individual map of a PCA performed on the latent coordinates, where individuals are colored according to the memberships</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNmixturefit</span><span class="op">$</span><span class="fu">plot_clustering_pca</span><span class="op">(</span></span>
 <span>  main <span class="op">=</span> <span class="st">"Clustering labels in Individual Factor Map"</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>main</code></dt>
 <dd><p>character. A title for the plot. An hopefully appropriate title will be used by default.</p></dd>
 
-
-<dt><code>plot</code></dt>
+      <dt><code>plot</code></dt>
 <dd><p>logical. Should the plot be displayed or sent back as <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot2::ggplot</a></code> object</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="returns-1">Returns<a class="anchor" aria-label="anchor" href="#returns-1"></a></h4>
 <p>a <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot2::ggplot</a></code> graphic</p>
 </div>
 
-</div><p></p><hr><a id="method-PLNmixturefit-postTreatment"></a><div class="section">
-<h3 id="method-posttreatment-">Method <code>postTreatment()</code><a class="anchor" aria-label="anchor" href="#method-posttreatment-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-PLNmixturefit-postTreatment"></a><div class="section">
+<h3 id="plnmixturefit-posttreatment-"><code>PLNmixturefit$postTreatment()</code><a class="anchor" aria-label="anchor" href="#plnmixturefit-posttreatment-"></a></h3>
 <p>Update fields after optimization</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNmixturefit</span><span class="op">$</span><span class="fu">postTreatment</span><span class="op">(</span></span>
@@ -399,65 +381,59 @@ with weights equal to the posterior probabilities.</p></dd>
 <span>  <span class="va">config_optim</span>,</span>
 <span>  <span class="va">nullModel</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>responses</code></dt>
 <dd><p>the matrix of responses common to every models</p></dd>
 
-
-<dt><code>covariates</code></dt>
+      <dt><code>covariates</code></dt>
 <dd><p>the matrix of covariates common to every models</p></dd>
 
-
-<dt><code>offsets</code></dt>
+      <dt><code>offsets</code></dt>
 <dd><p>the matrix of offsets common to every models</p></dd>
 
-
-<dt><code>weights</code></dt>
+      <dt><code>weights</code></dt>
 <dd><p>an optional vector of observation weights to be used in the fitting process.</p></dd>
 
-
-<dt><code>config_post</code></dt>
+      <dt><code>config_post</code></dt>
 <dd><p>a list for controlling the post-treatment</p></dd>
 
-
-<dt><code>config_optim</code></dt>
+      <dt><code>config_optim</code></dt>
 <dd><p>a list for controlling the optimization during the post-treatment computations</p></dd>
 
-
-<dt><code>nullModel</code></dt>
+      <dt><code>nullModel</code></dt>
 <dd><p>null model used for approximate R2 computations. Defaults to a GLM model with same design matrix but not latent variable.</p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-PLNmixturefit-show"></a><div class="section">
-<h3 id="method-show-">Method <code>show()</code><a class="anchor" aria-label="anchor" href="#method-show-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-PLNmixturefit-show"></a><div class="section">
+<h3 id="plnmixturefit-show-"><code>PLNmixturefit$show()</code><a class="anchor" aria-label="anchor" href="#plnmixturefit-show-"></a></h3>
 <p>User friendly print method</p><div class="section">
 <h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNmixturefit</span><span class="op">$</span><span class="fu">show</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+</div>
 
-</div><p></p><hr><a id="method-PLNmixturefit-print"></a><div class="section">
-<h3 id="method-print-">Method <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code><a class="anchor" aria-label="anchor" href="#method-print-"></a></h3>
+<p></p><hr><a id="method-PLNmixturefit-print"></a><div class="section">
+<h3 id="plnmixturefit-print-"><code>PLNmixturefit$print()</code><a class="anchor" aria-label="anchor" href="#plnmixturefit-print-"></a></h3>
 <p>User friendly print method</p><div class="section">
 <h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNmixturefit</span><span class="op">$</span><span class="fu">print</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+</div>
 
-</div><p></p><hr><a id="method-PLNmixturefit-clone"></a><div class="section">
-<h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
+<p></p><hr><a id="method-PLNmixturefit-clone"></a><div class="section">
+<h3 id="plnmixturefit-clone-"><code>PLNmixturefit$clone()</code><a class="anchor" aria-label="anchor" href="#plnmixturefit-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
 <h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PLNmixturefit</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
@@ -467,6 +443,7 @@ with weights equal to the posterior probabilities.</p></dd>
 </div>
 
 </div>
+
 
     </div>
 

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -79,12 +79,23 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="1.2.2-9100" id="plnmodels-122-9100">PLNmodels 1.2.2-9100<a class="anchor" aria-label="anchor" href="#plnmodels-122-9100"></a></h2>
+<h2 class="page-header" data-toc-text="1.3.0" id="plnmodels-130">PLNmodels 1.3.0<a class="anchor" aria-label="anchor" href="#plnmodels-130"></a></h2>
+<div class="section level3">
+<h3 id="new-backends-and-optimizers-1-3-0">New backends and optimizers<a class="anchor" aria-label="anchor" href="#new-backends-and-optimizers-1-3-0"></a></h3>
+<ul><li><p><strong>New built-in Newton optimizer</strong> (<code>backend = "builtin"</code>) for PLN, ZIPLN and PLNPCA, now the default for PLN and ZIPLN. Uses envelope-theorem Newton steps with strong Wolfe line search; does not depend on NLOPT. Substantially faster and more accurate than nlopt on large datasets with full covariance (e.g. +30 000 loglik on microcosm, p=259).</p></li>
+<li><p><strong>Fix critical convergence bug</strong> in PLN/PLNPCA with nlopt: premature termination due to ill-conditioned X scaling triggered the XTOL stopping criterion after very few iterations (e.g. 14 iter on barents, loglik -8520 instead of -4400). The built-in backend is immune to this bug; nlopt is also fixed via better parameter scaling.</p></li>
+<li><p><strong>ZIPLN joint VE step</strong> (<code>backend = "builtin"</code>): variational parameters (M, ψ, R) are now optimised jointly in a single Newton step per EM iteration, instead of sequentially. Gains up to +666 loglik on oaks compared to the nlopt sequential approach.</p></li>
+<li><p><strong>PLNPCA warm-start and shared SVD init</strong>: the collection of PLNPCA models now shares a single SVD initialisation computed once from a fast LM (<code>init_method = "LM"</code>, default). A pre-fitted PLNfit can be supplied via <code>inception = PLN(...)</code> to improve convergence for large ranks (e.g. rank &gt; <code>sqrt(p)</code>); see <code><a href="../reference/PLNPCA_param.html">?PLNPCA_param</a></code> for details.</p></li>
+<li><p><strong>torch backend marked experimental</strong>: the torch backend is now clearly documented as experimental. It emits a message on use and is not recommended for PLNPCA (systematically lower loglik than nlopt/builtin). It remains available for PLN on diagonal/spherical covariance where it can be faster.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="other-changes-1-3-0">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-1-3-0"></a></h3>
 <ul><li>various fix in ZIPLN model (prediction and initialization <a href="https://github.com/pln-team/PLNmodels/issues/146" class="external-link">#146</a>, <a href="https://github.com/pln-team/PLNmodels/issues/149" class="external-link">#149</a>, <a href="https://github.com/pln-team/PLNmodels/issues/150" class="external-link">#150</a>, <a href="https://github.com/pln-team/PLNmodels/issues/152" class="external-link">#152</a>)</li>
 <li>microcosm data now included (<a href="https://github.com/pln-team/PLNmodels/issues/153" class="external-link">#153</a>, <a href="https://github.com/pln-team/PLNmodels/issues/154" class="external-link">#154</a>)</li>
 <li>add AIC for PLN and ZIPLN classes (<a href="https://github.com/pln-team/PLNmodels/issues/151" class="external-link">#151</a>)</li>
 <li>other fixes (<a href="https://github.com/pln-team/PLNmodels/issues/155" class="external-link">#155</a>)</li>
 </ul></div>
+</div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="1.2.2" id="plnmodels-122-2025-03-21">PLNmodels 1.2.2 (2025-03-21)<small>2025-03-21</small><a class="anchor" aria-label="anchor" href="#plnmodels-122-2025-03-21"></a></h2>
 <ul><li>fix for <a href="https://github.com/pln-team/PLNmodels/issues/143" class="external-link">#143</a> (remove LBFGS_NOCEDAL variant from the possible algorithms)</li>

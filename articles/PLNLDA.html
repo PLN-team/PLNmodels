@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -102,7 +102,7 @@
 table with the Poisson discriminant Analysis</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2026-04-10</h4>
+            <h4 data-toc-skip class="date">2026-06-15</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/PLNLDA.Rmd" class="external-link"><code>vignettes/PLNLDA.Rmd</code></a></small>
       <div class="hidden name"><code>PLNLDA.Rmd</code></div>
@@ -232,7 +232,7 @@ vectors of latent variables
 and a discrete structure with
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>
 groups in the following way:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">group structure </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>𝛍</mi><mi>i</mi></msub><mo>=</mo><msub><mi>μ</mi><msub><mi>g</mi><mi>i</mi></msub></msub></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>g</mi><mi>i</mi></msub><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>K</mi><mo stretchy="false" form="postfix">}</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">latent space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>𝐙</mi><mi>i</mi></msub><mspace width="1.0em"></mspace><mtext mathvariant="normal">indep.</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>𝐙</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒩</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝛍</mi><mi>i</mi></msub><mo>,</mo><mi>𝚺</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="center" style="text-align: center"></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">observation space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mspace width="1.0em"></mspace><mtext mathvariant="normal">indep.</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>∼</mo><mi>𝒫</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>exp</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="postfix">}</mo><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{equation} 
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">group structure </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>𝛍</mi><mi>i</mi></msub><mo>=</mo><msub><mi>μ</mi><msub><mi>g</mi><mi>i</mi></msub></msub></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>g</mi><mi>i</mi></msub><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>K</mi><mo stretchy="false" form="postfix">}</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">latent space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>𝐙</mi><mi>i</mi></msub><mspace width="1.0em"></mspace><mtext mathvariant="normal">indep.</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>𝐙</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒩</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>𝛍</mi><mi>i</mi></msub><mo>,</mo><mi>𝚺</mi><mo stretchy="false" form="postfix">)</mo></mtd><mtd columnalign="center" style="text-align: center"></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">observation space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mspace width="1.0em"></mspace><mtext mathvariant="normal">indep.</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>∼</mo><mi>𝒫</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi mathvariant="normal">exp</mi><mo stretchy="false" form="prefix">{</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="postfix">}</mo><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{equation} 
   \begin{array}{rcl}
     \text{group structure }   &amp; \mathbf{\mu}_i = \mu_{g_i} &amp; g_i \in \{1, \dots, K\}  \\
     \text{latent space }   &amp; \mathbf{Z}_i \quad \text{indep.} &amp; \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu}_i, \boldsymbol{\Sigma})  &amp; \\
@@ -249,7 +249,7 @@ corresponds to the group-specific main effects and the variance matrix
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝚺</mi><annotation encoding="application/x-tex">\boldsymbol{\Sigma}</annotation></semantics></math>
 is shared among groups. An equivalent way of writing this model is the
 following:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">latent space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>𝐙</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒩</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝛍</mi><mi>i</mi></msub><mo>,</mo><mi>𝚺</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>𝛍</mi><mi>i</mi></msub><mo>=</mo><msubsup><mi>𝐠</mi><mi>i</mi><mi>⊤</mi></msubsup><mi>𝐌</mi></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">observation space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mspace width="1.0em"></mspace><mtext mathvariant="normal">indep.</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>∼</mo><mi>𝒫</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>exp</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="postfix">}</mo><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{equation} 
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">latent space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>𝐙</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒩</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>𝛍</mi><mi>i</mi></msub><mo>,</mo><mi>𝚺</mi><mo stretchy="false" form="postfix">)</mo></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>𝛍</mi><mi>i</mi></msub><mo>=</mo><msubsup><mi>𝐠</mi><mi>i</mi><mi>⊤</mi></msubsup><mi>𝐌</mi></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mrow><mtext mathvariant="normal">observation space </mtext><mspace width="0.333em"></mspace></mrow></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mspace width="1.0em"></mspace><mtext mathvariant="normal">indep.</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>∼</mo><mi>𝒫</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi mathvariant="normal">exp</mi><mo stretchy="false" form="prefix">{</mo><msub><mi>Z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="postfix">}</mo><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{equation} 
   \begin{array}{rcl}
   \text{latent space } &amp;   \mathbf{Z}_i \sim \mathcal{N}({\boldsymbol\mu}_i,\boldsymbol\Sigma) &amp; \boldsymbol{\mu}_i = \mathbf{g}_i^\top \mathbf{M} \\
   \text{observation space } &amp;  Y_{ij} | Z_{ij} \quad \text{indep.} &amp; Y_{ij} | Z_{ij} \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right),
@@ -261,7 +261,7 @@ is a group-indicator vector of length
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>g</mi><mrow><mi>i</mi><mi>k</mi></mrow></msub><mo>=</mo><mn>1</mn><mo>⇔</mo><msub><mi>g</mi><mi>i</mi></msub><mo>=</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">g_{ik} = 1 \Leftrightarrow g_i = k</annotation></semantics></math>)
 and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝐌</mi><mo>=</mo><msup><mrow><mo stretchy="true" form="prefix">[</mo><msubsup><mi>𝛍</mi><mn>1</mn><mi>⊤</mi></msubsup><mo>,</mo><mi>…</mi><mo>,</mo><msubsup><mi>𝛍</mi><mi>K</mi><mi>⊤</mi></msubsup><mo stretchy="true" form="postfix">]</mo></mrow><mi>⊤</mi></msup></mrow><annotation encoding="application/x-tex">\mathbf{M} = [\boldsymbol{\mu}_1^\top, \dots, \boldsymbol{\mu}_K^\top]^\top</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝐌</mi><mo>=</mo><mo stretchy="false" form="prefix">[</mo><msubsup><mi>𝛍</mi><mn>1</mn><mi>⊤</mi></msubsup><mo>,</mo><mi>…</mi><mo>,</mo><msubsup><mi>𝛍</mi><mi>K</mi><mi>⊤</mi></msubsup><msup><mo stretchy="false" form="postfix">]</mo><mi>⊤</mi></msup></mrow><annotation encoding="application/x-tex">\mathbf{M} = [\boldsymbol{\mu}_1^\top, \dots, \boldsymbol{\mu}_K^\top]^\top</annotation></semantics></math>
 is a
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>×</mo><mi>p</mi></mrow><annotation encoding="application/x-tex">K \times p</annotation></semantics></math>
 matrix collecting the group-specific main effects.</p>
@@ -281,7 +281,7 @@ of
 offsets in sample
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>.
 The latent layer then reads
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝐙</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒩</mi><mrow><mo stretchy="true" form="prefix">(</mo><mrow><msub><mi>𝐨</mi><mi>i</mi></msub><mo>+</mo><msubsup><mi>𝐠</mi><mi>i</mi><mi>⊤</mi></msubsup><mi>𝐌</mi><mo>+</mo><msubsup><mi>𝐱</mi><mi>i</mi><mi>⊤</mi></msubsup><mi>𝐁</mi></mrow><mo>,</mo><mi>𝚺</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\begin{equation} 
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝐙</mi><mi>i</mi></msub><mo>∼</mo><mi>𝒩</mi><mo stretchy="false" form="prefix">(</mo><mrow><msub><mi>𝐨</mi><mi>i</mi></msub><mo>+</mo><msubsup><mi>𝐠</mi><mi>i</mi><mi>⊤</mi></msubsup><mi>𝐌</mi><mo>+</mo><msubsup><mi>𝐱</mi><mi>i</mi><mi>⊤</mi></msubsup><mi>𝐁</mi></mrow><mo>,</mo><mi>𝚺</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\begin{equation} 
   \mathbf{Z}_i \sim \mathcal{N}({\mathbf{o}_i + \mathbf{g}_i^\top \mathbf{M} + \mathbf{x}_i^\top\mathbf{B}},\boldsymbol\Sigma)
 \end{equation}</annotation></semantics></math> where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐁</mi><annotation encoding="application/x-tex">\mathbf{B}</annotation></semantics></math>
@@ -306,24 +306,24 @@ and covariates
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>𝐁</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat{\mathbf{B}}</annotation></semantics></math>,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>𝐌</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat{\mathbf{M}}</annotation></semantics></math>
 and group counts
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>n</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>n</mi><mi>K</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(n_1, \dots, n_K)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>n</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>n</mi><mi>K</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(n_1, \dots, n_K)</annotation></semantics></math>
 </li>
 </ul>
 <p>We can predict the observation’s group using Bayes rule as follows:
 for
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>∈</mo><mrow><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>K</mi></mrow></mrow><annotation encoding="application/x-tex">k \in {1, \dots, K}</annotation></semantics></math>,
 compute
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>f</mi><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="false" form="prefix">|</mo><mi>𝐠</mi><mo>=</mo><mi>k</mi><mo>,</mo><mi>𝐨</mi><mo>,</mo><mi>𝐱</mi><mo>,</mo><mover><mi>𝐁</mi><mo accent="true">̂</mo></mover><mo>,</mo><mover><mi>𝚺</mi><mo accent="true">̂</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mi>𝚽</mi><mrow><mi>P</mi><mi>L</mi><mi>N</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐘</mi><mo>;</mo><mi>𝐨</mi><mo>+</mo><msub><mi>𝛍</mi><mi>k</mi></msub><mo>+</mo><msup><mi>𝐱</mi><mi>⊤</mi></msup><mover><mi>𝐁</mi><mo accent="true">̂</mo></mover><mo>,</mo><mover><mi>𝚺</mi><mo accent="true">̂</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>p</mi><mi>k</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><msub><mi>n</mi><mi>k</mi></msub><mrow><munderover><mo>∑</mo><mrow><mi>k</mi><mi>′</mi><mo>=</mo><mn>1</mn></mrow><mi>K</mi></munderover><msub><mi>n</mi><mrow><mi>k</mi><mi>′</mi></mrow></msub></mrow></mfrac></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{equation}
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"><msub><mi>f</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="false" form="postfix">)</mo></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mo>=</mo><mi>p</mi><mo stretchy="false" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="false" form="prefix">|</mo><mi>𝐠</mi><mo>=</mo><mi>k</mi><mo>,</mo><mi>𝐨</mi><mo>,</mo><mi>𝐱</mi><mo>,</mo><mover><mi>𝐁</mi><mo accent="true">̂</mo></mover><mo>,</mo><mover><mi>𝚺</mi><mo accent="true">̂</mo></mover><mo stretchy="false" form="postfix">)</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mo>=</mo><msub><mi>𝚽</mi><mrow><mi>P</mi><mi>L</mi><mi>N</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>𝐘</mi><mo>;</mo><mi>𝐨</mi><mo>+</mo><msub><mi>𝛍</mi><mi>k</mi></msub><mo>+</mo><msup><mi>𝐱</mi><mi>⊤</mi></msup><mover><mi>𝐁</mi><mo accent="true">̂</mo></mover><mo>,</mo><mover><mi>𝚺</mi><mo accent="true">̂</mo></mover><mo stretchy="false" form="postfix">)</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"><msub><mi>p</mi><mi>k</mi></msub></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mo>=</mo><mfrac><msub><mi>n</mi><mi>k</mi></msub><mrow><munderover><mo>∑</mo><mrow><msup><mi>k</mi><mo>′</mo></msup><mo>=</mo><mn>1</mn></mrow><mi>K</mi></munderover><msub><mi>n</mi><msup><mi>k</mi><mo>′</mo></msup></msub></mrow></mfrac></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{equation}
 \begin{aligned}
 f_k(\mathbf{Y}) &amp; = p(\mathbf{Y} | \mathbf{g} = k, \mathbf{o}, \mathbf{x}, \hat{\mathbf{B}}, \hat{\boldsymbol{\Sigma}}) \\
                 &amp; = \boldsymbol{\Phi}_{PLN}(\mathbf{Y}; \mathbf{o} + \boldsymbol{\mu}_k + \mathbf{x}^\top \hat{\mathbf{B}}, \hat{\boldsymbol{\Sigma}}) \\
 p_k             &amp; = \frac{n_k}{\sum_{k' = 1}^K n_{k'}}    
 \end{aligned}
 \end{equation}</annotation></semantics></math> where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝚽</mi><mrow><mi>P</mi><mi>L</mi><mi>N</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mo>•</mo><mo>;</mo><mi>𝛍</mi><mo>,</mo><mi>𝚺</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\boldsymbol{\Phi}_{PLN}(\bullet; \boldsymbol{\mu}, \boldsymbol{\Sigma})</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝚽</mi><mrow><mi>P</mi><mi>L</mi><mi>N</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>•</mi><mo>;</mo><mi>𝛍</mi><mo>,</mo><mi>𝚺</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\boldsymbol{\Phi}_{PLN}(\bullet; \boldsymbol{\mu}, \boldsymbol{\Sigma})</annotation></semantics></math>
 is the density function of a PLN distribution with parameters
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝛍</mi><mo>,</mo><mi>𝚺</mi><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(\boldsymbol{\mu}, \boldsymbol{\Sigma})</annotation></semantics></math>.
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>f</mi><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">f_k(\mathbf{Y})</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>𝛍</mi><mo>,</mo><mi>𝚺</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(\boldsymbol{\mu}, \boldsymbol{\Sigma})</annotation></semantics></math>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>f</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">f_k(\mathbf{Y})</annotation></semantics></math>
 and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>k</mi></msub><annotation encoding="application/x-tex">p_k</annotation></semantics></math>
 are respectively plug-in estimates of (i) the probability of observing
@@ -334,15 +334,15 @@ in a sample from group
 and (ii) the probability that a sample originates from group
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>.</p>
 <p>The posterior probability
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>π</mi><mo accent="true">̂</mo></mover><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\hat{\pi}_k(\mathbf{Y})</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>π</mi><mo accent="true">̂</mo></mover><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat{\pi}_k(\mathbf{Y})</annotation></semantics></math>
 that observation
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐘</mi><annotation encoding="application/x-tex">\mathbf{Y}</annotation></semantics></math>
 belongs to group
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
 and most likely group
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>k</mi><mo accent="true">̂</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\hat{k}(\mathbf{Y})</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>k</mi><mo accent="true">̂</mo></mover><mo stretchy="false" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat{k}(\mathbf{Y})</annotation></semantics></math>
 can thus be defined as
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mover><mi>π</mi><mo accent="true">̂</mo></mover><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mrow><msub><mi>p</mi><mi>k</mi></msub><msub><mi>f</mi><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><munderover><mo>∑</mo><mrow><mi>k</mi><mi>′</mi><mo>=</mo><mn>1</mn></mrow><mi>K</mi></munderover><msub><mi>p</mi><mrow><mi>k</mi><mi>′</mi></mrow></msub><msub><mi>f</mi><mrow><mi>k</mi><mi>′</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mover><mi>k</mi><mo accent="true">̂</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><munder><mrow><mo>arg</mo><mo>max</mo></mrow><mrow><mi>k</mi><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>K</mi><mo stretchy="false" form="postfix">}</mo></mrow></munder><msub><mover><mi>π</mi><mo accent="true">̂</mo></mover><mi>k</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{equation}
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"><msub><mover><mi>π</mi><mo accent="true">̂</mo></mover><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="false" form="postfix">)</mo></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mo>=</mo><mfrac><mrow><msub><mi>p</mi><mi>k</mi></msub><msub><mi>f</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="false" form="postfix">)</mo></mrow><mrow><munderover><mo>∑</mo><mrow><msup><mi>k</mi><mo>′</mo></msup><mo>=</mo><mn>1</mn></mrow><mi>K</mi></munderover><msub><mi>p</mi><msup><mi>k</mi><mo>′</mo></msup></msub><msub><mi>f</mi><msup><mi>k</mi><mo>′</mo></msup></msub><mo stretchy="false" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="false" form="postfix">)</mo></mrow></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"><mover><mi>k</mi><mo accent="true">̂</mo></mover><mo stretchy="false" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="false" form="postfix">)</mo></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mo>=</mo><munder><mrow><mrow><mi mathvariant="normal">arg</mi><mo>⁡</mo></mrow><mi mathvariant="normal">max</mi></mrow><mrow><mi>k</mi><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>K</mi><mo stretchy="false" form="postfix">}</mo></mrow></munder><msub><mover><mi>π</mi><mo accent="true">̂</mo></mover><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>𝐘</mi><mo stretchy="false" form="postfix">)</mo></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{equation}
 \begin{aligned}
 \hat{\pi}_k(\mathbf{Y}) &amp; = \frac{p_k f_k(\mathbf{Y})}{\sum_{k' = 1}^K p_{k'} f_{k'}(\mathbf{Y})} \\
 \hat{k}(\mathbf{Y})     &amp; = \underset{k \in \{1, \dots, K\}}{\arg\max} \hat{\pi}_k(\mathbf{Y})
@@ -363,7 +363,7 @@ and the covariance matrix
 Technically speaking, we can treat
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐠</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\mathbf{g}_i</annotation></semantics></math>
 as a discrete covariate and estimate
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mi>𝐌</mi><mo>,</mo><mi>𝐁</mi><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[\mathbf{M}, \mathbf{B}]</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">[</mo><mi>𝐌</mi><mo>,</mo><mi>𝐁</mi><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[\mathbf{M}, \mathbf{B}]</annotation></semantics></math>
 using the same strategy as for the standard <strong>PLN</strong> model.
 Briefly, we adopt a variational strategy to approximate the
 log-likelihood function and optimize the consecutive variational
@@ -414,7 +414,7 @@ brief summary of the estimation process and available methods:</p>
 <pre><code><span><span class="co">## Linear Discriminant Analysis for Poisson Lognormal distribution</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">##  nb_param   loglik       BIC       AIC       ICL</span></span>
-<span><span class="co">##       357 -799.922 -1494.612 -1156.922 -1130.593</span></span>
+<span><span class="co">##       357 -801.148 -1495.838 -1158.148 -1367.163</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">## * Useful fields</span></span>
 <span><span class="co">##     $model_par, $latent, $latent_pos, $var_par, $optim_par</span></span>
@@ -492,60 +492,60 @@ matrix of group means
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">-23.17</td>
-<td align="right">-6.82</td>
-<td align="right">-22.73</td>
-<td align="right">-21.56</td>
-<td align="right">-24.51</td>
-<td align="right">-25.09</td>
-<td align="right">-23.40</td>
-<td align="right">-22.55</td>
-<td align="right">-22.62</td>
-<td align="right">-5.65</td>
-<td align="right">-3.47</td>
-<td align="right">-21.55</td>
+<td align="right">-10.59</td>
+<td align="right">-6.83</td>
+<td align="right">-11.27</td>
+<td align="right">-10.36</td>
+<td align="right">-12.70</td>
+<td align="right">-15.25</td>
+<td align="right">-12.38</td>
+<td align="right">-11.31</td>
+<td align="right">-11.13</td>
+<td align="right">-5.71</td>
+<td align="right">-3.51</td>
+<td align="right">-11.70</td>
 </tr>
 <tr class="even">
-<td align="right">-23.14</td>
-<td align="right">-23.89</td>
-<td align="right">-5.67</td>
-<td align="right">-21.53</td>
-<td align="right">-7.44</td>
-<td align="right">-25.07</td>
-<td align="right">-23.38</td>
-<td align="right">-22.53</td>
-<td align="right">-22.60</td>
-<td align="right">-22.67</td>
-<td align="right">-20.50</td>
-<td align="right">-4.47</td>
+<td align="right">-10.45</td>
+<td align="right">-12.01</td>
+<td align="right">-5.71</td>
+<td align="right">-10.24</td>
+<td align="right">-7.48</td>
+<td align="right">-15.12</td>
+<td align="right">-12.25</td>
+<td align="right">-11.17</td>
+<td align="right">-11.00</td>
+<td align="right">-11.26</td>
+<td align="right">-10.55</td>
+<td align="right">-4.50</td>
 </tr>
 <tr class="odd">
 <td align="right">-2.38</td>
 <td align="right">-3.96</td>
 <td align="right">-2.36</td>
 <td align="right">-2.92</td>
-<td align="right">-6.51</td>
-<td align="right">-5.54</td>
+<td align="right">-6.50</td>
+<td align="right">-5.55</td>
 <td align="right">-2.69</td>
 <td align="right">-2.03</td>
 <td align="right">-2.70</td>
 <td align="right">-2.65</td>
-<td align="right">-20.61</td>
+<td align="right">-10.23</td>
 <td align="right">-3.85</td>
 </tr>
 <tr class="even">
-<td align="right">-23.16</td>
-<td align="right">-23.91</td>
-<td align="right">-5.69</td>
-<td align="right">-4.52</td>
-<td align="right">-24.44</td>
-<td align="right">-25.13</td>
-<td align="right">-23.42</td>
-<td align="right">-5.52</td>
-<td align="right">-5.59</td>
-<td align="right">-4.91</td>
-<td align="right">-20.57</td>
-<td align="right">-21.59</td>
+<td align="right">-10.58</td>
+<td align="right">-12.16</td>
+<td align="right">-5.71</td>
+<td align="right">-4.54</td>
+<td align="right">-12.62</td>
+<td align="right">-15.27</td>
+<td align="right">-12.39</td>
+<td align="right">-5.54</td>
+<td align="right">-5.62</td>
+<td align="right">-4.92</td>
+<td align="right">-10.70</td>
+<td align="right">-11.73</td>
 </tr>
 <tr class="odd">
 <td align="right">-0.28</td>
@@ -558,22 +558,22 @@ matrix of group means
 <td align="right">-0.80</td>
 <td align="right">-0.39</td>
 <td align="right">-0.45</td>
-<td align="right">-0.61</td>
+<td align="right">-0.60</td>
 <td align="right">-1.16</td>
 </tr>
 <tr class="even">
 <td align="right">-4.00</td>
 <td align="right">-3.32</td>
-<td align="right">-2.93</td>
-<td align="right">-4.47</td>
-<td align="right">-6.72</td>
+<td align="right">-2.94</td>
+<td align="right">-4.48</td>
+<td align="right">-6.74</td>
 <td align="right">-8.00</td>
 <td align="right">-2.85</td>
 <td align="right">-3.06</td>
-<td align="right">-5.53</td>
+<td align="right">-5.55</td>
 <td align="right">-3.99</td>
-<td align="right">-20.48</td>
-<td align="right">-21.50</td>
+<td align="right">-10.28</td>
+<td align="right">-11.30</td>
 </tr>
 </tbody>
 </table>
@@ -594,23 +594,23 @@ there are 4 or more groups and uses special representations for the edge
 cases of 3 or less groups.</p>
 <p><code>ggplot2</code>-savvy users who want to make their own
 representations can extracts the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>×</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>K</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">n \times (K-1)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>×</mo><mo stretchy="false" form="prefix">(</mo><mi>K</mi><mo>−</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">n \times (K-1)</annotation></semantics></math>
 matrix of sample scores from the <code>PLNLDAfit</code> object …</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myLDA_nocov</span><span class="op">$</span><span class="va">scores</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="va">head</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<table style="width:100%;" class="table">
+<table class="table">
 <colgroup>
+<col width="10%">
+<col width="12%">
+<col width="10%">
 <col width="8%">
-<col width="10%">
-<col width="10%">
-<col width="10%">
-<col width="9%">
 <col width="8%">
 <col width="8%">
 <col width="8%">
 <col width="7%">
-<col width="6%">
+<col width="7%">
 <col width="8%">
+<col width="7%">
 </colgroup>
 <thead><tr class="header">
 <th align="right">LD1</th>
@@ -627,87 +627,87 @@ matrix of sample scores from the <code>PLNLDAfit</code> object …</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">2111790</td>
-<td align="right">-543161.8</td>
-<td align="right">-44869.95</td>
-<td align="right">-51647.92</td>
-<td align="right">12674.79</td>
-<td align="right">5160.69</td>
-<td align="right">1154.56</td>
-<td align="right">-125.49</td>
-<td align="right">106.80</td>
-<td align="right">5.02</td>
-<td align="right">-103.11</td>
+<td align="right">6774.10</td>
+<td align="right">-36312.66</td>
+<td align="right">1973.10</td>
+<td align="right">177.15</td>
+<td align="right">184.98</td>
+<td align="right">-54.85</td>
+<td align="right">-60.31</td>
+<td align="right">23.20</td>
+<td align="right">33.69</td>
+<td align="right">-15.48</td>
+<td align="right">-6.76</td>
 </tr>
 <tr class="even">
-<td align="right">2113552</td>
-<td align="right">-540783.3</td>
-<td align="right">-45073.03</td>
-<td align="right">-51992.69</td>
-<td align="right">12587.97</td>
-<td align="right">5185.30</td>
-<td align="right">1184.00</td>
-<td align="right">-140.98</td>
-<td align="right">102.67</td>
-<td align="right">6.21</td>
-<td align="right">-104.01</td>
+<td align="right">6868.61</td>
+<td align="right">-36289.61</td>
+<td align="right">2008.51</td>
+<td align="right">169.61</td>
+<td align="right">176.56</td>
+<td align="right">-62.13</td>
+<td align="right">-61.18</td>
+<td align="right">19.13</td>
+<td align="right">34.54</td>
+<td align="right">-14.96</td>
+<td align="right">-6.77</td>
 </tr>
 <tr class="odd">
-<td align="right">2130641</td>
-<td align="right">-518421.5</td>
-<td align="right">-47449.75</td>
-<td align="right">-54296.94</td>
-<td align="right">11863.20</td>
-<td align="right">5060.39</td>
-<td align="right">1056.73</td>
-<td align="right">-167.13</td>
-<td align="right">117.74</td>
-<td align="right">9.89</td>
-<td align="right">-98.10</td>
+<td align="right">8073.08</td>
+<td align="right">-36020.55</td>
+<td align="right">2193.70</td>
+<td align="right">105.02</td>
+<td align="right">114.75</td>
+<td align="right">-60.34</td>
+<td align="right">-57.73</td>
+<td align="right">14.89</td>
+<td align="right">29.74</td>
+<td align="right">-13.79</td>
+<td align="right">-5.91</td>
 </tr>
 <tr class="even">
-<td align="right">2149778</td>
-<td align="right">-493020.1</td>
-<td align="right">-50108.04</td>
-<td align="right">-56776.14</td>
-<td align="right">11076.56</td>
-<td align="right">4830.33</td>
-<td align="right">791.95</td>
-<td align="right">-145.07</td>
-<td align="right">140.21</td>
-<td align="right">11.90</td>
-<td align="right">-90.75</td>
+<td align="right">9438.27</td>
+<td align="right">-35686.07</td>
+<td align="right">2392.75</td>
+<td align="right">30.45</td>
+<td align="right">53.46</td>
+<td align="right">-41.90</td>
+<td align="right">-55.44</td>
+<td align="right">21.02</td>
+<td align="right">23.70</td>
+<td align="right">-13.10</td>
+<td align="right">-4.83</td>
 </tr>
 <tr class="odd">
-<td align="right">2138640</td>
-<td align="right">-507664.1</td>
-<td align="right">-48546.40</td>
-<td align="right">-55301.02</td>
-<td align="right">11551.42</td>
-<td align="right">4922.17</td>
-<td align="right">895.27</td>
-<td align="right">-132.44</td>
-<td align="right">129.43</td>
-<td align="right">10.16</td>
-<td align="right">-94.64</td>
+<td align="right">8644.72</td>
+<td align="right">-35866.64</td>
+<td align="right">2278.05</td>
+<td align="right">73.65</td>
+<td align="right">93.87</td>
+<td align="right">-45.00</td>
+<td align="right">-58.25</td>
+<td align="right">21.04</td>
+<td align="right">26.72</td>
+<td align="right">-13.68</td>
+<td align="right">-5.32</td>
 </tr>
 <tr class="even">
-<td align="right">2124537</td>
-<td align="right">-526288.9</td>
-<td align="right">-46591.43</td>
-<td align="right">-53449.09</td>
-<td align="right">12132.43</td>
-<td align="right">5069.43</td>
-<td align="right">1055.04</td>
-<td align="right">-137.01</td>
-<td align="right">114.55</td>
-<td align="right">7.75</td>
-<td align="right">-99.93</td>
+<td align="right">7646.93</td>
+<td align="right">-36105.41</td>
+<td align="right">2128.35</td>
+<td align="right">126.46</td>
+<td align="right">139.76</td>
+<td align="right">-54.46</td>
+<td align="right">-59.79</td>
+<td align="right">20.56</td>
+<td align="right">31.17</td>
+<td align="right">-14.45</td>
+<td align="right">-6.15</td>
 </tr>
 </tbody>
 </table>
 <p>…or the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>×</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>K</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">p \times (K-1)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>×</mo><mo stretchy="false" form="prefix">(</mo><mi>K</mi><mo>−</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">p \times (K-1)</annotation></semantics></math>
 matrix of correlations between scores and (latent) variables</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myLDA_nocov</span><span class="op">$</span><span class="va">corr_map</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="va">head</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
@@ -743,87 +743,87 @@ matrix of correlations between scores and (latent) variables</p>
 <tbody>
 <tr class="odd">
 <td align="left">Che</td>
-<td align="right">-0.34</td>
-<td align="right">-0.12</td>
-<td align="right">-0.35</td>
-<td align="right">0.24</td>
-<td align="right">-0.66</td>
-<td align="right">-0.20</td>
-<td align="right">0.31</td>
-<td align="right">-0.22</td>
-<td align="right">0.84</td>
-<td align="right">-0.44</td>
-<td align="right">0.03</td>
+<td align="right">-0.33</td>
+<td align="right">0.07</td>
+<td align="right">-0.15</td>
+<td align="right">-0.37</td>
+<td align="right">-0.60</td>
+<td align="right">0.20</td>
+<td align="right">-0.08</td>
+<td align="right">-0.37</td>
+<td align="right">-0.25</td>
+<td align="right">-0.75</td>
+<td align="right">-0.19</td>
 </tr>
 <tr class="even">
 <td align="left">Hyc</td>
-<td align="right">0.07</td>
-<td align="right">0.60</td>
-<td align="right">-0.13</td>
-<td align="right">0.36</td>
-<td align="right">0.03</td>
-<td align="right">-0.63</td>
-<td align="right">-0.79</td>
 <td align="right">0.40</td>
-<td align="right">-0.13</td>
-<td align="right">-0.19</td>
-<td align="right">0.60</td>
+<td align="right">0.18</td>
+<td align="right">-0.10</td>
+<td align="right">0.04</td>
+<td align="right">0.17</td>
+<td align="right">0.76</td>
+<td align="right">-0.22</td>
+<td align="right">0.46</td>
+<td align="right">-0.16</td>
+<td align="right">0.27</td>
+<td align="right">0.63</td>
 </tr>
 <tr class="odd">
 <td align="left">Hym</td>
-<td align="right">0.11</td>
-<td align="right">0.12</td>
-<td align="right">0.09</td>
+<td align="right">-0.17</td>
+<td align="right">-0.16</td>
+<td align="right">0.71</td>
+<td align="right">-0.12</td>
+<td align="right">0.27</td>
+<td align="right">-0.02</td>
 <td align="right">-0.74</td>
-<td align="right">0.31</td>
-<td align="right">-0.08</td>
-<td align="right">0.40</td>
-<td align="right">0.37</td>
-<td align="right">-0.33</td>
-<td align="right">0.00</td>
-<td align="right">-0.61</td>
+<td align="right">-0.57</td>
+<td align="right">0.81</td>
+<td align="right">0.05</td>
+<td align="right">-0.40</td>
 </tr>
 <tr class="even">
 <td align="left">Hys</td>
-<td align="right">-0.43</td>
-<td align="right">0.19</td>
-<td align="right">0.64</td>
-<td align="right">0.01</td>
-<td align="right">0.19</td>
-<td align="right">-0.35</td>
-<td align="right">0.43</td>
-<td align="right">0.38</td>
-<td align="right">-0.33</td>
-<td align="right">-0.03</td>
-<td align="right">0.27</td>
+<td align="right">-0.27</td>
+<td align="right">0.39</td>
+<td align="right">0.22</td>
+<td align="right">0.34</td>
+<td align="right">0.12</td>
+<td align="right">0.24</td>
+<td align="right">-0.59</td>
+<td align="right">-0.62</td>
+<td align="right">0.40</td>
+<td align="right">0.25</td>
+<td align="right">0.24</td>
 </tr>
 <tr class="odd">
 <td align="left">Psy</td>
-<td align="right">0.13</td>
-<td align="right">-0.50</td>
+<td align="right">-0.23</td>
+<td align="right">-0.38</td>
+<td align="right">0.11</td>
+<td align="right">-0.30</td>
+<td align="right">-0.53</td>
+<td align="right">-0.10</td>
+<td align="right">-0.18</td>
+<td align="right">0.31</td>
+<td align="right">-0.13</td>
+<td align="right">-0.71</td>
 <td align="right">-0.19</td>
-<td align="right">-0.28</td>
-<td align="right">-0.39</td>
-<td align="right">0.24</td>
-<td align="right">0.05</td>
-<td align="right">0.13</td>
-<td align="right">0.53</td>
-<td align="right">-0.59</td>
-<td align="right">-0.34</td>
 </tr>
 <tr class="even">
 <td align="left">Aga</td>
-<td align="right">0.13</td>
-<td align="right">0.09</td>
-<td align="right">0.11</td>
-<td align="right">-0.89</td>
-<td align="right">0.04</td>
-<td align="right">-0.15</td>
-<td align="right">0.32</td>
-<td align="right">0.04</td>
 <td align="right">-0.10</td>
+<td align="right">-0.11</td>
+<td align="right">0.93</td>
+<td align="right">-0.35</td>
+<td align="right">-0.02</td>
+<td align="right">0.13</td>
+<td align="right">-0.39</td>
+<td align="right">-0.46</td>
+<td align="right">0.62</td>
+<td align="right">-0.24</td>
 <td align="right">-0.22</td>
-<td align="right">-0.51</td>
 </tr>
 </tbody>
 </table>
@@ -840,7 +840,7 @@ known covariates).</p>
 <p>By default, the <code>predict</code> use the argument
 <code>type = "posterior"</code> to output the matrix of log-posterior
 probabilities
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>log</mo><msub><mrow><mo stretchy="true" form="prefix">(</mo><mover><mi>π</mi><mo accent="true">̂</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow><mi>k</mi></msub></mrow><annotation encoding="application/x-tex">\log(\hat{\pi})_k</annotation></semantics></math></p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mover><mi>π</mi><mo accent="true">̂</mo></mover><msub><mo stretchy="false" form="postfix">)</mo><mi>k</mi></msub></mrow><annotation encoding="application/x-tex">\log(\hat{\pi})_k</annotation></semantics></math></p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">predicted.class</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">myLDA_nocov</span>, newdata <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span></span>
 <span><span class="co">## equivalent to </span></span>
@@ -848,18 +848,18 @@ probabilities
 <span><span class="va">predicted.class</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="7%">
-<col width="7%">
 <col width="8%">
 <col width="8%">
 <col width="8%">
-<col width="7%">
-<col width="7%">
-<col width="8%">
-<col width="7%">
-<col width="7%">
+<col width="9%">
 <col width="8%">
 <col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="9%">
+<col width="9%">
 </colgroup>
 <thead><tr class="header">
 <th align="right">1</th>
@@ -877,93 +877,93 @@ probabilities
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">-17.45</td>
-<td align="right">-42.66</td>
-<td align="right">-39.71</td>
-<td align="right">-25.48</td>
-<td align="right">-50.87</td>
-<td align="right">-32.70</td>
+<td align="right">-17.47</td>
+<td align="right">-30.72</td>
+<td align="right">-28.10</td>
+<td align="right">-25.44</td>
+<td align="right">-39.25</td>
+<td align="right">-32.75</td>
 <td align="right">-25.92</td>
-<td align="right">-76.04</td>
-<td align="right">-73.09</td>
+<td align="right">-41.49</td>
+<td align="right">-37.97</td>
 <td align="right">-20.60</td>
-<td align="right">-173.33</td>
-<td align="right">-67.22</td>
+<td align="right">-81.19</td>
+<td align="right">-47.29</td>
 </tr>
 <tr class="even">
-<td align="right">-9.67</td>
-<td align="right">-17.04</td>
-<td align="right">-52.29</td>
-<td align="right">-21.34</td>
-<td align="right">-64.53</td>
-<td align="right">-27.28</td>
-<td align="right">-14.70</td>
+<td align="right">-9.68</td>
+<td align="right">-17.05</td>
+<td align="right">-29.09</td>
+<td align="right">-21.33</td>
+<td align="right">-41.19</td>
+<td align="right">-27.33</td>
+<td align="right">-14.71</td>
 <td align="right">-15.59</td>
-<td align="right">-15.21</td>
-<td align="right">-14.70</td>
-<td align="right">-102.79</td>
-<td align="right">-58.78</td>
+<td align="right">-15.22</td>
+<td align="right">-14.71</td>
+<td align="right">-51.66</td>
+<td align="right">-38.80</td>
 </tr>
 <tr class="odd">
-<td align="right">-12.94</td>
+<td align="right">-12.95</td>
 <td align="right">-22.58</td>
-<td align="right">-99.85</td>
-<td align="right">-39.92</td>
-<td align="right">-104.71</td>
-<td align="right">-30.78</td>
-<td align="right">-22.55</td>
-<td align="right">-46.29</td>
-<td align="right">-40.69</td>
-<td align="right">-22.95</td>
-<td align="right">-126.16</td>
-<td align="right">-105.28</td>
+<td align="right">-53.40</td>
+<td align="right">-39.62</td>
+<td align="right">-58.02</td>
+<td align="right">-30.81</td>
+<td align="right">-22.54</td>
+<td align="right">-34.68</td>
+<td align="right">-28.92</td>
+<td align="right">-22.93</td>
+<td align="right">-65.58</td>
+<td align="right">-65.25</td>
 </tr>
 <tr class="even">
-<td align="right">-18.43</td>
-<td align="right">-31.08</td>
-<td align="right">-110.49</td>
-<td align="right">-115.00</td>
-<td align="right">-132.55</td>
-<td align="right">-54.03</td>
-<td align="right">-41.98</td>
-<td align="right">-103.31</td>
-<td align="right">-91.88</td>
-<td align="right">-44.64</td>
-<td align="right">-263.88</td>
-<td align="right">-200.44</td>
+<td align="right">-18.46</td>
+<td align="right">-31.01</td>
+<td align="right">-74.86</td>
+<td align="right">-109.98</td>
+<td align="right">-97.01</td>
+<td align="right">-53.97</td>
+<td align="right">-41.77</td>
+<td align="right">-68.23</td>
+<td align="right">-56.41</td>
+<td align="right">-44.11</td>
+<td align="right">-130.17</td>
+<td align="right">-128.22</td>
 </tr>
 <tr class="odd">
-<td align="right">-13.84</td>
-<td align="right">-20.02</td>
-<td align="right">-48.89</td>
-<td align="right">-60.70</td>
-<td align="right">-68.90</td>
-<td align="right">-38.18</td>
-<td align="right">-26.91</td>
-<td align="right">-48.05</td>
-<td align="right">-41.47</td>
-<td align="right">-25.88</td>
-<td align="right">-166.05</td>
-<td align="right">-104.10</td>
+<td align="right">-13.87</td>
+<td align="right">-20.03</td>
+<td align="right">-37.13</td>
+<td align="right">-59.57</td>
+<td align="right">-57.33</td>
+<td align="right">-38.21</td>
+<td align="right">-26.88</td>
+<td align="right">-36.38</td>
+<td align="right">-29.70</td>
+<td align="right">-25.78</td>
+<td align="right">-83.68</td>
+<td align="right">-73.43</td>
 </tr>
 <tr class="even">
-<td align="right">-9.25</td>
-<td align="right">-13.49</td>
-<td align="right">-33.41</td>
-<td align="right">-24.39</td>
-<td align="right">-44.37</td>
-<td align="right">-23.73</td>
-<td align="right">-14.62</td>
+<td align="right">-9.27</td>
+<td align="right">-13.50</td>
+<td align="right">-21.80</td>
+<td align="right">-24.33</td>
+<td align="right">-32.77</td>
+<td align="right">-23.77</td>
+<td align="right">-14.63</td>
 <td align="right">-15.92</td>
-<td align="right">-15.30</td>
+<td align="right">-15.32</td>
 <td align="right">-14.33</td>
-<td align="right">-85.81</td>
-<td align="right">-60.11</td>
+<td align="right">-44.84</td>
+<td align="right">-39.90</td>
 </tr>
 </tbody>
 </table>
 <p>You can also show them in the standard (and human-friendly)
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[0, 1]</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[0, 1]</annotation></semantics></math>
 scale with <code>scale = "prob"</code> to get the matrix
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>π</mi><mo accent="true">̂</mo></mover><mi>k</mi></msub><annotation encoding="application/x-tex">\hat{\pi}_k</annotation></semantics></math></p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
@@ -995,7 +995,7 @@ scale with <code>scale = "prob"</code> to get the matrix
 <td align="right">0.000</td>
 <td align="right">0.000</td>
 <td align="right">0.000</td>
-<td align="right">0.041</td>
+<td align="right">0.042</td>
 <td align="right">0</td>
 <td align="right">0</td>
 </tr>
@@ -1056,7 +1056,7 @@ scale with <code>scale = "prob"</code> to get the matrix
 <td align="right">0</td>
 </tr>
 <tr class="even">
-<td align="right">0.972</td>
+<td align="right">0.971</td>
 <td align="right">0.014</td>
 <td align="right">0</td>
 <td align="right">0</td>
@@ -1158,27 +1158,27 @@ instead of <code>NULL</code></p>
 <tbody>
 <tr class="odd">
 <td align="left">Che</td>
-<td align="right">-0.3294938</td>
+<td align="right">-0.3339281</td>
 </tr>
 <tr class="even">
 <td align="left">Hyc</td>
-<td align="right">1.3307412</td>
+<td align="right">0.6456694</td>
 </tr>
 <tr class="odd">
 <td align="left">Hym</td>
-<td align="right">-0.1927752</td>
+<td align="right">-0.1930336</td>
 </tr>
 <tr class="even">
 <td align="left">Hys</td>
-<td align="right">-0.4544759</td>
+<td align="right">-0.4548744</td>
 </tr>
 <tr class="odd">
 <td align="left">Psy</td>
-<td align="right">0.0366328</td>
+<td align="right">0.0386396</td>
 </tr>
 <tr class="even">
 <td align="left">Aga</td>
-<td align="right">-0.0611516</td>
+<td align="right">-0.0610140</td>
 </tr>
 </tbody>
 </table>
@@ -1217,88 +1217,88 @@ instead of <code>NULL</code></p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">-21.69</td>
-<td align="right">-11.14</td>
-<td align="right">-25.86</td>
-<td align="right">-20.47</td>
-<td align="right">-27.49</td>
-<td align="right">-46.53</td>
-<td align="right">-31.90</td>
-<td align="right">-30.19</td>
-<td align="right">-20.66</td>
-<td align="right">5.28</td>
-<td align="right">12.77</td>
-<td align="right">-25.63</td>
+<td align="right">-14.38</td>
+<td align="right">-16.11</td>
+<td align="right">-18.94</td>
+<td align="right">-14.51</td>
+<td align="right">-20.40</td>
+<td align="right">-38.67</td>
+<td align="right">-24.80</td>
+<td align="right">-22.16</td>
+<td align="right">-15.68</td>
+<td align="right">-4.47</td>
+<td align="right">3.31</td>
+<td align="right">-20.56</td>
 </tr>
 <tr class="even">
-<td align="right">-25.12</td>
-<td align="right">-44.94</td>
-<td align="right">-0.91</td>
-<td align="right">-18.17</td>
-<td align="right">-9.79</td>
-<td align="right">-50.63</td>
-<td align="right">-35.07</td>
-<td align="right">-31.87</td>
-<td align="right">-16.82</td>
-<td align="right">-19.15</td>
-<td align="right">-7.94</td>
-<td align="right">2.06</td>
+<td align="right">-15.21</td>
+<td align="right">-32.95</td>
+<td align="right">-7.84</td>
+<td align="right">-11.23</td>
+<td align="right">-18.40</td>
+<td align="right">-43.05</td>
+<td align="right">-25.97</td>
+<td align="right">-22.06</td>
+<td align="right">-10.99</td>
+<td align="right">-12.82</td>
+<td align="right">-5.15</td>
+<td align="right">-4.06</td>
 </tr>
 <tr class="odd">
-<td align="right">-1.03</td>
-<td align="right">-4.49</td>
-<td align="right">-1.68</td>
-<td align="right">-1.64</td>
-<td align="right">-5.74</td>
-<td align="right">-7.04</td>
-<td align="right">-2.65</td>
-<td align="right">-1.81</td>
-<td align="right">-1.41</td>
-<td align="right">-1.40</td>
-<td align="right">-27.63</td>
-<td align="right">-3.24</td>
+<td align="right">-2.83</td>
+<td align="right">-8.61</td>
+<td align="right">-3.82</td>
+<td align="right">-4.09</td>
+<td align="right">-11.76</td>
+<td align="right">-13.10</td>
+<td align="right">-5.33</td>
+<td align="right">-3.75</td>
+<td align="right">-3.69</td>
+<td align="right">-3.67</td>
+<td align="right">-17.99</td>
+<td align="right">-6.86</td>
 </tr>
 <tr class="even">
-<td align="right">-26.41</td>
-<td align="right">-35.18</td>
-<td align="right">-2.62</td>
-<td align="right">0.73</td>
-<td align="right">-29.29</td>
-<td align="right">-40.60</td>
-<td align="right">-32.14</td>
-<td align="right">-5.02</td>
-<td align="right">0.07</td>
-<td align="right">0.66</td>
-<td align="right">-21.01</td>
-<td align="right">-27.96</td>
+<td align="right">-16.85</td>
+<td align="right">-26.75</td>
+<td align="right">-9.05</td>
+<td align="right">-5.16</td>
+<td align="right">-21.32</td>
+<td align="right">-35.70</td>
+<td align="right">-25.07</td>
+<td align="right">-11.02</td>
+<td align="right">-7.08</td>
+<td align="right">-5.83</td>
+<td align="right">-15.02</td>
+<td align="right">-21.62</td>
 </tr>
 <tr class="odd">
-<td align="right">-0.05</td>
-<td align="right">-0.42</td>
-<td align="right">-0.47</td>
-<td align="right">-0.85</td>
-<td align="right">-0.44</td>
-<td align="right">-0.43</td>
-<td align="right">-0.59</td>
-<td align="right">-0.71</td>
-<td align="right">-0.06</td>
-<td align="right">-0.15</td>
-<td align="right">-0.19</td>
-<td align="right">-1.03</td>
+<td align="right">-0.11</td>
+<td align="right">-0.83</td>
+<td align="right">-0.93</td>
+<td align="right">-1.69</td>
+<td align="right">-0.95</td>
+<td align="right">-0.87</td>
+<td align="right">-1.22</td>
+<td align="right">-1.43</td>
+<td align="right">-0.12</td>
+<td align="right">-0.30</td>
+<td align="right">-0.36</td>
+<td align="right">-2.06</td>
 </tr>
 <tr class="even">
-<td align="right">-1.68</td>
-<td align="right">-4.17</td>
-<td align="right">-1.64</td>
-<td align="right">-2.27</td>
-<td align="right">-5.43</td>
-<td align="right">-10.70</td>
-<td align="right">-2.71</td>
-<td align="right">-2.72</td>
-<td align="right">-3.15</td>
-<td align="right">-1.60</td>
-<td align="right">-25.99</td>
-<td align="right">-29.46</td>
+<td align="right">-4.38</td>
+<td align="right">-7.87</td>
+<td align="right">-3.87</td>
+<td align="right">-5.57</td>
+<td align="right">-11.32</td>
+<td align="right">-20.13</td>
+<td align="right">-5.46</td>
+<td align="right">-5.60</td>
+<td align="right">-7.46</td>
+<td align="right">-4.31</td>
+<td align="right">-15.46</td>
+<td align="right">-21.25</td>
 </tr>
 </tbody>
 </table>
@@ -1345,7 +1345,7 @@ ease of exposition):</p>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-AiH89" class="csl-entry">
 Aitchison, J., and C. H. Ho. 1989. <span>“The Multivariate Poisson-Log
 Normal Distribution.”</span> <em>Biometrika</em> 76 (4): 643–53.

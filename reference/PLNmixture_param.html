@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -85,7 +85,7 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">PLNmixture_param</span><span class="op">(</span></span>
-<span>  backend <span class="op">=</span> <span class="st">"nlopt"</span>,</span>
+<span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"builtin"</span>, <span class="st">"nlopt"</span>, <span class="st">"torch"</span><span class="op">)</span>,</span>
 <span>  trace <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  covariance <span class="op">=</span> <span class="st">"spherical"</span>,</span>
 <span>  init_cl <span class="op">=</span> <span class="st">"kmeans"</span>,</span>
@@ -101,7 +101,7 @@
 
 
 <dl><dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
-<dd><p>optimization back used, either "nlopt" or "torch". Default is "nlopt"</p></dd>
+<dd><p>optimization back used, either "builtin", "nlopt" or "torch". Default is "builtin".</p></dd>
 
 
 <dt id="arg-trace">trace<a class="anchor" aria-label="anchor" href="#arg-trace"></a></dt>
@@ -125,7 +125,7 @@
 
 
 <dt id="arg-config-post">config_post<a class="anchor" aria-label="anchor" href="#arg-config-post"></a></dt>
-<dd><p>a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.).</p></dd>
+<dd><p>a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details</p></dd>
 
 
 <dt id="arg-inception">inception<a class="anchor" aria-label="anchor" href="#arg-inception"></a></dt>
@@ -140,9 +140,42 @@ which sometimes speeds up the inference.</p></dd>
     </div>
     <div id="details">
     <h2>Details</h2>
-    <p>See <code><a href="PLN_param.html">PLN_param()</a></code> for a full description of the generic optimization parameters. PLNmixture_param() also has additional parameters controlling the optimization due the inner-outer loop structure of the optimizer:</p><ul><li><p>"ftol_out" outer solver stops when an optimization step changes the objective function by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6</p></li>
-<li><p>"maxit_out" outer solver stops when the number of iteration exceeds maxit_out. Default is 50</p></li>
-<li><p>"it_smoothing" number of the iterations of the smoothing procedure. Default is 1.</p></li>
+    <p>The list of parameters <code>config_optim</code> controls the optimizers. When "nlopt" is chosen the following entries are relevant</p><ul><li><p>"algorithm" the optimization method used by NLOPT among LD type, e.g. "CCSAQ", "MMA", "LBFGS". See NLOPT documentation for further details. Default is "CCSAQ".</p></li>
+<li><p>"maxeval" stop when the number of iteration exceeds maxeval. Default is 10000</p></li>
+<li><p>"ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8</p></li>
+<li><p>"xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6</p></li>
+<li><p>"ftol_abs" stop when an optimization step changes the objective function by less than ftol_abs. Default is 0.0 (disabled)</p></li>
+<li><p>"xtol_abs" stop when an optimization step changes every parameters by less than xtol_abs. Default is 0.0 (disabled)</p></li>
+<li><p>"maxtime" stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (disabled)</p></li>
+</ul><p>When "torch" backend is used (only for PLN and PLNLDA for now), the following entries are relevant:</p><ul><li><p>"algorithm" the optimizer used by torch among RPROP (default), RMSPROP, ADAM and ADAGRAD</p></li>
+<li><p>"maxeval" stop when the number of iteration exceeds maxeval. Default is 10 000</p></li>
+<li><p>"numepoch" stop training once this number of epochs exceeds numepoch. Set to -1 to enable infinite training. Default is 1 000</p></li>
+<li><p>"num_batch" number of batches to use during training. Defaults to 1 (use full dataset at each epoch)</p></li>
+<li><p>"ftol_rel" stop when an optimization step changes the objective function by less than ftol multiplied by the absolute value of the parameter. Default is 1e-8</p></li>
+<li><p>"xtol_rel" stop when an optimization step changes every parameters by less than xtol multiplied by the absolute value of the parameter. Default is 1e-6</p></li>
+<li><p>"lr" learning rate. Default is 0.1.</p></li>
+<li><p>"momentum" momentum factor. Default is 0 (no momentum). Only used in RMSPROP</p></li>
+<li><p>"weight_decay" Weight decay penalty. Default is 0 (no decay). Not used in RPROP</p></li>
+<li><p>"step_sizes" pair of minimal (default: 1e-6) and maximal (default: 50) allowed step sizes. Only used in RPROP</p></li>
+<li><p>"etas" pair of multiplicative increase and decrease factors. Default is (0.5, 1.2). Only used in RPROP</p></li>
+<li><p>"centered" if TRUE, compute the centered RMSProp where the gradient is normalized by an estimation of its variance weight_decay (L2 penalty). Default to FALSE. Only used in RMSPROP</p></li>
+</ul><p>When "builtin" backend is used, the following entries are relevant</p><ul><li><p>"maxeval" stop when the number of Newton steps in the inner loop exceeds maxeval. Default is 10000</p></li>
+<li><p>"ftol_in" stop the inner loop when the objective changes by less than ftol_in (relative). Default is 1e-8</p></li>
+<li><p>"maxit_em" stop the EM outer loop when the number of EM iterations exceeds maxit_em. Default is 50</p></li>
+<li><p>"ftol_em" stop the EM outer loop when the ELBO changes by less than ftol_em (relative). Default is 1e-8</p></li>
+</ul><p>The list of parameters <code>config_post</code> controls the post-treatment processing (for most <code>PLN*()</code> functions), with the following entries (defaults may vary depending on the specific function, check <code>config_post_default_*</code> for defaults values):</p><ul><li><p>jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.</p></li>
+<li><p>bootstrap integer indicating the number of bootstrap resamples generated to evaluate the variance of the model parameters. Default is 0 (inactivated).</p></li>
+<li><p>variational_var boolean indicating whether variational Fisher information matrix should be computed to estimate the variance of the model parameters (highly underestimated). Default is FALSE.</p></li>
+<li><p>sandwich_var boolean indicating whether sandwich estimation should be used to estimate the variance of the model parameters (highly underestimated). Default is FALSE.</p></li>
+<li><p>rsquared boolean indicating whether approximation of R2 based on deviance should be computed. Default is TRUE</p></li>
+</ul></div>
+    <div id="outer-loop-optimization-parameters">
+    <h2>Outer-loop optimization parameters</h2>
+
+
+<p><code>PLNmixture_param()</code> adds parameters controlling the EM and smoothing outer loops:</p><ul><li><p>"ftol_em" outer EM solver stops when the objective changes by less than ftol_em (relative). Default is 1e-3</p></li>
+<li><p>"maxit_em" outer EM solver stops when the number of iterations exceeds maxit_em. Default is 50</p></li>
+<li><p>"it_smooth" number of the iterations of the smoothing procedure. Default is 1.</p></li>
 </ul></div>
     <div id="see-also">
     <h2>See also</h2>

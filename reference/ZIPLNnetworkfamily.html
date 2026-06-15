@@ -20,7 +20,7 @@ getModel() and plot()"><meta property="og:image" content="https://pln-team.githu
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -96,7 +96,7 @@ See the documentation for <code><a href="getBestModel.html">getBestModel()</a></
     </div>
     <div id="super-classes">
     <h2>Super classes</h2>
-    <p><code><a href="PLNfamily.html">PLNmodels::PLNfamily</a></code> -&gt; <code><a href="Networkfamily.html">PLNmodels::Networkfamily</a></code> -&gt; <code>ZIPLNnetworkfamily</code></p>
+    <p><code><a href="PLNfamily.html">PLNfamily</a></code> -&gt; <code><a href="Networkfamily.html">Networkfamily</a></code> -&gt; <code>ZIPLNnetworkfamily</code></p>
     </div>
     <div id="public-fields">
     <h2>Public fields</h2>
@@ -111,79 +111,72 @@ See the documentation for <code><a href="getBestModel.html">getBestModel()</a></
 
 <div class="section">
 <h3 id="public-methods">Public methods<a class="anchor" aria-label="anchor" href="#public-methods"></a></h3>
-
-<ul><li><p><a href="#method-ZIPLNnetworkfamily-new"><code>ZIPLNnetworkfamily$new()</code></a></p></li>
+<p></p><ul><li><p><a href="#method-ZIPLNnetworkfamily-initialize"><code>ZIPLNnetworkfamily$new()</code></a></p></li>
 <li><p><a href="#method-ZIPLNnetworkfamily-stability_selection"><code>ZIPLNnetworkfamily$stability_selection()</code></a></p></li>
 <li><p><a href="#method-ZIPLNnetworkfamily-clone"><code>ZIPLNnetworkfamily$clone()</code></a></p></li>
-</ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="getModel"><a href="PLNfamily.html#method-getModel"><code>PLNmodels::PLNfamily$getModel()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment"><a href="PLNfamily.html#method-postTreatment"><code>PLNmodels::PLNfamily$postTreatment()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="print"><a href="PLNfamily.html#method-print"><code>PLNmodels::PLNfamily$print()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="coefficient_path"><a href="Networkfamily.html#method-coefficient_path"><code>PLNmodels::Networkfamily$coefficient_path()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="getBestModel"><a href="Networkfamily.html#method-getBestModel"><code>PLNmodels::Networkfamily$getBestModel()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="optimize"><a href="Networkfamily.html#method-optimize"><code>PLNmodels::Networkfamily$optimize()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="plot"><a href="Networkfamily.html#method-plot"><code>PLNmodels::Networkfamily$plot()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="plot_objective"><a href="Networkfamily.html#method-plot_objective"><code>PLNmodels::Networkfamily$plot_objective()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="plot_stars"><a href="Networkfamily.html#method-plot_stars"><code>PLNmodels::Networkfamily$plot_stars()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="show"><a href="Networkfamily.html#method-show"><code>PLNmodels::Networkfamily$show()</code></a></span></li>
-</ul></details></p><hr><a id="method-ZIPLNnetworkfamily-new"></a><div class="section">
-<h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
+</ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="getModel"><a href="PLNfamily.html#method-getModel"><code>PLNfamily$getModel()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment"><a href="PLNfamily.html#method-postTreatment"><code>PLNfamily$postTreatment()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="print"><a href="PLNfamily.html#method-print"><code>PLNfamily$print()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="coefficient_path"><a href="Networkfamily.html#method-coefficient_path"><code>Networkfamily$coefficient_path()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="getBestModel"><a href="Networkfamily.html#method-getBestModel"><code>Networkfamily$getBestModel()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="optimize"><a href="Networkfamily.html#method-optimize"><code>Networkfamily$optimize()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="plot"><a href="Networkfamily.html#method-plot"><code>Networkfamily$plot()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="plot_objective"><a href="Networkfamily.html#method-plot_objective"><code>Networkfamily$plot_objective()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="plot_stars"><a href="Networkfamily.html#method-plot_stars"><code>Networkfamily$plot_stars()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="show"><a href="Networkfamily.html#method-show"><code>Networkfamily$show()</code></a></span></li>
+</ul></details></p><hr><a id="method-ZIPLNnetworkfamily-initialize"></a><div class="section">
+<h3 id="ziplnnetworkfamily-new-"><code>ZIPLNnetworkfamily$new()</code><a class="anchor" aria-label="anchor" href="#ziplnnetworkfamily-new-"></a></h3>
 <p>Initialize all models in the collection</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/ZIPLNnetworkfamily.html">ZIPLNnetworkfamily</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">penalties</span>, <span class="va">data</span>, <span class="va">control</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>penalties</code></dt>
 <dd><p>a vector of positive real number controlling the level of sparsity of the underlying network.</p></dd>
 
-
-<dt><code>data</code></dt>
+      <dt><code>data</code></dt>
 <dd><p>a named list used internally to carry the data matrices</p></dd>
 
-
-<dt><code>control</code></dt>
+      <dt><code>control</code></dt>
 <dd><p>a list for controlling the optimization.</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="returns">Returns<a class="anchor" aria-label="anchor" href="#returns"></a></h4>
 <p>Update current <code><a href="PLNnetworkfit.html">PLNnetworkfit</a></code> with smart starting values</p>
 </div>
 
-</div><p></p><hr><a id="method-ZIPLNnetworkfamily-stability_selection"></a><div class="section">
-<h3 id="method-stability-selection-">Method <code><a href="stability_selection.html">stability_selection()</a></code><a class="anchor" aria-label="anchor" href="#method-stability-selection-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-ZIPLNnetworkfamily-stability_selection"></a><div class="section">
+<h3 id="ziplnnetworkfamily-stability-selection-"><code>ZIPLNnetworkfamily$stability_selection()</code><a class="anchor" aria-label="anchor" href="#ziplnnetworkfamily-stability-selection-"></a></h3>
 <p>Compute the stability path by stability selection</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ZIPLNnetworkfamily</span><span class="op">$</span><span class="fu">stability_selection</span><span class="op">(</span></span>
 <span>  subsamples <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  control <span class="op">=</span> <span class="fu"><a href="../reference/ZIPLNnetwork_param.html">ZIPLNnetwork_param</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>subsamples</code></dt>
 <dd><p>a list of vectors describing the subsamples. The number of vectors (or list length) determines the number of subsamples used in the stability selection. Automatically set to 20 subsamples with size <code>10*sqrt(n)</code> if <code>n &gt;= 144</code> and <code>0.8*n</code> otherwise following Liu et al. (2010) recommendations.</p></dd>
 
-
-<dt><code>control</code></dt>
+      <dt><code>control</code></dt>
 <dd><p>a list controlling the main optimization process in each call to <code><a href="PLNnetwork.html">PLNnetwork()</a></code>. See <code><a href="ZIPLNnetwork.html">ZIPLNnetwork()</a></code> and <code><a href="ZIPLN_param.html">ZIPLN_param()</a></code> for details.</p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-ZIPLNnetworkfamily-clone"></a><div class="section">
-<h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-ZIPLNnetworkfamily-clone"></a><div class="section">
+<h3 id="ziplnnetworkfamily-clone-"><code>ZIPLNnetworkfamily$clone()</code><a class="anchor" aria-label="anchor" href="#ziplnnetworkfamily-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ZIPLNnetworkfamily</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
@@ -193,6 +186,7 @@ See the documentation for <code><a href="getBestModel.html">getBestModel()</a></
 </div>
 
 </div>
+
 
     </div>
 
@@ -205,7 +199,7 @@ See the documentation for <code><a href="getBestModel.html">getBestModel()</a></
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Initialization...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Adjusting 30 PLN with sparse inverse covariance estimation</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 	Joint optimization alternating gradient descent and graphical-lasso</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 	sparsifying penalty = 7.353689 	sparsifying penalty = 6.792388 	sparsifying penalty = 6.273931 	sparsifying penalty = 5.795047 	sparsifying penalty = 5.352716 	sparsifying penalty = 4.944148 	sparsifying penalty = 4.566765 	sparsifying penalty = 4.218188 	sparsifying penalty = 3.896217 	sparsifying penalty = 3.598823 	sparsifying penalty = 3.324127 	sparsifying penalty = 3.0704 	sparsifying penalty = 2.836039 	sparsifying penalty = 2.619566 	sparsifying penalty = 2.419617 	sparsifying penalty = 2.23493 	sparsifying penalty = 2.064339 	sparsifying penalty = 1.90677 	sparsifying penalty = 1.761228 	sparsifying penalty = 1.626795 	sparsifying penalty = 1.502623 	sparsifying penalty = 1.387929 	sparsifying penalty = 1.28199 	sparsifying penalty = 1.184137 	sparsifying penalty = 1.093752 	sparsifying penalty = 1.010267 	sparsifying penalty = 0.9331545 	sparsifying penalty = 0.8619276 	sparsifying penalty = 0.7961374 	sparsifying penalty = 0.7353689 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 	sparsifying penalty = 7.069727 	sparsifying penalty = 6.530101 	sparsifying penalty = 6.031664 	sparsifying penalty = 5.571272 	sparsifying penalty = 5.146022 	sparsifying penalty = 4.753231 	sparsifying penalty = 4.390421 	sparsifying penalty = 4.055304 	sparsifying penalty = 3.745766 	sparsifying penalty = 3.459855 	sparsifying penalty = 3.195767 	sparsifying penalty = 2.951837 	sparsifying penalty = 2.726526 	sparsifying penalty = 2.518412 	sparsifying penalty = 2.326184 	sparsifying penalty = 2.148628 	sparsifying penalty = 1.984625 	sparsifying penalty = 1.833141 	sparsifying penalty = 1.693219 	sparsifying penalty = 1.563977 	sparsifying penalty = 1.4446 	sparsifying penalty = 1.334335 	sparsifying penalty = 1.232486 	sparsifying penalty = 1.138411 	sparsifying penalty = 1.051517 	sparsifying penalty = 0.971256 	sparsifying penalty = 0.8971208 	sparsifying penalty = 0.8286444 	sparsifying penalty = 0.7653947 	sparsifying penalty = 0.7069727 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Post-treatments</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  DONE!</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">fits</span><span class="op">)</span></span></span>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -121,64 +121,82 @@
 <span class="r-in"><span><span class="va">myPLN</span> <span class="op">&lt;-</span> <span class="fu"><a href="PLN.html">PLN</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Initialization...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Adjusting a full covariance PLN model with nlopt optimizer</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Adjusting a full covariance PLN model with builtin optimizer</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Post-treatments...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  DONE!</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/vcov.html" class="external-link">vcov</a></span><span class="op">(</span><span class="va">myPLN</span>, type <span class="op">=</span> <span class="st">"covariance"</span><span class="op">)</span> <span class="co">## Sigma</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             Che          Hyc         Hym        Hys           Psy           Aga</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Che  2.52697814 -0.010979134  0.36146057  0.4454217 -0.0175114905  0.3093015371</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hyc -0.01097913  1.913684679  0.10912043  0.2678197 -0.1461127086 -0.1315181366</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hym  0.36146057  0.109120428  1.24561630  0.8658304 -0.1179489764  0.5148764342</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hys  0.44542165  0.267819684  0.86583038  2.6634873 -0.1458451779  0.4275744454</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Psy -0.01751149 -0.146112709 -0.11794898 -0.1458452  0.0759177017  0.0008813903</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Aga  0.30930154 -0.131518137  0.51487643  0.4275744  0.0008813903  1.1001077368</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Glo  0.08902440  0.170672898  0.20947258  0.3417547 -0.0494534369 -0.0628544429</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ath  0.35258965  0.108445121  0.38587757  0.6074185 -0.0474798166  0.1984193577</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Cea -0.01020553  0.006286386 -0.02336706 -0.0175259  0.0002229208 -0.0244072270</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ced  0.33761753  0.221361889  0.50816904  0.6809477 -0.0979593181  0.2194991369</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Set -0.06109581  0.478252085 -0.18330832  0.1361124 -0.0913572624 -0.3008139064</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> All  0.27370641 -0.264334984  0.68212053  0.3718507 -0.0048054054  0.5926047605</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Han -0.18429793  0.625923583  0.20737194  0.1327282 -0.2884528060 -0.1717090989</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hfo -0.36794635  0.563301946 -0.40006947 -0.1894020 -0.1457898159 -0.8149327745</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hsp -0.45131251  0.678032991 -0.34353798 -0.1873399 -0.1918463081 -0.7836251455</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hve  0.31290192 -0.132487739  0.16225128  0.2424163  0.0455951410  0.1865372164</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sta  0.36357042  0.256308313  0.47826683  0.6140835 -0.1212554098  0.4400389451</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              Glo         Ath           Cea          Ced         Set</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Che  0.089024399  0.35258965 -0.0102055272  0.337617531 -0.06109581</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hyc  0.170672898  0.10844512  0.0062863860  0.221361889  0.47825209</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hym  0.209472576  0.38587757 -0.0233670559  0.508169037 -0.18330832</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hys  0.341754670  0.60741848 -0.0175259004  0.680947658  0.13611243</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Psy -0.049453437 -0.04747982  0.0002229208 -0.097959318 -0.09135726</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Aga -0.062854443  0.19841936 -0.0244072270  0.219499137 -0.30081391</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Glo  1.118429797  0.22425908  0.0018643379  0.226248429  0.29218028</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ath  0.224259077  1.37415071 -0.0072823499  0.442735421  0.09535878</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Cea  0.001864338 -0.00728235  0.0500189656 -0.008096058  0.01680935</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ced  0.226248429  0.44273542 -0.0080960577  0.958423695  0.19446494</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Set  0.292180285  0.09535878  0.0168093479  0.194464936  1.58600496</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> All -0.076731662  0.08930359 -0.0272038372  0.080650875 -0.68273067</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Han -0.190926793 -0.19927284  0.0051659352  0.056186885 -0.04158390</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hfo  0.300485526 -0.16224136  0.0298559776 -0.133703678  0.81344044</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hsp  0.251315659 -0.22510433  0.0278260412 -0.117624171  0.77297407</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hve  0.088674401  0.24266431 -0.0076967099  0.204378457 -0.04182466</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sta  0.016815037  0.30842621 -0.0147825170  0.434702812  0.05542041</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              All          Han         Hfo         Hsp         Hve         Sta</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Che  0.273706415 -0.184297933 -0.36794635 -0.45131251  0.31290192  0.36357042</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hyc -0.264334984  0.625923583  0.56330195  0.67803299 -0.13248774  0.25630831</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hym  0.682120533  0.207371937 -0.40006947 -0.34353798  0.16225128  0.47826683</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hys  0.371850654  0.132728189 -0.18940196 -0.18733992  0.24241627  0.61408352</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Psy -0.004805405 -0.288452806 -0.14578982 -0.19184631  0.04559514 -0.12125541</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Aga  0.592604761 -0.171709099 -0.81493277 -0.78362515  0.18653722  0.44003895</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Glo -0.076731662 -0.190926793  0.30048553  0.25131566  0.08867440  0.01681504</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ath  0.089303588 -0.199272835 -0.16224136 -0.22510433  0.24266431  0.30842621</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Cea -0.027203837  0.005165935  0.02985598  0.02782604 -0.00769671 -0.01478252</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ced  0.080650875  0.056186885 -0.13370368 -0.11762417  0.20437846  0.43470281</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Set -0.682730673 -0.041583897  0.81344044  0.77297407 -0.04182466  0.05542041</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> All  1.807579025  0.028730854 -0.74502353 -0.66360976  0.14746202  0.20004445</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Han  0.028730854  3.665314173  0.62274755  0.99178020 -0.60114900  0.46466809</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hfo -0.745023530  0.622747547  2.76356179  1.64737314 -0.34530648 -0.25687533</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hsp -0.663609756  0.991780205  1.64737314  2.55148787 -0.48695770 -0.19576042</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hve  0.147462019 -0.601148998 -0.34530648 -0.48695770  1.34897495  0.14357089</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sta  0.200044454  0.464668088 -0.25687533 -0.19576042  0.14357089  1.02925215</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              Che          Hyc         Hym         Hys           Psy</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Che  2.521004879 -0.009621748  0.36202871  0.44639375 -0.0174331701</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hyc -0.009621748  1.884847015  0.10623049  0.26240559 -0.1444136471</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hym  0.362028711  0.106230486  1.24696664  0.86539400 -0.1168954762</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hys  0.446393751  0.262405590  0.86539400  2.65863350 -0.1443170333</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Psy -0.017433170 -0.144413647 -0.11689548 -0.14431703  0.0757392425</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Aga  0.307823860 -0.126838378  0.51730324  0.43084002  0.0001376518</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Glo  0.089844948  0.166211450  0.20809259  0.33855604 -0.0484036391</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ath  0.353484462  0.104954266  0.38574934  0.60568792 -0.0463288356</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Cea -0.017890515  0.012163203 -0.04470148 -0.03254729  0.0003721319</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ced  0.338629891  0.218379122  0.50794378  0.67941042 -0.0972694203</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Set -0.061240053  0.474809922 -0.18965441  0.13067256 -0.0912525748</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> All  0.272227213 -0.260398204  0.68537220  0.37524882 -0.0049566790</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Han -0.190282757  0.626177994  0.19801950  0.12275677 -0.2909474891</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hfo -0.375537379  0.564732976 -0.41675795 -0.20482200 -0.1473791488</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hsp -0.460651058  0.675704771 -0.36138697 -0.20672169 -0.1924982413</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hve  0.313100965 -0.130219312  0.16492155  0.24505003  0.0453696868</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sta  0.362585421  0.256496642  0.47721224  0.61297085 -0.1215073783</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               Aga          Glo         Ath           Cea         Ced</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Che  0.3078238599  0.089844948  0.35348446 -0.0178905149  0.33862989</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hyc -0.1268383781  0.166211450  0.10495427  0.0121632029  0.21837912</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hym  0.5173032352  0.208092591  0.38574934 -0.0447014798  0.50794378</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hys  0.4308400156  0.338556038  0.60568792 -0.0325472855  0.67941042</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Psy  0.0001376518 -0.048403639 -0.04632884  0.0003721319 -0.09726942</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Aga  1.0969937583 -0.060299881  0.20025725 -0.0462745674  0.22108092</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Glo -0.0602998814  1.115805410  0.22238118  0.0036140181  0.22419948</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ath  0.2002572516  0.222381182  1.37201187 -0.0127252795  0.44180172</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Cea -0.0462745674  0.003614018 -0.01272528  0.1107330918 -0.01397130</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ced  0.2210809197  0.224199475  0.44180172 -0.0139712955  0.95816390</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Set -0.3011056096  0.290107993  0.09193515  0.0332103341  0.19249831</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> All  0.5918619743 -0.074302561  0.09145003 -0.0530504532  0.08195119</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Han -0.1752991113 -0.199141863 -0.20907699  0.0102008023  0.05225075</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hfo -0.8254721519  0.299208538 -0.17375353  0.0572655297 -0.14377513</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hsp -0.7898624952  0.246046886 -0.23974986  0.0526218795 -0.12955968</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hve  0.1861438946  0.089892014  0.24432164 -0.0140023858  0.20567692</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sta  0.4396727112  0.015858484  0.30713667 -0.0268157180  0.43453646</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             Set          All         Han         Hfo         Hsp         Hve</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Che -0.06124005  0.272227213 -0.19028276 -0.37553738 -0.46065106  0.31310097</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hyc  0.47480992 -0.260398204  0.62617799  0.56473298  0.67570477 -0.13021931</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hym -0.18965441  0.685372201  0.19801950 -0.41675795 -0.36138697  0.16492155</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hys  0.13067256  0.375248823  0.12275677 -0.20482200 -0.20672169  0.24505003</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Psy -0.09125257 -0.004956679 -0.29094749 -0.14737915 -0.19249824  0.04536969</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Aga -0.30110561  0.591861974 -0.17529911 -0.82547215 -0.78986250  0.18614389</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Glo  0.29010799 -0.074302561 -0.19914186  0.29920854  0.24604689  0.08989201</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ath  0.09193515  0.091450026 -0.20907699 -0.17375353 -0.23974986  0.24432164</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Cea  0.03321033 -0.053050453  0.01020080  0.05726553  0.05262188 -0.01400239</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ced  0.19249831  0.081951192  0.05225075 -0.14377513 -0.12955968  0.20567692</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Set  1.60083536 -0.686896979 -0.03999138  0.83108168  0.78475434 -0.04267759</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> All -0.68689698  1.805936001  0.02100351 -0.75809328 -0.67247834  0.14837102</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Han -0.03999138  0.021003507  3.75721785  0.64390222  1.01552123 -0.60939930</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hfo  0.83108168 -0.758093278  0.64390222  2.86798568  1.69929471 -0.35294443</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hsp  0.78475434 -0.672478343  1.01552123  1.69929471  2.62607097 -0.49539413</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hve -0.04267759  0.148371019 -0.60939930 -0.35294443 -0.49539413  1.34599211</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sta  0.05587583  0.199051454  0.47126251 -0.26024512 -0.19907362  0.14306509</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             Sta</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Che  0.36258542</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hyc  0.25649664</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hym  0.47721224</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hys  0.61297085</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Psy -0.12150738</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Aga  0.43967271</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Glo  0.01585848</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ath  0.30713667</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Cea -0.02681572</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ced  0.43453646</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Set  0.05587583</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> All  0.19905145</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Han  0.47126251</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hfo -0.26024512</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hsp -0.19907362</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hve  0.14306509</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sta  1.03098743</span>
 </code></pre></div>
     </div>
   </div>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2-9100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -103,7 +103,8 @@
 
 
 <dl><dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
-<dd><p>optimization back used, either "nlopt" or "torch". Default is "nlopt"</p></dd>
+<dd><p>optimization back used, either "nlopt", "builtin" or "torch". Default is "nlopt".
+Note: the "nlopt" backend converges better in PLNnetwork's outer glasso alternation than "builtin".</p></dd>
 
 
 <dt id="arg-inception-cov">inception_cov<a class="anchor" aria-label="anchor" href="#arg-inception-cov"></a></dt>
@@ -131,7 +132,7 @@
 
 
 <dt id="arg-config-post">config_post<a class="anchor" aria-label="anchor" href="#arg-config-post"></a></dt>
-<dd><p>a list for controlling the post-treatment (optional bootstrap, jackknife, R2, etc).</p></dd>
+<dd><p>a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details</p></dd>
 
 
 <dt id="arg-config-optim">config_optim<a class="anchor" aria-label="anchor" href="#arg-config-optim"></a></dt>
