@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0-9010</span>
       </span>
     </div>
 
@@ -76,6 +76,7 @@
     <div class="page-header">
       <h1>Journal de développement — 11-12 juin 2026</h1>
     </div>
+
 
 <div id="journal-de-développement--11-12-juin-2026" class="section level1">
 
@@ -1018,9 +1019,820 @@ PLN torch et PLNPCA torch (barents, oaks) divergent systématiquement dans maste
 <td>−77355.4</td>
 <td>8.29s</td>
 <td>5.59s</td>
+</tr></tbody></table><hr></div>
+</div>
+</div>
+<div class="section level1">
+<h1 id="journal-de-développement--15-juin-2026">Journal de développement — 15 juin 2026<a class="anchor" aria-label="anchor" href="#journal-de-d%C3%A9veloppement--15-juin-2026"></a></h1>
+<p>Branche : <code>code-enhancement</code></p>
+<hr><div class="section level2">
+<h2 id="id_35-plnpca--init_method--em--em-tronqué-pour-linitialisation-svd-1506">35. PLNPCA — <code>init_method = "EM"</code> : EM tronqué pour l’initialisation SVD (15/06)<a class="anchor" aria-label="anchor" href="#id_35-plnpca--init_method--em--em-tronqu%C3%A9-pour-linitialisation-svd-1506"></a></h2>
+<p><strong>Fichiers</strong> : <code>R/PLNPCA.R</code>, <code>R/PLNPCAfamily-class.R</code></p>
+<div class="section level3">
+<h3 id="motivation-2">Motivation<a class="anchor" aria-label="anchor" href="#motivation-2"></a></h3>
+<p>L’init par défaut <code>"LM"</code> donne <code>M₀ = log((1+Y)/exp(O))</code> — une transformation log naïve, jamais mise à jour par le VE-step. Pour les grands rangs (<code>rank &gt; sqrt(p)</code>), l’écart entre M₀ et la vraie moyenne latente se traduit par un mauvais SVD résiduel et une initialisation sous-optimale de C.</p>
+<p>L’alternative <code>inception = PLN(...)</code> donne la meilleure qualité mais exige la convergence complète du PLN (coûteux). L’idée : <strong>EM tronqué</strong> — K itérations EM seulement, avec le backend builtin (Newton, rapide), pour obtenir une M plus proche de la vraie valeur sans payer le coût complet.</p>
+</div>
+<div class="section level3">
+<h3 id="implémentation">Implémentation<a class="anchor" aria-label="anchor" href="#impl%C3%A9mentation"></a></h3>
+<p>Ajout de <code>init_method = "EM"</code> et <code>init_niter = 5L</code> dans <code><a href="reference/PLNPCA_param.html">PLNPCA_param()</a></code>.</p>
+<p>Dans <code>PLNPCAfamily$initialize</code>, nouveau branchement :</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="er">}</span> <span class="cf">else</span> <span class="cf">if</span> (<span class="fu">identical</span>(control<span class="sc">$</span>init_method, <span class="st">"EM"</span>)) {</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  niter  <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">is.null</span>(control<span class="sc">$</span>init_niter)) <span class="dv">20</span><span class="dt">L</span> <span class="cf">else</span> control<span class="sc">$</span>init_niter</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  em_ctrl <span class="ot">&lt;-</span> <span class="fu">PLN_param</span>(<span class="at">backend =</span> <span class="st">"builtin"</span>, <span class="at">trace =</span> <span class="dv">0</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>                       <span class="at">config_optim =</span> <span class="fu">list</span>(<span class="at">maxit_em =</span> niter))</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  pln_em <span class="ot">&lt;-</span> PLNfit<span class="sc">$</span><span class="fu">new</span>(responses, covariates, offsets, weights, formula, em_ctrl)</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  pln_em<span class="sc">$</span><span class="fu">optimize</span>(responses, covariates, offsets, weights, em_ctrl<span class="sc">$</span>config_optim)</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>  init_B <span class="ot">&lt;-</span> pln_em<span class="sc">$</span>model_par<span class="sc">$</span>B</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  init_M <span class="ot">&lt;-</span> pln_em<span class="sc">$</span>var_par<span class="sc">$</span>M</span></code></pre></div>
+<p><strong>Subtilité</strong> : après calcul du SVD, <code>control$init_method</code> est forcé à <code>"LM"</code> avant la création des <code>PLNPCAfit</code> individuels — sinon <code>PLNfit$initialize</code> (appelé par <code>super$initialize</code>) passerait <code>"EM"</code> à <code>compute_PLN_starting_point</code> qui ne le reconnaît pas.</p>
+</div>
+<div class="section level3">
+<h3 id="résultats--oaks-p114-scan-init_niter">Résultats — oaks (p=114), scan <code>init_niter</code>
+<a class="anchor" aria-label="anchor" href="#r%C3%A9sultats--oaks-p114-scan-init_niter"></a></h3>
+<table class="table"><thead><tr><th>init</th>
+<th>rank=5</th>
+<th>rank=20</th>
+</tr></thead><tbody><tr><td>LM (défaut)</td>
+<td><strong>−77189.8</strong></td>
+<td>−30654.7</td>
+</tr><tr><td>EM K=2</td>
+<td>−77444</td>
+<td>
+<strong>−30525.6</strong> (+129)</td>
+</tr><tr><td>EM K=5</td>
+<td>−78003</td>
+<td>
+<strong>−30518.8</strong> (+135)</td>
+</tr><tr><td>EM K=10</td>
+<td>−78437</td>
+<td>−30547.5 (+107)</td>
+</tr><tr><td>EM K=20</td>
+<td>−78443</td>
+<td>−30620.5 (+34)</td>
 </tr></tbody></table></div>
+<div class="section level3">
+<h3 id="leçon-clé--phénomène-de-sur-convergence">Leçon clé — phénomène de sur-convergence<a class="anchor" aria-label="anchor" href="#le%C3%A7on-cl%C3%A9--ph%C3%A9nom%C3%A8ne-de-sur-convergence"></a></h3>
+<p>L’EM tronqué aide uniquement pour <strong><code>rank &gt; sqrt(p)</code></strong>. Pour les petits rangs, il nuit systématiquement (rank=5, p=114 : −800 ll). La cause : après K itérations, la M s’est “spécialisée” pour expliquer l’espace complet à p dimensions. Les K directions dominantes du SVD de cette M sur-convergée sont moins discriminantes pour un rang faible.</p>
+<p>Le sweet spot est <strong>K = 2–5</strong> : au-delà, l’effet de sur-convergence domine. Défaut fixé à <code>init_niter = 5L</code>.</p>
+</div>
+<div class="section level3">
+<h3 id="api">API<a class="anchor" aria-label="anchor" href="#api"></a></h3>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># grands rangs (rank &gt; sqrt(p)) :</span></span>
+<span><span class="fu"><a href="reference/PLNPCA_param.html">PLNPCA_param</a></span><span class="op">(</span>init_method <span class="op">=</span> <span class="st">"EM"</span><span class="op">)</span>              <span class="co"># K=5 par défaut</span></span>
+<span><span class="fu"><a href="reference/PLNPCA_param.html">PLNPCA_param</a></span><span class="op">(</span>init_method <span class="op">=</span> <span class="st">"EM"</span>, init_niter <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># qualité maximale (coûteux) :</span></span>
+<span><span class="fu"><a href="reference/PLNPCA_param.html">PLNPCA_param</a></span><span class="op">(</span>inception <span class="op">=</span> <span class="fu"><a href="reference/PLN.html">PLN</a></span><span class="op">(</span><span class="va">formula</span>, <span class="va">data</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><code>"LM"</code> reste le défaut. <code>"EM"</code> est un opt-in documenté.</p>
+<hr></div>
+</div>
+<div class="section level2">
+<h2 id="id_36-plnnetwork--inception_backend-et-inception_niter--init-plus-rapide-et-meilleure-1506">36. PLNnetwork — <code>inception_backend</code> et <code>inception_niter</code> : init plus rapide et meilleure (15/06)<a class="anchor" aria-label="anchor" href="#id_36-plnnetwork--inception_backend-et-inception_niter--init-plus-rapide-et-meilleure-1506"></a></h2>
+<p><strong>Fichiers</strong> : <code>R/PLNnetwork.R</code>, <code>R/PLNnetworkfamily-class.R</code></p>
+<div class="section level3">
+<h3 id="motivation-3">Motivation<a class="anchor" aria-label="anchor" href="#motivation-3"></a></h3>
+<p><code>PLNnetworkfamily$initialize</code> lance toujours un PLN complet avant la grille de pénalités. Sur oaks (p=114), ce PLN d’inception prend ~4s (nlopt) sur les ~6.5s totales.</p>
+<p>Par ailleurs, <code>inception_cov = "diagonal"</code> était déjà supporté mais <strong>cassé</strong> : la Σ diagonale donne des off-diagonaux nuls → <code>max_pen = 0</code> → grille de pénalités invalide.</p>
+</div>
+<div class="section level3">
+<h3 id="deux-apports">Deux apports<a class="anchor" aria-label="anchor" href="#deux-apports"></a></h3>
+<p><strong>1. Correctif <code>inception_cov != "full"</code></strong></p>
+<p>Dans <code>Networkfamily$initialize</code>, la Σ pour <code>max_pen</code> est désormais calculée comme covariance empirique des résidus latents quand la Σ fittée n’est pas plein-rang :</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">Sigma_maxpen</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">control</span><span class="op">$</span><span class="va">sigma_inception</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">control</span><span class="op">$</span><span class="va">sigma_inception</span>          <span class="co"># résidus empiriques (M − X·B)ᵀ(M − X·B)/n</span></span>
+<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">control</span><span class="op">$</span><span class="va">inception</span><span class="op">$</span><span class="va">model_par</span><span class="op">$</span><span class="va">Sigma</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<p><code>sigma_inception</code> est calculé dans <code>PLNnetworkfamily$initialize</code> quand <code>inception_cov != "full"</code> ou <code>inception_niter</code> est fixé.</p>
+<p><strong>2. <code>inception_backend</code> et <code>inception_niter</code></strong></p>
+<p>Deux nouveaux paramètres dans <code><a href="reference/PLNnetwork_param.html">PLNnetwork_param()</a></code> :</p>
+<ul><li>
+<code>inception_backend = NULL</code> : backend pour le PLN d’inception seulement (le reste de la grille utilise <code>backend</code>).</li>
+<li>
+<code>inception_niter = NULL</code> : limite les itérations de l’inception (<code>maxit_em</code> pour builtin, <code>maxeval × 10</code> pour nlopt).</li>
+</ul><p>Implémentation : un <code>ctrl_inc</code> séparé est construit via <code>make_config_optim(inc_backend, ...)</code> et utilisé pour <code>PLNfit$new()</code> <strong>et</strong> <code>PLNfit$optimize()</code> (le backend doit être cohérent entre les deux car <code>setup_optimizer</code> est appelé à <code>new()</code>).</p>
+</div>
+<div class="section level3">
+<h3 id="résultats--benchmark-inception_backend--builtin-inception_niter--5">Résultats — benchmark <code>inception_backend = "builtin", inception_niter = 5</code>
+<a class="anchor" aria-label="anchor" href="#r%C3%A9sultats--benchmark-inception_backend--builtin-inception_niter--5"></a></h3>
+<table class="table"><thead><tr><th>Dataset</th>
+<th>nlopt full (défaut)</th>
+<th>builtin K=5</th>
+<th>Δ ll</th>
+<th>speedup</th>
+</tr></thead><tbody><tr><td>trichoptera (p=17)</td>
+<td>−1149</td>
+<td>−1148</td>
+<td><strong>+1</strong></td>
+<td>~1×</td>
+</tr><tr><td>barents (p=30)</td>
+<td>−5226</td>
+<td>−5106</td>
+<td><strong>+120</strong></td>
+<td>~1×</td>
+</tr><tr><td>oaks (p=114)</td>
+<td>−37827</td>
+<td>−37435</td>
+<td><strong>+392</strong></td>
+<td>1.4×</td>
+</tr></tbody></table><p>Le même phénomène de sur-convergence que PLNPCA s’applique : un inception PLN trop convergé (K=50 ou convergence complète builtin) donne un mauvais warm-start pour les modèles pénalisés. Le sweet spot est K=5–10.</p>
+</div>
+<div class="section level3">
+<h3 id="leçon-clé--m-sur-convergée-nuit-au-warm-start-pénalisé">Leçon clé — M sur-convergée nuit au warm-start pénalisé<a class="anchor" aria-label="anchor" href="#le%C3%A7on-cl%C3%A9--m-sur-converg%C3%A9e-nuit-au-warm-start-p%C3%A9nalis%C3%A9"></a></h3>
+<p>Un inception complètement convergé fournit une M optimale pour le problème <strong>non-pénalisé</strong>. Or, les modèles de la grille GLASSO ont besoin d’une M qui s’adapte à des Ω contraints (sparse). Partir d’une M très bien ajustée au PLN plein rend la transition vers les solutions sparse plus difficile. L’EM tronqué laisse M “à mi-chemin” — meilleur point de départ pour la relaxation pénalisée.</p>
+<p>Ce principe est général : <strong>l’init d’une collection de modèles plus contraints bénéficie d’une initialisation sous-convergée du modèle père</strong>.</p>
+</div>
+<div class="section level3">
+<h3 id="api-1">API<a class="anchor" aria-label="anchor" href="#api-1"></a></h3>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/PLNnetwork_param.html">PLNnetwork_param</a></span><span class="op">(</span>inception_backend <span class="op">=</span> <span class="st">"builtin"</span>, inception_niter <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
+<p>Recommandé pour grands p. Les défauts restent inchangés (pas de breaking change).</p>
+<hr></div>
+</div>
+<div class="section level2">
+<h2 id="id_37-plnnetwork--warm-start-de-ω-dans-glasso--expérience-et-abandon-1506">37. PLNnetwork — Warm-start de Ω dans GLASSO : expérience et abandon (15/06)<a class="anchor" aria-label="anchor" href="#id_37-plnnetwork--warm-start-de-%CF%89-dans-glasso--exp%C3%A9rience-et-abandon-1506"></a></h2>
+<p><strong>Fichiers</strong> : <code>R/PLNnetworkfit-class.R</code>, <code>R/PLNnetworkfamily-class.R</code> (revertés)</p>
+<div class="section level3">
+<h3 id="hypothèse">Hypothèse<a class="anchor" aria-label="anchor" href="#hypoth%C3%A8se"></a></h3>
+<p><code>glassoFast</code> supporte <code>start = "warm"</code> avec <code>w.init</code> (Σ) et <code>wi.init</code> (Ω). L’idée : passer le Ω de l’itération précédente comme point de départ du prochain appel GLASSO.</p>
+<p>Deux variantes testées : 1. <strong>Intra-boucle</strong> : warm-start Ω entre les itérations GLASSO→VEM d’un même modèle. 2. <strong>Inter-modèles</strong> : passer <code>Omega = models[[m]]$model_par$Omega</code> au modèle m+1 via <code><a href="https://rdrr.io/r/stats/update.html" class="external-link">update()</a></code>.</p>
+</div>
+<div class="section level3">
+<h3 id="résultats--oaks">Résultats — oaks<a class="anchor" aria-label="anchor" href="#r%C3%A9sultats--oaks"></a></h3>
+<table class="table"><thead><tr><th>Variante</th>
+<th>ll</th>
+<th>temps</th>
+<th>EM iters</th>
+</tr></thead><tbody><tr><td>cold (défaut)</td>
+<td><strong>−37827</strong></td>
+<td><strong>6.6s</strong></td>
+<td>90</td>
+</tr><tr><td>warm intra-boucle</td>
+<td>−37878</td>
+<td>7.6s</td>
+<td>90</td>
+</tr><tr><td>warm inter-modèles</td>
+<td>−37838</td>
+<td>10.9s</td>
+<td>88</td>
+</tr></tbody></table><p>Toutes les variantes sont pires en qualité <strong>et</strong> en temps.</p>
+</div>
+<div class="section level3">
+<h3 id="explication">Explication<a class="anchor" aria-label="anchor" href="#explication"></a></h3>
+<p><strong>Intra-boucle</strong> : entre deux appels GLASSO successifs, la Σ change (le VEM met à jour M et B → nouvelle Σ via le M-step). Le Ω optimal sous Σ_{k-1} est loin de l’optimum sous Σ_k. Le cold start (depuis la diagonale de S) est plus proche de la solution sous la nouvelle Σ.</p>
+<p><strong>Inter-modèles</strong> : le path de pénalités est <strong>décroissant</strong> (sparse → dense). Le Ω sparse du modèle m est un mauvais point de départ pour le modèle m+1 moins pénalisé : glassoFast doit “activer” de nouveaux edges depuis une solution trop sparse, ce qui est plus lent que partir de la diagonale. L’algorithme GLASSO warm-start standard fonctionne dans l’autre sens (dense → sparse).</p>
+</div>
+<div class="section level3">
+<h3 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a></h3>
+<p>Le cold start glassoFast (initialisation diagonale interne) est optimal dans les deux contextes du PLNnetwork. <strong>Revert complet.</strong> L’implémentation existante était correcte.</p>
+<hr></div>
+</div>
+<div class="section level2">
+<h2 id="id_38-vérification-du-mécanisme-warm-start-b-m-s2-dans-plnnetwork-1506">38. Vérification du mécanisme warm-start (B, M, S2) dans PLNnetwork (15/06)<a class="anchor" aria-label="anchor" href="#id_38-v%C3%A9rification-du-m%C3%A9canisme-warm-start-b-m-s2-dans-plnnetwork-1506"></a></h2>
+<div class="section level3">
+<h3 id="question">Question<a class="anchor" aria-label="anchor" href="#question"></a></h3>
+<p>Le warm-start séquentiel (B, M, S2) entre modèles consécutifs est-il correctement implémenté et efficace ?</p>
+</div>
+<div class="section level3">
+<h3 id="audit-du-code">Audit du code<a class="anchor" aria-label="anchor" href="#audit-du-code"></a></h3>
+<p><code>PLNnetworkfit$optimize</code> (boucle while) : - <code>args$params</code> est initialisé une fois avant la boucle (ligne 61), puis <strong>mis à jour ligne 83</strong> à chaque itération avec les valeurs courantes de <code>private$B/M/S2</code> — pas de figement. - <code>private$Sigma</code> est mis à jour après chaque VEM step via <code>do.call(self$update, optim_out)</code> — <code>nlopt_optimize_fixed</code> retourne une Sigma recalculée (M-step : <code>Σ = (M−XB)ᵀ(M−XB)/n + diag(S²)</code>). - Le GLASSO de l’itération suivante utilise donc la Sigma à jour. Le flux GLASSO→VEM→Σ est correct.</p>
+<p><code>PLNnetworkfamily$optimize</code> : après convergence du modèle m, le modèle m+1 reçoit (B, M, S2) de m via <code><a href="https://rdrr.io/r/stats/update.html" class="external-link">update()</a></code>.</p>
+</div>
+<div class="section level3">
+<h3 id="mesure-defficacité--oaks-30-modèles">Mesure d’efficacité — oaks (30 modèles)<a class="anchor" aria-label="anchor" href="#mesure-defficacit%C3%A9--oaks-30-mod%C3%A8les"></a></h3>
+<ul><li>Total EM outer iterations : <strong>90</strong> (moyenne 3 par modèle)</li>
+<li>Sans warm-start, on attendrait ~10–20 par modèle → économie d’un facteur ~5×</li>
+</ul><p>Le warm-start (B, M, S2) est bien implémenté et très efficace. Aucun bug ni amélioration à apporter.</p>
+<hr></div>
+</div>
+<div class="section level2">
+<h2 id="id_39-benchmark-backend-torch--algorithmes-et-learning-rate-1606">39. Benchmark backend torch — algorithmes et learning rate (16/06)<a class="anchor" aria-label="anchor" href="#id_39-benchmark-backend-torch--algorithmes-et-learning-rate-1606"></a></h2>
+<p><strong>Fichiers</strong> : <code>R/PLNfit-class.R</code></p>
+<div class="section level3">
+<h3 id="objectif">Objectif<a class="anchor" aria-label="anchor" href="#objectif"></a></h3>
+<p>Tester si d’autres choix de <code>algorithm</code> ou <code>lr</code> améliorent la convergence du backend torch pour PLN (full, diagonal, spherical) sur trichoptera, barents, oaks.</p>
+</div>
+<div class="section level3">
+<h3 id="résultats-benchmark--avant-fix">Résultats benchmark — avant fix<a class="anchor" aria-label="anchor" href="#r%C3%A9sultats-benchmark--avant-fix"></a></h3>
+<p>Références builtin : trichoptera=-1051.8, barents=-4410.1, oaks=-32028.5</p>
+<table class="table"><thead><tr><th>dataset</th>
+<th>cov</th>
+<th>algo</th>
+<th>lr</th>
+<th>loglik</th>
+<th>Δ vs builtin</th>
+</tr></thead><tbody><tr><td>trichoptera</td>
+<td>full</td>
+<td>RPROP</td>
+<td>0.1</td>
+<td>-1052.1</td>
+<td>-0.3 ✓</td>
+</tr><tr><td>trichoptera</td>
+<td>diagonal</td>
+<td>RPROP</td>
+<td>0.1</td>
+<td>-1110.0</td>
+<td>-0.3 ✓</td>
+</tr><tr><td>trichoptera</td>
+<td>spherical</td>
+<td>RPROP</td>
+<td>0.1</td>
+<td>-1158.5</td>
+<td>-0.1 ✓</td>
+</tr><tr><td>barents</td>
+<td>full</td>
+<td>RPROP</td>
+<td>0.1</td>
+<td>-4557.9</td>
+<td><strong>-147.8 ✗</strong></td>
+</tr><tr><td>barents</td>
+<td>diagonal</td>
+<td>RPROP</td>
+<td>0.1</td>
+<td>-4969.7</td>
+<td><strong>-260.4 ✗</strong></td>
+</tr><tr><td>barents</td>
+<td>spherical</td>
+<td>RPROP</td>
+<td>0.1</td>
+<td>-5035.8</td>
+<td><strong>-258.4 ✗</strong></td>
+</tr><tr><td>oaks</td>
+<td>full</td>
+<td>RPROP</td>
+<td>0.1</td>
+<td>-32038.0</td>
+<td>-9.5 ~</td>
+</tr><tr><td>oaks</td>
+<td>diagonal</td>
+<td>RPROP</td>
+<td>0.1</td>
+<td>-38410.5</td>
+<td>-2.8 ✓</td>
+</tr><tr><td>oaks</td>
+<td>spherical</td>
+<td>RPROP</td>
+<td>0.1</td>
+<td>-39450.6</td>
+<td>-0.4 ✓</td>
+</tr></tbody></table><p>ADAM (toutes config) : ne converge pas en 1000 epochs — uniformément inférieur à RPROP.</p>
+<p><strong>Diagnostic</strong> : barents a des covariables à grande magnitude (Depth ~300). Un pas RPROP de <code>step_max=50</code> sur B_Depth génère un changement de 50×300=15000 dans le prédicteur → overflow float32 (max ≈ exp(88)). Trichoptera et oaks n’ont que l’intercept, donc pas de problème.</p>
+</div>
+<div class="section level3">
+<h3 id="fix--normalisation-x-en-interne-dans-torch_optimize">Fix : normalisation X en interne dans <code>torch_optimize</code>
+<a class="anchor" aria-label="anchor" href="#fix--normalisation-x-en-interne-dans-torch_optimize"></a></h3>
+<p>Même approche que PLNPCA-nlopt (<code>PLNPCAfit-class.R</code> lignes 310-311) :</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">x_scales</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">X</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">data</span><span class="op">$</span><span class="va">X</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sweep.html" class="external-link">sweep</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">X</span>, <span class="fl">2</span>, <span class="va">x_scales</span>, <span class="st">"/"</span><span class="op">)</span></span>
+<span><span class="va">params</span><span class="op">$</span><span class="va">B</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sweep.html" class="external-link">sweep</a></span><span class="op">(</span><span class="va">params</span><span class="op">$</span><span class="va">B</span>, <span class="fl">1</span>, <span class="va">x_scales</span>, <span class="st">"*"</span><span class="op">)</span></span>
+<span><span class="co"># ... optimisation sur X_sc, B_sc ...</span></span>
+<span><span class="va">out</span><span class="op">$</span><span class="va">B</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sweep.html" class="external-link">sweep</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">B</span>, <span class="fl">1</span>, <span class="va">x_scales</span>, <span class="st">"/"</span><span class="op">)</span>  <span class="co"># dénormalisation</span></span></code></pre></div>
+<p>Invariant : <code>X_sc %*% B_sc = X %*% B</code> → résultat identique, gradient mieux conditionné.</p>
+</div>
+<div class="section level3">
+<h3 id="résultats-après-fix">Résultats après fix<a class="anchor" aria-label="anchor" href="#r%C3%A9sultats-apr%C3%A8s-fix"></a></h3>
+<table class="table"><colgroup><col width="16%"><col width="14%"><col width="8%"><col width="17%"><col width="18%"><col width="25%"></colgroup><thead><tr><th>dataset</th>
+<th>cov</th>
+<th>lr</th>
+<th>loglik avant</th>
+<th>loglik après</th>
+<th>Δ après vs builtin</th>
+</tr></thead><tbody><tr><td>barents</td>
+<td>full</td>
+<td>0.1</td>
+<td>-4557.9</td>
+<td><strong>-4457.8</strong></td>
+<td>-47.7</td>
+</tr><tr><td>barents</td>
+<td>full</td>
+<td>0.01</td>
+<td>-4628.3</td>
+<td><strong>-4452.7</strong></td>
+<td>-42.6</td>
+</tr><tr><td>barents</td>
+<td>diagonal</td>
+<td>0.1</td>
+<td>-4969.7</td>
+<td><strong>-4736.7</strong></td>
+<td>-27.4</td>
+</tr><tr><td>barents</td>
+<td>spherical</td>
+<td>0.1</td>
+<td>-5035.8</td>
+<td><strong>-4810.6</strong></td>
+<td>-33.2</td>
+</tr><tr><td>trichoptera</td>
+<td>full</td>
+<td>0.1</td>
+<td>-1052.1</td>
+<td>-1052.1</td>
+<td>-0.3 (inchangé)</td>
+</tr><tr><td>oaks</td>
+<td>full</td>
+<td>0.1</td>
+<td>-32038.0</td>
+<td>-32040.1</td>
+<td>-11.6 (~inchangé)</td>
+</tr></tbody></table><p>Le fix réduit les gaps de 3–8× sur barents. Torch reste en retrait d’nlopt sur barents (~-40 units vs -12 pour nlopt), mais l’ordre de grandeur est acceptable.</p>
+</div>
+<div class="section level3">
+<h3 id="conclusions">Conclusions<a class="anchor" aria-label="anchor" href="#conclusions"></a></h3>
+<ul><li>
+<strong>RPROP lr=0.1 reste le meilleur défaut</strong> — aucun changement de <code>config_default_torch</code> nécessaire</li>
+<li>
+<strong><code>step_sizes=(1e-3, 50)</code> conservé</strong> — avec X normalisé, le step max correspond à ~6 unités dans le prédicteur (pour Depth), acceptable</li>
+<li>
+<strong>ADAM reste déconseillé</strong> — ne converge pas dans le budget 1000 epochs</li>
+<li>
+<strong>torch est expérimental</strong> mais maintenant utilisable même avec des covariables à grande échelle</li>
+<li>Tests : 302 PASS, 0 FAIL</li>
+</ul><hr></div>
+</div>
+<div class="section level2">
+<h2 id="id_40-uniformisation-de-la-normalisation-x-pour-tous-les-modèles-et-backends-1606">40. Uniformisation de la normalisation X pour tous les modèles et backends (16/06)<a class="anchor" aria-label="anchor" href="#id_40-uniformisation-de-la-normalisation-x-pour-tous-les-mod%C3%A8les-et-backends-1606"></a></h2>
+<p><strong>Fichiers</strong> : <code>R/utils.R</code>, <code>R/PLNfit-class.R</code>, <code>R/PLNnetworkfit-class.R</code>, <code>R/ZIPLNfit-class.R</code>, <code>R/PLNPCAfit-class.R</code></p>
+<div class="section level3">
+<h3 id="motivation-4">Motivation<a class="anchor" aria-label="anchor" href="#motivation-4"></a></h3>
+<p>La normalisation des colonnes de X stabilise l’optimisation pour les covariables à grande magnitude (Depth~300). Elle était déjà appliquée dans PLNPCAfit et (après §39) dans <code>torch_optimize</code>. Objectif : l’appliquer uniformément à tous les modèles (PLN, PLNPCA, PLNnetwork, ZIPLN) et tous les backends (nlopt, builtin, torch).</p>
+</div>
+<div class="section level3">
+<h3 id="architecture">Architecture<a class="anchor" aria-label="anchor" href="#architecture"></a></h3>
+<p><strong>Helper centralisé</strong> dans <code>utils.R</code> :</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">normalize_covariates</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">X</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">scales</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">X</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>X_sc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sweep.html" class="external-link">sweep</a></span><span class="op">(</span><span class="va">X</span>, <span class="fl">2</span>, <span class="va">scales</span>, <span class="st">"/"</span><span class="op">)</span>, scales <span class="op">=</span> <span class="va">scales</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<p><strong>Pattern uniforme</strong> dans chaque <code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize()</a></code> :</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">nrm</span>  <span class="op">&lt;-</span> <span class="fu">normalize_covariates</span><span class="op">(</span><span class="va">covariates</span><span class="op">)</span></span>
+<span><span class="co"># passe X_sc et B_sc = sweep(B, 1, nrm$scales, "*") aux backends</span></span>
+<span><span class="co"># après optimisation : B &lt;- sweep(B_sc, 1, nrm$scales, "/")</span></span></code></pre></div>
+<p><strong>Invariant</strong> : <code>X_sc %*% B_sc = X %*% B</code> — le modèle est mathématiquement identique.</p>
+</div>
+<div class="section level3">
+<h3 id="changements-par-fichier">Changements par fichier<a class="anchor" aria-label="anchor" href="#changements-par-fichier"></a></h3>
+<table class="table"><colgroup><col width="42%"><col width="57%"></colgroup><thead><tr><th>Fichier</th>
+<th>Changement</th>
+</tr></thead><tbody><tr><td><code>R/utils.R</code></td>
+<td>Ajout de <code>normalize_covariates()</code>
+</td>
+</tr><tr><td><code>R/PLNfit-class.R</code></td>
+<td>
+<code>PLNfit$optimize()</code> et <code>PLNfit_fixedcov$optimize()</code> : normalise X/B, dénormalise B en sortie ; <code>torch_optimize</code> : normalisation supprimée (faite en amont)</td>
+</tr><tr><td><code>R/PLNnetworkfit-class.R</code></td>
+<td>
+<code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize()</a></code> : nrm avant la boucle EM, boucle entière en B_sc (warm-start inclus), dénormalisation après la boucle</td>
+</tr><tr><td><code>R/ZIPLNfit-class.R</code></td>
+<td>
+<code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize()</a></code> : X local normalisé au début, <code>parameters$B</code> initialisé en B_sc, dénormalisé dans <code>self$update()</code>
+</td>
+</tr><tr><td><code>R/PLNPCAfit-class.R</code></td>
+<td>
+<code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize()</a></code> : code inline remplacé par appel au helper (logique inchangée)</td>
+</tr></tbody></table><p>PLNLDAfit appelle <code>super$optimize()</code> → couvert automatiquement, sans modification.</p>
+</div>
+<div class="section level3">
+<h3 id="résultats-numériques">Résultats numériques<a class="anchor" aria-label="anchor" href="#r%C3%A9sultats-num%C3%A9riques"></a></h3>
+<p><strong>builtin (Newton 2e ordre) : identique</strong> — Newton H⁻¹g est invariant à l’échelle, résultat mathématiquement exact.</p>
+<table class="table"><thead><tr><th>backend</th>
+<th>dataset</th>
+<th>cov</th>
+<th>avant</th>
+<th>après</th>
+<th>Δ</th>
+</tr></thead><tbody><tr><td>nlopt</td>
+<td>trichoptera</td>
+<td>full</td>
+<td>-1053.0</td>
+<td>-1053.1</td>
+<td>~0</td>
+</tr><tr><td>nlopt</td>
+<td>barents</td>
+<td>full</td>
+<td>-4422.9</td>
+<td>-4425.6</td>
+<td>-2.7</td>
+</tr><tr><td>nlopt</td>
+<td>barents</td>
+<td>diagonal</td>
+<td>-4711.0</td>
+<td>-4710.4</td>
+<td>+0.6</td>
+</tr><tr><td>nlopt</td>
+<td>barents</td>
+<td>spherical</td>
+<td>-4778.5</td>
+<td>-4778.0</td>
+<td>+0.5</td>
+</tr><tr><td>nlopt</td>
+<td>oaks</td>
+<td>full</td>
+<td>-32048.5</td>
+<td>-32046.7</td>
+<td>+1.8</td>
+</tr></tbody></table><p>La légère régression sur barents full (-2.7 units) est due à CCSAQ qui converge vers un bassin légèrement différent avec X normalisé — pas un bug, mais un comportement d’optimisation non-convexe. Converge bien (1542 iterations, identique avec maxeval=50000). Les autres cas s’améliorent ou restent stables.</p>
+<p><strong>Vérification B</strong> : coefficients Depth restent ~0.01 (échelle originale), pas ~3 (échelle normalisée). Dénormalisation correcte sur tous les modèles.</p>
+</div>
+<div class="section level3">
+<h3 id="tests--979-pass-0-fail-0-warn">Tests : 979 PASS, 0 FAIL, 0 WARN<a class="anchor" aria-label="anchor" href="#tests--979-pass-0-fail-0-warn"></a></h3>
+<hr></div>
+</div>
+<div class="section level2">
+<h2 id="id_41-migration-futurefutureapply--parallelmclapply-1606">41. Migration future/future.apply → parallel/mclapply (16/06)<a class="anchor" aria-label="anchor" href="#id_41-migration-futurefutureapply--parallelmclapply-1606"></a></h2>
+<p><strong>Fichiers</strong> : <code>R/utils.R</code>, <code>R/PLNfit-class.R</code>, <code>R/PLNPCAfamily-class.R</code>, <code>R/PLNnetworkfamily-class.R</code>, <code>R/PLNmixturefamily-class.R</code>, <code>R/PLNmixture.R</code>, <code>R/PLNPCA.R</code>, <code>R/PLNmodels-package.R</code>, <code>R/PLNPCAfamily-class.R</code>, <code>DESCRIPTION</code></p>
+<div class="section level3">
+<h3 id="motivation-5">Motivation<a class="anchor" aria-label="anchor" href="#motivation-5"></a></h3>
+<p><code>future</code> + <code>future.apply</code> interagissent mal avec les bibliothèques BLAS multithreadées (OpenBLAS, MKL) : chaque worker <code>future::plan("multisession")</code> spawne un nouveau processus R qui réinitialise BLAS avec N threads → oversubscription (ex. 4 workers × 8 threads BLAS = 32 threads sur 8 cœurs).</p>
+<p><code><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">parallel::mclapply</a></code> utilise <code>fork()</code> — les workers héritent exactement de la config BLAS du parent. L’utilisateur contrôle l’équilibre directement :</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>OPENBLAS_NUM_THREADS <span class="op">=</span> <span class="st">"2"</span><span class="op">)</span>  <span class="co"># 2 threads BLAS par worker</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>mc.cores <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>                    <span class="co"># 4 workers → 8 cœurs au total</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="changements-1">Changements<a class="anchor" aria-label="anchor" href="#changements-1"></a></h3>
+<p><strong>10 remplacements</strong> dans 5 fichiers :</p>
+<table class="table"><colgroup><col width="27%"><col width="30%"><col width="21%"><col width="21%"></colgroup><thead><tr><th>Fichier</th>
+<th>Contexte</th>
+<th>Avant</th>
+<th>Après</th>
+</tr></thead><tbody><tr><td><code>R/utils.R</code></td>
+<td>Init GLM (<code>nullModelPoisson</code>)</td>
+<td><code>future_lapply</code></td>
+<td><code>mclapply</code></td>
+</tr><tr><td><code>R/PLNfit-class.R</code></td>
+<td>Jackknife (PLNfit)</td>
+<td><code>future_lapply</code></td>
+<td><code>mclapply</code></td>
+</tr><tr><td><code>R/PLNfit-class.R</code></td>
+<td>Bootstrap (PLNfit)</td>
+<td><code>future_lapply</code></td>
+<td><code>mclapply</code></td>
+</tr><tr><td><code>R/PLNfit-class.R</code></td>
+<td>Jackknife (PLNfit_fixedcov)</td>
+<td><code>future_lapply</code></td>
+<td><code>mclapply</code></td>
+</tr><tr><td><code>R/PLNPCAfamily-class.R</code></td>
+<td>Fitting parallèle des rangs</td>
+<td><code>future_lapply</code></td>
+<td><code>mclapply</code></td>
+</tr><tr><td><code>R/PLNnetworkfamily-class.R</code></td>
+<td>Stability selection PLNnetwork</td>
+<td><code>future_lapply</code></td>
+<td><code>mclapply</code></td>
+</tr><tr><td><code>R/PLNnetworkfamily-class.R</code></td>
+<td>Stability selection ZIPLNnetwork</td>
+<td><code>future_lapply</code></td>
+<td><code>mclapply</code></td>
+</tr><tr><td><code>R/PLNmixturefamily-class.R</code></td>
+<td><code>add_one_cluster</code></td>
+<td><code>future_lapply</code></td>
+<td><code>mclapply</code></td>
+</tr><tr><td><code>R/PLNmixturefamily-class.R</code></td>
+<td><code>remove_one_cluster</code></td>
+<td><code>future_lapply</code></td>
+<td><code>mclapply</code></td>
+</tr><tr><td><code>R/PLNmixturefamily-class.R</code></td>
+<td>
+<code>optimize</code> (fitting / nb clusters)</td>
+<td><code>future_lapply</code></td>
+<td><code>mclapply</code></td>
+</tr></tbody></table><p>Pattern uniforme : <code>parallel::mclapply(X, FUN, mc.cores = getOption("mc.cores", 1L))</code></p>
+<p><strong>Nettoyage :</strong> - <code>DESCRIPTION</code> : <code>future</code> et <code>future.apply</code> retirés des <code>Imports</code> (<code>parallel</code> était déjà listé) - <code>R/PLNmodels-package.R</code> : <code>@import future</code> et <code>@importFrom future.apply ...</code> supprimés - <code>R/PLNPCAfamily-class.R</code> : <code>@import future</code> supprimé - <code>R/PLNPCA.R</code>, <code>R/PLNmixture.R</code> : exemples de doc mis à jour (<code>future::plan(...)</code> → <code>options(mc.cores = N)</code>)</p>
+</div>
+<div class="section level3">
+<h3 id="usage-pour-lutilisateur">Usage pour l’utilisateur<a class="anchor" aria-label="anchor" href="#usage-pour-lutilisateur"></a></h3>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Activer la parallélisation (avant l'appel à PLNPCA, PLNmixture, stability_selection)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>mc.cores <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Recommandation avec BLAS multithreadé : équilibrer workers × threads</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>OPENBLAS_NUM_THREADS <span class="op">=</span> <span class="st">"2"</span><span class="op">)</span>  <span class="co"># 4 workers × 2 threads = 8 cœurs</span></span>
+<span></span>
+<span><span class="va">myPCA</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/PLNPCA.html">PLNPCA</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="va">...</span>, data <span class="op">=</span> <span class="va">trichoptera</span>, ranks <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Revenir en séquentiel</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>mc.cores <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<p>La valeur par défaut <code>getOption("mc.cores", 1L)</code> garantit le comportement séquentiel si l’utilisateur n’a pas positionné <code>mc.cores</code> — aucune régression de comportement.</p>
+</div>
+<div class="section level3">
+<h3 id="limitation">Limitation<a class="anchor" aria-label="anchor" href="#limitation"></a></h3>
+<p><code>mclapply</code> est fork-based et ne fonctionne pas nativement sur Windows (repasse en séquentiel silencieusement). Acceptable pour un package scientifique R principalement utilisé sur Linux/macOS/HPC.</p>
+</div>
+<div class="section level3">
+<h3 id="tests--979-pass-0-fail-0-warn-1">Tests : 979 PASS, 0 FAIL, 0 WARN<a class="anchor" aria-label="anchor" href="#tests--979-pass-0-fail-0-warn-1"></a></h3>
+<hr></div>
+</div>
+<div class="section level2">
+<h2 id="id_42-zipln--remplacement-de-linit-psclzeroinfl-par-lm-rapide-1606">42. ZIPLN — Remplacement de l’init <code>pscl::zeroinfl</code> par LM rapide (16/06)<a class="anchor" aria-label="anchor" href="#id_42-zipln--remplacement-de-linit-psclzeroinfl-par-lm-rapide-1606"></a></h2>
+<p><strong>Fichiers</strong> : <code>R/utils.R</code>, <code>R/ZIPLNfit-class.R</code>, <code>DESCRIPTION</code></p>
+<div class="section level3">
+<h3 id="motivation-6">Motivation<a class="anchor" aria-label="anchor" href="#motivation-6"></a></h3>
+<p>L’initialisation de ZIPLN parcourait toutes les <code>p</code> espèces en boucle et ajustait un modèle ZI Poisson univarié par espèce via <code><a href="https://rdrr.io/pkg/pscl/man/zeroinfl.html" class="external-link">pscl::zeroinfl</a></code> (EM complet, 2 GLM par itération). Sur oaks (p=114), cela représentait ~2 s d’init avant même de commencer l’EM ELBO.</p>
+<p>Le point de départ n’a pas besoin d’être la solution exacte du modèle ZI Poisson univarié — il suffit d’être dans le bon voisinage pour que l’ELBO converge. De plus, le modèle univarié ignore la structure de covariance jointe, ce qui peut en fait orienter l’init vers un mauvais bassin pour l’ELBO multivarié.</p>
+</div>
+<div class="section level3">
+<h3 id="nouvelle-fonction-compute_zipln_starting_point">Nouvelle fonction <code>compute_ZIPLN_starting_point</code>
+<a class="anchor" aria-label="anchor" href="#nouvelle-fonction-compute_zipln_starting_point"></a></h3>
+<p>Ajoutée dans <code>R/utils.R</code>, exportée publiquement :</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">compute_ZIPLN_starting_point</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">Y</span>, <span class="va">X</span>, <span class="va">X0</span>, <span class="va">O</span>, <span class="va">w</span> <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="co"># PLN component: 1 appel lm.fit multivarié (identique à compute_PLN_starting_point "LM")</span></span>
+<span>  <span class="va">sp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compute_PLN_starting_point.html">compute_PLN_starting_point</a></span><span class="op">(</span><span class="va">Y</span>, <span class="va">X</span>, <span class="va">O</span>, <span class="va">w</span>, method <span class="op">=</span> <span class="st">"LM"</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="co"># ZI component: taux de zéros empiriques par espèce</span></span>
+<span>  <span class="va">zero_ind</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">Y</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">*</span> <span class="fl">1.0</span></span>
+<span>  <span class="va">R</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">zero_ind</span><span class="op">)</span>, <span class="va">n</span>, <span class="va">p</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="co"># B0: p GLMs binomiaux sur indicateur de zéro vs X0 (seulement pour ziparam="covar", d0&gt;0)</span></span>
+<span>  <span class="va">B0</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="va">d0</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">p</span>, \<span class="op">(</span><span class="va">j</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm.fit</a></span><span class="op">(</span><span class="va">X0</span>, <span class="va">zero_ind</span><span class="op">[</span>,<span class="va">j</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">binomial</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">coef</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">d0</span><span class="op">)</span><span class="op">)</span></span>
+<span>        <span class="kw">else</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0.0</span>, <span class="fl">0L</span>, <span class="va">p</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>B <span class="op">=</span> <span class="va">sp</span><span class="op">$</span><span class="va">B</span>, M <span class="op">=</span> <span class="va">sp</span><span class="op">$</span><span class="va">M</span>, S2 <span class="op">=</span> <span class="va">sp</span><span class="op">$</span><span class="va">S2</span>, R <span class="op">=</span> <span class="va">R</span>, B0 <span class="op">=</span> <span class="va">B0</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="changements-dans-ziplnfitinitialize">Changements dans <code>ZIPLNfit$initialize</code>
+<a class="anchor" aria-label="anchor" href="#changements-dans-ziplnfitinitialize"></a></h3>
+<p>La boucle <code>for (j in 1:p)</code> avec <code>pscl::zeroinfl(...)</code> est remplacée par un unique appel :</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compute_ZIPLN_starting_point.html">compute_ZIPLN_starting_point</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">Y</span>, <span class="va">data</span><span class="op">$</span><span class="va">X</span>, <span class="va">data</span><span class="op">$</span><span class="va">X0</span>, <span class="va">data</span><span class="op">$</span><span class="va">O</span>, <span class="va">data</span><span class="op">$</span><span class="va">w</span><span class="op">)</span></span>
+<span><span class="va">private</span><span class="op">$</span><span class="va">B</span> <span class="op">&lt;-</span> <span class="va">sp</span><span class="op">$</span><span class="va">B</span>; <span class="va">private</span><span class="op">$</span><span class="va">B0</span> <span class="op">&lt;-</span> <span class="va">sp</span><span class="op">$</span><span class="va">B0</span></span>
+<span><span class="va">private</span><span class="op">$</span><span class="va">M</span> <span class="op">&lt;-</span> <span class="va">sp</span><span class="op">$</span><span class="va">M</span>; <span class="va">private</span><span class="op">$</span><span class="va">S2</span> <span class="op">&lt;-</span> <span class="va">sp</span><span class="op">$</span><span class="va">S2</span>; <span class="va">private</span><span class="op">$</span><span class="va">R</span> <span class="op">&lt;-</span> <span class="va">sp</span><span class="op">$</span><span class="va">R</span></span></code></pre></div>
+<p>Garde ajoutée pour le cas dégénéré <code>ncol(X)==0</code> (préserve l’erreur attendue par les tests).</p>
+</div>
+<div class="section level3">
+<h3 id="nettoyage">Nettoyage<a class="anchor" aria-label="anchor" href="#nettoyage"></a></h3>
+<ul><li>
+<code>@importFrom pscl zeroinfl</code> et <code>@importFrom tidyr replace_na</code> retirés de <code>ZIPLNfit-class.R</code>
+</li>
+<li>
+<code>pscl</code> retiré des <code>Imports</code> de <code>DESCRIPTION</code> (dépendance lourde, plus nécessaire)</li>
+</ul></div>
+<div class="section level3">
+<h3 id="gains-mesurés">Gains mesurés<a class="anchor" aria-label="anchor" href="#gains-mesur%C3%A9s"></a></h3>
+<p><strong>Temps d’initialisation :</strong></p>
+<table class="table"><thead><tr><th>Dataset</th>
+<th>p</th>
+<th>Init LM</th>
+<th>Init pscl (extrapolé)</th>
+<th>Rapport</th>
+</tr></thead><tbody><tr><td>barents</td>
+<td>30</td>
+<td>~9 ms</td>
+<td>~570 ms</td>
+<td><strong>×60</strong></td>
+</tr><tr><td>oaks</td>
+<td>114</td>
+<td>~9 ms</td>
+<td>~2170 ms</td>
+<td><strong>×240</strong></td>
+</tr></tbody></table><p><strong>Loglik final (backend builtin, zi=“single”) :</strong></p>
+<table class="table"><thead><tr><th>Dataset</th>
+<th>Nouvelle init LM</th>
+<th>Ancienne init pscl (réf)</th>
+<th>Δ</th>
+</tr></thead><tbody><tr><td>trichoptera</td>
+<td>−1139.9</td>
+<td>−1139.3</td>
+<td>≈ 0</td>
+</tr><tr><td>oaks</td>
+<td><strong>−32117</strong></td>
+<td>−32680</td>
+<td><strong>+563</strong></td>
+</tr><tr><td>barents</td>
+<td>−4307</td>
+<td>—</td>
+<td>—</td>
+</tr></tbody></table><p>L’init pscl orientait apparemment l’ELBO vers un mauvais bassin sur oaks : le modèle univarié sans structure de covariance jointe produit un B biaisé. L’init LM neutre laisse l’EM converger vers une meilleure solution.</p>
+</div>
+<div class="section level3">
+<h3 id="tests--147-pass-ziplnziplnnetwork-205-pass-plnfitbackends-449-pass-plnpcamixturese-0-fail">Tests : 147 PASS (zipln+ziplnnetwork), 205 PASS (plnfit+backends), 449 PASS (plnpca+mixture+se), 0 FAIL<a class="anchor" aria-label="anchor" href="#tests--147-pass-ziplnziplnnetwork-205-pass-plnfitbackends-449-pass-plnpcamixturese-0-fail"></a></h3>
+<hr></div>
+</div>
+<div class="section level2">
+<h2 id="id_43-ziplnnetwork--ouverture-du-backend-builtin-1606">43. ZIPLNnetwork — Ouverture du backend builtin (16/06)<a class="anchor" aria-label="anchor" href="#id_43-ziplnnetwork--ouverture-du-backend-builtin-1606"></a></h2>
+<p><strong>Fichiers</strong> : <code>R/ZIPLNnetwork.R</code></p>
+<div class="section level3">
+<h3 id="motivation-7">Motivation<a class="anchor" aria-label="anchor" href="#motivation-7"></a></h3>
+<p>ZIPLNnetwork était bloqué à <code>backend="nlopt"</code> par un <code>stopifnot(backend %in% c("nlopt"))</code>. Comme <code>ZIPLNfit_sparse</code> hérite de <code>ZIPLNfit</code> sans surcharger <code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize()</a></code>, le backend Newton (VE step conjoint M,ψ,R) était architecturalement compatible mais inaccessible.</p>
+</div>
+<div class="section level3">
+<h3 id="changement">Changement<a class="anchor" aria-label="anchor" href="#changement"></a></h3>
+<p>Remplacement du bloc config manuel par <code>make_config_optim(backend, config_optim, trace, extra = list(ftol_out=1e-6, maxit_out=50))</code>, parallèle à <code><a href="reference/PLNnetwork_param.html">PLNnetwork_param()</a></code>. Backend “builtin” exposé comme option.</p>
+</div>
+<div class="section level3">
+<h3 id="résultats-benchmark">Résultats benchmark<a class="anchor" aria-label="anchor" href="#r%C3%A9sultats-benchmark"></a></h3>
+<table class="table"><colgroup><col width="11%"><col width="14%"><col width="11%"><col width="27%"><col width="18%"><col width="16%"></colgroup><thead><tr><th>Dataset</th>
+<th>builtin ll</th>
+<th>nlopt ll</th>
+<th>Δ (builtin − nlopt)</th>
+<th>Temps builtin</th>
+<th>Temps nlopt</th>
+</tr></thead><tbody><tr><td>trichoptera</td>
+<td>−1252.8</td>
+<td>−1255.1</td>
+<td><strong>+2.3</strong></td>
+<td>2.5 s</td>
+<td>2.1 s</td>
+</tr><tr><td>oaks</td>
+<td>−37843</td>
+<td>−37602</td>
+<td><strong>−241</strong></td>
+<td>60 s</td>
+<td>22 s</td>
+</tr></tbody></table></div>
+<div class="section level3">
+<h3 id="conclusion--nlopt-reste-le-défaut">Conclusion : nlopt reste le défaut<a class="anchor" aria-label="anchor" href="#conclusion--nlopt-reste-le-d%C3%A9faut"></a></h3>
+<p>Le backend Newton est sur-agressif dans le contexte de la boucle EM alternante GLASSO ↔︎ VE step : sur oaks (grand dataset), il produit des oscillations et converge 2.7× plus lentement vers une moins bonne solution. Sur trichoptera (petit dataset), il est légèrement meilleur.</p>
+<p><strong>Decision :</strong> <code>backend = c("nlopt", "builtin")</code> — nlopt premier = défaut. “builtin” disponible comme option expérimentale pour petits datasets.</p>
+<p>Analogue à PLNPCA où nlopt est le défaut malgré que builtin soit souvent meilleur (mais moins stable).</p>
+</div>
+<div class="section level3">
+<h3 id="tests--55-pass-ziplnnetwork-0-fail">Tests : 55 PASS (ziplnnetwork), 0 FAIL<a class="anchor" aria-label="anchor" href="#tests--55-pass-ziplnnetwork-0-fail"></a></h3>
+<hr></div>
+</div>
+<div class="section level2">
+<h2 id="id_44-ziplnnetwork--e-step-partiel-newton-maxit_ve-1606">44. ZIPLNnetwork — E-step partiel Newton (<code>maxit_ve</code>) (16/06)<a class="anchor" aria-label="anchor" href="#id_44-ziplnnetwork--e-step-partiel-newton-maxit_ve-1606"></a></h2>
+<p><strong>Fichiers</strong> : <code>R/ZIPLNfit-class.R</code>, <code>R/ZIPLNnetwork.R</code></p>
+<div class="section level3">
+<h3 id="diagnostic-confirmé">Diagnostic confirmé<a class="anchor" aria-label="anchor" href="#diagnostic-confirm%C3%A9"></a></h3>
+<p>Le benchmark de la section 43 montrait que Newton (maxit_em=200) oscillait sous l’alternance GLASSO/VE-step. Hypothèse : le VE step sur-convergé produit un M* très précis pour le Ω courant, mais GLASSO change Ω substantiellement à l’itération suivante → zig-zag.</p>
+<p><strong>Solution : E-step partiel.</strong> Limiter Newton à K itérations par tour d’EM extérieur, sans attendre la convergence complète. Fondement théorique : EM généralisé (Neal &amp; Hinton 1998) — il suffit de <em>progresser</em>, pas de converger, à chaque E-step.</p>
+</div>
+<div class="section level3">
+<h3 id="implémentation-1">Implémentation<a class="anchor" aria-label="anchor" href="#impl%C3%A9mentation-1"></a></h3>
+<p><strong><code>ZIPLNfit-class.R</code></strong> — priorité dans la lecture du <code>maxiter</code> Newton :</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">maxiter</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">control</span><span class="op">$</span><span class="va">config_optim</span><span class="op">$</span><span class="va">maxit_ve</span><span class="op">)</span><span class="op">)</span>  <span class="va">control</span><span class="op">$</span><span class="va">config_optim</span><span class="op">$</span><span class="va">maxit_ve</span></span>
+<span>  <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">control</span><span class="op">$</span><span class="va">config_optim</span><span class="op">$</span><span class="va">maxeval</span><span class="op">)</span><span class="op">)</span> <span class="va">control</span><span class="op">$</span><span class="va">config_optim</span><span class="op">$</span><span class="va">maxeval</span></span>
+<span>  <span class="kw">else</span> <span class="fl">10000L</span><span class="op">)</span></span></code></pre></div>
+<p><code>maxit_ve</code> est lu en priorité sur <code>maxeval</code>, sans toucher au comportement standalone (<code><a href="reference/ZIPLN_param.html">ZIPLN_param()</a></code> ne définit pas <code>maxit_ve</code> → <code>maxeval=10000</code> comme avant).</p>
+<p><strong><code>ZIPLNnetwork.R</code></strong> — ajout dans <code>extra</code> :</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">extra</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ftol_out <span class="op">=</span> <span class="fl">1e-6</span>, maxit_out <span class="op">=</span> <span class="fl">50</span>, maxit_ve <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="benchmark-oaks-et-trichoptera">Benchmark (oaks et trichoptera)<a class="anchor" aria-label="anchor" href="#benchmark-oaks-et-trichoptera"></a></h3>
+<p>Sweep <code>maxit_ve ∈ {1, 5, 10, 50}</code> vs nlopt sur oaks :</p>
+<table class="table"><thead><tr><th><code>maxit_ve</code></th>
+<th>loglik</th>
+<th>temps</th>
+</tr></thead><tbody><tr><td><strong>1</strong></td>
+<td><strong>−37601.8</strong></td>
+<td>53.5 s</td>
+</tr><tr><td>5</td>
+<td>−37874.1</td>
+<td>57.8 s</td>
+</tr><tr><td>10</td>
+<td>−37817.3</td>
+<td>66.1 s</td>
+</tr><tr><td>50</td>
+<td>−37843.0</td>
+<td>93.8 s</td>
+</tr><tr><td>nlopt</td>
+<td>−37602.2</td>
+<td>31.1 s</td>
+</tr></tbody></table><p><code>maxit_ve = 1</code> : qualité identique à nlopt, oscillations disparues. Mais 1.7× plus lent que nlopt sur oaks (chaque pas Newton coûte plus cher que CCSAQ malgré moins d’itérations).</p>
+<p>Sur trichoptera :</p>
+<table class="table"><thead><tr><th>Backend</th>
+<th>loglik</th>
+</tr></thead><tbody><tr><td>builtin maxit_ve=1</td>
+<td><strong>−1243.6</strong></td>
+</tr><tr><td>builtin maxit_ve=5 (ancien)</td>
+<td>−1252.8</td>
+</tr><tr><td>nlopt</td>
+<td>−1255.1</td>
+</tr></tbody></table><p><strong>Défaut final : <code>nlopt</code> (stable, plus rapide sur grands datasets). <code>builtin</code> avec <code>maxit_ve=1</code> disponible comme option — meilleur sur petits datasets (+11.5 ll sur trichoptera), équivalent sur grands (oaks ≈ nlopt).</strong></p>
+</div>
+<div class="section level3">
+<h3 id="tests--55-pass-0-fail">Tests : 55 PASS, 0 FAIL<a class="anchor" aria-label="anchor" href="#tests--55-pass-0-fail"></a></h3>
+<hr></div>
+</div>
+<div class="section level2">
+<h2 id="id_45-plnnetwork--maxit_ve--e-step-partiel-newton-1606">45. PLNnetwork — <code>maxit_ve</code> : E-step partiel Newton (16/06)<a class="anchor" aria-label="anchor" href="#id_45-plnnetwork--maxit_ve--e-step-partiel-newton-1606"></a></h2>
+<p><strong>Fichiers</strong> : <code>R/PLNnetworkfit-class.R</code>, <code>R/PLNnetwork.R</code></p>
+<div class="section level3">
+<h3 id="contexte-2">Contexte<a class="anchor" aria-label="anchor" href="#contexte-2"></a></h3>
+<p>Même problème que ZIPLNnetwork (section 44) : le backend <code>builtin</code> sur-converge le VE step interne avant chaque M-step GLASSO, causant des oscillations. Solution identique : E-step partiel via <code>maxit_ve</code>.</p>
+</div>
+<div class="section level3">
+<h3 id="implémentation-2">Implémentation<a class="anchor" aria-label="anchor" href="#impl%C3%A9mentation-2"></a></h3>
+<p><strong><code>PLNnetworkfit-class.R</code></strong> — création d’un <code>inner_config</code> limitant les itérations internes :</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">inner_config</span> <span class="op">&lt;-</span> <span class="va">config</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">config</span><span class="op">$</span><span class="va">maxit_ve</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">config</span><span class="op">$</span><span class="va">backend</span> <span class="op">==</span> <span class="st">"builtin"</span><span class="op">)</span> <span class="va">inner_config</span><span class="op">$</span><span class="va">maxit_em</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">config</span><span class="op">$</span><span class="va">maxit_ve</span><span class="op">)</span></span>
+<span>  <span class="kw">else</span>                             <span class="va">inner_config</span><span class="op">$</span><span class="va">maxeval</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">config</span><span class="op">$</span><span class="va">maxit_ve</span><span class="op">)</span> <span class="op">*</span> <span class="fl">10L</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">...</span>, params<span class="op">=</span><span class="va">...</span>, config <span class="op">=</span> <span class="va">inner_config</span><span class="op">)</span></span></code></pre></div>
+<p><strong><code>PLNnetwork.R</code></strong> — <code>maxit_ve = NULL</code> ajouté comme paramètre explicite de <code><a href="reference/PLNnetwork_param.html">PLNnetwork_param()</a></code>. Fusionné dans <code>config_optim</code> avant <code>make_config_optim()</code>. Défaut <code>NULL</code> = comportement inchangé.</p>
+</div>
+<div class="section level3">
+<h3 id="benchmark-complet-trichoptera-barents-oaks">Benchmark complet (trichoptera, barents, oaks)<a class="anchor" aria-label="anchor" href="#benchmark-complet-trichoptera-barents-oaks"></a></h3>
+<table class="table"><colgroup><col width="20%"><col width="20%"><col width="20%"><col width="20%"><col width="20%"></colgroup><thead><tr><th>Configuration</th>
+<th>trichoptera</th>
+<th>barents</th>
+<th>oaks</th>
+<th>temps oaks</th>
+</tr></thead><tbody><tr><td>nlopt (défaut)</td>
+<td>−1237.2</td>
+<td>−4618.2</td>
+<td>−37919.6</td>
+<td>19 s</td>
+</tr><tr><td>nlopt + incep builtin niter=5</td>
+<td>−1206.4</td>
+<td>−4605.2</td>
+<td>−37418.0</td>
+<td>14 s</td>
+</tr><tr><td>builtin maxit_ve=1</td>
+<td>−1238.0</td>
+<td>−4597.1</td>
+<td>−38874.3 ← mauvais</td>
+<td>22 s</td>
+</tr><tr><td><strong>builtin maxit_ve=1 + incep builtin niter=5</strong></td>
+<td><strong>−1203.1</strong></td>
+<td><strong>−4495.3</strong></td>
+<td><strong>−37243.9</strong></td>
+<td><strong>20 s</strong></td>
+</tr></tbody></table></div>
+<div class="section level3">
+<h3 id="résultats">Résultats<a class="anchor" aria-label="anchor" href="#r%C3%A9sultats"></a></h3>
+<p>L’inception est <strong>critique</strong> pour <code>backend="builtin"</code> : sans elle, builtin seul démarre d’un mauvais bassin sur oaks (−38874 vs nlopt −37920). Avec <code>inception_backend="builtin"</code> + <code>inception_niter=5</code> :</p>
+<p><strong>Meilleure combinaison sur tous les datasets</strong> :</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/PLNnetwork_param.html">PLNnetwork_param</a></span><span class="op">(</span>backend<span class="op">=</span><span class="st">"builtin"</span>, maxit_ve<span class="op">=</span><span class="fl">1</span>,</span>
+<span>                 inception_backend<span class="op">=</span><span class="st">"builtin"</span>, inception_niter<span class="op">=</span><span class="fl">5</span><span class="op">)</span></span></code></pre></div>
+<p>Gains vs nlopt défaut : <strong>+34 ll (trichoptera), +123 ll (barents), +676 ll (oaks)</strong>, pour un temps similaire.</p>
+<p>La doc <code><a href="reference/PLNnetwork_param.html">PLNnetwork_param()</a></code> est mise à jour avec cette recommandation et un tableau de benchmark.</p>
+</div>
+<div class="section level3">
+<h3 id="approche-unifiée-plnnetwork--ziplnnetwork">Approche unifiée PLNnetwork / ZIPLNnetwork<a class="anchor" aria-label="anchor" href="#approche-unifi%C3%A9e-plnnetwork--ziplnnetwork"></a></h3>
+<p>Les deux modèles réseau utilisent désormais le même mécanisme <code>maxit_ve</code> pour le E-step partiel Newton. Pour ZIPLNnetwork, <code>maxit_ve=1</code> est le défaut de <code>backend="builtin"</code> (sans inception_backend car le bénéfice est moins critique). Pour PLNnetwork, l’inception builtin tronquée est essentielle.</p>
+</div>
+<div class="section level3">
+<h3 id="tests--143-pass-0-fail">Tests : 143 PASS, 0 FAIL<a class="anchor" aria-label="anchor" href="#tests--143-pass-0-fail"></a></h3>
+<hr></div>
 </div>
 </div>
+<div class="section level1">
+<h1 id="journal-de-développement--16-juin-2026">Journal de développement — 16 juin 2026<a class="anchor" aria-label="anchor" href="#journal-de-d%C3%A9veloppement--16-juin-2026"></a></h1>
+<p>Branche : <code>code-enhancement</code></p>
+<hr><div class="section level2">
+<h2 id="id_46-zipln--ve-step-profilée-sur-les-coefficients-de-régression-b-1606">46. ZIPLN — VE step profilée sur les coefficients de régression B (16/06)<a class="anchor" aria-label="anchor" href="#id_46-zipln--ve-step-profil%C3%A9e-sur-les-coefficients-de-r%C3%A9gression-b-1606"></a></h2>
+<p><strong>Fichiers</strong> : <code>src/optim_zi-pln.cpp</code></p>
+<div class="section level3">
+<h3 id="motivation-8">Motivation<a class="anchor" aria-label="anchor" href="#motivation-8"></a></h3>
+<p>Dans PLN (backend builtin), B est <strong>profilé</strong> à chaque pas Newton : <code>B = P_X * M</code> (fermé optimal), le pas Newton est ensuite projeté sur <code>null(X')</code> via <code>Q_step = step_M − X*(P_X*step_M)</code>. Cela élimine B de l’optimisation variationnelle interne et exploite le théorème de l’enveloppe.</p>
+<p>Pour ZIPLN, B n’apparaît que dans le terme KL : <code>−0.5 * trace(Ω * (M − XB)' (M − XB))</code>. L’estimateur fermé de B donné M est identique : <code>B_opt(M) = (X'X)⁻¹X'M</code>. La VE step de ZIPLN (Newton joint (M,ψ,R)) peut donc profiler B de la même façon.</p>
+</div>
+<div class="section level3">
+<h3 id="implémentation-ve_step_zipln_newton">Implémentation (<code>ve_step_zipln_newton</code>)<a class="anchor" aria-label="anchor" href="#impl%C3%A9mentation-ve_step_zipln_newton"></a></h3>
+<p>Changements dans <code>optim_zi-pln.cpp</code> :</p>
+<ol style="list-style-type: decimal"><li>
+<strong>Précalcul de P_X</strong> : <code>P_X = (X'X)⁻¹X'</code> (une seule fois par appel VE)</li>
+<li>
+<strong>Initialisation de Z</strong> : <code>Z = O + M_full</code> (tracké séparément de M_res pour A)</li>
+<li>
+<strong>Projection du pas Newton</strong> : <code>Q_step = step_M − X*(P_X * step_M)</code> — maintient M_res ∈ null(X’)</li>
+<li>
+<strong>Armijo cohérent</strong> : Z (pour A) avance par <code>step_M</code> (direction complète), M_res par <code>Q_step</code> (projeté)</li>
+<li>
+<strong>Retour</strong> : <code>M = Z − O</code> (M_full avec B profilé implicite)</li>
+</ol><p>Par le théorème de l’enveloppe, le gradient de l’ELBO profilé w.r.t. M_full = gradient en coordonnées M_res (∂f/∂B = 0 au point optimal). Le coût additionnel est <code>O(2dnp)</code> par itération Newton — négligeable devant <code>O(np²)</code> pour Omega.</p>
+<p>Validité : puisque le M-step pour B calcule <code>B = (X'X)⁻¹X'M</code> avant chaque VE step, on a <code>M_res_init = (I−H)*M_init ∈ null(X')</code>. Le projecteur Q_step préserve cette propriété — M_res reste dans null(X’) à chaque itération.</p>
+</div>
+<div class="section level3">
+<h3 id="résultats-benchmark-trichoptera--oaks">Résultats benchmark (trichoptera / oaks)<a class="anchor" aria-label="anchor" href="#r%C3%A9sultats-benchmark-trichoptera--oaks"></a></h3>
+<table class="table"><colgroup><col width="20%"><col width="34%"><col width="20%"><col width="25%"></colgroup><thead><tr><th>Backend</th>
+<th>trichoptera ll</th>
+<th>oaks ll</th>
+<th>oaks time</th>
+</tr></thead><tbody><tr><td>nlopt (fixed B)</td>
+<td>−1140.8</td>
+<td>−31596.5</td>
+<td>17.4s</td>
+</tr><tr><td><strong>builtin (B-profiling, défaut)</strong></td>
+<td><strong>−1139.3</strong></td>
+<td><strong>−31536.7</strong></td>
+<td><strong>15.2s</strong></td>
+</tr><tr><td>Δ (builtin − nlopt)</td>
+<td><strong>+1.5</strong></td>
+<td><strong>+60</strong></td>
+<td><strong>−2.2s</strong></td>
+</tr></tbody></table><p>Le backend <code>builtin</code> est déjà le défaut de <code><a href="reference/ZIPLN_param.html">ZIPLN_param()</a></code> — la B-profilation est donc active par défaut sans aucun changement d’API.</p>
+</div>
+<div class="section level3">
+<h3 id="tests--147-pass-0-fail">Tests : 147 PASS, 0 FAIL<a class="anchor" aria-label="anchor" href="#tests--147-pass-0-fail"></a></h3>
+</div>
+</div>
+</div>
+
 
   </div>
 

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PLNmodels</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0-9010</span>
       </span>
     </div>
 
@@ -101,8 +101,10 @@
 
 
 <dl><dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
-<dd><p>optimization back used, either "builtin" (default), "nlopt" or "torch".
-"builtin" is the built-in envelope-theorem Newton optimizer (does not depend on NLOPT).</p></dd>
+<dd><p>optimization backend, either <code>"builtin"</code> (default), <code>"nlopt"</code> or <code>"torch"</code>.
+<code>"builtin"</code> is the built-in envelope-theorem Newton optimizer; it is the fastest and most
+accurate backend, especially for large p with full covariance.
+<code>"torch"</code> is <strong>experimental</strong>: it may converge to suboptimal solutions or fail on some datasets.</p></dd>
 
 
 <dt id="arg-trace">trace<a class="anchor" aria-label="anchor" href="#arg-trace"></a></dt>
