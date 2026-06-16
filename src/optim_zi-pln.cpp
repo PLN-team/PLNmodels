@@ -344,7 +344,8 @@ Rcpp::List ve_step_zipln_nlopt(
     const arma::mat A    = arma::exp(O + M + 0.5 * S2);
     const arma::mat Rfin = (1.0 / (1.0 + arma::exp(-(A + logit_Pi)))) % Y_zero;
     // B_new = (X'X)^{-1} X' M — profiled analytically from the converged M.
-    // Returned so the caller can skip the separate B M-step.
+    // Returned for symmetry with the Newton path; the R caller currently recomputes
+    // B in its own M-step (using the updated M), so this field is informational.
     const arma::mat B_new = (X.n_cols > 0)
         ? arma::solve(X.t() * X, X.t() * M, arma::solve_opts::likely_sympd)
         : arma::mat(0, (arma::uword)M.n_cols);
@@ -504,7 +505,8 @@ Rcpp::List ve_step_zipln_newton(
     }
 
     const arma::mat M_full = Z - O;
-    // B profiled from final M_full: reuse P_X already computed above.
+    // B profiled from final M_full: P_X already computed above.
+    // The R caller recomputes B in its M-step (= P_X * M_full), so this is informational.
     const arma::mat B_new = do_profile ? P_X * M_full : B;
     return Rcpp::List::create(
         Rcpp::Named("status")     = 3,
