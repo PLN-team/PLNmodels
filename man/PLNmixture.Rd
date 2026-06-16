@@ -26,9 +26,9 @@ a collection of models with class \code{\link{PLNmixturefit}}
 Fit the mixture variants of the Poisson lognormal with a variational algorithm. Use the (g)lm syntax for model specification (covariates, offsets).
 }
 \examples{
-## Use future to dispatch the computations on 2 workers
+## Use parallel to dispatch the computations on 2 workers
 \dontrun{
-future::plan("multisession", workers = 2)
+options(mc.cores = 2)
 }
 
 data(trichoptera)
@@ -36,9 +36,8 @@ trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 myMixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), clusters = 1:4, data = trichoptera,
                          control = PLNmixture_param(smoothing = 'none'))
 
-# Shut down parallel workers
 \dontrun{
-future::plan("sequential")
+options(mc.cores = 1)
 }
 }
 \seealso{

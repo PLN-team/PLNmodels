@@ -198,7 +198,7 @@ struct SphericalCovTraits {
             : omega2(omega_mat(0, 0)), sigma2(1.0 / omega_mat(0, 0)) {}
         void update(const arma::mat & M, const arma::mat & S2, const arma::vec & w, double w_bar) {
             arma::uword p = M.n_cols;
-            sigma2 = arma::accu(arma::diagmat(w) * (M % M + S2)) / (double(p) * w_bar);
+            sigma2 = arma::accu(w.t() * (M % M + S2)) / (double(p) * w_bar);
             omega2 = 1.0 / sigma2;
         }
     };

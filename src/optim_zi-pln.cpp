@@ -274,6 +274,12 @@ Rcpp::List optim_zipln_psi(
 // is required by nlopt's line-search.  The final R is recomputed from the
 // optimised (M, S²) before returning.
 //
+// B is kept fixed at the value from the preceding M-step (= P_X * M_prev).
+// Dynamic B-profiling (like the Newton case) was tested but has no effect here:
+// at the start of each VE step B is already at its optimum, so H*M ≈ H*M_prev
+// throughout the small nlopt steps — the profiling adds O(dnp) cost per evaluation
+// with no improvement in loglik.
+//
 // Interface: takes Pi (ZI structural probability), returns M, S², R.
 
 // [[Rcpp::export]]
@@ -337,12 +343,18 @@ Rcpp::List ve_step_zipln_nlopt(
     const arma::mat S2   = arma::exp(psi);
     const arma::mat A    = arma::exp(O + M + 0.5 * S2);
     const arma::mat Rfin = (1.0 / (1.0 + arma::exp(-(A + logit_Pi)))) % Y_zero;
+    // B_new = (X'X)^{-1} X' M — profiled analytically from the converged M.
+    // Returned so the caller can skip the separate B M-step.
+    const arma::mat B_new = (X.n_cols > 0)
+        ? arma::solve(X.t() * X, X.t() * M, arma::solve_opts::likely_sympd)
+        : arma::mat(0, (arma::uword)M.n_cols);
     return Rcpp::List::create(
         Rcpp::Named("status")     = static_cast<int>(result.status),
         Rcpp::Named("iterations") = result.nb_iterations,
         Rcpp::Named("M")  = M,
         Rcpp::Named("S2") = S2,
-        Rcpp::Named("R")  = Rfin
+        Rcpp::Named("R")  = Rfin,
+        Rcpp::Named("B")  = B_new
     );
 }
 
@@ -491,11 +503,15 @@ Rcpp::List ve_step_zipln_newton(
         if (std::abs(obj - obj_prev) < ftol_rel * (1.0 + std::abs(obj_prev))) break;
     }
 
+    const arma::mat M_full = Z - O;
+    // B profiled from final M_full: reuse P_X already computed above.
+    const arma::mat B_new = do_profile ? P_X * M_full : B;
     return Rcpp::List::create(
         Rcpp::Named("status")     = 3,
         Rcpp::Named("iterations") = iter,
-        Rcpp::Named("M")          = Z - O,    // M_full with profiled B embedded
+        Rcpp::Named("M")          = M_full,
         Rcpp::Named("S2")         = S2,
-        Rcpp::Named("R")          = R
+        Rcpp::Named("R")          = R,
+        Rcpp::Named("B")          = B_new
     );
 }

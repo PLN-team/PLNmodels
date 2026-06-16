@@ -59,13 +59,17 @@ Rcpp::List nlopt_optimize_rank(
         const arma::mat S2 = arma::exp(psi);                             // S² = exp(ψ)
         arma::mat Z = O + X * B + M * C.t();
         arma::mat A = arma::exp(Z + 0.5 * S2 * C2.t());
-        double objective = accu(diagmat(w) * (A - Y % Z))
-                         + 0.5 * accu(diagmat(w) * (M % M + S2 - psi - 1.));
+        const arma::mat AmY = A - Y;  // gradient uses (A-Y); objective uses (A - Y%Z)
+        double objective = accu(w.t() * arma::sum(A - Y % Z, 1))
+                         + 0.5 * accu(w.t() * arma::sum(M % M + S2 - psi - 1., 1));
 
-        metadata.map<B_ID>  (grad) = Xw.t() * (A - Y);
-        metadata.map<C_ID>  (grad) = (diagmat(w) * (A - Y)).t() * M + (A.t() * (S2.each_col() % w)) % C;
-        metadata.map<M_ID>  (grad) = diagmat(w) * ((A - Y) * C + M);
-        metadata.map<PSI_ID>(grad) = diagmat(w) * (0.5 * (S2 % (1. + A * C2) - 1.));
+        arma::mat gC  = (AmY.each_col() % w).t() * M + (A.t() * (S2.each_col() % w)) % C;
+        arma::mat gM  = AmY * C + M;  gM.each_col()  %= w;
+        arma::mat gPS = 0.5 * (S2 % (1. + A * C2) - 1.); gPS.each_col() %= w;
+        metadata.map<B_ID>  (grad) = Xw.t() * AmY;
+        metadata.map<C_ID>  (grad) = gC;
+        metadata.map<M_ID>  (grad) = gM;
+        metadata.map<PSI_ID>(grad) = gPS;
 
         objective_vec.push_back(objective);
         return objective;
@@ -147,11 +151,14 @@ Rcpp::List nlopt_optimize_vestep_rank(
         arma::mat S2 = arma::exp(psi);
         arma::mat Z  = O + XB + M * C.t();
         arma::mat A  = arma::exp(Z + 0.5 * S2 * C2.t());
-        double objective = accu(diagmat(w) * (A - Y % Z))
-                         + 0.5 * accu(diagmat(w) * (M % M + S2 - psi - 1.));
+        const arma::mat AmY = A - Y;  // gradient uses (A-Y); objective uses (A - Y%Z)
+        double objective = accu(w.t() * arma::sum(A - Y % Z, 1))
+                         + 0.5 * accu(w.t() * arma::sum(M % M + S2 - psi - 1., 1));
 
-        metadata.map<M_ID>  (grad) = diagmat(w) * ((A - Y) * C + M);
-        metadata.map<PSI_ID>(grad) = diagmat(w) * (0.5 * (S2 % (1. + A * C2) - 1.));
+        arma::mat gM  = AmY * C + M;  gM.each_col()  %= w;
+        arma::mat gPS = 0.5 * (S2 % (1. + A * C2) - 1.); gPS.each_col() %= w;
+        metadata.map<M_ID>  (grad) = gM;
+        metadata.map<PSI_ID>(grad) = gPS;
 
         objective_vec.push_back(objective);
         return objective;

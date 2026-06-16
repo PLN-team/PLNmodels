@@ -48,7 +48,7 @@ Rcpp::List nlopt_optimize_diagonal(
         const arma::mat B         = P_X * M_full;
         const arma::mat M_res     = M_full - X * B;
         const arma::rowvec diag_sigma = w.t() * (M_res % M_res + S2) / w_bar;
-        const arma::rowvec inv_sigma2 = arma::pow(diag_sigma, -1);
+        const arma::rowvec inv_sigma2 = arma::pow(arma::clamp(diag_sigma, 1e-20, arma::datum::inf), -1);
         arma::mat gM, gS;
         const double obj = diag_cov_obj_grad_impl(M_res, O + M_full, S2, logS2,
                                                    inv_sigma2, 0.5 * w_bar * accu(arma::log(diag_sigma)),
@@ -151,7 +151,7 @@ Rcpp::List nlopt_optimize_vestep_diagonal(
     arma::mat Z = O + M;
     arma::mat A = exp(Z + 0.5 * S2);
     arma::vec omega2 = Omega.diag();
-    arma::mat loglik =
+    arma::vec loglik =
       sum(Y % Z - A + 0.5 * logS2, 1) - 0.5 * (pow(M_res, 2) + S2) * omega2 + 0.5 * sum(log(omega2)) + ki(Y);
 
     Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));

@@ -9,6 +9,7 @@ PLNnetwork_param(
   inception_cov = c("full", "spherical", "diagonal"),
   inception_backend = NULL,
   inception_niter = NULL,
+  maxit_ve = NULL,
   trace = 1,
   n_penalties = 30,
   min_ratio = 0.1,
@@ -20,8 +21,11 @@ PLNnetwork_param(
 )
 }
 \arguments{
-\item{backend}{optimization back used, either "nlopt", "builtin" or "torch". Default is "nlopt".
-Note: the "nlopt" backend converges better in PLNnetwork's outer glasso alternation than "builtin".}
+\item{backend}{optimization backend, either \code{"nlopt"} (default, CCSAQ), \code{"builtin"} (Newton) or
+\code{"torch"}. For the per-penalty GLASSO alternation, \code{"builtin"} with \code{maxit_ve = 1} and
+\code{inception_backend = "builtin"} + \code{inception_niter = 5} is the \strong{recommended combination}:
+it consistently finds the best ELBO across datasets (see \code{maxit_ve} and \code{inception_backend}).
+Without a good inception, \code{"builtin"} alone can converge to a poor basin on large datasets.}
 
 \item{inception_cov}{Covariance structure used for the inception PLN:
 \code{"full"} (default), \code{"diagonal"} or \code{"spherical"}. Non-full structures are now
@@ -32,14 +36,14 @@ avoiding the broken \code{max_pen = 0} that previously occurred with diagonal/sp
 \item{inception_backend}{character or \code{NULL} (default). Backend for the inception PLN
 only; the penalty grid models always use \code{backend}. \strong{Recommended}: set
 \code{inception_backend = "builtin"} with \code{inception_niter = 5} for a consistently
-better initialisation at lower cost — the truncated Newton inception reaches a better
-basin for the GLASSO alternation than a fully-converged nlopt inception. Benchmark
-on three datasets (trichoptera p=17, barents p=30, oaks p=114):
+better starting basin — especially important when \code{backend = "builtin"}. Benchmark
+on three datasets (trichoptera p=17, barents p=30, oaks p=114) for the full recommended
+combination \verb{backend="builtin", maxit_ve=1, inception_backend="builtin", inception_niter=5}:
 \tabular{lrr}{
-dataset \tab Δ loglik (vs nlopt full) \tab speedup \cr
-trichoptera \tab +1 \tab ~1× \cr
-barents     \tab +120 \tab ~1× \cr
-oaks        \tab +392 \tab 1.4× \cr
+dataset     \tab Δ loglik (vs nlopt default) \tab time \cr
+trichoptera \tab +34  \tab ~1× \cr
+barents     \tab +123 \tab ~1× \cr
+oaks        \tab +676 \tab ~1× \cr
 }
 Ignored when \code{inception} is supplied by the user.}
 
@@ -51,6 +55,13 @@ optimum, which would make it harder to warm-start the sparse penalty models. Val
 above ~20 typically hurt. When \code{inception_cov != "full"} or \code{inception_niter} is set,
 the penalty grid uses the empirical residual covariance \verb{crossprod(M − X·B) / n}
 for \code{max_pen}.}
+
+\item{maxit_ve}{integer or \code{NULL} (default). Maximum number of inner VE-step iterations
+per outer GLASSO alternation turn. When \code{NULL} (default), inner VE step runs to full
+convergence (\code{maxit_em} for \code{"builtin"}, \code{maxeval} for \code{"nlopt"}). Setting \code{maxit_ve = 1}
+implements a \strong{partial E-step} (generalized EM): one Newton step per outer turn prevents
+over-convergence that causes oscillations with the GLASSO M-step. \strong{Recommended value: 1}
+when \code{backend = "builtin"} — see \code{backend} for the full recommended combination.}
 
 \item{trace}{a integer for verbosity.}
 

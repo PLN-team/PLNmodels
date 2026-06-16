@@ -5,7 +5,7 @@
 \title{Control of ZIPLNnetwork fit}
 \usage{
 ZIPLNnetwork_param(
-  backend = c("nlopt"),
+  backend = c("nlopt", "builtin"),
   inception_cov = c("full", "spherical", "diagonal"),
   trace = 1,
   n_penalties = 30,
@@ -18,8 +18,7 @@ ZIPLNnetwork_param(
 )
 }
 \arguments{
-\item{backend}{optimization back used, either "nlopt", "builtin" or "torch". Default is "nlopt".
-Note: the "nlopt" backend converges better in PLNnetwork's outer glasso alternation than "builtin".}
+\item{backend}{optimization backend, either \code{"nlopt"} (default, CCSAQ — recommended for ZIPLNnetwork: stable under alternating GLASSO/VE-step EM) or \code{"builtin"} (Newton joint on (M,ψ,R) — can be better on small datasets but may oscillate on large ones).}
 
 \item{inception_cov}{Covariance structure used for the inception PLN:
 \code{"full"} (default), \code{"diagonal"} or \code{"spherical"}. Non-full structures are now
@@ -55,7 +54,7 @@ Helper to define list of parameters to control the ZIPLNnetwork fit. All argumen
 See \code{\link[=PLNnetwork_param]{PLNnetwork_param()}} for a full description of the optimization parameters. Note that some defaults values are different than those used in \code{\link[=PLNnetwork_param]{PLNnetwork_param()}}:
 \itemize{
 \item "ftol_out" (outer loop convergence tolerance the objective function) is set by default to 1e-6
-\item "maxit_out" (max number of iterations for the outer loop) is set by default to 100
+\item "maxit_out" (max number of iterations for the outer loop) is set by default to 50
 }
 }
 \seealso{
