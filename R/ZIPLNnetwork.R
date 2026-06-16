@@ -85,7 +85,7 @@ ZIPLNnetwork_param <- function(
   backend <- match.arg(backend)
   inception_cov <- match.arg(inception_cov)
   config_opt <- make_config_optim(backend, config_optim, trace,
-                                  extra = list(ftol_out = 1e-6, maxit_out = 50))
+                                  extra = list(ftol_out = 1e-6, maxit_out = 50, maxit_ve = 1L))
 
   structure(list(
     backend           = backend          ,

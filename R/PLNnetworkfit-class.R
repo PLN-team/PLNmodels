@@ -62,9 +62,17 @@ PLNnetworkfit <- R6Class(
       convergence <- numeric(config$maxit_em)
       ## start from the standard PLN at initialization
       objective.old <- -self$loglik
+      ## Limit inner VE iterations per outer GLASSO turn (partial E-step, section 44).
+      ## maxit_ve limits maxit_em (builtin) or maxeval (nlopt) of the inner optimizer.
+      ## NULL = no limit = full convergence (default, backward-compatible).
+      inner_config <- config
+      if (!is.null(config$maxit_ve)) {
+        if (config$backend == "builtin") inner_config$maxit_em <- as.integer(config$maxit_ve)
+        else                             inner_config$maxeval  <- as.integer(config$maxit_ve) * 10L
+      }
       args <- list(data   = list(Y = data$Y, X = nrm$X_sc, O = data$O, w = data$w),
                    params = list(B = B_sc, M = private$M, S2 = private$S2),
-                   config = config)
+                   config = inner_config)
       M_res_init <- private$M - nrm$X_sc %*% B_sc
       private$Sigma <- crossprod(M_res_init)/self$n + diag(colMeans(private$S2), self$p, self$p)
       while (!cond) {
