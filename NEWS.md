@@ -1,9 +1,8 @@
-# PLNmodels 1.3.0
+# PLNmodels 1.3.0-9010
 
 ## New backends and optimizers
 
-* **New built-in Newton optimizer** (`backend = "builtin"`) for PLN, ZIPLN and PLNPCA,
-  now the default for PLN and ZIPLN. Uses envelope-theorem Newton steps with strong Wolfe line search; does not depend on NLOPT. Substantially faster and more accurate than nlopt on large datasets with full covariance (e.g. +30 000 loglik on microcosm, p=259).
+* **New built-in Newton optimizer** (`backend = "builtin"`) for PLN, ZIPLN and PLNPCA, now the default for PLN and ZIPLN. Uses envelope-theorem Newton steps with strong Wolfe line search; does not depend on NLOPT. Substantially faster and more accurate than nlopt on large datasets with full covariance (e.g. +30 000 loglik on microcosm, p=259).
 
 * **Fix critical convergence bug** in PLN/PLNPCA with nlopt: premature termination due to ill-conditioned X scaling triggered the XTOL stopping criterion after very few iterations
   (e.g. 14 iter on barents, loglik -8520 instead of -4400). The built-in backend is immune to this bug; nlopt is also fixed via better parameter scaling.
@@ -14,9 +13,27 @@
 
 * **torch backend marked experimental**: the torch backend is now clearly documented as experimental. It emits a message on use and is not recommended for PLNPCA (systematically lower loglik than nlopt/builtin). It remains available for PLN on diagonal/spherical covariance where it can be faster.
 
+* **ZIPLN  initialization**: `pscl::zeroinfl` is replaced by an internal
+  `compute_ZIPLN_starting_point()` that uses a standard LM (for B) and a binomial
+  GLM (for the ZI parameters). This is 60–240× faster and consistently finds better
+  starting points (+1263 loglik on `oaks`, p=114). The `pscl` package is no longer
+  a dependency.
+
 ## Other changes
 
+* **Uniform covariate normalization**: a `normalize_covariates()` helper (zero
+  mean, unit variance per column) is now applied consistently in all `optimize()`
+  methods (PLN, PLNPCA, PLNnetwork, ZIPLN). This makes the nlopt XTOL criterion
+  scale-invariant and stabilises the torch backend.
+
+* **Parallelism backend**: `future.apply::future_lapply` is replaced by
+  `parallel::mclapply` throughout (stability selection for PLNnetwork /
+  ZIPLNnetwork). Use `options(mc.cores = N)` to set the number of cores.
+
 * various fix in ZIPLN model (prediction and initialization #146, #149, #150, #152)
+* Correctness fix in PLNPCA rank model: the objective
+  function used `A − Y` where it should use `A − Y ⊙ Z`
+* inception an init improvement in ZIPLNnetwork
 * microcosm data now included (#153, #154)
 * add AIC for PLN and ZIPLN classes (#151)
 * other fixes (#155)
