@@ -335,8 +335,15 @@ PLNnetworkfamily <- R6Class(
         ## Determine inception backend (may differ from the main grid backend)
         inc_backend <- if (!is.null(control$inception_backend)) control$inception_backend else control$backend
 
-        ## Build a standalone optimizer config for the inception PLN
-        cfg_inception <- make_config_optim(inc_backend, list(), trace = 0)
+        ## Build a standalone optimizer config for the inception PLN.
+        ## Start from control$config_optim (carries ftol_em, maxit_em, etc. set by
+        ## PLNnetwork_param) and only rebuild from scratch when a different backend
+        ## is explicitly requested (different optimizer family = incompatible fields).
+        cfg_inception <- if (!is.null(control$inception_backend) && inc_backend != control$backend) {
+          make_config_optim(inc_backend, list(), trace = 0)
+        } else {
+          modifyList(control$config_optim, list(trace = 0))
+        }
         if (!is.null(control$inception_niter)) {
           niter <- as.integer(control$inception_niter)
           if (inc_backend == "builtin") {
