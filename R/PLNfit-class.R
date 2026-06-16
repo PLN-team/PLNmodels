@@ -107,6 +107,7 @@ PLNfit <- R6Class(
       if (config$trace >  1)
         message (paste("optimizing with device: ", config$device))
       ## Conversion of data and parameters to torch tensors (pointers)
+      ## X is already column-normalized by optimize() before this call.
       data    <- lapply(data, torch_tensor, dtype = torch_float32(), device = config$device)  # Y, X, O, w
       S2_init <- params$S2      # extract S2 as plain R matrix before torch conversion
       params$S2 <- NULL         # remove it: psi (leaf tensor) replaces it
@@ -258,7 +259,7 @@ PLNfit <- R6Class(
     },
 
     variance_jackknife = function(Y, X, O, w, config = config_default_nlopt) {
-      jacks <- future.apply::future_lapply(seq_len(self$n), function(i) {
+      jacks <- parallel::mclapply(seq_len(self$n), function(i) {
         data <- list(Y = Y[-i, , drop = FALSE],
                      X = X[-i, , drop = FALSE],
                      O = O[-i, , drop = FALSE],
@@ -268,7 +269,7 @@ PLNfit <- R6Class(
                      config = config)
         optim_out <- do.call(private$optimizer$main, args)
         optim_out[c("B", "Omega")]
-      }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
+      }, mc.cores = getOption("mc.cores", 1L))
 
       B_jack <- jacks %>% map("B") %>% reduce(`+`) / self$n
       var_jack   <- jacks %>% map("B") %>% map(~( (. - B_jack)^2)) %>% reduce(`+`) %>%
@@ -290,7 +291,7 @@ PLNfit <- R6Class(
 
     variance_bootstrap = function(Y, X, O, w, n_resamples = 100, config = config_default_nlopt) {
       resamples <- replicate(n_resamples, sample.int(self$n, replace = TRUE), simplify = FALSE)
-      boots <- future.apply::future_lapply(resamples, function(resample) {
+      boots <- parallel::mclapply(resamples, function(resample) {
         data <- list(Y = Y[resample, , drop = FALSE],
                      X = X[resample, , drop = FALSE],
                      O = O[resample, , drop = FALSE],
@@ -306,7 +307,7 @@ PLNfit <- R6Class(
 
         optim_out <- do.call(private$optimizer$main, args)
         optim_out[c("B", "Omega", "monitoring")]
-      }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
+      }, mc.cores = getOption("mc.cores", 1L))
 
       B_boots <- boots %>% map("B") %>% reduce(`+`) / n_resamples
       attr(private$B, "variance_bootstrap") <-
@@ -427,10 +428,13 @@ PLNfit <- R6Class(
 
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, config) {
-      args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
-                   params = list(B = private$B, M = private$M, S2 = private$S2),
+      nrm  <- normalize_covariates(covariates)
+      args <- list(data   = list(Y = responses, X = nrm$X_sc, O = offsets, w = weights),
+                   params = list(B = sweep(private$B, 1, nrm$scales, "*"),
+                                 M = private$M, S2 = private$S2),
                    config = config)
       optim_out <- do.call(private$optimizer$main, args)
+      optim_out$B <- sweep(optim_out$B, 1, nrm$scales, "/")
       do.call(self$update, optim_out)
     },
 
@@ -952,10 +956,13 @@ PLNfit_fixedcov <- R6Class(
     },
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, config) {
-      args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
-                   params = list(B = private$B, M = private$M, S2 = private$S2, Omega = private$Omega),
+      nrm  <- normalize_covariates(covariates)
+      args <- list(data   = list(Y = responses, X = nrm$X_sc, O = offsets, w = weights),
+                   params = list(B = sweep(private$B, 1, nrm$scales, "*"),
+                                 M = private$M, S2 = private$S2, Omega = private$Omega),
                    config = config)
       optim_out <- do.call(private$optimizer$main, args)
+      optim_out$B <- sweep(optim_out$B, 1, nrm$scales, "/")
       do.call(self$update, optim_out)
       private$Sigma <- solve(optim_out$Omega)
     }
@@ -987,7 +994,7 @@ PLNfit_fixedcov <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     variance_jackknife = function(Y, X, O, w, config = config_default_nlopt) {
-      jacks <- future.apply::future_lapply(seq_len(self$n), function(i) {
+      jacks <- parallel::mclapply(seq_len(self$n), function(i) {
         data <- list(Y = Y[-i, , drop = FALSE],
                      X = X[-i, , drop = FALSE],
                      O = O[-i, , drop = FALSE],
@@ -997,7 +1004,7 @@ PLNfit_fixedcov <- R6Class(
                      config = config)
         optim_out <- do.call(private$optimizer$main, args)
         optim_out[c("B", "Omega")]
-      }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
+      }, mc.cores = getOption("mc.cores", 1L))
 
       B_jack <- jacks %>% map("B") %>% reduce(`+`) / self$n
       var_jack   <- jacks %>% map("B") %>% map(~( (. - B_jack)^2)) %>% reduce(`+`) %>%

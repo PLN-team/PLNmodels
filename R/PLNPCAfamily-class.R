@@ -20,7 +20,6 @@
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
 #' @import ggplot2
-#' @import future
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
@@ -118,7 +117,7 @@ PLNPCAfamily <- R6Class(
           self$models[[i]] <- model
         }
       } else {
-        self$models <- future.apply::future_lapply(self$models, function(model) {
+        self$models <- parallel::mclapply(self$models, function(model) {
           if (config$trace == 1) {
             cat("\t Rank approximation =", model$rank, "\r")
             flush.console()
@@ -129,7 +128,7 @@ PLNPCAfamily <- R6Class(
           }
           model$optimize(self$responses, self$covariates, self$offsets, self$weights, config)
           model
-        }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
+        }, mc.cores = getOption("mc.cores", 1L))
       }
     },
 

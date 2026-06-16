@@ -67,12 +67,10 @@ ZIPLNfit <- R6Class(
     },
 
     #' @description Initialize a [`ZIPLNfit`] model
-    #' @importFrom stats glm.fit residuals poisson fitted coef
-    #' @importFrom pscl zeroinfl
-    #' @importFrom tidyr replace_na
+    #' @importFrom stats glm.fit fitted coef
     initialize = function(data, control) {
       ## problem dimensions
-      n <- nrow(data$Y); p <- ncol(data$Y); d <- ncol(data$X); d0 <- ncol(data$X0)
+      n <- nrow(data$Y); p <- ncol(data$Y); d0 <- ncol(data$X0)
 
       ## save the formula call as specified by the user
       private$formula <- data$formula
@@ -88,40 +86,12 @@ ZIPLNfit <- R6Class(
         private$B  <- control$inception$model_par$B
         private$B0 <- control$inception$model_par$B0
       } else {
-        R  <- matrix(0, n, p)
-        M  <- matrix(0, n, p)
-        B  <- matrix(0, d , p)
-        B0 <- matrix(0, d0, p)
-        ## Feature-wise univariate (ZI)poisson regression as starting point for ZIPLN
-        for (j in 1:p) {
-          y = data$Y[, j]
-          if (min(y) == 0) {
-            suppressWarnings(
-              zip_out <- switch(control$ziparam,
-                  "row"    = pscl::zeroinfl(y ~ 0 + data$X | 0 + factor(1:n), offset = data$O[, j]),
-                  "covar"  = pscl::zeroinfl(y ~ 0 + data$X | 0 + data$X0    , offset = data$O[, j]),
-                             pscl::zeroinfl(y ~ 0 + data$X |               1, offset = data$O[, j])) # offset only for the count model
-            )
-            B0[,j] <- replace_na(coef(zip_out, "zero") , -10)
-            B[,j]  <- replace_na(coef(zip_out, "count"), 0)
-            R[, j] <- replace_na(predict(zip_out, type = "zero"), sum(y == 0) / n)
-            M[,j]  <- pmin(replace_na(residuals(zip_out), 0) + data$X %*% coef(zip_out, "count"), 10)
-          } else {
-            p_out  <- glm(y ~ 0 + data$X, family = 'poisson', offset = data$O[, j])
-            B0[,j] <- rep(-10, d0)
-            B[,j]  <- replace_na(coef(p_out), 0)
-            R[, j] <- sum(y == 0) / n
-            M[,j]  <- pmin(replace_na(residuals(p_out), 0) + data$X %*% coef(p_out), 10)
-          }
-        }
-
-        ## Initialization of the ZI component
-        private$R  <- R
-        private$B0 <- B0
-        ## Initialization of the PLN component
-        private$B <- B
-        private$M <- M
-        private$S2 <- matrix(.01, n, p)
+        sp <- compute_ZIPLN_starting_point(data$Y, data$X, data$X0, data$O, data$w)
+        private$B  <- sp$B
+        private$B0 <- sp$B0
+        private$M  <- sp$M
+        private$S2 <- sp$S2
+        private$R  <- sp$R
       }
       private$Pi <- switch(control$ziparam,
                            "single" = matrix(    mean(private$R), n, p)              ,
@@ -160,10 +130,13 @@ ZIPLNfit <- R6Class(
     #' @description Call to the Cpp optimizer and update of the relevant fields
     #' @param control a list for controlling the optimization. See details.
     optimize = function(data, control) {
+      ## Normalize X columns so all backends handle large-magnitude covariates well.
+      nrm    <- normalize_covariates(data$X)
+      data$X <- nrm$X_sc
 
       parameters <-
-        list(Omega = NA, B0 = private$B0, B = private$B, Pi = private$Pi,
-             M = private$M, S2 = private$S2, R = private$R)
+        list(Omega = NA, B0 = private$B0, B = sweep(private$B, 1, nrm$scales, "*"),
+             Pi = private$Pi, M = private$M, S2 = private$S2, R = private$R)
 
       # Outer loop
       nb_iter <- 0
@@ -242,7 +215,7 @@ ZIPLNfit <- R6Class(
       }
 
       self$update(
-        B      = parameters$B,
+        B      = sweep(parameters$B, 1, nrm$scales, "/"),
         B0     = parameters$B0,
         Pi     = parameters$Pi,
         Omega  = parameters$Omega,

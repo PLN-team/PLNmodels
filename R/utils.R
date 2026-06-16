@@ -1,6 +1,16 @@
 available_algorithms_nlopt <- c("CCSAQ", "MMA", "LBFGS", "VAR1", "VAR2")
 available_algorithms_torch <- c("RPROP", "RMSPROP", "ADAM", "ADAGRAD")
 
+## Column-normalize a covariate matrix so that all backends receive a
+## well-conditioned X regardless of covariate magnitudes.  The transformation
+## X_sc = X / scale, B_sc = B * scale satisfies X_sc %*% B_sc = X %*% B
+## exactly, so the PLN model is unchanged.  The pmax(..., 1) guard prevents
+## zero-variance or already-unit-norm columns from being inflated.
+normalize_covariates <- function(X) {
+  scales <- pmax(sqrt(colSums(X^2)), 1)
+  list(X_sc = sweep(X, 2, scales, "/"), scales = scales)
+}
+
 config_default_nlopt <-
   list(
     algorithm     = "CCSAQ",
@@ -164,10 +174,11 @@ logLikPoisson <- function(responses, lambda, weights = rep(1, nrow(responses))) 
 #' @importFrom stats glm.fit glm.control
 nullModelPoisson <- function(responses, covariates, offsets, weights = rep(1, nrow(responses))) {
 ### TODO: use fastglm
-  B <- do.call(cbind, future_lapply(1:ncol(responses), function(j)
+  B <- do.call(cbind, parallel::mclapply(1:ncol(responses), function(j)
     coefficients(suppressWarnings(
       glm.fit(covariates, responses[, j], weights = weights, offset = offsets[, j], family = stats::poisson(),
-        control = glm.control(epsilon = 1e-3, maxit = 10))))))
+        control = glm.control(epsilon = 1e-3, maxit = 10)))),
+    mc.cores = getOption("mc.cores", 1L)))
   offsets + covariates %*% B
 }
 
@@ -340,4 +351,45 @@ compute_PLN_starting_point <- function(Y, X, O, w, method = c("LM", "GLM")) {
   list(B  = matrix(B, d, p),
        M  = matrix(log((1 + Y0) / expO), n, p),
        S2 = 1 / (2 + Y0))
+}
+
+#' Helper function for ZIPLN initialization.
+#'
+#' @description
+#' Fast LM-based starting point for ZIPLN: one multivariate `lm.fit` for the PLN
+#' component and empirical zero rates / binomial GLMs for the ZI component.
+#' Replaces the previous per-species `pscl::zeroinfl` loop.
+#'
+#' @param Y Response count matrix (n × p)
+#' @param X Design matrix for the PLN component (n × d)
+#' @param X0 Design matrix for the ZI component (n × d0, empty `matrix(NA,0,0)` when unused)
+#' @param O Offset matrix in log-scale (n × p)
+#' @param w Weight vector of length n (defaults to uniform weights)
+#' @return Named list: `B` (d × p), `M` (n × p), `S2` (n × p), `R` (n × p), `B0` (d0 × p)
+#'
+#' @importFrom stats lm.fit glm.fit binomial
+#' @export
+compute_ZIPLN_starting_point <- function(Y, X, X0, O, w = NULL) {
+  if (is.null(w)) w <- rep(1.0, nrow(Y))
+  n <- nrow(Y); p <- ncol(Y); d0 <- ncol(X0)
+  if (ncol(X) == 0) stop("PLN component requires at least one covariate (or an intercept) to fit ZIPLN.")
+
+  ## PLN component: fast multivariate LM (identical to compute_PLN_starting_point "LM")
+  sp <- compute_PLN_starting_point(Y, X, O, w, method = "LM")
+
+  ## ZI component: empirical per-species zero rates
+  zero_ind <- (Y == 0) * 1.0
+  R <- matrix(colMeans(zero_ind), n, p, byrow = TRUE)
+
+  ## B0: p binomial GLMs on zero indicator vs X0 (only for "covar" ziparam where d0 > 0)
+  B0 <- if (!is.null(d0) && d0 > 0) {
+    binom_fam <- binomial()
+    vapply(seq_len(p), function(j)
+      glm.fit(X0, zero_ind[, j], family = binom_fam)$coefficients,
+      numeric(d0))
+  } else {
+    matrix(0.0, 0L, p)
+  }
+
+  list(B = sp$B, M = sp$M, S2 = sp$S2, R = R, B0 = B0)
 }

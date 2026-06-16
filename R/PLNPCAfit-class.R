@@ -305,16 +305,13 @@ PLNPCAfit <- R6Class(
       ## Optimization ----------------------
       #' @description Call to the C++ optimizer and update of the relevant fields
       optimize = function(responses, covariates, offsets, weights, config) {
-        ## Column-scale X to prevent first-step blowup when X has large-scale columns
-        ## (e.g. depth in metres). Equivalent problem; B is unscaled before storing.
-        scales <- pmax(sqrt(colSums(covariates^2)), 1)
-        X_sc   <- sweep(covariates, 2, scales, "/")
-        B_sc   <- sweep(private$B,  1, scales, "*")
-        args <- list(data   = list(Y = responses, X = X_sc, O = offsets, w = weights),
-                     params = list(B = B_sc, C = private$C, M = private$M, S2 = private$S2),
+        nrm  <- normalize_covariates(covariates)
+        args <- list(data   = list(Y = responses, X = nrm$X_sc, O = offsets, w = weights),
+                     params = list(B = sweep(private$B, 1, nrm$scales, "*"),
+                                   C = private$C, M = private$M, S2 = private$S2),
                      config = config)
         optim_out <- do.call(private$optimizer$main, args)
-        optim_out$B <- sweep(optim_out$B, 1, scales, "/")
+        optim_out$B <- sweep(optim_out$B, 1, nrm$scales, "/")
         do.call(self$update, optim_out)
       },
 
