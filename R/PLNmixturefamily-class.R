@@ -53,11 +53,11 @@ PLNmixturefamily <-
           candidate
         }) %>% map(as_indicator)
 
-        loglik_candidates <- future.apply::future_lapply(tau_candidates, function(tau_) {
+        loglik_candidates <- parallel::mclapply(tau_candidates, function(tau_) {
           model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_, private$formula, control)
           model$optimize(self$responses, self$covariates, self$offsets, config_fast)
           model$loglik
-        }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random")) %>% unlist()
+        }, mc.cores = getOption("mc.cores", 1L)) %>% unlist()
 
         best_one <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_candidates[[which.max(loglik_candidates)]], private$formula, control)
         best_one$optimize(self$responses, self$covariates, self$offsets, control$config_optim)
@@ -111,11 +111,11 @@ PLNmixturefamily <-
           tau_merged
         })
 
-        loglik_candidates <- future.apply::future_lapply(tau_candidates, function(tau_) {
+        loglik_candidates <- parallel::mclapply(tau_candidates, function(tau_) {
           model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_, private$formula, control)
           model$optimize(self$responses, self$covariates, self$offsets, config_fast)
           model$loglik
-        }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random")) %>% unlist()
+        }, mc.cores = getOption("mc.cores", 1L)) %>% unlist()
 
         best_one <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_candidates[[which.max(loglik_candidates)]], private$formula, control)
         best_one$optimize(self$responses, self$covariates, self$offsets, control$config_optim)
@@ -191,7 +191,7 @@ PLNmixturefamily <-
       #' @param config a list for controlling the optimization
       optimize = function(config) {
         ## go along the number of clusters (i.e the models)
-         self$models <- future.apply::future_lapply(self$models, function(model) {
+         self$models <- parallel::mclapply(self$models, function(model) {
           if (config$trace == 1) {
             cat("\tnumber of cluster =", model$k, "\r")
             flush.console()
@@ -202,7 +202,7 @@ PLNmixturefamily <-
             flush.console()
           }
           model
-        }, future.seed = TRUE)
+        }, mc.cores = getOption("mc.cores", 1L))
       },
       #' @description
       #' function to restart clustering to avoid local minima by smoothing the loglikelihood values as a function of the number of clusters

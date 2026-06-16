@@ -54,14 +54,15 @@ ZIPLNnetwork <- function(formula, data, subset, weights, zi = c("single", "row",
 #' @inheritParams PLNnetwork_param
 #'
 #' @inherit PLN_param details return
+#' @param backend optimization backend, either `"nlopt"` (default, CCSAQ — recommended for ZIPLNnetwork: stable under alternating GLASSO/VE-step EM) or `"builtin"` (Newton joint on (M,ψ,R) — can be better on small datasets but may oscillate on large ones).
 #' @details See [PLNnetwork_param()] for a full description of the optimization parameters. Note that some defaults values are different than those used in [PLNnetwork_param()]:
 #' * "ftol_out" (outer loop convergence tolerance the objective function) is set by default to 1e-6
-#' * "maxit_out" (max number of iterations for the outer loop) is set by default to 100
+#' * "maxit_out" (max number of iterations for the outer loop) is set by default to 50
 #'
 #' @seealso [PLNnetwork_param()] and [PLN_param()]
 #' @export
 ZIPLNnetwork_param <- function(
-    backend           = c("nlopt"),
+    backend           = c("nlopt", "builtin"),
     inception_cov     = c("full", "spherical", "diagonal"),
     trace             = 1      ,
     n_penalties       = 30     ,
@@ -81,14 +82,10 @@ ZIPLNnetwork_param <- function(
   config_pst$trace <- trace
 
   ## optimization config
-  stopifnot(backend %in% c("nlopt"))
-  stopifnot(config_optim$algorithm %in% available_algorithms_nlopt)
-  config_opt <- config_default_nlopt
-  config_opt$trace <- trace
-  config_opt$ftol_out  <- 1e-6
-  config_opt$maxit_out <- 50
-  config_opt[names(config_optim)] <- config_optim
+  backend <- match.arg(backend)
   inception_cov <- match.arg(inception_cov)
+  config_opt <- make_config_optim(backend, config_optim, trace,
+                                  extra = list(ftol_out = 1e-6, maxit_out = 50, maxit_ve = 1L))
 
   structure(list(
     backend           = backend          ,

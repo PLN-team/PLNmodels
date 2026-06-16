@@ -16,8 +16,10 @@ PLN_param(
 )
 }
 \arguments{
-\item{backend}{optimization back used, either "builtin" (default), "nlopt" or "torch".
-"builtin" is the built-in envelope-theorem Newton optimizer (does not depend on NLOPT).}
+\item{backend}{optimization backend, either \code{"builtin"} (default), \code{"nlopt"} or \code{"torch"}.
+\code{"builtin"} is the built-in envelope-theorem Newton optimizer; it is the fastest and most
+accurate backend, especially for large p with full covariance.
+\code{"torch"} is \strong{experimental}: it may converge to suboptimal solutions or fail on some datasets.}
 
 \item{trace}{a integer for verbosity.}
 

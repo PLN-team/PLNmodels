@@ -20,7 +20,6 @@
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
 #' @import ggplot2
-#' @import future
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
@@ -55,10 +54,19 @@ PLNPCAfamily <- R6Class(
       private$params <- ranks
       ## compute starting point for the common SVD:
       ##   user-provided inception PLNfit → use its converged M and B
-      ##   otherwise: LM on log-transformed data (fast, no EM needed)
+      ##   "EM": run K truncated PLN-EM iterations (builtin, fast) for a better M
+      ##   otherwise: LM or GLM on log-transformed data
       if (isPLNfit(control$inception)) {
         init_B <- control$inception$model_par$B
         init_M <- control$inception$var_par$M
+      } else if (identical(control$init_method, "EM")) {
+        niter  <- if (is.null(control$init_niter)) 20L else control$init_niter
+        em_ctrl <- PLN_param(backend = "builtin", trace = 0,
+                             config_optim = list(maxit_em = niter))
+        pln_em <- PLNfit$new(responses, covariates, offsets, weights, formula, em_ctrl)
+        pln_em$optimize(responses, covariates, offsets, weights, em_ctrl$config_optim)
+        init_B <- pln_em$model_par$B
+        init_M <- pln_em$var_par$M
       } else {
         lm_start <- compute_PLN_starting_point(
           responses, covariates, offsets, weights,
@@ -70,6 +78,9 @@ PLNPCAfamily <- R6Class(
       ## SVD of the residual M - XB, shared across all ranks
       private$svdM <- svd(init_M - covariates %*% init_B, nu = max(ranks), nv = ncol(responses))
       control$svdM <- private$svdM
+      ## "EM" has served its purpose; PLNPCAfit$new inherits PLNfit$initialize which would
+      ## pass init_method to compute_PLN_starting_point — force "LM" for individual models.
+      if (identical(control$init_method, "EM")) control$init_method <- "LM"
       ## instantiate as many models as ranks
       self$models <- lapply(ranks, function(rank){
         model <- PLNPCAfit$new(rank, responses, covariates, offsets, weights, formula, control)
@@ -106,7 +117,7 @@ PLNPCAfamily <- R6Class(
           self$models[[i]] <- model
         }
       } else {
-        self$models <- future.apply::future_lapply(self$models, function(model) {
+        self$models <- parallel::mclapply(self$models, function(model) {
           if (config$trace == 1) {
             cat("\t Rank approximation =", model$rank, "\r")
             flush.console()
@@ -117,7 +128,7 @@ PLNPCAfamily <- R6Class(
           }
           model$optimize(self$responses, self$covariates, self$offsets, self$weights, config)
           model
-        }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
+        }, mc.cores = getOption("mc.cores", 1L))
       }
     },
 

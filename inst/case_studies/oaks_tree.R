@@ -1,6 +1,8 @@
 library(PLNmodels)
 library(factoextra)
 
+options(mc.cores = 4)
+
 ## get oaks data set
 data(oaks)
 
@@ -92,8 +94,8 @@ factoextra::fviz_pca_biplot(
 system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLNnetwork_param(min_ratio = 0.02)))
 plot(myPLNnets)
 plot(getBestModel(myPLNnets, "EBIC"))
-# stability_selection(myPLNnets)
-# plot(getBestModel(myPLNnets, "StARS", stability = .975))
+stability_selection(myPLNnets)
+plot(getBestModel(myPLNnets, "StARS", stability = .975))
 
 system.time(myZIPLNnets <- ZIPLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), zi = "single", data = oaks, control = ZIPLNnetwork_param(min_ratio = 0.1)))
 plot(myZIPLNnets)

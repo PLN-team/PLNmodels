@@ -66,9 +66,12 @@ Rcpp::List nlopt_optimize_genetic_modeling(
               0.5 * trace(Omega * (M.t() * (M.each_col() % w) + diagmat(w.t() * S2))) +
               0.5 * w_bar * accu(log(u * sigma2));
 
+        arma::mat gM = M * Omega + A - Y;  gM.each_col() %= w;
+        arma::mat gS = S.each_row() % diagvec(Omega).t() + S % A - 1.0 / arma::clamp(S, 1e-20, arma::datum::inf);
+        gS.each_col() %= w;
         metadata.map<THETA_ID>(grad) = (A - Y).t() * Xw;
-        metadata.map<M_ID>(grad) = diagmat(w) * (M * Omega + A - Y);
-        metadata.map<S_ID>(grad) = diagmat(w) * (S.each_row() % diagvec(Omega).t() + S % A - pow(S, -1));
+        metadata.map<M_ID>(grad) = gM;
+        metadata.map<S_ID>(grad) = gS;
         metadata.map<RHO_ID>(grad) = accu(0.5 * w_bar * (Lambda - 1) / u - (0.5/sigma2) * diagvec(R) % (Lambda - 1) / pow(u, 2) );
 
         return objective;

@@ -12,18 +12,17 @@
 #'
 #' @rdname PLNPCA
 #' @examples
-#' #' ## Use future to dispatch the computations on 2 workers
+#' ## Use parallel to dispatch the computations on 2 workers
 #' \dontrun{
-#' future::plan("multisession", workers = 2)
+#' options(mc.cores = 2)
 #' }
 #'
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #' myPCA <- PLNPCA(Abundance ~ 1 + offset(log(Offset)), data = trichoptera, ranks = 1:5)
 #'
-#' # Shut down parallel workers
 #' \dontrun{
-#' future::plan("sequential")
+#' options(mc.cores = 1)
 #' }
 #' @seealso The classes [`PLNPCAfamily`] and [`PLNPCAfit`], and the configuration function [PLNPCA_param()].
 #' @importFrom stats model.frame model.matrix model.response model.offset
@@ -67,21 +66,29 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
 #'   find lower loglik than `"nlopt"` and `"builtin"` on most datasets — not recommended).
 #' @inheritParams PLN_param trace config_optim config_post
 #' @param init_method character: strategy used to compute the starting point for the shared SVD.
-#'   Either `"LM"` (default, fast: one multivariate `lm.fit` on log-transformed counts) or
-#'   `"GLM"` (p independent Poisson GLMs, more accurate for complex or highly unbalanced
-#'   designs). Ignored when `inception` is provided. Benchmarks show `"LM"` is as good as
-#'   or better than `"GLM"` for PLNPCA in most cases; `"GLM"` is not recommended.
-#'   See [compute_PLN_starting_point()].
+#'   - `"LM"` (default): fast multivariate `lm.fit` on log-transformed counts. Good for
+#'     small to moderate ranks (`rank <= sqrt(p)`). Recommended default.
+#'   - `"GLM"`: p independent Poisson GLMs. Rarely better than `"LM"` for PLNPCA; not
+#'     recommended.
+#'   - `"EM"`: run `init_niter` variational EM iterations of a full PLN (builtin backend)
+#'     before computing the SVD, giving a latent mean M closer to the true posterior.
+#'     **Recommended for large ranks** (`rank > sqrt(p)`): benchmark on oaks (p=114)
+#'     shows +135 loglik at rank=20 vs `"LM"`, with negligible extra cost (5 EM iterations).
+#'     Caution: hurts for small ranks (e.g. rank=5, p=114: −800 loglik) because an
+#'     over-converged M reduces low-rank SVD discriminability. Ignored when `inception`
+#'     is provided.
+#' @param init_niter integer: number of PLN EM iterations when `init_method = "EM"`.
+#'   Default is 5. The sweet spot is 2–10: beyond ~10 the M over-converges toward the full
+#'   PLN optimum, degrading the low-rank SVD and hurting small-rank models. Ignored for
+#'   `"LM"` and `"GLM"`.
 #' @param inception an optional pre-fitted [`PLNfit`] object. When provided, its variational
 #'   means `M` and regression coefficients `B` are used to compute the shared SVD
 #'   `svd(M - X*B)` that initialises all ranks simultaneously. This replaces the default
-#'   LM-based starting point and can improve convergence for large ranks on datasets with
-#'   strong covariate effects (e.g. `inception = PLN(formula, data)`). When `NULL` (default),
-#'   a fast LM is used. `init_method` is ignored when `inception` is set.
-#'   **Recommendation for large rank or complex datasets**: providing a pre-fitted PLN can
-#'   substantially improve the ELBO, especially for high ranks (e.g. rank > `sqrt(p)`) where
-#'   the LM initialisation may miss a better basin. Benchmark shows gains of up to +87 loglik
-#'   on oaks (p=114, rank=20) vs the default LM init.
+#'   LM-based starting point and gives the highest-quality initialisation for large ranks.
+#'   When `NULL` (default), see `init_method`. `init_method` is ignored when `inception` is set.
+#'   **Recommendation**: for large ranks (`rank > sqrt(p)`) on complex datasets, prefer
+#'   `init_method = "EM"` (cheap, most gains) or `inception = PLN(formula, data)` (maximum
+#'   quality, full convergence cost). Benchmark: up to +135 loglik at rank=20, oaks p=114.
 #' @param sequential logical. If `TRUE`, ranks are fitted in ascending order and each model is
 #'    warm-started from the converged solution of the previous rank: loadings C are augmented
 #'    with new columns from the inception SVD, while latent scores M and variances S2 are
@@ -98,7 +105,8 @@ PLNPCA_param <- function(
     config_optim  = list() ,
     config_post   = list() ,
     inception     = NULL   , # pretrained PLNfit used as initialization
-    init_method   = c("LM", "GLM"),
+    init_method   = c("LM", "GLM", "EM"),
+    init_niter    = 5L,
     sequential    = FALSE    # fit ranks sequentially, warm-starting each from the previous
 ) {
 
@@ -124,5 +132,6 @@ PLNPCA_param <- function(
     config_optim  = config_opt  ,
     config_post   = config_pst  ,
     inception     = inception   ,
-    init_method   = init_method   ), class = "PLNmodels_param")
+    init_method   = init_method ,
+    init_niter    = as.integer(init_niter) ), class = "PLNmodels_param")
 }

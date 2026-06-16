@@ -52,15 +52,28 @@ PLNnetworkfit <- R6Class(
     #' @description Call to the C++ optimizer and update of the relevant fields
     #' @param config a list for controlling the optimization
     optimize = function(data, config) {
+      ## Normalize X columns once for the entire EM loop.  The optimizer works
+      ## in (X_sc, B_sc) space throughout; private$B holds B_sc until the end.
+      nrm  <- normalize_covariates(data$X)
+      B_sc <- sweep(private$B, 1, nrm$scales, "*")
+
       cond <- FALSE; iter <- 0
       objective   <- numeric(config$maxit_em)
       convergence <- numeric(config$maxit_em)
       ## start from the standard PLN at initialization
       objective.old <- -self$loglik
-      args <- list(data   = list(Y = data$Y, X = data$X, O = data$O, w = data$w),
-                   params = list(B = private$B, M = private$M, S2 = private$S2),
-                   config = config)
-      M_res_init <- private$M - private$X %*% private$B
+      ## Limit inner VE iterations per outer GLASSO turn (partial E-step, section 44).
+      ## maxit_ve limits maxit_em (builtin) or maxeval (nlopt) of the inner optimizer.
+      ## NULL = no limit = full convergence (default, backward-compatible).
+      inner_config <- config
+      if (!is.null(config$maxit_ve)) {
+        if (config$backend == "builtin") inner_config$maxit_em <- as.integer(config$maxit_ve)
+        else                             inner_config$maxeval  <- as.integer(config$maxit_ve) * 10L
+      }
+      args <- list(data   = list(Y = data$Y, X = nrm$X_sc, O = data$O, w = data$w),
+                   params = list(B = B_sc, M = private$M, S2 = private$S2),
+                   config = inner_config)
+      M_res_init <- private$M - nrm$X_sc %*% B_sc
       private$Sigma <- crossprod(M_res_init)/self$n + diag(colMeans(private$S2), self$p, self$p)
       while (!cond) {
         iter <- iter + 1
@@ -70,19 +83,22 @@ PLNnetworkfit <- R6Class(
         if (anyNA(glasso_out$wi)) break
         private$Omega <- args$params$Omega <- Matrix::symmpart(glasso_out$wi)
 
-        ## CALL TO NLOPT OPTIMIZATION TO UPDATE OTHER PARMAETERS
+        ## CALL TO NLOPT OPTIMIZATION TO UPDATE OTHER PARAMETERS
         optim_out <- do.call(private$optimizer$main, args)
-        do.call(self$update, optim_out)
+        do.call(self$update, optim_out)  # private$B now holds B_sc
 
         ## Check convergence
-        objective[iter]   <- -self$loglik # + self$penalty * sum(abs(private$Omega))
+        objective[iter]   <- -self$loglik
         convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
         if ((convergence[iter] < config$ftol_em) | (iter >= config$maxit_em)) cond <- TRUE
 
-        ## Prepare next iterate
+        ## Prepare next iterate (private$B = B_sc from self$update above)
         args$params <- list(B = private$B, M = private$M, S2 = private$S2)
         objective.old <- objective[iter]
       }
+
+      ## Restore B to original scale before leaving
+      private$B <- sweep(private$B, 1, nrm$scales, "/")
 
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## OUTPUT

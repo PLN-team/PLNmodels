@@ -63,8 +63,16 @@ Networkfamily <- R6Class(
       ## Get an appropriate grid of penalties
       if (is.null(penalties)) {
         if (control$trace > 1) cat("\nComputing an appropriate grid of penalties.")
+        ## sigma_inception overrides the fitted Sigma when the inception uses a restricted
+        ## covariance (diagonal/spherical) or truncated EM: the empirical residual covariance
+        ## is a valid full-rank proxy for max_pen even when model_par$Sigma is diagonal.
+        Sigma_maxpen <- if (!is.null(control$sigma_inception)) {
+          control$sigma_inception
+        } else {
+          as.matrix(control$inception$model_par$Sigma)
+        }
         max_pen <- list_penalty_weights %>%
-          map(~ as.matrix(control$inception$model_par$Sigma) / .x) %>%
+          map(~ Sigma_maxpen / .x) %>%
           map_dbl(~ max(abs(.x[upper.tri(.x, diag = control$penalize_diagonal)]))) %>%
           max()
         penalties <- 10^seq(log10(max_pen), log10(max_pen*control$min_ratio), len = control$n_penalties)
@@ -324,15 +332,49 @@ PLNnetworkfamily <- R6Class(
 
       ## A basic model (constrained model) for inception, ignored if inception is provided by the user
       if (is.null(control$inception)) {
-        ## Allow inception with spherical / diagonal / full PLNfit before switching back to PLNfit_fixedcov
-        ## for the inner-outer loop of PLNnetwork.
+        ## Determine inception backend (may differ from the main grid backend)
+        inc_backend <- if (!is.null(control$inception_backend)) control$inception_backend else control$backend
+
+        ## Build a standalone optimizer config for the inception PLN.
+        ## Start from control$config_optim (carries ftol_em, maxit_em, etc. set by
+        ## PLNnetwork_param) and only rebuild from scratch when a different backend
+        ## is explicitly requested (different optimizer family = incompatible fields).
+        cfg_inception <- if (!is.null(control$inception_backend) && inc_backend != control$backend) {
+          make_config_optim(inc_backend, list(), trace = 0)
+        } else {
+          modifyList(control$config_optim, list(trace = 0))
+        }
+        if (!is.null(control$inception_niter)) {
+          niter <- as.integer(control$inception_niter)
+          if (inc_backend == "builtin") {
+            cfg_inception$maxit_em <- niter
+          } else {
+            cfg_inception$maxeval <- niter * 10L
+          }
+        }
+
+        ## Patch control to use the inception backend for new() (optimizer is configured there)
+        ctrl_inc <- control
+        ctrl_inc$backend      <- inc_backend
+        ctrl_inc$config_optim <- cfg_inception
         myPLN <- switch(
           control$inception_cov,
-          "spherical" = PLNfit_spherical$new(data$Y, data$X, data$O, data$w, data$formula, control),
-          "diagonal" = PLNfit_diagonal$new(data$Y, data$X, data$O, data$w, data$formula, control),
-          PLNfit$new(data$Y, data$X, data$O, data$w, data$formula, control) # defaults to full
+          "spherical" = PLNfit_spherical$new(data$Y, data$X, data$O, data$w, data$formula, ctrl_inc),
+          "diagonal" = PLNfit_diagonal$new(data$Y, data$X, data$O, data$w, data$formula, ctrl_inc),
+          PLNfit$new(data$Y, data$X, data$O, data$w, data$formula, ctrl_inc) # defaults to full
         )
-        myPLN$optimize(data$Y, data$X, data$O, data$w, control$config_optim)
+        myPLN$optimize(data$Y, data$X, data$O, data$w, cfg_inception)
+
+        ## Empirical residual covariance is needed only when the fitted Sigma is not
+        ## full-rank: diagonal/spherical inception gives Σ_off-diag = 0 → max_pen = 0.
+        ## For truncated EM, the fitted Sigma is consistent with the (partially converged)
+        ## M so we also replace it. When only the backend differs (full covariance, no
+        ## iteration limit), the fitted Sigma from builtin is valid for max_pen.
+        need_empirical_sigma <- !is.null(control$inception_niter) || control$inception_cov != "full"
+        if (need_empirical_sigma) {
+          resid <- myPLN$var_par$M - data$X %*% myPLN$model_par$B
+          control$sigma_inception <- crossprod(resid) / nrow(resid)
+        }
         control$inception <- myPLN
       }
 
@@ -366,7 +408,7 @@ PLNnetworkfamily <- R6Class(
       cat("\nStability Selection for PLNnetwork: ")
       cat("\nsubsampling: ")
 
-      stabs_out <- future.apply::future_lapply(subsamples, function(subsample) {
+      stabs_out <- parallel::mclapply(subsamples, function(subsample) {
         cat("+")
         inception_ <- self$getModel(self$penalties[1])
         inception_$update(
@@ -393,7 +435,7 @@ PLNnetworkfamily <- R6Class(
           as.matrix(model$latent_network("support"))[upper.tri(diag(private$p))]
         }))
         nets
-      }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
+      }, mc.cores = getOption("mc.cores", 1L))
 
       prob <- Reduce("+", stabs_out, accumulate = FALSE) / length(subsamples)
       ## formatting/tyding
@@ -501,7 +543,7 @@ ZIPLNnetworkfamily <- R6Class(
       cat("\nStability Selection for ZIPLNnetwork: ")
       cat("\nsubsampling: ")
 
-      stabs_out <- future.apply::future_lapply(subsamples, function(subsample) {
+      stabs_out <- parallel::mclapply(subsamples, function(subsample) {
           cat("+")
         inception_ <- self$getModel(self$penalties[1])
         inception_$update(
@@ -533,7 +575,7 @@ ZIPLNnetworkfamily <- R6Class(
           as.matrix(model$latent_network("support"))[upper.tri(diag(private$p))]
         }))
         nets
-      }, future.seed = TRUE, future.scheduling = structure(TRUE, ordering = "random"))
+      }, mc.cores = getOption("mc.cores", 1L))
 
       prob <- Reduce("+", stabs_out, accumulate = FALSE) / length(subsamples)
       ## formatting/tyding

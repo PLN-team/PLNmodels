@@ -12,9 +12,9 @@
 #'
 #' @rdname PLNmixture
 #' @examples
-#' ## Use future to dispatch the computations on 2 workers
+#' ## Use parallel to dispatch the computations on 2 workers
 #' \dontrun{
-#' future::plan("multisession", workers = 2)
+#' options(mc.cores = 2)
 #' }
 #'
 #' data(trichoptera)
@@ -22,9 +22,8 @@
 #' myMixtures <- PLNmixture(Abundance ~ 1 + offset(log(Offset)), clusters = 1:4, data = trichoptera,
 #'                          control = PLNmixture_param(smoothing = 'none'))
 #'
-#' # Shut down parallel workers
 #' \dontrun{
-#' future::plan("sequential")
+#' options(mc.cores = 1)
 #' }
 #' @seealso The classes [`PLNmixturefamily`], [`PLNmixturefit`] and [PLNmixture_param()]
 #' @importFrom stats model.frame model.matrix model.response model.offset update.formula

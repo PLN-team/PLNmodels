@@ -48,7 +48,7 @@ Rcpp::List nlopt_optimize_spherical(
         const arma::mat S2     = arma::exp(logS2);
         const arma::mat B      = P_X * M_full;
         const arma::mat M_res  = M_full - X * B;
-        const double sigma2    = accu(arma::diagmat(w) * (arma::pow(M_res, 2) + S2)) / (double(p) * w_bar);
+        const double sigma2    = accu(w.t() * (arma::pow(M_res, 2) + S2)) / (double(p) * w_bar);
         arma::mat gM, gS;
         const double obj = spherical_cov_obj_grad_impl(M_res, O + M_full, S2, logS2,
                                                         1./sigma2, 0.5 * double(p) * w_bar * std::log(sigma2),
@@ -65,7 +65,7 @@ Rcpp::List nlopt_optimize_spherical(
     arma::mat S2     = arma::exp(logS2);
     arma::mat B      = P_X * M;
     arma::mat M_res  = M - X * B;
-    const double sigma2 = accu(diagmat(w) * (pow(M_res, 2) + S2)) / (double(p) * w_bar);
+    const double sigma2 = accu(w.t() * (pow(M_res, 2) + S2)) / (double(p) * w_bar);
     arma::sp_mat Sigma(p, p); Sigma.diag() = arma::ones<arma::vec>(p) * sigma2;
     arma::sp_mat Omega(p, p); Omega.diag() = arma::ones<arma::vec>(p) * pow(sigma2, -1);
     arma::mat Z = O + M;
@@ -132,7 +132,7 @@ Rcpp::List nlopt_optimize_vestep_spherical(
         const arma::mat logS2 = metadata.map<S_ID>(params);
         const arma::mat S2    = arma::exp(logS2);
         const arma::mat M_res = M - XB;
-        const double penalty  = 0.5 * omega2 * accu(arma::diagmat(w) * (arma::pow(M_res, 2) + S2));
+        const double penalty  = 0.5 * omega2 * accu(w.t() * (arma::pow(M_res, 2) + S2));
         arma::mat gM, gS;
         const double obj = spherical_cov_obj_grad_impl(M_res, O + M, S2, logS2,
                                                         omega2, penalty, Y, w, gM, gS);

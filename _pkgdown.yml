@@ -140,6 +140,7 @@ reference:
     - '`rPLN`'
     - '`ICL`'
     - '`compute_PLN_starting_point`'
+    - '`compute_ZIPLN_starting_point`'
 - title: Data sets
   desc: ~
   contents:
