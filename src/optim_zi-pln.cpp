@@ -349,6 +349,14 @@ Rcpp::List ve_step_zipln_nlopt(
 // ---------------------------------------------------------------------------------------
 // Joint VE Newton optimizer for (M, ψ=log(S²), R) — no NLopt dependency.
 //
+// B-profiling (envelope over regression coefficients, same as PLN builtin):
+//   B_opt(M) = (X'X)^{-1} X' M  (closed-form WLS at each step)
+//   M_res = (I − H) M            (in null(X') throughout)
+// Each Newton step is projected onto null(X') via Q_step = step_M − X*(P_X*step_M),
+// so M_res stays in null(X') and B is implicitly updated at every iteration.
+// Z = O + M_full is tracked separately from M_res to correctly update A.
+// By the envelope theorem the gradient w.r.t. M_full equals the gradient in M_res coords.
+//
 // R is the exact conditional optimum given (M, ψ): R_ij* = σ(A_ij + logit(π_ij)) for Y=0.
 // Since ∂f/∂R = 0 at R*, updating R at each Newton iteration does not modify the gradient
 // formula for (M, ψ) — only (1-R) changes, tightening the VE step.
@@ -356,47 +364,57 @@ Rcpp::List ve_step_zipln_nlopt(
 // Per Newton iteration:
 //   0. R  ← σ(A + logit(Pi)), zeroed where Y > 0          [exact VE for R, O(np)]
 //   1. 2×2 Newton step for (M_res, ψ) with cross-term H_{Mψ}  [joint step]
-//   2. Joint Armijo on (M_res, ψ) with R fixed             [line search, R frozen]
+//   1b. Project Newton step onto null(X'): Q_step = step_M − X*(P_X*step_M)  [B-profiling]
+//   2. Joint Armijo: Z (M_full) moves by step_M; M_res moves by Q_step       [line search]
 //
-// M·Ω cached and updated incrementally inside the line search (avoids O(np²) per trial).
+// M_res·Ω cached and updated incrementally (avoids O(np²) per trial).
 
 // [[Rcpp::export]]
 Rcpp::List ve_step_zipln_newton(
-    const arma::mat & init_M,    // (n,p)
+    const arma::mat & init_M,    // (n,p) M_full = X*B + M_res
     const arma::mat & init_S2,   // (n,p) variational variance
     const arma::mat & Y,         // (n,p)
     const arma::mat & X,         // (n,d)
     const arma::mat & O,         // (n,p)
     const arma::mat & Pi,        // (n,p) ZI structural probability (model param, fixed)
-    const arma::mat & B,         // (d,p)
+    const arma::mat & B,         // (d,p) — used to initialise M_res; then profiled out
     const arma::mat & Omega,     // (p,p)
     const int    maxiter,
     const double ftol_rel
 ) {
     const arma::mat XB         = X * B;
-    const arma::mat OXB        = O + XB;
     const arma::vec diag_Omega = arma::diagvec(Omega);
     const arma::mat omega_d    = arma::ones(init_M.n_rows, 1) * diag_Omega.t(); // (n,p)
     const arma::mat logit_Pi   = logit(Pi);
     const arma::mat Y_zero     = arma::conv_to<arma::mat>::from(Y < 0.5);  // 1.0 where Y==0
 
-    arma::mat M_res = init_M - XB;
+    // B-profiling: P_X = (X'X)^{-1} X' (d×n). Projects Newton steps onto null(X')
+    // so that M_res = (I−H)*M stays in null(X') and B is implicitly re-profiled.
+    // Since B (from the M-step) = P_X*init_M, M_res = (I−H)*init_M ∈ null(X').
+    const bool      do_profile = (X.n_cols > 0);
+    const arma::mat P_X = do_profile
+        ? arma::solve(X.t() * X, X.t(), arma::solve_opts::likely_sympd)
+        : arma::mat(0, (arma::uword)init_M.n_rows);
+
+    arma::mat M_res = init_M - XB;         // (I−H)*init_M: in null(X') by construction
     arma::mat psi   = arma::log(init_S2);
     arma::mat MO    = M_res * Omega;
     arma::mat S2    = arma::exp(psi);
-    arma::mat A     = arma::trunc_exp(OXB + M_res + 0.5 * S2);
+    arma::mat Z     = O + init_M;          // Z = O + M_full; tracked separately from M_res
+    arma::mat A     = arma::trunc_exp(Z + 0.5 * S2);
 
     // R and (1-R): updated at each Newton iteration, frozen during line search.
-    // one_m_R_Y = (1-R)%Y = Y always: when Y>0 R=0, when Y=0 Y=0, so just use Y.
     arma::mat R     = arma::zeros(arma::size(A));
     arma::mat one_m_R(arma::size(A));
 
-    // Objective for line search: captures one_m_R by ref (frozen during LS).
-    auto obj_fun = [&](const arma::mat & Mres, const arma::mat & MO_,
-                       const arma::mat & psi_) -> double {
+    // Objective: data term uses Z = O + M_full (captures B update via Z);
+    // KL term uses M_res (projected, in null(X')).
+    // Y*O is a constant offset — it cancels in all Armijo and convergence comparisons.
+    auto obj_fun = [&](const arma::mat & Z_, const arma::mat & Mres,
+                       const arma::mat & MO_, const arma::mat & psi_) -> double {
         const arma::mat S2_ = arma::exp(psi_);
-        const arma::mat A_  = arma::trunc_exp(OXB + Mres + 0.5 * S2_);
-        return - arma::accu(Y % (Mres + XB)) + arma::accu(one_m_R % A_)
+        const arma::mat A_  = arma::trunc_exp(Z_ + 0.5 * S2_);
+        return - arma::accu(Y % Z_) + arma::accu(one_m_R % A_)
                + 0.5 * arma::accu(Mres % MO_)
                + 0.5 * arma::dot(diag_Omega, arma::sum(S2_, 0))
                - 0.5 * arma::accu(psi_);
@@ -413,20 +431,19 @@ Rcpp::List ve_step_zipln_newton(
         R       = 1.0 / (1.0 + arma::exp(-(A + logit_Pi)));
         R      %= Y_zero;
         one_m_R = 1.0 - R;
-        obj_prev = obj_fun(M_res, MO, psi);
+        obj_prev = obj_fun(Z, M_res, MO, psi);
 
         // ----------------------------------------------------------------
         // Step 1 — joint 2×2 Newton step for (M_res, ψ)
         // ----------------------------------------------------------------
         const arma::mat one_m_R_A = one_m_R % A;
 
-        // h_mp computed first; h_pp reuses S2 % one_m_R_A via h_mp
         const arma::mat h_mm = one_m_R_A + omega_d;
         const arma::mat h_mp = 0.5 * S2 % one_m_R_A;
         const arma::mat h_pp = h_mp % (1.0 + 0.5 * S2) + 0.5 * S2 % omega_d;
 
         const arma::mat grad_M   = MO + one_m_R_A - Y;
-        const arma::mat grad_psi = h_mp + 0.5 * (S2 % omega_d - 1.0);  // = 0.5*(S2%(one_m_R_A+omega_d)-1)
+        const arma::mat grad_psi = h_mp + 0.5 * (S2 % omega_d - 1.0);
 
         arma::mat det = h_mm % h_pp - h_mp % h_mp;
         det.clamp(1e-20, arma::datum::inf);
@@ -435,41 +452,49 @@ Rcpp::List ve_step_zipln_newton(
         const arma::mat step_psi = (h_mm % grad_psi - h_mp % grad_M  ) / det;
 
         // ----------------------------------------------------------------
-        // Step 2 — joint Armijo on (M_res, ψ), R frozen at current value.
-        // dMO = step_M * Omega computed once; MO_trial = MO - α·dMO is O(np).
+        // Step 1b — B-profiling: project Newton step onto null(X').
+        // Q_step moves M_res (KL term); step_M moves Z = O + M_full (data term A).
+        // By the envelope theorem the gradient w.r.t. M_full = gradient in M_res coords.
         // ----------------------------------------------------------------
-        const arma::mat dMO = step_M * Omega;
-        double slope = -arma::accu(grad_M % step_M) - arma::accu(grad_psi % step_psi);
+        const arma::mat Q_step = do_profile ? step_M - X * (P_X * step_M) : step_M;
+        const arma::mat dMO    = Q_step * Omega;  // incremental MO update
+
+        // ----------------------------------------------------------------
+        // Step 2 — joint Armijo: Z moves by step_M (for A); M_res by Q_step (for KL).
+        // ----------------------------------------------------------------
+        double slope = -arma::accu(grad_M % Q_step) - arma::accu(grad_psi % step_psi);
         if (slope >= 0.0)
             slope = -(arma::accu(arma::square(grad_M)) + arma::accu(arma::square(grad_psi)));
 
         constexpr double c1 = 1e-4;
         double alpha        = 1.0;
         for (int ls = 0; ls < 20; ++ls) {
-            if (obj_fun(M_res - alpha * step_M,
+            if (obj_fun(Z     - alpha * step_M,   // full step: tracks M_full for A
+                        M_res - alpha * Q_step,    // projected: KL residual stays in null(X')
                         MO    - alpha * dMO,
                         psi   - alpha * step_psi) <= obj_prev + c1 * alpha * slope) break;
             alpha *= 0.5;
         }
 
-        M_res -= alpha * step_M;
+        M_res -= alpha * Q_step;
+        Z     -= alpha * step_M;     // Z = O + M_full_new; B implicitly = P_X*(Z-O)
         MO    -= alpha * dMO;
         psi   -= alpha * step_psi;
         S2     = arma::exp(psi);
-        A      = arma::trunc_exp(OXB + M_res + 0.5 * S2);
+        A      = arma::trunc_exp(Z + 0.5 * S2);
 
         // ----------------------------------------------------------------
         // Convergence: compare objective before and after this Newton step
         // (R is frozen during the step; obj_prev was set at top of this iter)
         // ----------------------------------------------------------------
-        const double obj = obj_fun(M_res, MO, psi);
+        const double obj = obj_fun(Z, M_res, MO, psi);
         if (std::abs(obj - obj_prev) < ftol_rel * (1.0 + std::abs(obj_prev))) break;
     }
 
     return Rcpp::List::create(
         Rcpp::Named("status")     = 3,
         Rcpp::Named("iterations") = iter,
-        Rcpp::Named("M")          = M_res + XB,
+        Rcpp::Named("M")          = Z - O,    // M_full with profiled B embedded
         Rcpp::Named("S2")         = S2,
         Rcpp::Named("R")          = R
     );
