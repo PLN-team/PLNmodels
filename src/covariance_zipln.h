@@ -23,9 +23,18 @@
 // (1-R)⊙Y⊙Z coincide identically.
 // ─────────────────────────────────────────────────────────────────────────────
 
+// Quantities derived from (Y, Pi) that stay constant through a VE-step call —
+// computed once and shared by both backends (builtin_optim_zipln.h, nlopt_optim_zipln.h).
+struct ZiplnRContext {
+    arma::mat logit_Pi;
+    arma::mat Y_zero;  // 1 where Y == 0, else 0 — R is restricted to these entries by construction
+    ZiplnRContext(const arma::mat & Pi, const arma::mat & Y)
+        : logit_Pi(logit(Pi)), Y_zero(arma::conv_to<arma::mat>::from(Y < 0.5)) {}
+};
+
 // Exact conditional optimum of R given (A, Pi): σ(A + logit(Pi)) where Y = 0, else 0.
-inline arma::mat zipln_update_R(const arma::mat & A, const arma::mat & logit_Pi, const arma::mat & Y_zero) {
-    return (1.0 / (1.0 + arma::exp(-(A + logit_Pi)))) % Y_zero;
+inline arma::mat zipln_update_R(const arma::mat & A, const ZiplnRContext & ctx) {
+    return (1.0 / (1.0 + arma::exp(-(A + ctx.logit_Pi)))) % ctx.Y_zero;
 }
 
 // VE-step objective + gradient for fixed R (A_eff = (1-R) ⊙ A passed in by the

@@ -143,11 +143,11 @@ inline Rcpp::List make_vestep_result(
 
 // "ZIPLN VE-step" result: like the "VE-step" shape above, but for the joint
 // (M, S2, R) VE-step (B and Omega fixed): R replaces Ji (the R caller computes
-// the log-likelihood separately via zipln_vloglik), and B is also returned —
-// re-profiled from the converged M, informational only (the R caller's own
-// M-step recomputes B independently from the updated M on the next outer round).
+// the log-likelihood separately via zipln_vloglik). No B field: the converged
+// B was only ever re-profiled for an "informational" return value that no R
+// call site reads — dropped along with the solve()/P_X*M that computed it.
 inline Rcpp::List make_zipln_vestep_result(
-    const arma::mat & M, const arma::mat & S2, const arma::mat & R, const arma::mat & B,
+    const arma::mat & M, const arma::mat & S2, const arma::mat & R,
     int status, const char * backend,
     const std::vector<double> & objective_vec, int iterations
 ) {
@@ -155,7 +155,6 @@ inline Rcpp::List make_zipln_vestep_result(
         Rcpp::Named("M")  = M,
         Rcpp::Named("S2") = S2,
         Rcpp::Named("R")  = R,
-        Rcpp::Named("B")  = B,
         Rcpp::Named("monitoring", Rcpp::List::create(
             Rcpp::Named("status",     status        ),
             Rcpp::Named("backend",    backend       ),

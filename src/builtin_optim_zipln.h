@@ -38,8 +38,7 @@ Rcpp::List ve_step_zipln_newton_impl(
         ? arma::solve(d.X.t() * d.X, d.X.t(), arma::solve_opts::likely_sympd)
         : arma::mat(0, d.Y.n_rows);
 
-    const arma::mat logit_Pi = logit(Pi);
-    const arma::mat Y_zero   = arma::conv_to<arma::mat>::from(d.Y < 0.5);
+    const ZiplnRContext ctx(Pi, d.Y);
 
     arma::mat M     = init_M;            // M_full
     arma::mat M_res = init_M - d.X * B;  // in null(X') by construction (B = P_X * init_M)
@@ -54,7 +53,7 @@ Rcpp::List ve_step_zipln_newton_impl(
 
     for (iter = 0; iter < maxiter; iter++) {
         // Exact conditional optimum of R, frozen for this Newton step + line search.
-        R = zipln_update_R(A, logit_Pi, Y_zero);
+        R = zipln_update_R(A, ctx);
         const arma::mat one_m_R = 1.0 - R;
         const arma::mat A_eff   = one_m_R % A;
 
@@ -94,6 +93,23 @@ Rcpp::List ve_step_zipln_newton_impl(
         if (converged(obj, f0, ftol_rel)) break;
     }
 
-    const arma::mat B_new = do_profile ? P_X * M : B;
-    return make_zipln_vestep_result(M, S2, R, B_new, 3, "newton", objective_vec, iter);
+    return make_zipln_vestep_result(M, S2, R, 3, "newton", objective_vec, iter);
+}
+
+// Thin wrapper: extracts params/config (mirroring builtin_vestep_pln_impl's wrappers)
+// and delegates to ve_step_zipln_newton_impl. One instantiation per covariance structure
+// in wrappers_builtin_optim_zipln.cpp — each export is a one-line call to this template.
+template <typename Traits>
+Rcpp::List ve_step_zipln_newton_wrapper(
+    const Rcpp::List & data, const Rcpp::List & params, const Rcpp::List & config
+) {
+    const PlnData d(data);
+    const auto init_M  = Rcpp::as<arma::mat>(params["M"]);
+    const auto init_S2 = Rcpp::as<arma::mat>(params["S2"]);
+    const auto Pi      = Rcpp::as<arma::mat>(params["Pi"]);
+    const auto B       = Rcpp::as<arma::mat>(params["B"]);
+    const auto Omega   = Rcpp::as<arma::mat>(params["Omega"]);
+    const NewtonConfig cfg(config);
+    typename Traits::State state(Omega);
+    return ve_step_zipln_newton_impl<Traits>(d, init_M, init_S2, Pi, B, state, cfg.maxiter, cfg.ftol);
 }

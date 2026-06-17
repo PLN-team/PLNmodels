@@ -33,14 +33,6 @@ optim_zipln_zipar_covar <- function(R, init_B0, X0, configuration) {
     .Call('_PLNmodels_optim_zipln_zipar_covar', PACKAGE = 'PLNmodels', R, init_B0, X0, configuration)
 }
 
-optim_zipln_M <- function(init_M, Y, X, O, R, S2, B, Omega, configuration) {
-    .Call('_PLNmodels_optim_zipln_M', PACKAGE = 'PLNmodels', init_M, Y, X, O, R, S2, B, Omega, configuration)
-}
-
-optim_zipln_psi <- function(init_S2, O, M, R, B, diag_Omega, configuration) {
-    .Call('_PLNmodels_optim_zipln_psi', PACKAGE = 'PLNmodels', init_S2, O, M, R, B, diag_Omega, configuration)
-}
-
 cpp_test_packing <- function() {
     .Call('_PLNmodels_cpp_test_packing', PACKAGE = 'PLNmodels')
 }

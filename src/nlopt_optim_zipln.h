@@ -46,12 +46,11 @@ Rcpp::List ve_step_zipln_nlopt_impl(
     std::vector<double> objective_vec;
     objective_vec.reserve(nlopt_get_maxeval(optimizer.get()));
 
-    const arma::mat XB       = d.X * B;
-    const arma::mat logit_Pi = logit(Pi);
-    const arma::mat Y_zero   = arma::conv_to<arma::mat>::from(d.Y < 0.5);
+    const arma::mat XB = d.X * B;
+    const ZiplnRContext ctx(Pi, d.Y);
 
     const arma::mat A0      = arma::exp(d.O + init_M + 0.5 * init_S2);
-    const arma::mat R0      = zipln_update_R(A0, logit_Pi, Y_zero);
+    const arma::mat R0      = zipln_update_R(A0, ctx);
     const arma::mat one_m_R = 1.0 - R0;
 
     auto objective_and_grad = [&](const double * par, double * grad) -> double {
@@ -71,15 +70,12 @@ Rcpp::List ve_step_zipln_nlopt_impl(
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
 
-    const arma::mat M     = metadata.copy<M_ID>  (parameters.data());
-    const arma::mat psi   = metadata.copy<PSI_ID>(parameters.data());
-    const arma::mat S2    = arma::exp(psi);
-    const arma::mat A     = arma::exp(d.O + M + 0.5 * S2);
-    const arma::mat Rfin  = zipln_update_R(A, logit_Pi, Y_zero);
-    const arma::mat B_new = (d.X.n_cols > 0)
-        ? arma::solve(d.X.t() * d.X, d.X.t() * M, arma::solve_opts::likely_sympd)
-        : arma::mat(0, (arma::uword)M.n_cols);
+    const arma::mat M    = metadata.copy<M_ID>  (parameters.data());
+    const arma::mat psi  = metadata.copy<PSI_ID>(parameters.data());
+    const arma::mat S2   = arma::exp(psi);
+    const arma::mat A    = arma::exp(d.O + M + 0.5 * S2);
+    const arma::mat Rfin = zipln_update_R(A, ctx);
 
-    return make_zipln_vestep_result(M, S2, Rfin, B_new,
+    return make_zipln_vestep_result(M, S2, Rfin,
                                      static_cast<int>(result.status), "nlopt", objective_vec, result.nb_iterations);
 }
