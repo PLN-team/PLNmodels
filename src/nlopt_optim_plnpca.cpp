@@ -23,10 +23,7 @@ Rcpp::List nlopt_optimize_rank(
     const Rcpp::List & config  // List of config values
 ) {
     // Conversion from R, prepare optimization
-    const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]); // responses (n,p)
-    const arma::mat & X = Rcpp::as<arma::mat>(data["X"]); // covariates (n,d)
-    const arma::mat & O = Rcpp::as<arma::mat>(data["O"]); // offsets (n,p)
-    const arma::vec & w = Rcpp::as<arma::vec>(data["w"]); // weights (n)
+    const PlnData d(data);
     const auto init_B   = Rcpp::as<arma::mat>(params["B"]);  // (d,p)
     const auto init_C   = Rcpp::as<arma::mat>(params["C"]);  // (p,q)
     const auto init_M   = Rcpp::as<arma::mat>(params["M"]);  // (n,q)
@@ -47,9 +44,9 @@ Rcpp::List nlopt_optimize_rank(
     std::vector<double> objective_vec;
     objective_vec.reserve(nlopt_get_maxeval(optimizer.get()));
 
-    const arma::mat Xw = X.each_col() % w;   // precomputed once
+    const arma::mat Xw = d.X.each_col() % d.w;   // precomputed once
 
-    auto objective_and_grad = [&metadata, &O, &X, &Xw, &Y, &w, &objective_vec](const double * params, double * grad) -> double {
+    auto objective_and_grad = [&metadata, &d, &Xw, &objective_vec](const double * params, double * grad) -> double {
         const arma::mat B   = metadata.map<B_ID>  (params);
         const arma::mat C   = metadata.map<C_ID>  (params);
         const arma::mat M   = metadata.map<M_ID>  (params);
@@ -57,15 +54,15 @@ Rcpp::List nlopt_optimize_rank(
 
         const arma::mat C2 = C % C;
         const arma::mat S2 = arma::exp(psi);                             // S² = exp(ψ)
-        arma::mat Z = O + X * B + M * C.t();
+        arma::mat Z = d.O + d.X * B + M * C.t();
         arma::mat A = arma::exp(Z + 0.5 * S2 * C2.t());
-        const arma::mat AmY = A - Y;  // gradient uses (A-Y); objective uses (A - Y%Z)
-        double objective = accu(w.t() * arma::sum(A - Y % Z, 1))
-                         + 0.5 * accu(w.t() * arma::sum(M % M + S2 - psi - 1., 1));
+        const arma::mat AmY = A - d.Y;  // gradient uses (A-Y); objective uses (A - Y%Z)
+        double objective = accu(d.w.t() * arma::sum(A - d.Y % Z, 1))
+                         + 0.5 * accu(d.w.t() * arma::sum(M % M + S2 - psi - 1., 1));
 
-        arma::mat gC  = (AmY.each_col() % w).t() * M + (A.t() * (S2.each_col() % w)) % C;
-        arma::mat gM  = AmY * C + M;  gM.each_col()  %= w;
-        arma::mat gPS = 0.5 * (S2 % (1. + A * C2) - 1.); gPS.each_col() %= w;
+        arma::mat gC  = (AmY.each_col() % d.w).t() * M + (A.t() * (S2.each_col() % d.w)) % C;
+        arma::mat gM  = AmY * C + M;  gM.each_col()  %= d.w;
+        arma::mat gPS = 0.5 * (S2 % (1. + A * C2) - 1.); gPS.each_col() %= d.w;
         metadata.map<B_ID>  (grad) = Xw.t() * AmY;
         metadata.map<C_ID>  (grad) = gC;
         metadata.map<M_ID>  (grad) = gM;
@@ -82,14 +79,14 @@ Rcpp::List nlopt_optimize_rank(
     arma::mat M   = metadata.copy<M_ID>  (parameters.data());
     arma::mat psi = metadata.copy<PSI_ID>(parameters.data());
     arma::mat S2  = arma::exp(psi);
-    arma::mat Sigma = C * (M.t() * (M.each_col() % w) + arma::diagmat(arma::sum(S2.each_col() % w, 0))) * C.t() / accu(w);
-    arma::mat Omega = C * inv_sympd((M.t() * (M.each_col() % w) + arma::diagmat(arma::sum(S2.each_col() % w, 0))) / accu(w)) * C.t();
-    arma::mat Z   = O + X * B + M * C.t();
+    arma::mat Sigma = C * (M.t() * (M.each_col() % d.w) + arma::diagmat(arma::sum(S2.each_col() % d.w, 0))) * C.t() / accu(d.w);
+    arma::mat Omega = C * inv_sympd((M.t() * (M.each_col() % d.w) + arma::diagmat(arma::sum(S2.each_col() % d.w, 0))) / accu(d.w)) * C.t();
+    arma::mat Z   = d.O + d.X * B + M * C.t();
     arma::mat A   = arma::exp(Z + 0.5 * S2 * (C % C).t());
-    arma::mat loglik = arma::sum(Y % Z - A, 1) - 0.5 * arma::sum(M % M + S2 - psi - 1., 1) + ki(Y);
+    arma::mat loglik = arma::sum(d.Y % Z - A, 1) - 0.5 * arma::sum(M % M + S2 - psi - 1., 1) + ki(d.Y);
 
     Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
-    Ji.attr("weights") = w;
+    Ji.attr("weights") = d.w;
     return Rcpp::List::create(
         Rcpp::Named("B", B),
         Rcpp::Named("C", C),
@@ -122,10 +119,7 @@ Rcpp::List nlopt_optimize_vestep_rank(
         const Rcpp::List & config  // List of config values
 ) {
     // Conversion from R, prepare optimization
-    const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]); // responses (n,p)
-    const arma::mat & X = Rcpp::as<arma::mat>(data["X"]); // covariates (n,d)
-    const arma::mat & O = Rcpp::as<arma::mat>(data["O"]); // offsets (n,p)
-    const arma::vec & w = Rcpp::as<arma::vec>(data["w"]); // weights (n)
+    const PlnData d(data);
     const auto init_M        = Rcpp::as<arma::mat>(params["M"]);  // (n,q)
     const arma::mat init_S2  = Rcpp::as<arma::mat>(params["S2"]); // (n,q) variance
     const arma::mat init_psi = arma::log(init_S2);                // ψ = log(S²)
@@ -142,21 +136,21 @@ Rcpp::List nlopt_optimize_vestep_rank(
     std::vector<double> objective_vec;
     objective_vec.reserve(nlopt_get_maxeval(optimizer.get()));
     const arma::mat C2 = C % C;
-    const arma::mat XB = X * B;
+    const arma::mat XB = d.X * B;
 
-    auto objective_and_grad = [&metadata, &O, &XB, &Y, &w, &C, &C2, &objective_vec](const double * params, double * grad) -> double {
+    auto objective_and_grad = [&metadata, &d, &XB, &C, &C2, &objective_vec](const double * params, double * grad) -> double {
         const arma::mat M   = metadata.map<M_ID>  (params);
         const arma::mat psi = metadata.map<PSI_ID>(params);
 
         arma::mat S2 = arma::exp(psi);
-        arma::mat Z  = O + XB + M * C.t();
+        arma::mat Z  = d.O + XB + M * C.t();
         arma::mat A  = arma::exp(Z + 0.5 * S2 * C2.t());
-        const arma::mat AmY = A - Y;  // gradient uses (A-Y); objective uses (A - Y%Z)
-        double objective = accu(w.t() * arma::sum(A - Y % Z, 1))
-                         + 0.5 * accu(w.t() * arma::sum(M % M + S2 - psi - 1., 1));
+        const arma::mat AmY = A - d.Y;  // gradient uses (A-Y); objective uses (A - Y%Z)
+        double objective = accu(d.w.t() * arma::sum(A - d.Y % Z, 1))
+                         + 0.5 * accu(d.w.t() * arma::sum(M % M + S2 - psi - 1., 1));
 
-        arma::mat gM  = AmY * C + M;  gM.each_col()  %= w;
-        arma::mat gPS = 0.5 * (S2 % (1. + A * C2) - 1.); gPS.each_col() %= w;
+        arma::mat gM  = AmY * C + M;  gM.each_col()  %= d.w;
+        arma::mat gPS = 0.5 * (S2 % (1. + A * C2) - 1.); gPS.each_col() %= d.w;
         metadata.map<M_ID>  (grad) = gM;
         metadata.map<PSI_ID>(grad) = gPS;
 
@@ -169,21 +163,11 @@ Rcpp::List nlopt_optimize_vestep_rank(
     arma::mat M   = metadata.copy<M_ID>  (parameters.data());
     arma::mat psi = metadata.copy<PSI_ID>(parameters.data());
     arma::mat S2  = arma::exp(psi);
-    arma::mat Z   = O + X * B + M * C.t();
+    arma::mat Z   = d.O + d.X * B + M * C.t();
     arma::mat A   = arma::exp(Z + 0.5 * S2 * C2.t());
-    arma::mat loglik = arma::sum(Y % Z - A, 1) - 0.5 * arma::sum(M % M + S2 - psi - 1., 1) + ki(Y);
+    arma::mat loglik = arma::sum(d.Y % Z - A, 1) - 0.5 * arma::sum(M % M + S2 - psi - 1., 1) + ki(d.Y);
 
     Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
-    Ji.attr("weights") = w;
-    return Rcpp::List::create(
-        Rcpp::Named("M")  = M,
-        Rcpp::Named("S2") = S2,
-        Rcpp::Named("Ji") = Ji,
-        Rcpp::Named("monitoring", Rcpp::List::create(
-            Rcpp::Named("status", static_cast<int>(result.status)),
-            Rcpp::Named("backend", "nlopt"),
-            Rcpp::Named("objective", objective_vec),
-            Rcpp::Named("iterations", result.nb_iterations)
-        ))
-    );
+    Ji.attr("weights") = d.w;
+    return make_vestep_result(M, S2, Ji, static_cast<int>(result.status), "nlopt", objective_vec, result.nb_iterations);
 }
