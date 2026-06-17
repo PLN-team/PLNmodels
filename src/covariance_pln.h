@@ -25,6 +25,22 @@ struct CovTraitsBase {
         return 0.5 * arma::as_scalar(w.t() * arma::sum(MO % M, 1));
     }
 
+    // Objective value only (no gradient) at a given point — used by the builtin Newton
+    // solver's Armijo line search, which evaluates several trial points per step without
+    // needing their gradient. A, MO are passed in (already available/cheaply updated at
+    // the call site) rather than recomputed here.
+    template <typename State>
+    static double objective(
+        const arma::mat & M_res, const arma::mat & Z,
+        const arma::mat & S2,   const arma::mat & logS2,
+        const arma::mat & MO,
+        const State & s,
+        const arma::mat & Y,    const arma::vec & w,
+        const arma::mat & A)
+    {
+        return arma::accu(w.t() * (A - Y % Z - 0.5 * logS2)) + penalty_M(MO, M_res, w) + Derived::penalty_S(S2, s, w);
+    }
+
     // VE-step objective + gradient: B and Omega fixed, only (M, S²) optimized.
     template <typename State>
     static double vestep_obj_grad(

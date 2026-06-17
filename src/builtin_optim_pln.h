@@ -56,8 +56,7 @@ Rcpp::List builtin_optimize_pln_impl(
                                           grad_M, step_M, grad_psi, step_psi, MresO);
             const arma::mat Q_step  = step_M - d.X * (P_X * step_M);
             const arma::mat QstepO  = Traits::times_Omega(Q_step, state);
-            double f0    = arma::accu(d.w.t() * (A - d.Y % Z - 0.5 * psi))
-                         + Traits::penalty_M(MresO, M_res, d.w) + Traits::penalty_S(S2, state, d.w);
+            double f0    = Traits::objective(M_res, Z, S2, psi, MresO, state, d.Y, d.w, A);
             double slope = -arma::accu(grad_M % Q_step) - arma::accu(grad_psi % step_psi);
             if (slope >= 0) slope = -arma::accu(grad_M % step_M) - arma::accu(grad_psi % step_psi);
             double alpha = 1.0;
@@ -68,11 +67,15 @@ Rcpp::List builtin_optimize_pln_impl(
                 const arma::mat S2t    = arma::exp(psit);
                 const arma::mat Zt     = Z     - alpha * step_M;
                 const arma::mat At     = arma::exp(Zt + 0.5 * S2t);
-                if (arma::accu(d.w.t() * (At - d.Y % Zt - 0.5 * psit))
-                    + Traits::penalty_M(MresOt, MresT, d.w) + Traits::penalty_S(S2t, state, d.w)
-                    <= f0 + c1 * alpha * slope) break;
+                if (Traits::objective(MresT, Zt, S2t, psit, MresOt, state, d.Y, d.w, At) <= f0 + c1 * alpha * slope) break;
                 alpha *= 0.5;
             }
+
+            // Post-step objective: M_res_new = M_res - alpha*Q_step and MO_new = MresO -
+            // alpha*QstepO follow from the envelope theorem (B is re-profiled from the new
+            // M), so they're available without a redundant O(n p²) product.
+            const arma::mat M_res_new = M_res - alpha * Q_step;
+            const arma::mat MO_new    = MresO - alpha * QstepO;
             M   -= alpha * step_M;
             psi -= alpha * step_psi;
             S2   = arma::exp(psi);
@@ -80,9 +83,10 @@ Rcpp::List builtin_optimize_pln_impl(
             Z    = d.O + M;
             A    = arma::exp(Z + 0.5 * S2);
 
-            objective_vec.push_back(f0);
-            if (it > 0 && converged(f0, inner_prev, ftol)) break;
-            inner_prev = f0;
+            double obj = Traits::objective(M_res_new, Z, S2, psi, MO_new, state, d.Y, d.w, A);
+            objective_vec.push_back(obj);
+            if (it > 0 && converged(obj, inner_prev, ftol)) break;
+            inner_prev = obj;
         }
 
         // ── VM-step: update Omega/Sigma (skipped for fixed covariance) ──
@@ -141,8 +145,7 @@ Rcpp::List builtin_vestep_pln_impl(
         Traits::compute_joint_step_MS(M_res, state, A, S2, d.Y, d.w,
                                       grad_M, step_M, grad_psi, step_psi, MO);
         const arma::mat dMO = Traits::times_Omega(step_M, state);
-        double f0    = arma::accu(d.w.t() * (A - d.Y % Z - 0.5 * psi))
-                     + Traits::penalty_M(MO, M_res, d.w) + Traits::penalty_S(S2, state, d.w);
+        double f0    = Traits::objective(M_res, Z, S2, psi, MO, state, d.Y, d.w, A);
         double slope = -arma::accu(grad_M % step_M) - arma::accu(grad_psi % step_psi);
         double alpha = 1.0;
         for (int ls = 0; ls < 20; ls++) {
@@ -152,9 +155,7 @@ Rcpp::List builtin_vestep_pln_impl(
             const arma::mat S2t   = arma::exp(psit);
             const arma::mat Zt    = Z     - alpha * step_M;
             const arma::mat At    = arma::exp(Zt + 0.5 * S2t);
-            if (arma::accu(d.w.t() * (At - d.Y % Zt - 0.5 * psit))
-                + Traits::penalty_M(MOt, MresT, d.w) + Traits::penalty_S(S2t, state, d.w)
-                <= f0 + c1 * alpha * slope) break;
+            if (Traits::objective(MresT, Zt, S2t, psit, MOt, state, d.Y, d.w, At) <= f0 + c1 * alpha * slope) break;
             alpha *= 0.5;
         }
         M   -= alpha * step_M;
@@ -167,8 +168,7 @@ Rcpp::List builtin_vestep_pln_impl(
         // (exact incremental update, avoids an extra O(n p²) product for full cov).
         const arma::mat MO_new   = MO - alpha * dMO;
         const arma::mat M_res_new = M - XB;
-        double obj = arma::accu(d.w.t() * (A - d.Y % Z - 0.5 * psi))
-                   + Traits::penalty_M(MO_new, M_res_new, d.w) + Traits::penalty_S(S2, state, d.w);
+        double obj = Traits::objective(M_res_new, Z, S2, psi, MO_new, state, d.Y, d.w, A);
         objective_vec.push_back(obj);
         total_iter++;
 
