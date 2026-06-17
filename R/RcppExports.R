@@ -41,14 +41,6 @@ optim_zipln_psi <- function(init_S2, O, M, R, B, diag_Omega, configuration) {
     .Call('_PLNmodels_optim_zipln_psi', PACKAGE = 'PLNmodels', init_S2, O, M, R, B, diag_Omega, configuration)
 }
 
-ve_step_zipln_nlopt <- function(init_M, init_S2, Y, X, O, Pi, B, Omega, configuration) {
-    .Call('_PLNmodels_ve_step_zipln_nlopt', PACKAGE = 'PLNmodels', init_M, init_S2, Y, X, O, Pi, B, Omega, configuration)
-}
-
-ve_step_zipln_newton <- function(init_M, init_S2, Y, X, O, Pi, B, Omega, maxiter, ftol_rel) {
-    .Call('_PLNmodels_ve_step_zipln_newton', PACKAGE = 'PLNmodels', init_M, init_S2, Y, X, O, Pi, B, Omega, maxiter, ftol_rel)
-}
-
 cpp_test_packing <- function() {
     .Call('_PLNmodels_cpp_test_packing', PACKAGE = 'PLNmodels')
 }
@@ -93,6 +85,22 @@ builtin_optimize_vestep_rank <- function(data, params, config) {
     .Call('_PLNmodels_builtin_optimize_vestep_rank', PACKAGE = 'PLNmodels', data, params, config)
 }
 
+ve_step_zipln_newton_full <- function(data, params, config) {
+    .Call('_PLNmodels_ve_step_zipln_newton_full', PACKAGE = 'PLNmodels', data, params, config)
+}
+
+ve_step_zipln_newton_diagonal <- function(data, params, config) {
+    .Call('_PLNmodels_ve_step_zipln_newton_diagonal', PACKAGE = 'PLNmodels', data, params, config)
+}
+
+ve_step_zipln_newton_spherical <- function(data, params, config) {
+    .Call('_PLNmodels_ve_step_zipln_newton_spherical', PACKAGE = 'PLNmodels', data, params, config)
+}
+
+ve_step_zipln_newton_fixed <- function(data, params, config) {
+    .Call('_PLNmodels_ve_step_zipln_newton_fixed', PACKAGE = 'PLNmodels', data, params, config)
+}
+
 nlopt_optimize_full <- function(data, params, config) {
     .Call('_PLNmodels_nlopt_optimize_full', PACKAGE = 'PLNmodels', data, params, config)
 }
@@ -131,5 +139,21 @@ nlopt_optimize_rank <- function(data, params, config) {
 
 nlopt_optimize_vestep_rank <- function(data, params, config) {
     .Call('_PLNmodels_nlopt_optimize_vestep_rank', PACKAGE = 'PLNmodels', data, params, config)
+}
+
+ve_step_zipln_nlopt_full <- function(data, params, config) {
+    .Call('_PLNmodels_ve_step_zipln_nlopt_full', PACKAGE = 'PLNmodels', data, params, config)
+}
+
+ve_step_zipln_nlopt_diagonal <- function(data, params, config) {
+    .Call('_PLNmodels_ve_step_zipln_nlopt_diagonal', PACKAGE = 'PLNmodels', data, params, config)
+}
+
+ve_step_zipln_nlopt_spherical <- function(data, params, config) {
+    .Call('_PLNmodels_ve_step_zipln_nlopt_spherical', PACKAGE = 'PLNmodels', data, params, config)
+}
+
+ve_step_zipln_nlopt_fixed <- function(data, params, config) {
+    .Call('_PLNmodels_ve_step_zipln_nlopt_fixed', PACKAGE = 'PLNmodels', data, params, config)
 }
 

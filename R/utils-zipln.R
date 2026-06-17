@@ -92,6 +92,25 @@ parameter_list_converged <- function(oldp, newp, xtol_abs = NULL, xtol_rel = NUL
   FALSE
 }
 
+# Returns the (data, params, config) C++ VE-step export matching backend × suffix
+# (covariance structure). Used by ZIPLNfit's setup_MS_optimizer (R/ZIPLNfit-class.R),
+# the ZIPLN analogue of PLNfit's setup_optimizer (R/PLNfit-class.R).
+zipln_MS_fn <- function(backend, suffix) {
+  if (backend == "builtin") {
+    switch(suffix,
+      full      = ve_step_zipln_newton_full,
+      diagonal  = ve_step_zipln_newton_diagonal,
+      spherical = ve_step_zipln_newton_spherical,
+      fixed     = ve_step_zipln_newton_fixed)
+  } else {
+    switch(suffix,
+      full      = ve_step_zipln_nlopt_full,
+      diagonal  = ve_step_zipln_nlopt_diagonal,
+      spherical = ve_step_zipln_nlopt_spherical,
+      fixed     = ve_step_zipln_nlopt_fixed)
+  }
+}
+
 #' #' @importFrom glmnet glmnet
 #' optim_zipln_B <- function(M, X, Omega, config) {
 #'
