@@ -336,14 +336,23 @@ PLNPCAfit <- R6Class(
         M_init <- svd_residuals$u[, 1:q, drop = FALSE] %*% diag(svd_residuals$d[1:q], nrow = q, ncol = q) %*% t(svd_residuals$v[1:q, 1:q, drop = FALSE])
 
         ## Initialize the variational parameters with the appropriate new dimension of the data
-        args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
-                     ## Initialize the variational parameters with the new dimension of the data
-                     params = list(M = M_init, S2 = matrix(.01, n, q)),
-                     B = private$B,
-                     C = private$C,
-                     config = control$config_optim)
-        vestep_optimizer <- if (control$backend == "torch") private$torch_optimize_vestep_rank else private$optimizer$vestep
-        optim_out <- do.call(vestep_optimizer, args)
+        params0 <- list(M = M_init, S2 = matrix(.01, n, q))
+        if (control$backend == "torch") {
+          args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
+                       params = params0,
+                       B = private$B,
+                       C = private$C,
+                       config = control$config_optim)
+          optim_out <- do.call(private$torch_optimize_vestep_rank, args)
+        } else {
+          ## B, C are fixed and passed alongside the variational parameters
+          params0$B <- private$B
+          params0$C <- private$C
+          args <- list(data   = list(Y = responses, X = covariates, O = offsets, w = weights),
+                       params = params0,
+                       config = control$config_optim)
+          optim_out <- do.call(private$optimizer$vestep, args)
+        }
         optim_out
       },
 

@@ -177,14 +177,14 @@ Rcpp::List nlopt_joint_profiled_impl(
 template <typename CovTraits>
 Rcpp::List nlopt_vestep_impl(
     const Rcpp::List & data,    // List(Y, X, O, w)
-    const Rcpp::List & params,  // List(M, S2)
-    const arma::mat & B,        // (d,p) — fixed
-    const arma::mat & Omega,    // (p,p) — fixed precision (dense, any structure)
+    const Rcpp::List & params,  // List(M, S2, B, Omega) — B, Omega fixed
     const Rcpp::List & config
 ) {
     const PlnData d(data);
     const auto init_M   = Rcpp::as<arma::mat>(params["M"]);
     const auto init_S2  = Rcpp::as<arma::mat>(params["S2"]);
+    const auto B        = Rcpp::as<arma::mat>(params["B"]);
+    const auto Omega    = Rcpp::as<arma::mat>(params["Omega"]);
 
     const auto metadata = tuple_metadata(init_M, init_S2);
     enum { M_ID, S_ID };

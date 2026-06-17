@@ -454,11 +454,11 @@ PLNfit <- R6Class(
       } else {
         params0 <- list(M = self$var_par$M, S2 = self$var_par$S2)
       }
+      ## B, Omega are fixed and passed alongside the variational parameters
+      params0$B     <- as.matrix(B)
+      params0$Omega <- as.matrix(Omega)
       args <- list(data = list(Y = responses, X = covariates, O = offsets, w = weights),
-                   ## Initialize the variational parameters with the new dimension of the data
                    params = params0,
-                   B = as.matrix(B),
-                   Omega = as.matrix(Omega),
                    config = control$config_optim)
       optim_out <- do.call(private$optimizer$vestep, args)
       optim_out

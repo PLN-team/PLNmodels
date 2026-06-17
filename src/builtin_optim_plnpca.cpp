@@ -263,13 +263,13 @@ Rcpp::List builtin_optimize_rank(
 Rcpp::List builtin_optimize_vestep_rank(
     const Rcpp::List & data  ,
     const Rcpp::List & params,
-    const arma::mat & B,
-    const arma::mat & C,
     const Rcpp::List & config
 ) {
     const PlnData D(data);
     arma::mat M  = Rcpp::as<arma::mat>(params["M"]);
     arma::mat S2 = Rcpp::as<arma::mat>(params["S2"]);
+    arma::mat B  = Rcpp::as<arma::mat>(params["B"]);
+    arma::mat C  = Rcpp::as<arma::mat>(params["C"]);
 
     const int    maxiter = config.containsElementNamed("maxeval") ? Rcpp::as<int>   (config["maxeval"])  : 10000;
     const double ftol    = config.containsElementNamed("ftol_in") ? Rcpp::as<double>(config["ftol_in"]) : 1e-9;

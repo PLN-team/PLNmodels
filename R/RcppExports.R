@@ -5,24 +5,24 @@ builtin_optimize_full <- function(data, params, config) {
     .Call('_PLNmodels_builtin_optimize_full', PACKAGE = 'PLNmodels', data, params, config)
 }
 
-builtin_optimize_vestep_full <- function(data, params, B, Omega, config) {
-    .Call('_PLNmodels_builtin_optimize_vestep_full', PACKAGE = 'PLNmodels', data, params, B, Omega, config)
+builtin_optimize_vestep_full <- function(data, params, config) {
+    .Call('_PLNmodels_builtin_optimize_vestep_full', PACKAGE = 'PLNmodels', data, params, config)
 }
 
 builtin_optimize_diagonal <- function(data, params, config) {
     .Call('_PLNmodels_builtin_optimize_diagonal', PACKAGE = 'PLNmodels', data, params, config)
 }
 
-builtin_optimize_vestep_diagonal <- function(data, params, B, Omega, config) {
-    .Call('_PLNmodels_builtin_optimize_vestep_diagonal', PACKAGE = 'PLNmodels', data, params, B, Omega, config)
+builtin_optimize_vestep_diagonal <- function(data, params, config) {
+    .Call('_PLNmodels_builtin_optimize_vestep_diagonal', PACKAGE = 'PLNmodels', data, params, config)
 }
 
 builtin_optimize_spherical <- function(data, params, config) {
     .Call('_PLNmodels_builtin_optimize_spherical', PACKAGE = 'PLNmodels', data, params, config)
 }
 
-builtin_optimize_vestep_spherical <- function(data, params, B, Omega, config) {
-    .Call('_PLNmodels_builtin_optimize_vestep_spherical', PACKAGE = 'PLNmodels', data, params, B, Omega, config)
+builtin_optimize_vestep_spherical <- function(data, params, config) {
+    .Call('_PLNmodels_builtin_optimize_vestep_spherical', PACKAGE = 'PLNmodels', data, params, config)
 }
 
 builtin_optimize_fixed <- function(data, params, config) {
@@ -33,8 +33,8 @@ builtin_optimize_rank <- function(data, params, config) {
     .Call('_PLNmodels_builtin_optimize_rank', PACKAGE = 'PLNmodels', data, params, config)
 }
 
-builtin_optimize_vestep_rank <- function(data, params, B, C, config) {
-    .Call('_PLNmodels_builtin_optimize_vestep_rank', PACKAGE = 'PLNmodels', data, params, B, C, config)
+builtin_optimize_vestep_rank <- function(data, params, config) {
+    .Call('_PLNmodels_builtin_optimize_vestep_rank', PACKAGE = 'PLNmodels', data, params, config)
 }
 
 nlopt_optimize_full <- function(data, params, config) {
@@ -45,8 +45,8 @@ nlopt_optimize_full_profiled <- function(data, params, config) {
     .Call('_PLNmodels_nlopt_optimize_full_profiled', PACKAGE = 'PLNmodels', data, params, config)
 }
 
-nlopt_optimize_vestep_full <- function(data, params, B, Omega, config) {
-    .Call('_PLNmodels_nlopt_optimize_vestep_full', PACKAGE = 'PLNmodels', data, params, B, Omega, config)
+nlopt_optimize_vestep_full <- function(data, params, config) {
+    .Call('_PLNmodels_nlopt_optimize_vestep_full', PACKAGE = 'PLNmodels', data, params, config)
 }
 
 nlopt_optimize_fixed <- function(data, params, config) {
@@ -57,24 +57,24 @@ nlopt_optimize_diagonal <- function(data, params, config) {
     .Call('_PLNmodels_nlopt_optimize_diagonal', PACKAGE = 'PLNmodels', data, params, config)
 }
 
-nlopt_optimize_vestep_diagonal <- function(data, params, B, Omega, config) {
-    .Call('_PLNmodels_nlopt_optimize_vestep_diagonal', PACKAGE = 'PLNmodels', data, params, B, Omega, config)
+nlopt_optimize_vestep_diagonal <- function(data, params, config) {
+    .Call('_PLNmodels_nlopt_optimize_vestep_diagonal', PACKAGE = 'PLNmodels', data, params, config)
 }
 
 nlopt_optimize_spherical <- function(data, params, config) {
     .Call('_PLNmodels_nlopt_optimize_spherical', PACKAGE = 'PLNmodels', data, params, config)
 }
 
-nlopt_optimize_vestep_spherical <- function(data, params, B, Omega, config) {
-    .Call('_PLNmodels_nlopt_optimize_vestep_spherical', PACKAGE = 'PLNmodels', data, params, B, Omega, config)
+nlopt_optimize_vestep_spherical <- function(data, params, config) {
+    .Call('_PLNmodels_nlopt_optimize_vestep_spherical', PACKAGE = 'PLNmodels', data, params, config)
 }
 
 nlopt_optimize_rank <- function(data, params, config) {
     .Call('_PLNmodels_nlopt_optimize_rank', PACKAGE = 'PLNmodels', data, params, config)
 }
 
-nlopt_optimize_vestep_rank <- function(data, params, B, C, config) {
-    .Call('_PLNmodels_nlopt_optimize_vestep_rank', PACKAGE = 'PLNmodels', data, params, B, C, config)
+nlopt_optimize_vestep_rank <- function(data, params, config) {
+    .Call('_PLNmodels_nlopt_optimize_vestep_rank', PACKAGE = 'PLNmodels', data, params, config)
 }
 
 cpp_test_nlopt <- function() {

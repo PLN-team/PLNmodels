@@ -32,13 +32,13 @@ Rcpp::List builtin_optimize_full(
 Rcpp::List builtin_optimize_vestep_full(
     const Rcpp::List & data  ,
     const Rcpp::List & params,
-    const arma::mat & B,
-    const arma::mat & Omega,
     const Rcpp::List & config
 ) {
     const PlnData d(data);
-    arma::mat M  = Rcpp::as<arma::mat>(params["M"]);
-    arma::mat S2 = Rcpp::as<arma::mat>(params["S2"]);
+    arma::mat M     = Rcpp::as<arma::mat>(params["M"]);
+    arma::mat S2    = Rcpp::as<arma::mat>(params["S2"]);
+    arma::mat B     = Rcpp::as<arma::mat>(params["B"]);
+    arma::mat Omega = Rcpp::as<arma::mat>(params["Omega"]);
     const NewtonConfig cfg(config);
     FullCovTraits::State state(Omega);
     return builtin_vestep_pln_impl<FullCovTraits>(d, M, S2, B, state, cfg.maxiter, cfg.ftol);
@@ -66,13 +66,13 @@ Rcpp::List builtin_optimize_diagonal(
 Rcpp::List builtin_optimize_vestep_diagonal(
     const Rcpp::List & data  ,
     const Rcpp::List & params,
-    const arma::mat & B,
-    const arma::mat & Omega,
     const Rcpp::List & config
 ) {
     const PlnData d(data);
-    arma::mat M  = Rcpp::as<arma::mat>(params["M"]);
-    arma::mat S2 = Rcpp::as<arma::mat>(params["S2"]);
+    arma::mat M     = Rcpp::as<arma::mat>(params["M"]);
+    arma::mat S2    = Rcpp::as<arma::mat>(params["S2"]);
+    arma::mat B     = Rcpp::as<arma::mat>(params["B"]);
+    arma::mat Omega = Rcpp::as<arma::mat>(params["Omega"]);
     const NewtonConfig cfg(config);
     DiagonalCovTraits::State state(Omega);
     return builtin_vestep_pln_impl<DiagonalCovTraits>(d, M, S2, B, state, cfg.maxiter, cfg.ftol);
@@ -100,13 +100,13 @@ Rcpp::List builtin_optimize_spherical(
 Rcpp::List builtin_optimize_vestep_spherical(
     const Rcpp::List & data  ,
     const Rcpp::List & params,
-    const arma::mat & B,
-    const arma::mat & Omega,
     const Rcpp::List & config
 ) {
     const PlnData d(data);
-    arma::mat M  = Rcpp::as<arma::mat>(params["M"]);
-    arma::mat S2 = Rcpp::as<arma::mat>(params["S2"]);
+    arma::mat M     = Rcpp::as<arma::mat>(params["M"]);
+    arma::mat S2    = Rcpp::as<arma::mat>(params["S2"]);
+    arma::mat B     = Rcpp::as<arma::mat>(params["B"]);
+    arma::mat Omega = Rcpp::as<arma::mat>(params["Omega"]);
     const NewtonConfig cfg(config);
     SphericalCovTraits::State state(Omega);
     return builtin_vestep_pln_impl<SphericalCovTraits>(d, M, S2, B, state, cfg.maxiter, cfg.ftol);

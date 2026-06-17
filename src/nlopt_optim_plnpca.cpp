@@ -111,9 +111,7 @@ Rcpp::List nlopt_optimize_rank(
 // [[Rcpp::export]]
 Rcpp::List nlopt_optimize_vestep_rank(
         const Rcpp::List & data  , // List(Y, X, O, w)
-        const Rcpp::List & params, // List(M, S2)
-        const arma::mat & B,       // (d,p)
-        const arma::mat & C,       // (p,q)
+        const Rcpp::List & params, // List(M, S2, B, C) — B, C fixed
         const Rcpp::List & config  // List of config values
 ) {
     // Conversion from R, prepare optimization
@@ -121,6 +119,8 @@ Rcpp::List nlopt_optimize_vestep_rank(
     const auto init_M        = Rcpp::as<arma::mat>(params["M"]);  // (n,q)
     const arma::mat init_S2  = Rcpp::as<arma::mat>(params["S2"]); // (n,q) variance
     const arma::mat init_psi = arma::log(init_S2);                // ψ = log(S²)
+    const auto B = Rcpp::as<arma::mat>(params["B"]);  // (d,p)
+    const auto C = Rcpp::as<arma::mat>(params["C"]);  // (p,q)
 
     const auto metadata = tuple_metadata(init_M, init_psi);
     enum { M_ID, PSI_ID };

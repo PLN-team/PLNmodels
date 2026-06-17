@@ -50,12 +50,10 @@ Rcpp::List nlopt_optimize_full_profiled(
 // [[Rcpp::export]]
 Rcpp::List nlopt_optimize_vestep_full(
     const Rcpp::List & data,   // List(Y, X, O, w)
-    const Rcpp::List & params, // List(M, S2)
-    const arma::mat & B,       // (d,p)
-    const arma::mat & Omega,   // (p,p)
+    const Rcpp::List & params, // List(M, S2, B, Omega)
     const Rcpp::List & config
 ) {
-    return nlopt_vestep_impl<FullCovTraits>(data, params, B, Omega, config);
+    return nlopt_vestep_impl<FullCovTraits>(data, params, config);
 }
 
 // ---------------------------------------------------------------------------------------
@@ -93,12 +91,10 @@ Rcpp::List nlopt_optimize_diagonal(
 // [[Rcpp::export]]
 Rcpp::List nlopt_optimize_vestep_diagonal(
     const Rcpp::List & data,   // List(Y, X, O, w)
-    const Rcpp::List & params, // List(M, S2)
-    const arma::mat & B,       // (d,p)
-    const arma::mat & Omega,   // (p,p)
+    const Rcpp::List & params, // List(M, S2, B, Omega)
     const Rcpp::List & config
 ) {
-    return nlopt_vestep_impl<DiagonalCovTraits>(data, params, B, Omega, config);
+    return nlopt_vestep_impl<DiagonalCovTraits>(data, params, config);
 }
 
 // ---------------------------------------------------------------------------------------
@@ -119,10 +115,8 @@ Rcpp::List nlopt_optimize_spherical(
 // [[Rcpp::export]]
 Rcpp::List nlopt_optimize_vestep_spherical(
     const Rcpp::List & data  , // List(Y, X, O, w)
-    const Rcpp::List & params, // List(M, S2)
-    const arma::mat & B,       // (d,p)
-    const arma::mat & Omega,   // (p,p)
+    const Rcpp::List & params, // List(M, S2, B, Omega)
     const Rcpp::List & config
 ) {
-    return nlopt_vestep_impl<SphericalCovTraits>(data, params, B, Omega, config);
+    return nlopt_vestep_impl<SphericalCovTraits>(data, params, config);
 }
