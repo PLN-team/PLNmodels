@@ -110,22 +110,7 @@ Rcpp::List builtin_optimize_pln_impl(
     Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
     Ji.attr("weights") = w;
     Rcpp::List cov_out = Traits::output_cov(M_res, S2, w, w_bar, state);
-    return Rcpp::List::create(
-        Rcpp::Named("B",     B               ),
-        Rcpp::Named("M",     M               ),
-        Rcpp::Named("S2",    S2              ),
-        Rcpp::Named("Z",     Z               ),
-        Rcpp::Named("A",     A               ),
-        Rcpp::Named("Sigma", cov_out["Sigma"]),
-        Rcpp::Named("Omega", cov_out["Omega"]),
-        Rcpp::Named("Ji",    Ji              ),
-        Rcpp::Named("monitoring", Rcpp::List::create(
-            Rcpp::Named("status",     last_status                  ),
-            Rcpp::Named("backend",    "newton"                     ),
-            Rcpp::Named("objective",  objective_vec                ),
-            Rcpp::Named("iterations", (int)objective_vec.size()    )
-        ))
-    );
+    return make_pln_result(B, M, S2, Z, A, cov_out, Ji, last_status, "newton", objective_vec, (int)objective_vec.size());
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -201,15 +186,5 @@ Rcpp::List builtin_vestep_pln_impl(
 
     Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
     Ji.attr("weights") = w;
-    return Rcpp::List::create(
-        Rcpp::Named("M")  = M,
-        Rcpp::Named("S2") = S2,
-        Rcpp::Named("Ji") = Ji,
-        Rcpp::Named("monitoring", Rcpp::List::create(
-            Rcpp::Named("status",     3           ),
-            Rcpp::Named("backend",    "newton"    ),
-            Rcpp::Named("objective",  objective_vec),
-            Rcpp::Named("iterations", total_iter  )
-        ))
-    );
+    return make_vestep_result(M, S2, Ji, 3, "newton", objective_vec, total_iter);
 }

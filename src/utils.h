@@ -26,53 +26,6 @@ inline arma::mat logit(arma::mat M) {
   return arma::trunc_log(M) - arma::trunc_log(1 - M) ;
 }
 
-// ---- Newton step for B: diagonal Hessian approximation with Armijo line search ----
-// Updates B, Z, A in-place (Z = O + X*B + M and A = exp(Z + S²/2) after update).
-// Requires Xw = X.*w and Xw2 = X².*w precomputed outside the loop.
-inline void newton_step_B(
-    const arma::mat & Xw, const arma::mat & Xw2,
-    const arma::mat & X,  const arma::mat & Y,
-    const arma::mat & O,  const arma::vec & w,
-    const arma::mat & M,  const arma::mat & S2,
-    arma::mat & B, arma::mat & Z, arma::mat & A
-) {
-    constexpr double c1 = 1e-4;
-    arma::mat grad_B = Xw.t() * (A - Y);
-    arma::mat hess_B = Xw2.t() * A;
-    hess_B.clamp(1e-10, arma::datum::inf);
-    const arma::mat step_B  = grad_B / hess_B;
-    const arma::mat XstepB  = X * step_B;
-    const double f0_B    = arma::accu(w.t() * (A - Y % Z));
-    const double slope_B = -arma::accu(grad_B % step_B);
-    double alpha_B = 1.0;
-    for (int ls = 0; ls < 20; ls++) {
-        const arma::mat Zt = Z - alpha_B * XstepB;
-        if (arma::accu(w.t() * (arma::exp(Zt + 0.5 * S2) - Y % Zt))
-            <= f0_B + c1 * alpha_B * slope_B) break;
-        alpha_B *= 0.5;
-    }
-    B -= alpha_B * step_B;
-    Z  = O + X * B + M;
-    A  = arma::exp(Z + 0.5 * S2);
-}
-
-// ---- Fixed-point update for ψ = log(S²) (overflow-safe) ----
-// Exact minimiser of F(ψ) for fixed A: ψ = −log(A + cov_diag).
-// cov_diag: diagonal of Omega broadcast to (n,p) — arma::mat or double (scalar broadcast).
-// Updates A, ψ, S2 = exp(ψ) in-place.  S is not stored: recover via exp(0.5*ψ) at output.
-template<typename CovDiagType>
-inline void fixed_point_psi(
-    arma::mat & psi, arma::mat & S2,
-    const arma::mat & Z, arma::mat & A,
-    const CovDiagType & cov_diag
-) {
-    A = arma::exp(Z + 0.5 * S2);
-    const arma::mat psi_cand = -arma::log(A + cov_diag);
-    const arma::mat psi_ub   = arma::log(arma::clamp(700. - Z, 1., arma::datum::inf));
-    psi = arma::clamp(arma::min(psi_cand, psi_ub), -40., arma::datum::inf);
-    S2  = arma::exp(psi);
-}
-
 // ---- Relative convergence test: |val - prev| < tol * (1 + |prev|) ----
 inline bool converged(double val, double prev, double tol) {
     return std::abs(val - prev) < tol * (1.0 + std::abs(prev));
@@ -92,3 +45,64 @@ struct NewtonConfig {
         if (cfg.containsElementNamed("ftol_em"))  em_tol  = Rcpp::as<double>(cfg["ftol_em"]);
     }
 };
+
+// ---- PLN data extraction: Y, X, O, w from the R-side `data` list ----
+// Centralises the Rcpp::as<...> pattern replicated across all PLN optimizers (builtin and nlopt).
+struct PlnData {
+    arma::mat Y, X, O;
+    arma::vec w;
+    explicit PlnData(const Rcpp::List & data) :
+        Y(Rcpp::as<arma::mat>(data["Y"])),
+        X(Rcpp::as<arma::mat>(data["X"])),
+        O(Rcpp::as<arma::mat>(data["O"])),
+        w(Rcpp::as<arma::vec>(data["w"])) {}
+};
+
+// ---- Result assembly for PLN optimizers ----
+// Centralises the two Rcpp::List::create shapes replicated across all PLN optimizers.
+// "Full" result: joint (B, Sigma/Omega) optimizers (nlopt EM/profiled, builtin Newton).
+inline Rcpp::List make_pln_result(
+    const arma::mat & B, const arma::mat & M, const arma::mat & S2,
+    const arma::mat & Z, const arma::mat & A,
+    const Rcpp::List & cov_out,   // List(Sigma, Omega)
+    const Rcpp::NumericVector & Ji,
+    int status, const char * backend,
+    const std::vector<double> & objective_vec, int iterations
+) {
+    return Rcpp::List::create(
+        Rcpp::Named("B",     B               ),
+        Rcpp::Named("M",     M               ),
+        Rcpp::Named("S2",    S2              ),
+        Rcpp::Named("Z",     Z               ),
+        Rcpp::Named("A",     A               ),
+        Rcpp::Named("Sigma", cov_out["Sigma"]),
+        Rcpp::Named("Omega", cov_out["Omega"]),
+        Rcpp::Named("Ji",    Ji              ),
+        Rcpp::Named("monitoring", Rcpp::List::create(
+            Rcpp::Named("status",     status        ),
+            Rcpp::Named("backend",    backend       ),
+            Rcpp::Named("objective",  objective_vec ),
+            Rcpp::Named("iterations", iterations    )
+        ))
+    );
+}
+
+// "VE-step" result: B and Omega fixed, only (M, S2) optimized.
+inline Rcpp::List make_vestep_result(
+    const arma::mat & M, const arma::mat & S2,
+    const Rcpp::NumericVector & Ji,
+    int status, const char * backend,
+    const std::vector<double> & objective_vec, int iterations
+) {
+    return Rcpp::List::create(
+        Rcpp::Named("M")  = M,
+        Rcpp::Named("S2") = S2,
+        Rcpp::Named("Ji") = Ji,
+        Rcpp::Named("monitoring", Rcpp::List::create(
+            Rcpp::Named("status",     status        ),
+            Rcpp::Named("backend",    backend       ),
+            Rcpp::Named("objective",  objective_vec ),
+            Rcpp::Named("iterations", iterations    )
+        ))
+    );
+}

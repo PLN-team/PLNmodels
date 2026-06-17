@@ -18,17 +18,14 @@ Rcpp::List builtin_optimize_full(
     const Rcpp::List & params,
     const Rcpp::List & config
 ) {
-    const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]);
-    const arma::mat & X = Rcpp::as<arma::mat>(data["X"]);
-    const arma::mat & O = Rcpp::as<arma::mat>(data["O"]);
-    const arma::vec & w = Rcpp::as<arma::vec>(data["w"]);
+    const PlnData d(data);
     arma::mat B  = Rcpp::as<arma::mat>(params["B"]);
     arma::mat M  = Rcpp::as<arma::mat>(params["M"]);
     arma::mat S2 = Rcpp::as<arma::mat>(params["S2"]);
     const NewtonConfig cfg(config);
-    const double w_bar = arma::accu(w);
-    FullCovTraits::State state(M - X * B, S2, w, w_bar);
-    return builtin_optimize_pln_impl<FullCovTraits>(Y, X, O, w, B, M, S2, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol);
+    const double w_bar = arma::accu(d.w);
+    FullCovTraits::State state(M - d.X * B, S2, d.w, w_bar);
+    return builtin_optimize_pln_impl<FullCovTraits>(d.Y, d.X, d.O, d.w, B, M, S2, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol);
 }
 
 // [[Rcpp::export]]
@@ -39,15 +36,12 @@ Rcpp::List builtin_optimize_vestep_full(
     const arma::mat & Omega,
     const Rcpp::List & config
 ) {
-    const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]);
-    const arma::mat & X = Rcpp::as<arma::mat>(data["X"]);
-    const arma::mat & O = Rcpp::as<arma::mat>(data["O"]);
-    const arma::vec & w = Rcpp::as<arma::vec>(data["w"]);
+    const PlnData d(data);
     arma::mat M  = Rcpp::as<arma::mat>(params["M"]);
     arma::mat S2 = Rcpp::as<arma::mat>(params["S2"]);
     const NewtonConfig cfg(config);
     FullCovTraits::State state(Omega);
-    return builtin_vestep_pln_impl<FullCovTraits>(Y, X, O, w, M, S2, B, state, cfg.maxiter, cfg.ftol);
+    return builtin_vestep_pln_impl<FullCovTraits>(d.Y, d.X, d.O, d.w, M, S2, B, state, cfg.maxiter, cfg.ftol);
 }
 
 // ===== DIAGONAL COVARIANCE =====
@@ -58,17 +52,14 @@ Rcpp::List builtin_optimize_diagonal(
     const Rcpp::List & params,
     const Rcpp::List & config
 ) {
-    const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]);
-    const arma::mat & X = Rcpp::as<arma::mat>(data["X"]);
-    const arma::mat & O = Rcpp::as<arma::mat>(data["O"]);
-    const arma::vec & w = Rcpp::as<arma::vec>(data["w"]);
+    const PlnData d(data);
     arma::mat B  = Rcpp::as<arma::mat>(params["B"]);
     arma::mat M  = Rcpp::as<arma::mat>(params["M"]);
     arma::mat S2 = Rcpp::as<arma::mat>(params["S2"]);
     const NewtonConfig cfg(config);
-    const double w_bar = arma::accu(w);
-    DiagonalCovTraits::State state(M - X * B, S2, w, w_bar);
-    return builtin_optimize_pln_impl<DiagonalCovTraits>(Y, X, O, w, B, M, S2, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol);
+    const double w_bar = arma::accu(d.w);
+    DiagonalCovTraits::State state(M - d.X * B, S2, d.w, w_bar);
+    return builtin_optimize_pln_impl<DiagonalCovTraits>(d.Y, d.X, d.O, d.w, B, M, S2, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol);
 }
 
 // [[Rcpp::export]]
@@ -79,15 +70,12 @@ Rcpp::List builtin_optimize_vestep_diagonal(
     const arma::mat & Omega,
     const Rcpp::List & config
 ) {
-    const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]);
-    const arma::mat & X = Rcpp::as<arma::mat>(data["X"]);
-    const arma::mat & O = Rcpp::as<arma::mat>(data["O"]);
-    const arma::vec & w = Rcpp::as<arma::vec>(data["w"]);
+    const PlnData d(data);
     arma::mat M  = Rcpp::as<arma::mat>(params["M"]);
     arma::mat S2 = Rcpp::as<arma::mat>(params["S2"]);
     const NewtonConfig cfg(config);
     DiagonalCovTraits::State state(Omega);
-    return builtin_vestep_pln_impl<DiagonalCovTraits>(Y, X, O, w, M, S2, B, state, cfg.maxiter, cfg.ftol);
+    return builtin_vestep_pln_impl<DiagonalCovTraits>(d.Y, d.X, d.O, d.w, M, S2, B, state, cfg.maxiter, cfg.ftol);
 }
 
 // ===== SPHERICAL COVARIANCE =====
@@ -98,17 +86,14 @@ Rcpp::List builtin_optimize_spherical(
     const Rcpp::List & params,
     const Rcpp::List & config
 ) {
-    const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]);
-    const arma::mat & X = Rcpp::as<arma::mat>(data["X"]);
-    const arma::mat & O = Rcpp::as<arma::mat>(data["O"]);
-    const arma::vec & w = Rcpp::as<arma::vec>(data["w"]);
+    const PlnData d(data);
     arma::mat B  = Rcpp::as<arma::mat>(params["B"]);
     arma::mat M  = Rcpp::as<arma::mat>(params["M"]);
     arma::mat S2 = Rcpp::as<arma::mat>(params["S2"]);
     const NewtonConfig cfg(config);
-    const double w_bar = arma::accu(w);
-    SphericalCovTraits::State state(M - X * B, S2, w, w_bar);
-    return builtin_optimize_pln_impl<SphericalCovTraits>(Y, X, O, w, B, M, S2, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol);
+    const double w_bar = arma::accu(d.w);
+    SphericalCovTraits::State state(M - d.X * B, S2, d.w, w_bar);
+    return builtin_optimize_pln_impl<SphericalCovTraits>(d.Y, d.X, d.O, d.w, B, M, S2, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol);
 }
 
 // [[Rcpp::export]]
@@ -119,15 +104,12 @@ Rcpp::List builtin_optimize_vestep_spherical(
     const arma::mat & Omega,
     const Rcpp::List & config
 ) {
-    const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]);
-    const arma::mat & X = Rcpp::as<arma::mat>(data["X"]);
-    const arma::mat & O = Rcpp::as<arma::mat>(data["O"]);
-    const arma::vec & w = Rcpp::as<arma::vec>(data["w"]);
+    const PlnData d(data);
     arma::mat M  = Rcpp::as<arma::mat>(params["M"]);
     arma::mat S2 = Rcpp::as<arma::mat>(params["S2"]);
     const NewtonConfig cfg(config);
     SphericalCovTraits::State state(Omega);
-    return builtin_vestep_pln_impl<SphericalCovTraits>(Y, X, O, w, M, S2, B, state, cfg.maxiter, cfg.ftol);
+    return builtin_vestep_pln_impl<SphericalCovTraits>(d.Y, d.X, d.O, d.w, M, S2, B, state, cfg.maxiter, cfg.ftol);
 }
 
 // ===== FIXED COVARIANCE (Omega provided externally, no VE step exported) =====
@@ -138,15 +120,12 @@ Rcpp::List builtin_optimize_fixed(
     const Rcpp::List & params,
     const Rcpp::List & config
 ) {
-    const arma::mat & Y     = Rcpp::as<arma::mat>(data["Y"]);
-    const arma::mat & X     = Rcpp::as<arma::mat>(data["X"]);
-    const arma::mat & O     = Rcpp::as<arma::mat>(data["O"]);
-    const arma::vec & w     = Rcpp::as<arma::vec>(data["w"]);
+    const PlnData d(data);
     arma::mat B     = Rcpp::as<arma::mat>(params["B"]);
     arma::mat M     = Rcpp::as<arma::mat>(params["M"]);
     arma::mat S2    = Rcpp::as<arma::mat>(params["S2"]);
     arma::mat Omega = Rcpp::as<arma::mat>(params["Omega"]);
     const NewtonConfig cfg(config);
     FixedCovTraits::State state(Omega);
-    return builtin_optimize_pln_impl<FixedCovTraits>(Y, X, O, w, B, M, S2, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol);
+    return builtin_optimize_pln_impl<FixedCovTraits>(d.Y, d.X, d.O, d.w, B, M, S2, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol);
 }

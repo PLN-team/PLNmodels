@@ -17,16 +17,15 @@ Rcpp::List nlopt_optimize_full(
     const Rcpp::List & params, // List(B, M, S)
     const Rcpp::List & config  // List of config values
 ) {
-    const arma::mat & X = Rcpp::as<arma::mat>(data["X"]);
-    const arma::vec & w = Rcpp::as<arma::vec>(data["w"]);
+    const PlnData d(data);
     const auto init_B  = Rcpp::as<arma::mat>(params["B"]);
     const auto init_M  = Rcpp::as<arma::mat>(params["M"]);
     const auto init_S2 = Rcpp::as<arma::mat>(params["S2"]);
 
     // Initial Omega profiled from (M_res_init, S2_init); the M-step then re-profiles
     // it after every inner nlopt run (see nlopt_optimize_em_impl).
-    const arma::mat M_res_init = init_M - X * init_B;
-    FullCovTraits::State state(M_res_init, init_S2, w, arma::accu(w));
+    const arma::mat M_res_init = init_M - d.X * init_B;
+    FullCovTraits::State state(M_res_init, init_S2, d.w, arma::accu(d.w));
 
     return nlopt_optimize_em_impl<FullCovTraits>(data, init_M, init_S2, state, config);
 }

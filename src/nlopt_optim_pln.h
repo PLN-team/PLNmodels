@@ -5,8 +5,8 @@
 #include "covariance_pln.h"            // CovTraits + ki() (via utils.h)
 
 // ─── Generic EM optimizer: inner nlopt with Omega fixed, outer M-step on Omega ─
-// Mirrors the builtin Newton EM structure (builtin_optimize_pln_impl). CovTraits
-// must provide: State::update(M_res, S2, w, w_bar) [mstep], vestep_obj_grad,
+// CovTraits must provide:
+// State::update(M_res, S2, w, w_bar) [mstep], vestep_obj_grad,
 // elbo_cov, final_loglik, output_cov, has_em.
 // FullCovTraits  (has_em=true):  loops until ELBO converges, M-step updates Omega.
 // FixedCovTraits (has_em=false): single inner nlopt pass, Omega fixed externally.
@@ -20,17 +20,14 @@ Rcpp::List nlopt_optimize_em_impl(
     typename CovTraits::State state,
     const Rcpp::List & config
 ) {
-    const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]);
-    const arma::mat & X = Rcpp::as<arma::mat>(data["X"]);
-    const arma::mat & O = Rcpp::as<arma::mat>(data["O"]);
-    const arma::vec & w = Rcpp::as<arma::vec>(data["w"]);
+    const PlnData d(data);
 
-    const arma::uword p = Y.n_cols;
-    const double w_bar  = arma::accu(w);
+    const arma::uword p = d.Y.n_cols;
+    const double w_bar  = arma::accu(d.w);
     const NewtonConfig cfg(config);
 
-    const arma::mat Xw  = X.each_col() % w;
-    const arma::mat P_X = (X.n_cols > 0) ? arma::solve(X.t() * Xw, Xw.t()) : arma::mat(0, Y.n_rows);
+    const arma::mat Xw  = d.X.each_col() % d.w;
+    const arma::mat P_X = (d.X.n_cols > 0) ? arma::solve(d.X.t() * Xw, Xw.t()) : arma::mat(0, d.Y.n_rows);
 
     const auto metadata = tuple_metadata(init_M, init_S2);
     enum { M_ID, S_ID };
@@ -56,9 +53,9 @@ Rcpp::List nlopt_optimize_em_impl(
             const arma::mat logS2  = metadata.map<S_ID>(par);
             const arma::mat S2     = arma::exp(logS2);
             const arma::mat B      = P_X * M_full;
-            const arma::mat M_res  = M_full - X * B;
+            const arma::mat M_res  = M_full - d.X * B;
             arma::mat gM, gS;
-            const double obj = CovTraits::vestep_obj_grad(M_res, O + M_full, S2, logS2, state, Y, w, gM, gS);
+            const double obj = CovTraits::vestep_obj_grad(M_res, d.O + M_full, S2, logS2, state, d.Y, d.w, gM, gS);
             metadata.map<M_ID>(grad) = gM;
             metadata.map<S_ID>(grad) = gS;
             objective_vec.push_back(obj);
@@ -74,12 +71,12 @@ Rcpp::List nlopt_optimize_em_impl(
             arma::mat logS2  = metadata.copy<S_ID>(parameters.data());
             arma::mat S2     = arma::exp(logS2);
             arma::mat B      = P_X * M_full;
-            arma::mat M_res  = M_full - X * B;
-            state.update(M_res, S2, w, w_bar);  // M-step
+            arma::mat M_res  = M_full - d.X * B;
+            state.update(M_res, S2, d.w, w_bar);  // M-step
 
-            arma::mat Z = O + M_full;
+            arma::mat Z = d.O + M_full;
             arma::mat A = arma::exp(Z + 0.5 * S2);
-            double elbo = arma::accu(w.t() * (Y % Z - A + 0.5 * logS2)) + CovTraits::elbo_cov(state, w_bar, p);
+            double elbo = arma::accu(d.w.t() * (d.Y % Z - A + 0.5 * logS2)) + CovTraits::elbo_cov(state, w_bar, p);
             if (em_iter > 0 && converged(elbo, elbo_prev, cfg.em_tol)) break;
             elbo_prev = elbo;
         } else {
@@ -91,30 +88,15 @@ Rcpp::List nlopt_optimize_em_impl(
     arma::mat logS2  = metadata.copy<S_ID>(parameters.data());
     arma::mat S2     = arma::exp(logS2);
     arma::mat B      = P_X * M;
-    arma::mat M_res  = M - X * B;
-    arma::mat Z      = O + M;
+    arma::mat M_res  = M - d.X * B;
+    arma::mat Z      = d.O + M;
     arma::mat A      = arma::exp(Z + 0.5 * S2);
 
-    arma::vec loglik = CovTraits::final_loglik(Y, Z, A, M_res, logS2, state);
+    arma::vec loglik = CovTraits::final_loglik(d.Y, Z, A, M_res, logS2, state);
     Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
-    Ji.attr("weights") = w;
-    Rcpp::List cov_out = CovTraits::output_cov(M_res, S2, w, w_bar, state);
-    return Rcpp::List::create(
-        Rcpp::Named("B",     B               ),
-        Rcpp::Named("M",     M               ),
-        Rcpp::Named("S2",    S2              ),
-        Rcpp::Named("Z",     Z               ),
-        Rcpp::Named("A",     A               ),
-        Rcpp::Named("Sigma", cov_out["Sigma"]),
-        Rcpp::Named("Omega", cov_out["Omega"]),
-        Rcpp::Named("Ji",    Ji              ),
-        Rcpp::Named("monitoring", Rcpp::List::create(
-            Rcpp::Named("status",     last_status      ),
-            Rcpp::Named("backend",    "nlopt"          ),
-            Rcpp::Named("objective",  objective_vec    ),
-            Rcpp::Named("iterations", total_iterations )
-        ))
-    );
+    Ji.attr("weights") = d.w;
+    Rcpp::List cov_out = CovTraits::output_cov(M_res, S2, d.w, w_bar, state);
+    return make_pln_result(B, M, S2, Z, A, cov_out, Ji, last_status, "nlopt", objective_vec, total_iterations);
 }
 
 // ─── Generic joint optimizer with Omega profiled at every eval ────────────────
@@ -130,23 +112,20 @@ Rcpp::List nlopt_joint_profiled_impl(
     const Rcpp::List & params,  // List(B [unused], M, S2)
     const Rcpp::List & config
 ) {
-    const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]);
-    const arma::mat & X = Rcpp::as<arma::mat>(data["X"]);
-    const arma::mat & O = Rcpp::as<arma::mat>(data["O"]);
-    const arma::vec & w = Rcpp::as<arma::vec>(data["w"]);
+    const PlnData d(data);
     const auto init_M   = Rcpp::as<arma::mat>(params["M"]);
     const auto init_S2  = Rcpp::as<arma::mat>(params["S2"]);
 
-    const arma::uword p = Y.n_cols;
-    const double w_bar  = arma::accu(w);
+    const arma::uword p = d.Y.n_cols;
+    const double w_bar  = arma::accu(d.w);
 
-    const arma::mat Xw  = X.each_col() % w;
-    const arma::mat P_X = (X.n_cols > 0) ? arma::solve(X.t() * Xw, Xw.t()) : arma::mat(0, (arma::uword)Y.n_rows);
+    const arma::mat Xw  = d.X.each_col() % d.w;
+    const arma::mat P_X = (d.X.n_cols > 0) ? arma::solve(d.X.t() * Xw, Xw.t()) : arma::mat(0, (arma::uword)d.Y.n_rows);
 
     // Initialize state by profiling Omega from the initial (M_res, S2)
     const arma::mat B_init     = P_X * init_M;
-    const arma::mat M_res_init = init_M - X * B_init;
-    typename CovTraits::State state(M_res_init, init_S2, w, w_bar);
+    const arma::mat M_res_init = init_M - d.X * B_init;
+    typename CovTraits::State state(M_res_init, init_S2, d.w, w_bar);
 
     const auto metadata = tuple_metadata(init_M, init_S2);
     enum { M_ID, S_ID };
@@ -165,10 +144,10 @@ Rcpp::List nlopt_joint_profiled_impl(
         const arma::mat logS2  = metadata.map<S_ID>(par);
         const arma::mat S2     = arma::exp(logS2);
         const arma::mat B      = P_X * M_full;
-        const arma::mat M_res  = M_full - X * B;
+        const arma::mat M_res  = M_full - d.X * B;
         arma::mat gM, gS;
-        const double obj = CovTraits::profile_and_grad(state, M_res, O + M_full, S2, logS2,
-                                                        Y, w, w_bar, p, gM, gS);
+        const double obj = CovTraits::profile_and_grad(state, M_res, d.O + M_full, S2, logS2,
+                                                        d.Y, d.w, w_bar, p, gM, gS);
         metadata.map<M_ID>(grad) = gM;
         metadata.map<S_ID>(grad) = gS;
         objective_vec.push_back(obj);
@@ -180,32 +159,18 @@ Rcpp::List nlopt_joint_profiled_impl(
     arma::mat logS2 = metadata.copy<S_ID>(parameters.data());
     arma::mat S2    = arma::exp(logS2);
     arma::mat B     = P_X * M;
-    arma::mat M_res = M - X * B;
-    state.update(M_res, S2, w, w_bar);  // ensure state matches final parameters
+    arma::mat M_res = M - d.X * B;
+    state.update(M_res, S2, d.w, w_bar);  // ensure state matches final parameters
 
-    arma::mat Z = O + M;
+    arma::mat Z = d.O + M;
     arma::mat A = arma::exp(Z + 0.5 * S2);
 
-    arma::vec loglik = CovTraits::final_loglik(Y, Z, A, M_res, logS2, state);
+    arma::vec loglik = CovTraits::final_loglik(d.Y, Z, A, M_res, logS2, state);
     Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
-    Ji.attr("weights") = w;
-    Rcpp::List cov_out = CovTraits::output_cov(M_res, S2, w, w_bar, state);
-    return Rcpp::List::create(
-        Rcpp::Named("B",     B               ),
-        Rcpp::Named("M",     M               ),
-        Rcpp::Named("S2",    S2              ),
-        Rcpp::Named("Z",     Z               ),
-        Rcpp::Named("A",     A               ),
-        Rcpp::Named("Sigma", cov_out["Sigma"]),
-        Rcpp::Named("Omega", cov_out["Omega"]),
-        Rcpp::Named("Ji",    Ji              ),
-        Rcpp::Named("monitoring", Rcpp::List::create(
-            Rcpp::Named("status",     static_cast<int>(result.status)),
-            Rcpp::Named("backend",    "nlopt"),
-            Rcpp::Named("objective",  objective_vec),
-            Rcpp::Named("iterations", result.nb_iterations)
-        ))
-    );
+    Ji.attr("weights") = d.w;
+    Rcpp::List cov_out = CovTraits::output_cov(M_res, S2, d.w, w_bar, state);
+    return make_pln_result(B, M, S2, Z, A, cov_out, Ji,
+                            static_cast<int>(result.status), "nlopt", objective_vec, result.nb_iterations);
 }
 
 // ─── Generic VE-step optimizer (M, ψ=log S² only; B and Ω fixed) ─────────────
@@ -221,10 +186,7 @@ Rcpp::List nlopt_vestep_impl(
     const arma::mat & Omega,    // (p,p) — fixed precision (dense, any structure)
     const Rcpp::List & config
 ) {
-    const arma::mat & Y = Rcpp::as<arma::mat>(data["Y"]);
-    const arma::mat & X = Rcpp::as<arma::mat>(data["X"]);
-    const arma::mat & O = Rcpp::as<arma::mat>(data["O"]);
-    const arma::vec & w = Rcpp::as<arma::vec>(data["w"]);
+    const PlnData d(data);
     const auto init_M   = Rcpp::as<arma::mat>(params["M"]);
     const auto init_S2  = Rcpp::as<arma::mat>(params["S2"]);
 
@@ -239,7 +201,7 @@ Rcpp::List nlopt_vestep_impl(
     std::vector<double> objective_vec;
     objective_vec.reserve(nlopt_get_maxeval(optimizer.get()));
 
-    const arma::mat XB = X * B;
+    const arma::mat XB = d.X * B;
     const typename CovTraits::State s(Omega);
 
     auto objective_and_grad = [&](const double * par, double * grad) -> double {
@@ -248,7 +210,7 @@ Rcpp::List nlopt_vestep_impl(
         const arma::mat S2    = arma::exp(logS2);
         const arma::mat M_res = M - XB;
         arma::mat gM, gS;
-        const double obj = CovTraits::vestep_obj_grad(M_res, O + M, S2, logS2, s, Y, w, gM, gS);
+        const double obj = CovTraits::vestep_obj_grad(M_res, d.O + M, S2, logS2, s, d.Y, d.w, gM, gS);
         metadata.map<M_ID>(grad) = gM;
         metadata.map<S_ID>(grad) = gS;
         objective_vec.push_back(obj);
@@ -260,21 +222,11 @@ Rcpp::List nlopt_vestep_impl(
     const arma::mat logS2 = metadata.copy<S_ID>(parameters.data());
     const arma::mat S2    = arma::exp(logS2);
     const arma::mat M_res = M - XB;
-    const arma::mat Z     = O + M;
+    const arma::mat Z     = d.O + M;
     const arma::mat A     = arma::exp(Z + 0.5 * S2);
 
-    arma::vec loglik = CovTraits::final_loglik(Y, Z, A, M_res, logS2, s);
+    arma::vec loglik = CovTraits::final_loglik(d.Y, Z, A, M_res, logS2, s);
     Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
-    Ji.attr("weights") = w;
-    return Rcpp::List::create(
-        Rcpp::Named("M")  = M,
-        Rcpp::Named("S2") = S2,
-        Rcpp::Named("Ji") = Ji,
-        Rcpp::Named("monitoring", Rcpp::List::create(
-            Rcpp::Named("status",     static_cast<int>(result.status)),
-            Rcpp::Named("backend",    "nlopt"),
-            Rcpp::Named("objective",  objective_vec),
-            Rcpp::Named("iterations", result.nb_iterations)
-        ))
-    );
+    Ji.attr("weights") = d.w;
+    return make_vestep_result(M, S2, Ji, static_cast<int>(result.status), "nlopt", objective_vec, result.nb_iterations);
 }
