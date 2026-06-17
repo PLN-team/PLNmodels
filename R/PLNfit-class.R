@@ -96,8 +96,6 @@ PLNfit <- R6Class(
         .5 * torch_sum(torch_mm(M_res, params$Omega) * M_res + S2 * torch_diag(params$Omega), dim = 2)
       Ji <- - torch_sum(.logfactorial_torch(data$Y), dim = 2) + Ji_tmp
       Ji <- .5 * self$p + as.numeric(Ji$cpu())
-
-      attr(Ji, "weights") <- as.numeric(data$w$cpu())
       Ji
     },
 
@@ -809,7 +807,6 @@ PLNfit_diagonal <- R6Class(
           torch_sum(data$Y * params$Z - params$A + .5 * params$psi -
                       .5 * (torch_square(M_res) + S2) * omega_diag[NULL,], dim = 2)
       )
-      attr(Ji, "weights") <- as.numeric(data$w)
       Ji
     }
 
@@ -894,7 +891,6 @@ PLNfit_spherical <- R6Class(
         torch_sum(data$Y * params$Z - params$A + .5 * (params$psi - torch_log(sigma2)) -
                     .5 * (torch_pow(M_res, 2) + S2)/sigma2, dim = 2)
       )
-      attr(Ji, "weights") <- as.numeric(data$w)
       Ji
     }
 

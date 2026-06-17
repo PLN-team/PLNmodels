@@ -93,10 +93,8 @@ Rcpp::List nlopt_optimize_em_impl(
     arma::mat A      = arma::exp(Z + 0.5 * S2);
 
     arma::vec loglik = CovTraits::final_loglik(d.Y, Z, A, M_res, logS2, state);
-    Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
-    Ji.attr("weights") = d.w;
     Rcpp::List cov_out = CovTraits::output_cov(M_res, S2, d.w, w_bar, state);
-    return make_pln_result(B, M, S2, Z, A, cov_out, Ji, last_status, "nlopt", objective_vec, total_iterations);
+    return make_pln_result(B, M, S2, Z, A, cov_out, loglik, last_status, "nlopt", objective_vec, total_iterations);
 }
 
 // ─── Generic joint optimizer with Omega profiled at every eval ────────────────
@@ -166,10 +164,8 @@ Rcpp::List nlopt_joint_profiled_impl(
     arma::mat A = arma::exp(Z + 0.5 * S2);
 
     arma::vec loglik = CovTraits::final_loglik(d.Y, Z, A, M_res, logS2, state);
-    Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
-    Ji.attr("weights") = d.w;
     Rcpp::List cov_out = CovTraits::output_cov(M_res, S2, d.w, w_bar, state);
-    return make_pln_result(B, M, S2, Z, A, cov_out, Ji,
+    return make_pln_result(B, M, S2, Z, A, cov_out, loglik,
                             static_cast<int>(result.status), "nlopt", objective_vec, result.nb_iterations);
 }
 
@@ -226,7 +222,5 @@ Rcpp::List nlopt_vestep_impl(
     const arma::mat A     = arma::exp(Z + 0.5 * S2);
 
     arma::vec loglik = CovTraits::final_loglik(d.Y, Z, A, M_res, logS2, s);
-    Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
-    Ji.attr("weights") = d.w;
-    return make_vestep_result(M, S2, Ji, static_cast<int>(result.status), "nlopt", objective_vec, result.nb_iterations);
+    return make_vestep_result(M, S2, loglik, static_cast<int>(result.status), "nlopt", objective_vec, result.nb_iterations);
 }

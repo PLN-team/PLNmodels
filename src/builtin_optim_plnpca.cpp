@@ -237,8 +237,6 @@ Rcpp::List builtin_optimize_rank(
     arma::vec loglik = arma::sum(D.Y % Z - A, 1)
                      - 0.5 * arma::sum(M % M + S2 - psi - 1., 1) + ki(D.Y);
 
-    Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
-    Ji.attr("weights") = D.w;
     return Rcpp::List::create(
         Rcpp::Named("B",     B    ),
         Rcpp::Named("C",     C    ),
@@ -248,7 +246,7 @@ Rcpp::List builtin_optimize_rank(
         Rcpp::Named("A",     A    ),
         Rcpp::Named("Sigma", Sigma),
         Rcpp::Named("Omega", Omega),
-        Rcpp::Named("Ji",    Ji   ),
+        Rcpp::Named("Ji",    loglik),
         Rcpp::Named("monitoring", Rcpp::List::create(
             Rcpp::Named("status",     res.status        ),
             Rcpp::Named("backend",    "lbfgs"           ),
@@ -314,9 +312,7 @@ Rcpp::List builtin_optimize_vestep_rank(
     arma::vec loglik = arma::sum(D.Y % Z - A, 1)
                      - 0.5 * arma::sum(M % M + S2 - psi - 1., 1) + ki(D.Y);
 
-    Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
-    Ji.attr("weights") = D.w;
     // status hardcoded to 3 (converged), matching prior behavior: this VE-step
     // never surfaced run_lbfgs's internal status (4 = degenerate slope, 5 = maxiter).
-    return make_vestep_result(M, S2, Ji, 3, "lbfgs", res.objective_vec, res.total_iter);
+    return make_vestep_result(M, S2, loglik, 3, "lbfgs", res.objective_vec, res.total_iter);
 }

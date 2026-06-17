@@ -107,10 +107,8 @@ Rcpp::List builtin_optimize_pln_impl(
     A = arma::exp(Z + 0.5 * S2);
 
     arma::vec loglik = Traits::final_loglik(Y, Z, A, M_res, psi, state);
-    Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
-    Ji.attr("weights") = w;
     Rcpp::List cov_out = Traits::output_cov(M_res, S2, w, w_bar, state);
-    return make_pln_result(B, M, S2, Z, A, cov_out, Ji, last_status, "newton", objective_vec, (int)objective_vec.size());
+    return make_pln_result(B, M, S2, Z, A, cov_out, loglik, last_status, "newton", objective_vec, (int)objective_vec.size());
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -184,7 +182,5 @@ Rcpp::List builtin_vestep_pln_impl(
     const arma::mat M_res = M - XB;
     arma::vec loglik = Traits::final_loglik(Y, Z, A, M_res, psi, state);
 
-    Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
-    Ji.attr("weights") = w;
-    return make_vestep_result(M, S2, Ji, 3, "newton", objective_vec, total_iter);
+    return make_vestep_result(M, S2, loglik, 3, "newton", objective_vec, total_iter);
 }

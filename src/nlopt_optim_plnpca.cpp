@@ -83,10 +83,8 @@ Rcpp::List nlopt_optimize_rank(
     arma::mat Omega = C * inv_sympd((M.t() * (M.each_col() % d.w) + arma::diagmat(arma::sum(S2.each_col() % d.w, 0))) / accu(d.w)) * C.t();
     arma::mat Z   = d.O + d.X * B + M * C.t();
     arma::mat A   = arma::exp(Z + 0.5 * S2 * (C % C).t());
-    arma::mat loglik = arma::sum(d.Y % Z - A, 1) - 0.5 * arma::sum(M % M + S2 - psi - 1., 1) + ki(d.Y);
+    arma::vec loglik = arma::sum(d.Y % Z - A, 1) - 0.5 * arma::sum(M % M + S2 - psi - 1., 1) + ki(d.Y);
 
-    Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
-    Ji.attr("weights") = d.w;
     return Rcpp::List::create(
         Rcpp::Named("B", B),
         Rcpp::Named("C", C),
@@ -96,7 +94,7 @@ Rcpp::List nlopt_optimize_rank(
         Rcpp::Named("A", A),
         Rcpp::Named("Sigma", Sigma),
         Rcpp::Named("Omega", Omega),
-        Rcpp::Named("Ji", Ji),
+        Rcpp::Named("Ji", loglik),
         Rcpp::Named("monitoring", Rcpp::List::create(
             Rcpp::Named("status", static_cast<int>(result.status)),
             Rcpp::Named("backend", "nlopt"),
@@ -165,9 +163,7 @@ Rcpp::List nlopt_optimize_vestep_rank(
     arma::mat S2  = arma::exp(psi);
     arma::mat Z   = d.O + d.X * B + M * C.t();
     arma::mat A   = arma::exp(Z + 0.5 * S2 * C2.t());
-    arma::mat loglik = arma::sum(d.Y % Z - A, 1) - 0.5 * arma::sum(M % M + S2 - psi - 1., 1) + ki(d.Y);
+    arma::vec loglik = arma::sum(d.Y % Z - A, 1) - 0.5 * arma::sum(M % M + S2 - psi - 1., 1) + ki(d.Y);
 
-    Rcpp::NumericVector Ji = Rcpp::as<Rcpp::NumericVector>(Rcpp::wrap(loglik));
-    Ji.attr("weights") = d.w;
-    return make_vestep_result(M, S2, Ji, static_cast<int>(result.status), "nlopt", objective_vec, result.nb_iterations);
+    return make_vestep_result(M, S2, loglik, static_cast<int>(result.status), "nlopt", objective_vec, result.nb_iterations);
 }

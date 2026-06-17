@@ -79,7 +79,6 @@ PLNPCAfit <- R6Class(
               torch_sum(data$Y * Z - A, dim = 2) -
               0.5 * torch_sum(torch_square(params$M) + S2 - params$psi - 1, dim = 2)
         Ji <- .5 * self$p + as.numeric(Ji$cpu())
-        attr(Ji, "weights") <- as.numeric(data$w$cpu())
         Ji
       },
 
@@ -215,7 +214,6 @@ PLNPCAfit <- R6Class(
         Ji_r <- .5 * self$p - rowSums(.logfactorial(as.matrix(data_r$Y))) +
                 rowSums(data_r$Y * Z_r - A_r) -
                 0.5 * rowSums(params_r$M^2 + S2_r - params_r$psi - 1)
-        attr(Ji_r, "weights") <- w_r
 
         list(
           B          = params_r$B,

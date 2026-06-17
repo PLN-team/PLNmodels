@@ -65,7 +65,7 @@ inline Rcpp::List make_pln_result(
     const arma::mat & B, const arma::mat & M, const arma::mat & S2,
     const arma::mat & Z, const arma::mat & A,
     const Rcpp::List & cov_out,   // List(Sigma, Omega)
-    const Rcpp::NumericVector & Ji,
+    const arma::vec & loglik,     // per-observation log-likelihood Ji; wrapped to NumericVector below
     int status, const char * backend,
     const std::vector<double> & objective_vec, int iterations
 ) {
@@ -77,7 +77,7 @@ inline Rcpp::List make_pln_result(
         Rcpp::Named("A",     A               ),
         Rcpp::Named("Sigma", cov_out["Sigma"]),
         Rcpp::Named("Omega", cov_out["Omega"]),
-        Rcpp::Named("Ji",    Ji              ),
+        Rcpp::Named("Ji",    loglik          ),
         Rcpp::Named("monitoring", Rcpp::List::create(
             Rcpp::Named("status",     status        ),
             Rcpp::Named("backend",    backend       ),
@@ -90,14 +90,14 @@ inline Rcpp::List make_pln_result(
 // "VE-step" result: B and Omega fixed, only (M, S2) optimized.
 inline Rcpp::List make_vestep_result(
     const arma::mat & M, const arma::mat & S2,
-    const Rcpp::NumericVector & Ji,
+    const arma::vec & loglik,
     int status, const char * backend,
     const std::vector<double> & objective_vec, int iterations
 ) {
     return Rcpp::List::create(
         Rcpp::Named("M")  = M,
         Rcpp::Named("S2") = S2,
-        Rcpp::Named("Ji") = Ji,
+        Rcpp::Named("Ji") = loglik,
         Rcpp::Named("monitoring", Rcpp::List::create(
             Rcpp::Named("status",     status        ),
             Rcpp::Named("backend",    backend       ),
