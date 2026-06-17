@@ -27,7 +27,6 @@ Rcpp::List builtin_optimize_pln_impl(
     const arma::uword p  = d.Y.n_cols;
     const double w_bar   = arma::accu(d.w);
     const double c1      = 1e-4;
-    const arma::mat ones_row = arma::ones(n, 1);
 
     const arma::mat Xw   = d.X.each_col() % d.w;
     const arma::mat XtWX = d.X.t() * Xw;
@@ -53,7 +52,7 @@ Rcpp::List builtin_optimize_pln_impl(
             // Joint Newton step: compute_joint_step_MS also returns MO = M_res * Omega
             // so we reuse it for the Armijo penalty — avoids a redundant O(n p²) product.
             arma::mat grad_M, step_M, grad_psi, step_psi, MresO;
-            Traits::compute_joint_step_MS(M_res, state, A, S2, d.Y, d.w, ones_row,
+            Traits::compute_joint_step_MS(M_res, state, A, S2, d.Y, d.w,
                                           grad_M, step_M, grad_psi, step_psi, MresO);
             const arma::mat Q_step  = step_M - d.X * (P_X * step_M);
             const arma::mat QstepO  = Traits::times_Omega(Q_step, state);
@@ -121,9 +120,7 @@ Rcpp::List builtin_vestep_pln_impl(
     const arma::mat & B, const typename Traits::State & state,
     int maxiter, double ftol
 ) {
-    const int n = d.Y.n_rows;
     const double c1 = 1e-4;
-    const arma::mat ones_row = arma::ones(n, 1);
     const arma::mat XB = d.X * B;
 
     arma::mat psi = arma::log(S2);
@@ -141,7 +138,7 @@ Rcpp::List builtin_vestep_pln_impl(
         // Joint Newton step: MO = M_res * Omega returned to avoid recomputing it
         // for the Armijo penalty evaluation.
         arma::mat grad_M, step_M, grad_psi, step_psi, MO;
-        Traits::compute_joint_step_MS(M_res, state, A, S2, d.Y, d.w, ones_row,
+        Traits::compute_joint_step_MS(M_res, state, A, S2, d.Y, d.w,
                                       grad_M, step_M, grad_psi, step_psi, MO);
         const arma::mat dMO = Traits::times_Omega(step_M, state);
         double f0    = arma::accu(d.w.t() * (A - d.Y % Z - 0.5 * psi))
