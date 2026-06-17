@@ -388,40 +388,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// optim_zipln_R_var
-arma::mat optim_zipln_R_var(const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::mat& M, const arma::mat& S2, const arma::mat& Pi, const arma::mat& B);
-RcppExport SEXP _PLNmodels_optim_zipln_R_var(SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP MSEXP, SEXP S2SEXP, SEXP PiSEXP, SEXP BSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type M(MSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type S2(S2SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Pi(PiSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
-    rcpp_result_gen = Rcpp::wrap(optim_zipln_R_var(Y, X, O, M, S2, Pi, B));
-    return rcpp_result_gen;
-END_RCPP
-}
-// optim_zipln_R_exact
-arma::mat optim_zipln_R_exact(const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::mat& M, const arma::mat& S2, const arma::mat& Pi, const arma::mat& B);
-RcppExport SEXP _PLNmodels_optim_zipln_R_exact(SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP MSEXP, SEXP S2SEXP, SEXP PiSEXP, SEXP BSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type M(MSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type S2(S2SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Pi(PiSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
-    rcpp_result_gen = Rcpp::wrap(optim_zipln_R_exact(Y, X, O, M, S2, Pi, B));
-    return rcpp_result_gen;
-END_RCPP
-}
 // optim_zipln_M
 Rcpp::List optim_zipln_M(const arma::mat& init_M, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::mat& R, const arma::mat& S2, const arma::mat& B, const arma::mat& Omega, const Rcpp::List& configuration);
 RcppExport SEXP _PLNmodels_optim_zipln_M(SEXP init_MSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP RSEXP, SEXP S2SEXP, SEXP BSEXP, SEXP OmegaSEXP, SEXP configurationSEXP) {
@@ -552,8 +518,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_optim_zipln_Omega_diagonal", (DL_FUNC) &_PLNmodels_optim_zipln_Omega_diagonal, 4},
     {"_PLNmodels_optim_zipln_B_dense", (DL_FUNC) &_PLNmodels_optim_zipln_B_dense, 2},
     {"_PLNmodels_optim_zipln_zipar_covar", (DL_FUNC) &_PLNmodels_optim_zipln_zipar_covar, 4},
-    {"_PLNmodels_optim_zipln_R_var", (DL_FUNC) &_PLNmodels_optim_zipln_R_var, 7},
-    {"_PLNmodels_optim_zipln_R_exact", (DL_FUNC) &_PLNmodels_optim_zipln_R_exact, 7},
     {"_PLNmodels_optim_zipln_M", (DL_FUNC) &_PLNmodels_optim_zipln_M, 9},
     {"_PLNmodels_optim_zipln_psi", (DL_FUNC) &_PLNmodels_optim_zipln_psi, 7},
     {"_PLNmodels_ve_step_zipln_nlopt", (DL_FUNC) &_PLNmodels_ve_step_zipln_nlopt, 9},

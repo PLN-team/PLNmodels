@@ -109,14 +109,6 @@ optim_zipln_zipar_covar <- function(R, init_B0, X0, configuration) {
     .Call('_PLNmodels_optim_zipln_zipar_covar', PACKAGE = 'PLNmodels', R, init_B0, X0, configuration)
 }
 
-optim_zipln_R_var <- function(Y, X, O, M, S2, Pi, B) {
-    .Call('_PLNmodels_optim_zipln_R_var', PACKAGE = 'PLNmodels', Y, X, O, M, S2, Pi, B)
-}
-
-optim_zipln_R_exact <- function(Y, X, O, M, S2, Pi, B) {
-    .Call('_PLNmodels_optim_zipln_R_exact', PACKAGE = 'PLNmodels', Y, X, O, M, S2, Pi, B)
-}
-
 optim_zipln_M <- function(init_M, Y, X, O, R, S2, B, Omega, configuration) {
     .Call('_PLNmodels_optim_zipln_M', PACKAGE = 'PLNmodels', init_M, Y, X, O, R, S2, B, Omega, configuration)
 }

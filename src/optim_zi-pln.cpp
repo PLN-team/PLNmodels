@@ -1,7 +1,4 @@
 #include <RcppArmadillo.h>
-#ifdef _OPENMP
-#include <omp.h>
-#endif
 
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::depends(nloptr)]]
@@ -9,7 +6,6 @@
 #include "nlopt_wrapper.h"
 #include "packing.h"
 #include "utils.h"
-#include "lambertW.h"
 
 // All optimizers use the reparameterization ψ = log(S²) so the variance S² is
 // always positive. The R/C++ interface passes S2 (variance) rather than S (std dev).
@@ -121,59 +117,6 @@ Rcpp::List optim_zipln_zipar_covar(
         Rcpp::Named("iterations") = result.nb_iterations,
         Rcpp::Named("B0") = B0,
         Rcpp::Named("Pi") = logistic(X0 * B0));
-}
-
-// [[Rcpp::export]]
-arma::mat optim_zipln_R_var(
-    const arma::mat & Y,  // responses (n,p)
-    const arma::mat & X,  // covariates (n,d)
-    const arma::mat & O,  // offsets (n,p)
-    const arma::mat & M,  // (n,p)
-    const arma::mat & S2, // (n,p) variational variance
-    const arma::mat & Pi, // (d,p)
-    const arma::mat & B   // covariates (n,d)
-) {
-    arma::mat A = exp(O + M + 0.5 * S2);
-    arma::mat R = 1. / (1. + exp(-(A + logit(Pi))));
-    R %= arma::conv_to<arma::mat>::from(Y < 0.5);
-    return R;
-}
-
-double phi (double mu, double sigma2) {
-  double W = lambertW0_CS(sigma2 * exp(mu)) ;
-  return(exp(-(pow(W, 2) + 2 * W) / (2 * sigma2)) / sqrt(1 + W)) ;
-}
-
-// [[Rcpp::export]]
-arma::mat optim_zipln_R_exact (
-    const arma::mat & Y,  // covariates (n,d)
-    const arma::mat & X,  // covariates (n,d)
-    const arma::mat & O,  // offsets (n,p)
-    const arma::mat & M,  // (n,p)
-    const arma::mat & S2, // (n,p) variational variance
-    const arma::mat & Pi, // (n,p)
-    const arma::mat & B   // covariates (n,d)
-) {
-
-  arma::mat XB = X * B;
-  arma::mat M_mu = M - XB;
-  const int n = (int)M.n_rows;
-  const int p = (int)M.n_cols;
-  arma::vec diag_Sigma = (sum(M_mu % M_mu, 0) + sum(S2, 0)).t() / double(n);
-  arma::mat R = arma::zeros(n, p);
-  // lambertW0_CS is pure (no global state) — safe to parallelize
-#ifdef _OPENMP
-#pragma omp parallel for collapse(2) schedule(static)
-#endif
-  for(int i = 0; i < n; i++) {
-    for(int j = 0; j < p; j++) {
-      if(Y(i, j) < 0.5) {
-        double Phi = phi(O(i,j) + XB(i,j), diag_Sigma(j));
-        R(i,j) = Pi(i,j) / (Phi * (1 - Pi(i,j)) + Pi(i,j));
-      }
-    }
-  }
-  return R;
 }
 
 // [[Rcpp::export]]
