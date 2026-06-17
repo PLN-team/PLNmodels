@@ -3,7 +3,7 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 
 #include "utils.h"
-#include "builtin_newton_pln.h"
+#include "builtin_optim_pln.h"
 
 // ---------------------------------------------------------------------------------------
 // Builtin Newton optimizer for PLN — all covariance structures.

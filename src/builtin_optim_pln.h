@@ -1,7 +1,7 @@
 #pragma once
 #include <RcppArmadillo.h>
 #include "utils.h"
-#include "builtin_covariance_pln.h"
+#include "covariance_pln.h"
 
 // M_full parameterization: M is the full variational mean of Z_i (= X_i*B + M_res),
 // consistent with the ZIPLN convention.  M_res = M - X*B is computed locally for KL.

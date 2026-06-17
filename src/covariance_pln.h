@@ -51,6 +51,23 @@ struct DenseOmegaImpl {
         step_psi = (h_mm % grad_psi - h_mp % grad_M  ) / det;
     }
 
+    // VE-step objective + gradient: B and Omega fixed, only (M, S²) optimized.
+    static double vestep_obj_grad(
+        const arma::mat & M_res, const arma::mat & Z,
+        const arma::mat & S2,   const arma::mat & logS2,
+        const State & s,
+        const arma::mat & Y,    const arma::vec & w,
+        arma::mat & gM, arma::mat & gPS)
+    {
+        const arma::mat A  = arma::exp(Z + 0.5 * S2);
+        const arma::mat MO = M_res * s.Omega;
+        gM  = MO + A - Y;                                              gM.each_col()  %= w;
+        gPS = 0.5*(S2.each_row() % s.diag_Omega.t() + S2%A - 1.0);   gPS.each_col() %= w;
+        return arma::accu(w.t() * (A - Y%Z - 0.5*logS2))
+             + 0.5*(arma::accu(MO % (M_res.each_col() % w))
+                  + arma::dot(s.diag_Omega, (w.t() * S2).t()));
+    }
+
     static arma::vec final_loglik(const arma::mat & Y, const arma::mat & Z, const arma::mat & A,
                                    const arma::mat & M, const arma::mat & psi, const State & s) {
         const arma::mat S2 = arma::exp(psi);
@@ -66,6 +83,7 @@ struct DenseOmegaImpl {
 struct FullCovTraits : DenseOmegaImpl {
     struct State : DenseOmegaImpl::State {
         arma::mat Sigma;
+        double log_det_Sigma = 0.0;  // cached by update() — avoids a second Cholesky in elbo_cov
 
         State(const arma::mat & M, const arma::mat & S2, const arma::vec & w, double w_bar) {
             update(M, S2, w, w_bar);
@@ -78,6 +96,8 @@ struct FullCovTraits : DenseOmegaImpl {
             Sigma      = (1./w_bar) * (M.t() * (M.each_col() % w) + arma::diagmat(w.t() * S2));
             Omega      = arma::inv_sympd(Sigma);
             diag_Omega = arma::diagvec(Omega);
+            double sign;
+            arma::log_det(log_det_Sigma, sign, Sigma);
         }
     };
 
@@ -87,7 +107,26 @@ struct FullCovTraits : DenseOmegaImpl {
     }
 
     static double elbo_cov(const State & s, double w_bar, arma::uword /*p*/) {
-        return -0.5 * w_bar * std::real(arma::log_det(s.Sigma));
+        return -0.5 * w_bar * s.log_det_Sigma;
+    }
+
+    // Profiled joint objective + gradient: profiles Omega from (M_res, S2) at each eval.
+    // Returns data_term + (w_bar/2)*log|Sigma_hat|  (envelope theorem: same gradient as
+    // fixed-Omega objective).  Only called for small p since it costs O(np² + p³) per eval.
+    static double profile_and_grad(
+        State & s,
+        const arma::mat & M_res, const arma::mat & Z,
+        const arma::mat & S2,   const arma::mat & logS2,
+        const arma::mat & Y,    const arma::vec & w,
+        double w_bar, arma::uword /*p*/,
+        arma::mat & gM, arma::mat & gPS)
+    {
+        s.update(M_res, S2, w, w_bar);  // O(np²) + O(p³); caches log_det_Sigma
+        const arma::mat A  = arma::exp(Z + 0.5 * S2);
+        const arma::mat MO = M_res * s.Omega;
+        gM  = MO + A - Y;                                              gM.each_col()  %= w;
+        gPS = 0.5*(S2.each_row() % s.diag_Omega.t() + S2%A - 1.0);   gPS.each_col() %= w;
+        return arma::accu(w.t() * (A - Y%Z - 0.5*logS2)) - elbo_cov(s, w_bar, 0);
     }
 
     static Rcpp::List output_cov(const arma::mat & /*M*/, const arma::mat & /*S2*/,
@@ -114,7 +153,7 @@ struct DiagonalCovTraits {
             sigma2 = arma::pow(omega2, -1);
         }
         void update(const arma::mat & M, const arma::mat & S2, const arma::vec & w, double w_bar) {
-            sigma2 = (w.t() * (M % M + S2)) / w_bar;
+            sigma2 = arma::clamp(w.t() * (M % M + S2) / w_bar, 1e-20, arma::datum::inf);
             omega2 = arma::pow(sigma2, -1);
         }
     };
@@ -161,6 +200,37 @@ struct DiagonalCovTraits {
 
     static double elbo_cov(const State & s, double w_bar, arma::uword /*p*/) {
         return -0.5 * w_bar * arma::accu(arma::log(s.sigma2));
+    }
+
+    // VE-step objective + gradient: B and Omega fixed, only (M, S²) optimized.
+    static double vestep_obj_grad(
+        const arma::mat & M_res, const arma::mat & Z,
+        const arma::mat & S2,   const arma::mat & logS2,
+        const State & s,
+        const arma::mat & Y,    const arma::vec & w,
+        arma::mat & gM, arma::mat & gPS)
+    {
+        const arma::mat A = arma::exp(Z + 0.5 * S2);
+        gM  = M_res.each_row() % s.omega2 + A - Y;              gM.each_col()  %= w;
+        gPS = 0.5*(S2.each_row() % s.omega2 + S2 % A - 1.0);   gPS.each_col() %= w;
+        return arma::accu(w.t() * (A - Y%Z - 0.5*logS2))
+             + 0.5 * arma::as_scalar(w.t() * (arma::pow(M_res, 2) + S2) * s.omega2.t());
+    }
+
+    // Profiled joint objective + gradient: profiles sigma2 from (M_res, S2) at each eval.
+    static double profile_and_grad(
+        State & s,
+        const arma::mat & M_res, const arma::mat & Z,
+        const arma::mat & S2,   const arma::mat & logS2,
+        const arma::mat & Y,    const arma::vec & w,
+        double w_bar, arma::uword p,
+        arma::mat & gM, arma::mat & gPS)
+    {
+        s.update(M_res, S2, w, w_bar);
+        const arma::mat A = arma::exp(Z + 0.5 * S2);
+        gM  = M_res.each_row() % s.omega2 + A - Y;              gM.each_col()  %= w;
+        gPS = 0.5*(S2.each_row() % s.omega2 + S2 % A - 1.0);   gPS.each_col() %= w;
+        return arma::accu(w.t() * (A - Y%Z - 0.5*logS2)) - elbo_cov(s, w_bar, p);
     }
 
     static arma::vec final_loglik(const arma::mat & Y, const arma::mat & Z, const arma::mat & A,
@@ -244,6 +314,37 @@ struct SphericalCovTraits {
 
     static double elbo_cov(const State & s, double w_bar, arma::uword p) {
         return -0.5 * w_bar * double(p) * std::log(s.sigma2);
+    }
+
+    // VE-step objective + gradient: B and Omega fixed, only (M, S²) optimized.
+    static double vestep_obj_grad(
+        const arma::mat & M_res, const arma::mat & Z,
+        const arma::mat & S2,   const arma::mat & logS2,
+        const State & s,
+        const arma::mat & Y,    const arma::vec & w,
+        arma::mat & gM, arma::mat & gPS)
+    {
+        const arma::mat A = arma::exp(Z + 0.5 * S2);
+        gM  = s.omega2 * M_res + A - Y;               gM.each_col()  %= w;
+        gPS = 0.5*(s.omega2 * S2 + S2 % A - 1.0);    gPS.each_col() %= w;
+        return arma::accu(w.t() * (A - Y%Z - 0.5*logS2))
+             + 0.5 * s.omega2 * arma::accu(w.t() * (arma::pow(M_res, 2) + S2));
+    }
+
+    // Profiled joint objective + gradient: profiles sigma2 from (M_res, S2) at each eval.
+    static double profile_and_grad(
+        State & s,
+        const arma::mat & M_res, const arma::mat & Z,
+        const arma::mat & S2,   const arma::mat & logS2,
+        const arma::mat & Y,    const arma::vec & w,
+        double w_bar, arma::uword p,
+        arma::mat & gM, arma::mat & gPS)
+    {
+        s.update(M_res, S2, w, w_bar);
+        const arma::mat A = arma::exp(Z + 0.5 * S2);
+        gM  = s.omega2 * M_res + A - Y;               gM.each_col()  %= w;
+        gPS = 0.5*(s.omega2 * S2 + S2 % A - 1.0);    gPS.each_col() %= w;
+        return arma::accu(w.t() * (A - Y%Z - 0.5*logS2)) - elbo_cov(s, w_bar, p);
     }
 
     static arma::vec final_loglik(const arma::mat & Y, const arma::mat & Z, const arma::mat & A,
