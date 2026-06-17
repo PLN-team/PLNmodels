@@ -78,6 +78,11 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 #' * "ftol_abs" stop when an optimization step changes the objective function by less than ftol_abs. Default is 0.0 (disabled)
 #' * "xtol_abs" stop when an optimization step changes every parameters by less than xtol_abs. Default is 0.0 (disabled)
 #' * "maxtime" stop when the optimization time (in seconds) exceeds maxtime. Default is -1 (disabled)
+#' * "profiled" (full covariance only) if TRUE, profile both B and Omega at every nlopt evaluation instead of
+#'   running an EM loop (Omega fixed for the duration of each inner nlopt solve, B profiled in closed form at every
+#'   evaluation). Despite the extra `O(n*p^2 + p^3)` cost per evaluation, benchmarks found it consistently faster
+#'   than the EM loop (and with a slightly better loglik) across a range of problem sizes. Default is TRUE;
+#'   set to FALSE to recover the EM loop.
 #'
 #' When "torch" backend is used (only for PLN and PLNLDA for now), the following entries are relevant:
 #' * "algorithm" the optimizer used by torch among RPROP (default), RMSPROP, ADAM and ADAGRAD

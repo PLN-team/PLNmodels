@@ -9,7 +9,9 @@
 #include "nlopt_optim_pln.h"
 
 // ---------------------------------------------------------------------------------------
-// Full covariance PLN — nlopt/CCSAQ optimizer: B profiled via closed form, reduced parameter vector
+// Full covariance PLN — EM loop, nlopt/CCSAQ inner solve: B profiled via closed form, reduced
+// parameter vector, Omega fixed for the duration of each inner solve. Not the default (see
+// nlopt_optimize_full_profiled below) — kept for config_optim$profiled = FALSE.
 
 // [[Rcpp::export]]
 Rcpp::List nlopt_optimize_full(
@@ -32,8 +34,11 @@ Rcpp::List nlopt_optimize_full(
 
 // ---------------------------------------------------------------------------------------
 // Full covariance PLN — profiled variant (no EM loop): Omega profiled at every eval.
-// Recommended for small p where the per-eval O(np² + p³) cost is acceptable.
-// For large p, prefer nlopt_optimize_full (EM with fixed-Omega inner nlopt).
+// Despite the extra O(np² + p³) per-eval cost, this consistently outperformed the EM
+// loop above (nlopt_optimize_full) in benchmarks — faster (1.1x-4.5x) and a slightly
+// better loglik across n in [50,300], p in [10,600] (synthetic Toeplitz Sigma) and on
+// the oaks dataset (n=116, p=114). This is the default (config_optim$profiled = TRUE,
+// see PLNfit-class.R); set profiled = FALSE to fall back to nlopt_optimize_full.
 
 // [[Rcpp::export]]
 Rcpp::List nlopt_optimize_full_profiled(

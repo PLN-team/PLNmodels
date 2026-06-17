@@ -388,8 +388,14 @@ PLNfit <- R6Class(
         private$M  <- start_point$M
         private$S2 <- start_point$S2
       }
+      ## "profiled" (nlopt only, default TRUE): profile both B and Omega at every nlopt eval
+      ## instead of running an EM loop (Omega fixed per inner nlopt solve, B profiled in
+      ## closed form). Benchmarked faster than the EM loop (1.1x-4.5x) with a slightly
+      ## better loglik across n in [50,300], p in [10,600] and on oaks (see PLN_param() docs).
+      ## Set config_optim$profiled = FALSE to recover the EM loop (nlopt_optimize_full).
+      nlopt_main_fn <- if (isTRUE(control$config_optim$profiled)) nlopt_optimize_full_profiled else nlopt_optimize_full
       private$setup_optimizer(control$backend,
-        nlopt_optimize_full,         builtin_optimize_full,
+        nlopt_main_fn,                builtin_optimize_full,
         nlopt_optimize_vestep_full,  builtin_optimize_vestep_full)
     },
 
