@@ -13,7 +13,7 @@
 //
 // Input/output: M is in M_full format throughout.
 
-// Mirror of nlopt_full_cov structure: outer EM loop (max_em) over an inner VE-step that
+// Mirror of nlopt_optimize_em_impl's structure (nlopt_optim_pln.h): outer EM loop (max_em) over an inner VE-step that
 // optimizes (M, ψ) jointly for fixed Omega until convergence (ftol), then one Omega M-step.
 // Joint Newton step per inner iteration: diagonal 2×2 per (i,j) with cross-term H_Mψ.
 template<typename Traits>
@@ -38,17 +38,16 @@ Rcpp::List builtin_optimize_pln_impl(
     double elbo_prev = -arma::datum::inf;
     int last_status  = 5;
 
-    B           = P_X * M;
-    arma::mat Z = d.O + M;
-    arma::mat A = arma::exp(Z + 0.5 * S2);
+    arma::mat Z     = d.O + M;
+    arma::mat A     = arma::exp(Z + 0.5 * S2);
+    // M_res = M - X*B with B = P_X*M; carried across iterations from here on (see below),
+    // so B itself only needs to be recomputed once, at the very end for the returned value.
+    arma::mat M_res = M - d.X * (P_X * M);
 
     for (int em_iter = 0; em_iter < std::max(1, max_em); em_iter++) {
         // ── Inner VE-step: optimize (M, ψ) to convergence for the current Omega/state ──
         double inner_prev = arma::datum::inf;
         for (int it = 0; it < maxiter; it++) {
-            const arma::mat XB    = d.X * B;
-            const arma::mat M_res = M - XB;
-
             // Joint Newton step: compute_joint_step_MS also returns MO = M_res * Omega
             // so we reuse it for the Armijo penalty — avoids a redundant O(n p²) product.
             arma::mat grad_M, step_M, grad_psi, step_psi, MresO;
@@ -71,28 +70,26 @@ Rcpp::List builtin_optimize_pln_impl(
                 alpha *= 0.5;
             }
 
-            // Post-step objective: M_res_new = M_res - alpha*Q_step and MO_new = MresO -
-            // alpha*QstepO follow from the envelope theorem (B is re-profiled from the new
-            // M), so they're available without a redundant O(n p²) product.
-            const arma::mat M_res_new = M_res - alpha * Q_step;
-            const arma::mat MO_new    = MresO - alpha * QstepO;
-            M   -= alpha * step_M;
-            psi -= alpha * step_psi;
-            S2   = arma::exp(psi);
-            B    = P_X * M;
-            Z    = d.O + M;
-            A    = arma::exp(Z + 0.5 * S2);
+            // Post-step update: M_res -= alpha*Q_step and MresO -= alpha*QstepO follow from
+            // the envelope theorem (B is implicitly re-profiled from the new M), so they're
+            // carried forward without ever recomputing B = P_X*M or X*B inside this loop.
+            M_res -= alpha * Q_step;
+            MresO -= alpha * QstepO;
+            M     -= alpha * step_M;
+            psi   -= alpha * step_psi;
+            S2     = arma::exp(psi);
+            Z      = d.O + M;
+            A      = arma::exp(Z + 0.5 * S2);
 
-            double obj = Traits::objective(M_res_new, Z, S2, psi, MO_new, state, d.Y, d.w, A);
+            double obj = Traits::objective(M_res, Z, S2, psi, MresO, state, d.Y, d.w, A);
             objective_vec.push_back(obj);
             if (it > 0 && converged(obj, inner_prev, ftol)) break;
             inner_prev = obj;
         }
 
         // ── VM-step: update Omega/Sigma (skipped for fixed covariance) ──
-        const arma::mat M_res_cur = M - d.X * B;
         if (Traits::has_em) {
-            Traits::mstep(state, M_res_cur, S2, d.w, w_bar, p);
+            Traits::mstep(state, M_res, S2, d.w, w_bar, p);
         } else {
             last_status = 3; break;   // fixed covariance: inner loop already converged
         }
@@ -104,10 +101,7 @@ Rcpp::List builtin_optimize_pln_impl(
         elbo_prev = elbo;
     }
 
-    S2 = arma::exp(psi);
-    arma::mat M_res = M - d.X * B;
-    Z = d.O + M;
-    A = arma::exp(Z + 0.5 * S2);
+    B = P_X * M;  // only needed for the returned value — computed once here
 
     arma::vec loglik = Traits::final_loglik(d.Y, Z, A, M_res, psi, state);
     Rcpp::List cov_out = Traits::output_cov(M_res, S2, d.w, w_bar, state);
@@ -133,12 +127,11 @@ Rcpp::List builtin_vestep_pln_impl(
     double obj_prev = arma::datum::inf;
     int total_iter  = 0;
 
-    arma::mat Z = d.O + M;
-    arma::mat A = arma::exp(Z + 0.5 * S2);
+    arma::mat Z     = d.O + M;
+    arma::mat A     = arma::exp(Z + 0.5 * S2);
+    arma::mat M_res = M - XB;  // carried across iterations: XB is fixed, so M_res moves by the same increment as M
 
     for (int it = 0; it < maxiter; it++) {
-        arma::mat M_res = M - XB;
-
         // Joint Newton step: MO = M_res * Omega returned to avoid recomputing it
         // for the Armijo penalty evaluation.
         arma::mat grad_M, step_M, grad_psi, step_psi, MO;
@@ -158,17 +151,19 @@ Rcpp::List builtin_vestep_pln_impl(
             if (Traits::objective(MresT, Zt, S2t, psit, MOt, state, d.Y, d.w, At) <= f0 + c1 * alpha * slope) break;
             alpha *= 0.5;
         }
-        M   -= alpha * step_M;
-        psi -= alpha * step_psi;
-        S2   = arma::exp(psi);
-        Z    = d.O + M;
-        A    = arma::exp(Z + 0.5 * S2);
 
-        // Post-update objective: reuse MO_new = MO - alpha*dMO = M_res_new * Omega
-        // (exact incremental update, avoids an extra O(n p²) product for full cov).
-        const arma::mat MO_new   = MO - alpha * dMO;
-        const arma::mat M_res_new = M - XB;
-        double obj = Traits::objective(M_res_new, Z, S2, psi, MO_new, state, d.Y, d.w, A);
+        // Post-step update: M_res and MO move by the same alpha*step increments as M
+        // (B/XB fixed here, so no re-profiling needed) — carried forward to the next
+        // iteration instead of recomputing M - XB from scratch.
+        M_res -= alpha * step_M;
+        MO    -= alpha * dMO;
+        M     -= alpha * step_M;
+        psi   -= alpha * step_psi;
+        S2     = arma::exp(psi);
+        Z      = d.O + M;
+        A      = arma::exp(Z + 0.5 * S2);
+
+        double obj = Traits::objective(M_res, Z, S2, psi, MO, state, d.Y, d.w, A);
         objective_vec.push_back(obj);
         total_iter++;
 
@@ -176,7 +171,6 @@ Rcpp::List builtin_vestep_pln_impl(
         obj_prev = obj;
     }
 
-    const arma::mat M_res = M - XB;
     arma::vec loglik = Traits::final_loglik(d.Y, Z, A, M_res, psi, state);
 
     return make_vestep_result(M, S2, loglik, 3, "newton", objective_vec, total_iter);

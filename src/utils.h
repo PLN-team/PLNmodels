@@ -32,7 +32,7 @@ inline bool converged(double val, double prev, double tol) {
 }
 
 // ---- Config extraction for builtin Newton optimizers ----
-// Centralises the containsElementNamed pattern replicated across all newton_*.cpp files.
+// Centralises the containsElementNamed pattern used by builtin_optim_pln.* and nlopt_optim_pln.h.
 struct NewtonConfig {
     int    maxiter            = 200;
     double ftol               = 1e-8;
@@ -65,7 +65,7 @@ inline Rcpp::List make_pln_result(
     const arma::mat & B, const arma::mat & M, const arma::mat & S2,
     const arma::mat & Z, const arma::mat & A,
     const Rcpp::List & cov_out,   // List(Sigma, Omega)
-    const arma::vec & loglik,     // per-observation log-likelihood Ji; wrapped to NumericVector below
+    const arma::vec & loglik,     // per-observation log-likelihood Ji (auto-wrapped by Rcpp::Named)
     int status, const char * backend,
     const std::vector<double> & objective_vec, int iterations
 ) {
