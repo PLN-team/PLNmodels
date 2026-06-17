@@ -115,8 +115,3 @@ Rcpp::List optim_zipln_zipar_covar(
         Rcpp::Named("B0") = B0,
         Rcpp::Named("Pi") = logistic(X0 * B0));
 }
-
-// VE step for (M, ψ=log(S²), R) — ported to the generic, trait-based
-// ve_step_zipln_{newton,nlopt}_impl<Traits> templates (builtin_optim_zipln.h /
-// nlopt_optim_zipln.h), exported per covariance structure in
-// wrappers_builtin_optim_zipln.cpp / wrappers_nlopt_optim_zipln.cpp.
