@@ -6,6 +6,7 @@
 #include "nlopt_wrapper.h"
 #include "packing.h"
 #include "utils.h"
+#include "covariance_plnpca.h"
 
 // ---------------------------------------------------------------------------------------
 // Rank-constrained covariance
@@ -52,18 +53,9 @@ Rcpp::List nlopt_optimize_rank(
         const arma::mat M   = metadata.map<M_ID>  (params);
         const arma::mat psi = metadata.map<PSI_ID>(params);
 
-        const arma::mat C2 = C % C;
-        const arma::mat S2 = arma::exp(psi);                             // S² = exp(ψ)
-        arma::mat Z = d.O + d.X * B + M * C.t();
-        arma::mat A = arma::exp(Z + 0.5 * S2 * C2.t());
-        const arma::mat AmY = A - d.Y;  // gradient uses (A-Y); objective uses (A - Y%Z)
-        double objective = accu(d.w.t() * arma::sum(A - d.Y % Z, 1))
-                         + 0.5 * accu(d.w.t() * arma::sum(M % M + S2 - psi - 1., 1));
-
-        arma::mat gC  = (AmY.each_col() % d.w).t() * M + (A.t() * (S2.each_col() % d.w)) % C;
-        arma::mat gM  = AmY * C + M;  gM.each_col()  %= d.w;
-        arma::mat gPS = 0.5 * (S2 % (1. + A * C2) - 1.); gPS.each_col() %= d.w;
-        metadata.map<B_ID>  (grad) = Xw.t() * AmY;
+        arma::mat gB, gC, gM, gPS;
+        double objective = rank_obj_grad(d, Xw, B, C, M, psi, gB, gC, gM, gPS);
+        metadata.map<B_ID>  (grad) = gB;
         metadata.map<C_ID>  (grad) = gC;
         metadata.map<M_ID>  (grad) = gM;
         metadata.map<PSI_ID>(grad) = gPS;
@@ -79,29 +71,15 @@ Rcpp::List nlopt_optimize_rank(
     arma::mat M   = metadata.copy<M_ID>  (parameters.data());
     arma::mat psi = metadata.copy<PSI_ID>(parameters.data());
     arma::mat S2  = arma::exp(psi);
-    arma::mat Sigma = C * (M.t() * (M.each_col() % d.w) + arma::diagmat(arma::sum(S2.each_col() % d.w, 0))) * C.t() / accu(d.w);
-    arma::mat Omega = C * inv_sympd((M.t() * (M.each_col() % d.w) + arma::diagmat(arma::sum(S2.each_col() % d.w, 0))) / accu(d.w)) * C.t();
     arma::mat Z   = d.O + d.X * B + M * C.t();
     arma::mat A   = arma::exp(Z + 0.5 * S2 * (C % C).t());
-    arma::vec loglik = arma::sum(d.Y % Z - A, 1) - 0.5 * arma::sum(M % M + S2 - psi - 1., 1) + ki(d.Y);
 
-    return Rcpp::List::create(
-        Rcpp::Named("B", B),
-        Rcpp::Named("C", C),
-        Rcpp::Named("M", M),
-        Rcpp::Named("S2", S2),
-        Rcpp::Named("Z", Z),
-        Rcpp::Named("A", A),
-        Rcpp::Named("Sigma", Sigma),
-        Rcpp::Named("Omega", Omega),
-        Rcpp::Named("Ji", loglik),
-        Rcpp::Named("monitoring", Rcpp::List::create(
-            Rcpp::Named("status", static_cast<int>(result.status)),
-            Rcpp::Named("backend", "nlopt"),
-            Rcpp::Named("objective", objective_vec),
-            Rcpp::Named("iterations", result.nb_iterations)
-        ))
-    );
+    const double w_bar = arma::accu(d.w);
+    Rcpp::List cov_out = rank_output_cov(M, C, S2, d.w, w_bar);
+    arma::vec loglik   = rank_final_loglik(d.Y, Z, A, M, S2, psi);
+
+    return make_plnpca_result(B, C, M, S2, Z, A, cov_out, loglik,
+                                 static_cast<int>(result.status), "nlopt", objective_vec, result.nb_iterations);
 }
 
 // ---------------------------------------------------------------------------------------
@@ -140,15 +118,8 @@ Rcpp::List nlopt_optimize_vestep_rank(
         const arma::mat M   = metadata.map<M_ID>  (params);
         const arma::mat psi = metadata.map<PSI_ID>(params);
 
-        arma::mat S2 = arma::exp(psi);
-        arma::mat Z  = d.O + XB + M * C.t();
-        arma::mat A  = arma::exp(Z + 0.5 * S2 * C2.t());
-        const arma::mat AmY = A - d.Y;  // gradient uses (A-Y); objective uses (A - Y%Z)
-        double objective = accu(d.w.t() * arma::sum(A - d.Y % Z, 1))
-                         + 0.5 * accu(d.w.t() * arma::sum(M % M + S2 - psi - 1., 1));
-
-        arma::mat gM  = AmY * C + M;  gM.each_col()  %= d.w;
-        arma::mat gPS = 0.5 * (S2 % (1. + A * C2) - 1.); gPS.each_col() %= d.w;
+        arma::mat gM, gPS;
+        double objective = rank_vestep_obj_grad(d, XB, C, C2, M, psi, gM, gPS);
         metadata.map<M_ID>  (grad) = gM;
         metadata.map<PSI_ID>(grad) = gPS;
 
@@ -161,9 +132,9 @@ Rcpp::List nlopt_optimize_vestep_rank(
     arma::mat M   = metadata.copy<M_ID>  (parameters.data());
     arma::mat psi = metadata.copy<PSI_ID>(parameters.data());
     arma::mat S2  = arma::exp(psi);
-    arma::mat Z   = d.O + d.X * B + M * C.t();
+    arma::mat Z   = d.O + XB + M * C.t();
     arma::mat A   = arma::exp(Z + 0.5 * S2 * C2.t());
-    arma::vec loglik = arma::sum(d.Y % Z - A, 1) - 0.5 * arma::sum(M % M + S2 - psi - 1., 1) + ki(d.Y);
+    arma::vec loglik = rank_final_loglik(d.Y, Z, A, M, S2, psi);
 
     return make_vestep_result(M, S2, loglik, static_cast<int>(result.status), "nlopt", objective_vec, result.nb_iterations);
 }

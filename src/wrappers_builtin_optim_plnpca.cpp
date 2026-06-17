@@ -3,6 +3,7 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 
 #include "utils.h"
+#include "covariance_plnpca.h"
 
 // ---------------------------------------------------------------------------------------
 // Rank-constrained PLN — Joint L-BFGS with strong Wolfe line search
@@ -169,8 +170,7 @@ Rcpp::List builtin_optimize_rank(
     arma::mat M  = Rcpp::as<arma::mat>(params["M"]);
     arma::mat S2 = Rcpp::as<arma::mat>(params["S2"]);
 
-    const int    maxiter = config.containsElementNamed("maxeval") ? Rcpp::as<int>   (config["maxeval"])  : 10000;
-    const double ftol    = config.containsElementNamed("ftol_in") ? Rcpp::as<double>(config["ftol_in"]) : 1e-9;
+    const NewtonConfig cfg(config, 10000, 1e-9);
 
     const arma::uword n = D.Y.n_rows, p = D.Y.n_cols, q = M.n_cols, d = B.n_rows;
 
@@ -195,19 +195,9 @@ Rcpp::List builtin_optimize_rank(
         arma::mat C_   = arma::reshape(x.subvec(oC,   oM-1   ), p, q);
         arma::mat M_   = arma::reshape(x.subvec(oM,   oPsi-1 ), n, q);
         arma::mat psi_ = arma::reshape(x.subvec(oPsi, N-1    ), n, q);
-        arma::mat S2_  = arma::exp(psi_);
-        arma::mat C2_  = C_ % C_;
-        arma::mat Z_   = D.O + D.X * B_ + M_ * C_.t();
-        arma::mat A_   = arma::exp(Z_ + 0.5 * S2_ * C2_.t());
-        double f = arma::accu(D.w.t() * (A_ - D.Y % Z_))
-                 + 0.5 * arma::accu(D.w.t() * (M_ % M_ + S2_ - psi_ - 1.));
-        arma::mat AmY  = A_ - D.Y;
-        arma::mat AmYw = AmY; AmYw.each_col() %= D.w;
-        arma::mat gB_  = Xw.t() * AmY;
-        arma::mat gC_  = AmYw.t() * M_ + (A_.t() * (S2_.each_col() % D.w)) % C_;
-        arma::mat gM_  = AmY * C_ + M_;  gM_.each_col() %= D.w;
-        arma::mat gPs_ = arma::diagmat(D.w) * (0.5 * (S2_ % (1. + A_ * C2_) - 1.));
-        arma::vec g    = arma::join_cols(
+        arma::mat gB_, gC_, gM_, gPs_;
+        double f = rank_obj_grad(D, Xw, B_, C_, M_, psi_, gB_, gC_, gM_, gPs_);
+        arma::vec g = arma::join_cols(
             arma::join_cols(arma::vectorise(gB_), arma::vectorise(gC_)),
             arma::join_cols(arma::vectorise(gM_), arma::vectorise(gPs_)));
         return {f, g};
@@ -218,7 +208,7 @@ Rcpp::List builtin_optimize_rank(
         arma::join_cols(arma::vectorise(B), arma::vectorise(C)),
         arma::join_cols(arma::vectorise(M), arma::vectorise(psi)));
 
-    LbfgsResult res = run_lbfgs(x0, fg, maxiter, ftol);
+    LbfgsResult res = run_lbfgs(x0, fg, cfg.maxiter, cfg.ftol);
 
     // Unpack final parameters
     B   = arma::reshape(res.x.subvec(oB,   oC-1  ), d, p);
@@ -231,29 +221,11 @@ Rcpp::List builtin_optimize_rank(
     A   = arma::exp(Z + 0.5 * S2 * C2.t());
 
     const double w_bar = arma::accu(D.w);
-    arma::mat nSig = M.t() * (M.each_col() % D.w) + arma::diagmat(arma::sum(S2.each_col() % D.w, 0));
-    arma::mat Sigma = C * nSig * C.t() / w_bar;
-    arma::mat Omega = C * arma::inv_sympd(nSig / w_bar) * C.t();
-    arma::vec loglik = arma::sum(D.Y % Z - A, 1)
-                     - 0.5 * arma::sum(M % M + S2 - psi - 1., 1) + ki(D.Y);
+    Rcpp::List cov_out = rank_output_cov(M, C, S2, D.w, w_bar);
+    arma::vec loglik   = rank_final_loglik(D.Y, Z, A, M, S2, psi);
 
-    return Rcpp::List::create(
-        Rcpp::Named("B",     B    ),
-        Rcpp::Named("C",     C    ),
-        Rcpp::Named("M",     M    ),
-        Rcpp::Named("S2",    S2   ),
-        Rcpp::Named("Z",     Z    ),
-        Rcpp::Named("A",     A    ),
-        Rcpp::Named("Sigma", Sigma),
-        Rcpp::Named("Omega", Omega),
-        Rcpp::Named("Ji",    loglik),
-        Rcpp::Named("monitoring", Rcpp::List::create(
-            Rcpp::Named("status",     res.status        ),
-            Rcpp::Named("backend",    "lbfgs"           ),
-            Rcpp::Named("objective",  res.objective_vec ),
-            Rcpp::Named("iterations", res.total_iter    )
-        ))
-    );
+    return make_plnpca_result(B, C, M, S2, Z, A, cov_out, loglik,
+                                 res.status, "lbfgs", res.objective_vec, res.total_iter);
 }
 
 // ---------------------------------------------------------------------------------------
@@ -271,8 +243,7 @@ Rcpp::List builtin_optimize_vestep_rank(
     arma::mat B  = Rcpp::as<arma::mat>(params["B"]);
     arma::mat C  = Rcpp::as<arma::mat>(params["C"]);
 
-    const int    maxiter = config.containsElementNamed("maxeval") ? Rcpp::as<int>   (config["maxeval"])  : 10000;
-    const double ftol    = config.containsElementNamed("ftol_in") ? Rcpp::as<double>(config["ftol_in"]) : 1e-9;
+    const NewtonConfig cfg(config, 10000, 1e-9);
 
     const arma::uword n = D.Y.n_rows, q = M.n_cols;
     const arma::uword oM = 0, oPsi = n*q, N = 2*n*q;
@@ -290,18 +261,13 @@ Rcpp::List builtin_optimize_vestep_rank(
     auto fg = [&](const arma::vec & x) -> std::pair<double, arma::vec> {
         arma::mat M_   = arma::reshape(x.subvec(oM,   oPsi-1), n, q);
         arma::mat psi_ = arma::reshape(x.subvec(oPsi, N-1   ), n, q);
-        arma::mat S2_  = arma::exp(psi_);
-        arma::mat Z_   = D.O + XB + M_ * C.t();
-        arma::mat A_   = arma::exp(Z_ + 0.5 * S2_ * C2.t());
-        double f = arma::accu(D.w.t() * (A_ - D.Y % Z_))
-                 + 0.5 * arma::accu(D.w.t() * (M_ % M_ + S2_ - psi_ - 1.));
-        arma::mat gM_  = (A_ - D.Y) * C + M_;  gM_.each_col() %= D.w;
-        arma::mat gPs_ = arma::diagmat(D.w) * (0.5 * (S2_ % (1. + A_ * C2) - 1.));
+        arma::mat gM_, gPs_;
+        double f = rank_vestep_obj_grad(D, XB, C, C2, M_, psi_, gM_, gPs_);
         return {f, arma::join_cols(arma::vectorise(gM_), arma::vectorise(gPs_))};
     };
 
     arma::vec x0 = arma::join_cols(arma::vectorise(M), arma::vectorise(psi));
-    LbfgsResult res = run_lbfgs(x0, fg, maxiter, ftol);
+    LbfgsResult res = run_lbfgs(x0, fg, cfg.maxiter, cfg.ftol);
 
     M   = arma::reshape(res.x.subvec(oM,   oPsi-1), n, q);
     psi = arma::reshape(res.x.subvec(oPsi, N-1   ), n, q);
@@ -309,8 +275,7 @@ Rcpp::List builtin_optimize_vestep_rank(
     Z   = D.O + XB + M * C.t();
     A   = arma::exp(Z + 0.5 * S2 * C2.t());
 
-    arma::vec loglik = arma::sum(D.Y % Z - A, 1)
-                     - 0.5 * arma::sum(M % M + S2 - psi - 1., 1) + ki(D.Y);
+    arma::vec loglik = rank_final_loglik(D.Y, Z, A, M, S2, psi);
 
     // status hardcoded to 3 (converged), matching prior behavior: this VE-step
     // never surfaced run_lbfgs's internal status (4 = degenerate slope, 5 = maxiter).
