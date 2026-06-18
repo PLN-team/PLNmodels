@@ -27,18 +27,18 @@ formula-based interface (covariates, offsets, weights) and a choice of
 optimization backends (a fast built-in Newton solver, NLOPT, and an
 experimental torch backend):
 
-- **PLN**: unpenalized multivariate Poisson regression, with several
+- **PLN**[^2]: unpenalized multivariate Poisson regression, with several
   covariance structures (full, diagonal, spherical, fixed, or a
   genetic/heritability structure).
-- **PLNPCA**[^2]: probabilistic Poisson PCA — a rank-constrained
+- **PLNPCA**[^3]: probabilistic Poisson PCA — a rank-constrained
   covariance for dimension reduction and visualization.
-- **PLNLDA**: Poisson lognormal discriminant analysis[^3] for the
+- **PLNLDA**: Poisson lognormal discriminant analysis[^4] for the
   supervised classification of count data.
-- **PLNnetwork**[^4]: sparse inverse-covariance (network) inference via
-  a graphical-lasso-like penalty[^5].
-- **PLNmixture**: model-based clustering[^6] of count data via a mixture
+- **PLNnetwork**[^5]: sparse inverse-covariance (network) inference via
+  a graphical-lasso-like penalty[^6].
+- **PLNmixture**: model-based clustering[^7] of count data via a mixture
   of PLN models.
-- **ZIPLN**: a zero-inflated extension of PLN for data with excess
+- **ZIPLN**[^8]: a zero-inflated extension of PLN for data with excess
   zeros, with the same family of covariance structures and an optional
   sparse (`ZIPLNnetwork`) variant.
 
@@ -56,7 +56,7 @@ remotes::install_github("pln-team/PLNmodels@tag_number")  # a specific tagged re
 
 ## Illustration
 
-We illustrate the main models on the `barents` data set[^7]: the
+We illustrate the main models on the `barents` data set[^9]: the
 abundance of 30 fish species observed in 89 sites in the Barents sea,
 along with depth, temperature and geographic coordinates for each site.
 
@@ -242,28 +242,36 @@ table(cluster = myMixture$memberships, zone = barents$zone)
     abundances, Frontiers in Ecology and Evolution, 2021.
     [doi:10.3389/fevo.2021.588292](https://www.frontiersin.org/articles/10.3389/fevo.2021.588292/full)
 
-[^2]: J. Chiquet, M. Mariadassou and S. Robin: Variational inference for
+[^2]: Aitchison, J. and Ho, C. H. The multivariate Poisson-log normal
+    distribution. Biometrika, 76(4), 1989, 643–653.
+
+[^3]: J. Chiquet, M. Mariadassou and S. Robin: Variational inference for
     probabilistic Poisson PCA, the Annals of Applied Statistics, 12:
     2674–2698, 2018.
     [doi:10.1214/18-AOAS1177](http://dx.doi.org/10.1214/18%2DAOAS1177)
 
-[^3]: Fisher, R. A. The use of multiple measurements in taxonomic
+[^4]: Fisher, R. A. The use of multiple measurements in taxonomic
     problems. Annals of Eugenics, 7(2), 1936; Rao, C. R. The utilization
     of multiple measurements in problems of biological classification.
     JRSS B, 10(2), 1948.
 
-[^4]: J. Chiquet, M. Mariadassou and S. Robin: Variational inference for
+[^5]: J. Chiquet, M. Mariadassou and S. Robin: Variational inference for
     sparse network reconstruction from count data, Proceedings of the
     36th International Conference on Machine Learning (ICML), 2019.
     [link](http://proceedings.mlr.press/v97/chiquet19a.html)
 
-[^5]: Friedman, J., Hastie, T. and Tibshirani, R. Sparse inverse
+[^6]: Friedman, J., Hastie, T. and Tibshirani, R. Sparse inverse
     covariance estimation with the graphical lasso. Biostatistics, 9(3),
     2008.
 
-[^6]: Fraley, C. and Raftery, A. E. MCLUST: Software for model-based
+[^7]: Fraley, C. and Raftery, A. E. MCLUST: Software for model-based
     cluster analysis. Journal of Classification, 16(2), 1999.
 
-[^7]: Fossheim, M., Nilssen, E. M. and Aschan, M. Fish assemblages in
+[^8]: Batardière, B., Chiquet, J., Gindraud, F. and Mariadassou, M.
+    Zero-inflation in the multivariate Poisson lognormal family.
+    Statistics and Computing, 35, 2025.
+    [doi:10.1007/s11222-025-10729-0](https://doi.org/10.1007/s11222-025-10729-0)
+
+[^9]: Fossheim, M., Nilssen, E. M. and Aschan, M. Fish assemblages in
     the Barents Sea. Marine Biology Research, 2(4), 2006.
     [doi:10.1080/17451000600815698](https://doi.org/10.1080/17451000600815698)
