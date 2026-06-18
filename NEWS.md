@@ -2,7 +2,7 @@
 
 ## New backends and optimizers
 
-* **New built-in Newton optimizer** (`backend = "builtin"`) for PLN, ZIPLN and PLNPCA, now the default for PLN and ZIPLN. Uses envelope-theorem Newton steps with strong Wolfe line search; does not depend on NLOPT. Substantially faster and more accurate than nlopt on large datasets with full covariance (e.g. +30 000 loglik on microcosm, p=259).
+* **New built-in Newton optimizer** (`backend = "builtin"`) for PLN, ZIPLN and PLNPCA, now the default for ZIPLN. Uses envelope-theorem Newton steps with strong Wolfe line search; does not depend on NLOPT. Substantially faster and more accurate than nlopt on large datasets with full covariance (e.g. +30 000 loglik on microcosm, p=259).
 
 * **Fix critical convergence bug** in PLN/PLNPCA with nlopt: premature termination due to ill-conditioned X scaling triggered the XTOL stopping criterion after very few iterations
   (e.g. 14 iter on barents, loglik -8520 instead of -4400). The built-in backend is immune to this bug; nlopt is also fixed via better parameter scaling.
@@ -14,6 +14,20 @@
 * **torch backend marked experimental**: the torch backend is now clearly documented as experimental. It emits a message on use and is not recommended for PLNPCA (systematically lower loglik than nlopt/builtin). It remains available for PLN on diagonal/spherical covariance where it can be faster.
 
 * **Full covariance, nlopt backend**: `config_optim$profiled = TRUE` is now the default. Both B and Omega are profiled at every nlopt evaluation instead of running an EM loop (Omega fixed for the duration of each inner solve). Despite the extra per-evaluation cost, this is consistently faster (1.1x-4.5x) and reaches a slightly better loglik across a range of problem sizes, because it needs far fewer total evaluations than the EM loop. Set `profiled = FALSE` to recover the previous behaviour.
+
+* **PLN default backend reverted to `"nlopt"`**: now that `profiled = TRUE` makes nlopt
+  consistently faster (2-4x on n,p in the hundreds), it becomes the default again over
+  `"builtin"`. `"builtin"` remains available and can still reach a slightly better optimum,
+  an advantage that grows with p (e.g. n=880, p=259: +96 loglik for 3.4x more time) — prefer
+  it when fit quality matters more than speed, typically for large p.
+
+* **PLNnetwork default backend switched to `"builtin"`**, combined with new defaults
+  `maxit_ve = 1` (one partial Newton VE-step per GLASSO alternation, instead of running the
+  VE-step to full convergence) and `inception_niter = 5` (a deliberately under-converged
+  inception model, better suited to warm-start the sparse penalty path). This combination was
+  already benchmarked but not wired in as the default: it consistently finds a better ELBO
+  than plain nlopt at essentially the same speed (+34 trichoptera, +123 barents, +676 oaks).
+  Set `backend = "nlopt"` to recover the previous default.
 
 * **ZIPLN  initialization**: `pscl::zeroinfl` is replaced by an internal
   `compute_ZIPLN_starting_point()` that uses a standard LM (for B) and a binomial
