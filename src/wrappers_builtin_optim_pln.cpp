@@ -129,3 +129,39 @@ Rcpp::List builtin_optimize_fixed(
     FixedCovTraits::State state(Omega);
     return builtin_optimize_pln_impl<FixedCovTraits>(d, B, M, S2, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol);
 }
+
+// ===== GENETIC / HERITABILITY COVARIANCE (C provided externally, fixed) =====
+
+// [[Rcpp::export]]
+Rcpp::List builtin_optimize_genetic(
+    const Rcpp::List & data  ,
+    const Rcpp::List & params, // List(B, M, S2, C) — C: fixed p×p correlation matrix
+    const Rcpp::List & config
+) {
+    const PlnData d(data);
+    arma::mat B  = Rcpp::as<arma::mat>(params["B"]);
+    arma::mat M  = Rcpp::as<arma::mat>(params["M"]);
+    arma::mat S2 = Rcpp::as<arma::mat>(params["S2"]);
+    arma::mat C  = Rcpp::as<arma::mat>(params["C"]);
+    const NewtonConfig cfg(config);
+    const double w_bar = arma::accu(d.w);
+    GeneticCovTraits::State state = GeneticCovTraits::State::from_correlation(C);
+    state.update(M - d.X * B, S2, d.w, w_bar);
+    return builtin_optimize_pln_impl<GeneticCovTraits>(d, B, M, S2, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol);
+}
+
+// [[Rcpp::export]]
+Rcpp::List builtin_optimize_vestep_genetic(
+    const Rcpp::List & data  ,
+    const Rcpp::List & params, // List(M, S2, B, Omega) — B, Omega fixed
+    const Rcpp::List & config
+) {
+    const PlnData d(data);
+    arma::mat M     = Rcpp::as<arma::mat>(params["M"]);
+    arma::mat S2    = Rcpp::as<arma::mat>(params["S2"]);
+    arma::mat B     = Rcpp::as<arma::mat>(params["B"]);
+    arma::mat Omega = Rcpp::as<arma::mat>(params["Omega"]);
+    const NewtonConfig cfg(config);
+    GeneticCovTraits::State state(Omega);
+    return builtin_vestep_pln_impl<GeneticCovTraits>(d, M, S2, B, state, cfg.maxiter, cfg.ftol);
+}

@@ -79,6 +79,43 @@ Rcpp::List nlopt_optimize_fixed(
 }
 
 // ---------------------------------------------------------------------------------------
+// Genetic / heritability covariance PLN — EM loop, nlopt/CCSAQ inner solve: B profiled via
+// closed form, Omega (built from a fixed correlation matrix C and estimated (rho, sigma2))
+// fixed for the duration of each inner solve, re-estimated by GeneticCovTraits::State::update
+// at every outer M-step (see covariance_pln.h).
+
+// [[Rcpp::export]]
+Rcpp::List nlopt_optimize_genetic(
+    const Rcpp::List & data  , // List(Y, X, O, w)
+    const Rcpp::List & params, // List(B, M, S2, C) — C: fixed p×p correlation matrix
+    const Rcpp::List & config
+) {
+    const PlnData d(data);
+    const auto init_B  = Rcpp::as<arma::mat>(params["B"]);
+    const auto init_M  = Rcpp::as<arma::mat>(params["M"]);
+    const auto init_S2 = Rcpp::as<arma::mat>(params["S2"]);
+    const auto C       = Rcpp::as<arma::mat>(params["C"]);
+
+    const arma::mat M_res_init = init_M - d.X * init_B;
+    GeneticCovTraits::State state = GeneticCovTraits::State::from_correlation(C);
+    state.update(M_res_init, init_S2, d.w, arma::accu(d.w));
+
+    return nlopt_optimize_em_impl<GeneticCovTraits>(data, init_M, init_S2, state, config);
+}
+
+// ---------------------------------------------------------------------------------------
+// VE genetic covariance — nlopt/CCSAQ (M and S only, B and Omega fixed)
+
+// [[Rcpp::export]]
+Rcpp::List nlopt_optimize_vestep_genetic(
+    const Rcpp::List & data,   // List(Y, X, O, w)
+    const Rcpp::List & params, // List(M, S2, B, Omega)
+    const Rcpp::List & config
+) {
+    return nlopt_vestep_impl<GeneticCovTraits>(data, params, config);
+}
+
+// ---------------------------------------------------------------------------------------
 // Diagonal covariance PLN — nlopt/CCSAQ optimizer: B and sigma² profiled at every eval
 
 // [[Rcpp::export]]

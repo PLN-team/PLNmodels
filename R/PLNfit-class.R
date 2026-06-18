@@ -1030,3 +1030,88 @@ PLNfit_fixedcov <- R6Class(
 )
 
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+##  CLASS PLNfit_genpop ############################
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+#' An R6 Class to represent a PLNfit with a residual covariance structured by a fixed
+#' correlation matrix (e.g. a genetic relationship matrix), motivated by population genetics
+#'
+#' @description Sigma = sigma2 * (rho * C + (1 - rho) * I_p), where C is a fixed p x p
+#' correlation matrix supplied by the user (`control$C`) and (sigma2, rho) are estimated.
+#' See `GeneticCovTraits` in `src/covariance_pln.h` for the C++ side.
+#'
+#' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param offsets offset matrix (called O in the model). Will usually be extracted from the corresponding field in PLNfamily-class
+#' @param weights an optional vector of observation weights to be used in the fitting process.
+#' @param formula model formula used for fitting, extracted from the formula in the upper-level call
+#' @param control a list for controlling the optimization, must include a field `C` (the fixed p x p correlation matrix). See details.
+#'
+#' @rdname PLNfit_genpop
+#' @importFrom R6 R6Class
+#'
+#' @examples
+#' \dontrun{
+#' data(trichoptera)
+#' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+#' p <- ncol(trichoptera$Abundance)
+#' C <- 0.5^abs(outer(1:p, 1:p, "-")); diag(C) <- 1
+#' myPLN <- PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(covariance = "genpop", C = C))
+#' class(myPLN)
+#' print(myPLN)
+#' }
+PLNfit_genpop <- R6Class(
+  classname = "PLNfit_genpop",
+  inherit = PLNfit,
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ## PUBLIC MEMBERS ----
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  public  = list(
+    #' @description Initialize a [`PLNfit_genpop`] model
+    initialize = function(responses, covariates, offsets, weights, formula, control) {
+      super$initialize(responses, covariates, offsets, weights, formula, control)
+      stopifnot(!is.null(control$C), nrow(control$C) == ncol(responses), ncol(control$C) == ncol(responses))
+      private$C <- as.matrix(control$C)
+      private$setup_optimizer(control$backend, nlopt_optimize_genetic, builtin_optimize_genetic,
+                              nlopt_optimize_vestep_genetic, builtin_optimize_vestep_genetic)
+    },
+    #' @description Call to the NLopt or builtin optimizer and update of the relevant fields
+    optimize = function(responses, covariates, offsets, weights, config) {
+      nrm  <- normalize_covariates(covariates)
+      args <- list(data   = list(Y = responses, X = nrm$X_sc, O = offsets, w = weights),
+                   params = list(B = sweep(private$B, 1, nrm$scales, "*"),
+                                 M = private$M, S2 = private$S2, C = private$C),
+                   config = config)
+      optim_out <- do.call(private$optimizer$main, args)
+      optim_out$B <- sweep(optim_out$B, 1, nrm$scales, "/")
+      do.call(self$update, optim_out)
+    }
+  ),
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ## PRIVATE MEMBERS ----
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  private = list(
+    C = NULL # fixed p x p correlation matrix (e.g. genetic relationship matrix)
+  ),
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ## ACTIVE BINDINGS ----
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  active = list(
+    #' @field nb_param number of parameters in the current PLN model
+    nb_param   = function() {as.integer(self$p * self$d + 2)},
+    #' @field vcov_model character: the model used for the residual covariance
+    vcov_model = function() {"genpop"},
+    #' @field gen_par a list with the two extra parameters of the genpop covariance model:
+    #' sigma2 (variance scale) and rho (mixing weight / heritability), decoded from Sigma and C.
+    gen_par    = function() {
+      Xd <- cbind(as.vector(private$C), as.vector(diag(self$p)))
+      cf <- qr.solve(Xd, as.vector(private$Sigma))
+      list(sigma2 = cf[1] + cf[2], rho = cf[1] / (cf[1] + cf[2]))
+    }
+  )
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  ##  END OF THE CLASS PLNfit_genpop
+  ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+)

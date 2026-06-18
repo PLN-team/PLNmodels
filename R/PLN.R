@@ -36,6 +36,7 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
       "diagonal"  = PLNfit_diagonal$new(args$Y, args$X, args$O, args$w, args$formula, control),
       "spherical" = PLNfit_spherical$new(args$Y, args$X, args$O, args$w, args$formula, control),
       "fixed"     = PLNfit_fixedcov$new(args$Y, args$X, args$O, args$w, args$formula, control),
+      "genpop"    = PLNfit_genpop$new(args$Y, args$X, args$O, args$w, args$formula, control),
                     PLNfit$new(args$Y, args$X, args$O, args$w, args$formula, control)) # default: full covariance
 
   ## optimization
@@ -58,8 +59,10 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 #'   `"builtin"` is the built-in envelope-theorem Newton optimizer; it is the fastest and most
 #'   accurate backend, especially for large p with full covariance.
 #'   `"torch"` is **experimental**: it may converge to suboptimal solutions or fail on some datasets.
-#' @param covariance character setting the model for the covariance matrix. Either "full", "diagonal", "spherical" or "fixed". Default is "full".
+#' @param covariance character setting the model for the covariance matrix. Either "full", "diagonal", "spherical", "fixed" or "genpop". Default is "full".
 #' @param Omega precision matrix of the latent variables. Inverse of Sigma. Must be specified if `covariance` is "fixed"
+#' @param C a fixed p x p correlation matrix (e.g. a genetic relationship matrix). Must be specified if `covariance` is "genpop": the
+#'   residual covariance is then modeled as `Sigma = sigma2 * (rho * C + (1 - rho) * I)`, with `sigma2` and `rho` estimated.
 #' @param config_optim a list for controlling the optimizer (either "nlopt" or "torch" backend). See details
 #' @param config_post a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details
 #' @param trace a integer for verbosity.
@@ -115,8 +118,9 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 PLN_param <- function(
     backend       = c("builtin", "nlopt", "torch"),
     trace         = 1,
-    covariance    = c("full", "diagonal", "spherical", "fixed"),
+    covariance    = c("full", "diagonal", "spherical", "fixed", "genpop"),
     Omega         = NULL,
+    C             = NULL,
     config_post   = list(),
     config_optim  = list(),
     inception     = NULL,
@@ -125,7 +129,8 @@ PLN_param <- function(
 
   covariance  <- match.arg(covariance)
   init_method <- match.arg(init_method)
-  if (covariance == "fixed") stopifnot(inherits(Omega, "matrix") | inherits(Omega, "Matrix"))
+  if (covariance == "fixed")  stopifnot(inherits(Omega, "matrix") | inherits(Omega, "Matrix"))
+  if (covariance == "genpop") stopifnot(inherits(C, "matrix") | inherits(C, "Matrix"))
   if (!is.null(inception)) stopifnot(isPLNfit(inception))
 
   ## post-treatment config
@@ -144,6 +149,7 @@ PLN_param <- function(
     trace         = trace      ,
     covariance    = covariance ,
     Omega         = Omega      ,
+    C             = C          ,
     config_post   = config_pst ,
     config_optim  = config_opt ,
     init_method   = init_method,

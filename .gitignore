@@ -74,3 +74,6 @@ pkgdown
 tests/testthat/_snaps/
 
 snowflake.log
+
+# Claude memory notes (kept local only, not part of the package)
+/memory/
