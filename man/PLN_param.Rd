@@ -18,11 +18,10 @@ PLN_param(
 }
 \arguments{
 \item{backend}{optimization backend, either \code{"nlopt"} (default), \code{"builtin"} or \code{"torch"}.
-\code{"nlopt"} (CCSAQ, with \code{config_optim$profiled = TRUE}) is consistently faster than \code{"builtin"}
-across problem sizes (e.g. 2-4x on n,p in the hundreds). \code{"builtin"} is the built-in
-envelope-theorem Newton optimizer; it can reach a slightly better optimum, an advantage that
-grows with p (e.g. full covariance, n=880, p=259: +96 loglik for 3.4x more time) — prefer it
-when the last bit of ELBO matters more than speed, typically for large p.
+\code{"nlopt"} (CCSAQ, with \code{config_optim$profiled = TRUE}) is consistently faster than \code{"builtin"}.
+\code{"builtin"} is the built-in envelope-theorem Newton optimizer; it can reach a slightly better
+optimum, an advantage that tends to grow with p — prefer it when the last bit of ELBO matters
+more than speed, typically for large p.
 \code{"torch"} is \strong{experimental}: it may converge to suboptimal solutions or fail on some datasets.}
 
 \item{trace}{a integer for verbosity.}

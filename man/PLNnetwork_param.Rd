@@ -24,9 +24,9 @@ PLNnetwork_param(
 \item{backend}{optimization backend, either \code{"builtin"} (Newton, default) or
 \code{"nlopt"} (CCSAQ) or \code{"torch"}. The default combines \code{"builtin"} with \code{maxit_ve = 1} and
 \code{inception_niter = 5} (see \code{maxit_ve} and \code{inception_backend}): this consistently finds a
-better ELBO than plain \code{"nlopt"} across datasets, at essentially the same speed (benchmark
-below). Without a good inception, \code{"builtin"} alone (\code{maxit_ve = NULL}) can converge to a
-poor basin on large datasets — use \code{"nlopt"} if you want to opt out of the whole combination.}
+better ELBO than plain \code{"nlopt"}, at essentially the same speed. Without a good inception,
+\code{"builtin"} alone (\code{maxit_ve = NULL}) can converge to a poor basin on large datasets — use
+\code{"nlopt"} if you want to opt out of the whole combination.}
 
 \item{inception_cov}{Covariance structure used for the inception PLN:
 \code{"full"} (default), \code{"diagonal"} or \code{"spherical"}. Non-full structures are now
@@ -35,15 +35,7 @@ empirical covariance of latent residuals \verb{M − X·B} (a full-rank proxy fo
 avoiding the broken \code{max_pen = 0} that previously occurred with diagonal/spherical.}
 
 \item{inception_backend}{character or \code{NULL} (default, i.e. same as \code{backend}). Backend for
-the inception PLN only; the penalty grid models always use \code{backend}. Benchmark on three
-datasets (trichoptera p=17, barents p=30, oaks p=114) for the default combination
-\verb{backend="builtin", maxit_ve=1, inception_niter=5} against plain \code{nlopt}:
-\tabular{lrr}{
-dataset     \tab Δ loglik (vs nlopt default) \tab time \cr
-trichoptera \tab +34  \tab ~1× \cr
-barents     \tab +123 \tab ~1× \cr
-oaks        \tab +676 \tab ~1× \cr
-}
+the inception PLN only; the penalty grid models always use \code{backend}.
 Ignored when \code{inception} is supplied by the user.}
 
 \item{inception_niter}{integer or \code{NULL}. Limits the inception PLN to at most

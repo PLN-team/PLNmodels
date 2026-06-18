@@ -52,24 +52,16 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #' @param backend optimization backend, either `"builtin"` (Newton, default) or
 #'   `"nlopt"` (CCSAQ) or `"torch"`. The default combines `"builtin"` with `maxit_ve = 1` and
 #'   `inception_niter = 5` (see `maxit_ve` and `inception_backend`): this consistently finds a
-#'   better ELBO than plain `"nlopt"` across datasets, at essentially the same speed (benchmark
-#'   below). Without a good inception, `"builtin"` alone (`maxit_ve = NULL`) can converge to a
-#'   poor basin on large datasets — use `"nlopt"` if you want to opt out of the whole combination.
+#'   better ELBO than plain `"nlopt"`, at essentially the same speed. Without a good inception,
+#'   `"builtin"` alone (`maxit_ve = NULL`) can converge to a poor basin on large datasets — use
+#'   `"nlopt"` if you want to opt out of the whole combination.
 #' @param inception_cov Covariance structure used for the inception PLN:
 #'   `"full"` (default), `"diagonal"` or `"spherical"`. Non-full structures are now
 #'   fully supported: when `inception_cov != "full"`, the penalty grid is built from the
 #'   empirical covariance of latent residuals `M − X·B` (a full-rank proxy for Σ),
 #'   avoiding the broken `max_pen = 0` that previously occurred with diagonal/spherical.
 #' @param inception_backend character or `NULL` (default, i.e. same as `backend`). Backend for
-#'   the inception PLN only; the penalty grid models always use `backend`. Benchmark on three
-#'   datasets (trichoptera p=17, barents p=30, oaks p=114) for the default combination
-#'   `backend="builtin", maxit_ve=1, inception_niter=5` against plain `nlopt`:
-#'   \tabular{lrr}{
-#'     dataset     \tab Δ loglik (vs nlopt default) \tab time \cr
-#'     trichoptera \tab +34  \tab ~1× \cr
-#'     barents     \tab +123 \tab ~1× \cr
-#'     oaks        \tab +676 \tab ~1× \cr
-#'   }
+#'   the inception PLN only; the penalty grid models always use `backend`.
 #'   Ignored when `inception` is supplied by the user.
 #' @param inception_niter integer or `NULL`. Limits the inception PLN to at most
 #'   this many iterations (EM iterations for `"builtin"`, function evaluations × 10 for

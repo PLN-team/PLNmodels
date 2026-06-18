@@ -72,9 +72,8 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
 #'     recommended.
 #'   - `"EM"`: run `init_niter` variational EM iterations of a full PLN (builtin backend)
 #'     before computing the SVD, giving a latent mean M closer to the true posterior.
-#'     **Recommended for large ranks** (`rank > sqrt(p)`): benchmark on oaks (p=114)
-#'     shows +135 loglik at rank=20 vs `"LM"`, with negligible extra cost (5 EM iterations).
-#'     Caution: hurts for small ranks (e.g. rank=5, p=114: −800 loglik) because an
+#'     **Recommended for large ranks** (`rank > sqrt(p)`), where it noticeably improves the
+#'     loglik at negligible extra cost. Caution: hurts for small ranks, because an
 #'     over-converged M reduces low-rank SVD discriminability. Ignored when `inception`
 #'     is provided.
 #' @param init_niter integer: number of PLN EM iterations when `init_method = "EM"`.
@@ -88,7 +87,7 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
 #'   When `NULL` (default), see `init_method`. `init_method` is ignored when `inception` is set.
 #'   **Recommendation**: for large ranks (`rank > sqrt(p)`) on complex datasets, prefer
 #'   `init_method = "EM"` (cheap, most gains) or `inception = PLN(formula, data)` (maximum
-#'   quality, full convergence cost). Benchmark: up to +135 loglik at rank=20, oaks p=114.
+#'   quality, full convergence cost).
 #' @param sequential logical. If `TRUE`, ranks are fitted in ascending order and each model is
 #'    warm-started from the converged solution of the previous rank: loadings C are augmented
 #'    with new columns from the inception SVD, while latent scores M and variances S2 are

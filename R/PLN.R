@@ -56,11 +56,10 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 #' Helper to define list of parameters to control the PLN fit. All arguments have defaults.
 #'
 #' @param backend optimization backend, either `"nlopt"` (default), `"builtin"` or `"torch"`.
-#'   `"nlopt"` (CCSAQ, with `config_optim$profiled = TRUE`) is consistently faster than `"builtin"`
-#'   across problem sizes (e.g. 2-4x on n,p in the hundreds). `"builtin"` is the built-in
-#'   envelope-theorem Newton optimizer; it can reach a slightly better optimum, an advantage that
-#'   grows with p (e.g. full covariance, n=880, p=259: +96 loglik for 3.4x more time) — prefer it
-#'   when the last bit of ELBO matters more than speed, typically for large p.
+#'   `"nlopt"` (CCSAQ, with `config_optim$profiled = TRUE`) is consistently faster than `"builtin"`.
+#'   `"builtin"` is the built-in envelope-theorem Newton optimizer; it can reach a slightly better
+#'   optimum, an advantage that tends to grow with p — prefer it when the last bit of ELBO matters
+#'   more than speed, typically for large p.
 #'   `"torch"` is **experimental**: it may converge to suboptimal solutions or fail on some datasets.
 #' @param covariance character setting the model for the covariance matrix. Either "full", "diagonal", "spherical", "fixed" or "genpop". Default is "full".
 #' @param Omega precision matrix of the latent variables. Inverse of Sigma. Must be specified if `covariance` is "fixed"
