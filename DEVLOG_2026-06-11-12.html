@@ -1829,6 +1829,324 @@ PLN torch et PLNPCA torch (barents, oaks) divergent systématiquement dans maste
 </div>
 <div class="section level3">
 <h3 id="tests--147-pass-0-fail">Tests : 147 PASS, 0 FAIL<a class="anchor" aria-label="anchor" href="#tests--147-pass-0-fail"></a></h3>
+<hr></div>
+</div>
+</div>
+<div class="section level1">
+<h1 id="journal-de-développement--17-juin-2026">Journal de développement — 17 juin 2026<a class="anchor" aria-label="anchor" href="#journal-de-d%C3%A9veloppement--17-juin-2026"></a></h1>
+<p>Branche : <code>code-enhancement</code></p>
+<hr><div class="section level2">
+<h2 id="id_47-uniformisation-des-signatures-ve-step-c--data-params-config-partout-1706">47. Uniformisation des signatures VE-step C++ — <code>(data, params, config)</code> partout (17/06)<a class="anchor" aria-label="anchor" href="#id_47-uniformisation-des-signatures-ve-step-c--data-params-config-partout-1706"></a></h2>
+<p><strong>Fichiers</strong> : <code>src/nlopt_optim_pln.h</code>, <code>src/nlopt_optim_pln.cpp</code>, <code>src/builtin_optim_pln.cpp</code>, <code>R/PLNfit-class.R</code>, <code>src/nlopt_optim_plnpca.cpp</code>, <code>src/builtin_optim_plnpca.cpp</code>, <code>R/PLNPCAfit-class.R</code></p>
+<div class="section level3">
+<h3 id="motivation-9">Motivation<a class="anchor" aria-label="anchor" href="#motivation-9"></a></h3>
+<p>Les fonctions VE-step exportées (<code>nlopt_optimize_vestep_{full,diagonal,spherical}</code>, <code>builtin_optimize_vestep_{full,diagonal,spherical}</code>, et les variantes rang <code>nlopt_optimize_vestep_rank</code> / <code>builtin_optimize_vestep_rank</code> pour PLNPCA) prenaient <code>B</code>/<code>Omega</code> (ou <code>B</code>/<code>C</code>) comme paramètres séparés en plus de <code>data</code>/<code>params</code>/<code>config</code>, alors que toutes les autres fonctions d’optimisation exportées suivent la convention <code>(data, params, config)</code> uniquement.</p>
+</div>
+<div class="section level3">
+<h3 id="implémentation-3">Implémentation<a class="anchor" aria-label="anchor" href="#impl%C3%A9mentation-3"></a></h3>
+<ul><li>
+<code>nlopt_vestep_impl&lt;CovTraits&gt;</code> (template dans <code>nlopt_optim_pln.h</code>) et les 3 wrappers <code>nlopt_optimize_vestep_*</code> extraient désormais <code>B</code>/<code>Omega</code> depuis <code>params["B"]</code>/<code>params["Omega"]</code> au lieu de les recevoir en arguments.</li>
+<li>Idem côté builtin : les 3 wrappers <code>builtin_optimize_vestep_*</code> font <code>Rcpp::as&lt;arma::mat&gt;(params["B"])</code> / <code>params["Omega"]</code>.</li>
+<li>Idem pour PLNPCA : <code>nlopt_optimize_vestep_rank</code> et <code>builtin_optimize_vestep_rank</code> lisent <code>B</code>/<code>C</code> depuis <code>params</code>.</li>
+<li>Côté R, seul <code>optimize_vestep()</code> (méthode privée commune à <code>PLNfit</code>/<code>PLNfit_diagonal</code>/<code>PLNfit_spherical</code>/<code>PLNLDAfit</code> via héritage) construisait réellement les arguments d’appel — il injecte maintenant <code>B</code>/<code>Omega</code> dans <code>params0</code> avant l’appel <code>do.call</code>. Vérifié par grep qu’aucun autre site R n’invoque ces fonctions avec des arguments construits (les autres occurrences sont des <code>setup_optimizer(...)</code> qui ne font que stocker des références de fonction).</li>
+<li>Pour PLNPCA, <code>PLNPCAfit-class.R::optimize_vestep()</code> distingue le cas <code>torch</code> (signature séparée <code>B</code>, <code>C</code> conservée, car ce backend n’a pas été touché) du cas nlopt/builtin (B et C injectés dans <code>params0</code>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="tests--979-pass-0-fail-suite-complète">Tests : 979 PASS, 0 FAIL (suite complète)<a class="anchor" aria-label="anchor" href="#tests--979-pass-0-fail-suite-compl%C3%A8te"></a></h3>
+<hr></div>
+</div>
+<div class="section level2">
+<h2 id="id_48-refactorisation-crtp-de-covariance_plnh--covtraitsbasederived-partagé-par-tous-les-traits-1706">48. Refactorisation CRTP de <code>covariance_pln.h</code> : <code>CovTraitsBase&lt;Derived&gt;</code> partagé par tous les traits (17/06)<a class="anchor" aria-label="anchor" href="#id_48-refactorisation-crtp-de-covariance_plnh--covtraitsbasederived-partag%C3%A9-par-tous-les-traits-1706"></a></h2>
+<p><strong>Fichiers</strong> : <code>src/covariance_pln.h</code>, <code>src/builtin_optim_pln.h</code></p>
+<div class="section level3">
+<h3 id="motivation-10">Motivation<a class="anchor" aria-label="anchor" href="#motivation-10"></a></h3>
+<p>Audit demandé par l’utilisateur sur les redondances structurelles de <code>covariance_pln.h</code> : <code>vestep_obj_grad</code>, <code>profile_and_grad</code>, <code>compute_joint_step_MS</code> et <code>penalty_M</code> étaient réimplémentés quasi à l’identique dans <code>FullCovTraits</code>/<code>DiagonalCovTraits</code>/<code>SphericalCovTraits</code> (et hérités via <code>DenseOmegaImpl</code> pour Full/Fixed). La seule vraie différence entre <code>vestep_obj_grad</code> et <code>profile_and_grad</code> est l’appel à <code>s.update(...)</code> et la nature du terme de pénalité ajouté (<code>penalty_M+penalty_S</code> explicite vs <code>-elbo_cov</code>, ce dernier étant une constante quand Omega est profilé en MLE).</p>
+</div>
+<div class="section level3">
+<h3 id="implémentation-4">Implémentation<a class="anchor" aria-label="anchor" href="#impl%C3%A9mentation-4"></a></h3>
+<ul><li>Nouveau <code>template&lt;typename Derived&gt; struct CovTraitsBase</code> fournissant en une seule implémentation : <code>penalty_M</code>, <code>vestep_obj_grad</code>, <code>profile_and_grad</code>, <code>compute_joint_step_MS</code>, et un helper privé <code>vestep_core</code> (factorise le calcul de <code>A</code>, <code>MO</code>, <code>gM</code>, <code>gPS</code>).</li>
+<li>
+<strong>Point technique clé</strong> : chaque méthode de <code>CovTraitsBase</code> est elle-même un <em>template</em> sur <code>State</code> (déduit à l’appel) plutôt que d’utiliser <code>typename Derived::State</code>. À l’endroit où <code>FullCovTraits</code> hérite de <code>CovTraitsBase&lt;FullCovTraits&gt;</code>, <code>FullCovTraits</code> est encore incomplet (CRTP) — toute référence à <code>Derived::xxx</code> ne peut donc apparaître que dans un corps de fonction à instanciation différée, jamais dans une déclaration résolue immédiatement par le compilateur.</li>
+<li>Deux nouvelles primitives par trait concret : <code>diag_scale(S2,s)</code> (= <code>S2 ⊙ diag(Omega)</code> broadcasté) et <code>add_diag(X,s)</code> (= <code>X + diag(Omega)</code> broadcasté), qui remplacent les <code>omega_d</code>/<code>ones_row</code> calculés à la main dans chaque <code>compute_joint_step_MS</code>. Conséquence : le paramètre <code>ones_row</code> (et la construction <code>arma::ones(n,1)</code>) disparaît de <code>builtin_optim_pln.h</code>, le broadcast Armadillo natif (<code>each_row()</code>) suffit.</li>
+<li>
+<code>FullCovTraits</code>/<code>FixedCovTraits</code> héritent de <code>DenseOmegaImpl, CovTraitsBase&lt;Self&gt;</code> (mixin, pas de diamant) ; <code>DiagonalCovTraits</code>/<code>SphericalCovTraits</code> héritent juste de <code>CovTraitsBase&lt;Self&gt;</code>. Chaque trait concret ne définit plus que <code>State</code>, <code>times_Omega</code>, <code>diag_scale</code>, <code>add_diag</code>, <code>penalty_S</code>, <code>mstep</code>, <code>elbo_cov</code>, <code>output_cov</code>, <code>final_loglik</code>, <code>has_em</code>.</li>
+<li>Équivalence mathématique vérifiée terme à terme avant implémentation (pas seulement testée a posteriori) : <code>penalty_M(MO,M_res,w)+penalty_S(S2,s,w)</code> ≡ aux formules originales pour les 3 structures de covariance.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="pourquoi-crtp-statique-et-pas-du-polymorphisme-virtuel-discussion-explicite-avec-lutilisateur">Pourquoi CRTP statique et pas du polymorphisme virtuel (discussion explicite avec l’utilisateur)<a class="anchor" aria-label="anchor" href="#pourquoi-crtp-statique-et-pas-du-polymorphisme-virtuel-discussion-explicite-avec-lutilisateur"></a></h3>
+<ol style="list-style-type: decimal"><li>
+<code>has_em</code> est un <code>constexpr bool</code> utilisé dans un <code>if constexpr</code> (cf. entrée sur l’audit C++ initial) — perdu avec du virtuel.</li>
+<li>
+<code>State</code> change de forme selon le trait (<code>mat</code>+<code>vec</code> / <code>rowvec</code> / deux <code>double</code>) — une interface virtuelle exigerait un type-erasure (allocation), alors que Spherical n’alloue rien aujourd’hui.</li>
+<li>Le choix de structure de covariance est fait une fois pour toutes côté Rcpp (une fonction exportée par structure) — jamais de dispatch dynamique nécessaire à l’intérieur d’un appel C++, donc aucun bénéfice à payer le coût d’un vtable dans la boucle chaude (évaluation de gradient, potentiellement des milliers de fois par fit).</li>
+</ol></div>
+<div class="section level3">
+<h3 id="tests--979-pass-0-fail-suite-complète-1">Tests : 979 PASS, 0 FAIL (suite complète)<a class="anchor" aria-label="anchor" href="#tests--979-pass-0-fail-suite-compl%C3%A8te-1"></a></h3>
+<hr></div>
+</div>
+<div class="section level2">
+<h2 id="id_49-factorisation-de-lobjectif-newton-covtraitsbaseobjective--unification-convention-prépost-pas-1706">49. Factorisation de l’objectif Newton (<code>CovTraitsBase::objective</code>) + unification convention pré/post-pas (17/06)<a class="anchor" aria-label="anchor" href="#id_49-factorisation-de-lobjectif-newton-covtraitsbaseobjective--unification-convention-pr%C3%A9post-pas-1706"></a></h2>
+<p><strong>Fichiers</strong> : <code>src/covariance_pln.h</code>, <code>src/builtin_optim_pln.h</code></p>
+<div class="section level3">
+<h3 id="motivation-11">Motivation<a class="anchor" aria-label="anchor" href="#motivation-11"></a></h3>
+<p>Suite à l’entrée 48, deuxième passe d’audit demandée sur l’exploitation des objets <code>covariance_pln</code> dans <code>builtin_optim_pln.h</code>/<code>nlopt_optim_pln.h</code>. Constat : la formule <code>accu(w.t()*(A-Y%Z-0.5*logS2)) + Traits::penalty_M(MO,M_res,w) + Traits::penalty_S(S2,state,w)</code> (valeur d’objectif seule, sans gradient — utilisée par la recherche linéaire Armijo du solveur Newton builtin) était écrite à la main 6 fois dans <code>builtin_optim_pln.h</code> (3× dans <code>builtin_optimize_pln_impl</code>, 3× dans <code>builtin_vestep_pln_impl</code>).</p>
+<p>Deuxième constat, plus subtil : les deux fonctions n’enregistraient pas la même convention dans <code>monitoring$objective</code>. <code>builtin_optimize_pln_impl</code> empilait <code>f0</code>, la valeur <strong>avant</strong> le pas de Newton de l’itération courante (valeur de l’itéré précédent). <code>builtin_vestep_pln_impl</code> recalculait explicitement la valeur <strong>après</strong> le pas (<code>obj</code>, via mise à jour incrémentale <code>MO_new = MO - alpha*dMO</code>). Pas un bug de convergence (chaque fonction est cohérente avec elle-même), mais une trace de monitoring non comparable entre <code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize()</a></code> et <code>optimize_vestep()</code> pour le même backend <code>newton</code>.</p>
+</div>
+<div class="section level3">
+<h3 id="implémentation-5">Implémentation<a class="anchor" aria-label="anchor" href="#impl%C3%A9mentation-5"></a></h3>
+<ul><li>Nouvelle méthode <code>CovTraitsBase::objective(M_res, Z, S2, logS2, MO, s, Y, w, A)</code> (template sur <code>State</code>), appelée aux 6 emplacements.</li>
+<li>
+<code>builtin_optimize_pln_impl</code> aligné sur la convention post-pas : après le choix de <code>alpha</code>, recalcul de <code>M_res_new = M_res - alpha*Q_step</code> et <code>MO_new = MresO - alpha*QstepO</code> (théorème de l’enveloppe — pas de produit <code>O(np²)</code> supplémentaire), puis <code>obj = Traits::objective(M_res_new, Z, S2, psi, MO_new, ...)</code> poussé dans <code>objective_vec</code>.</li>
+<li>
+<code>builtin_vestep_pln_impl</code> utilisait déjà la convention post-pas — seul l’appel à la formule manuelle est remplacé par <code>Traits::objective(...)</code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="tests--979-pass-0-fail-suite-complète-2">Tests : 979 PASS, 0 FAIL (suite complète)<a class="anchor" aria-label="anchor" href="#tests--979-pass-0-fail-suite-compl%C3%A8te-2"></a></h3>
+<hr></div>
+</div>
+<div class="section level2">
+<h2 id="id_50-portage-de-covtraitsbasefactorisation-nloptbuiltin-vers-le-ve-step-zipln-1706">50. Portage de <code>CovTraitsBase</code>/factorisation nlopt+builtin vers le VE-step ZIPLN (17/06)<a class="anchor" aria-label="anchor" href="#id_50-portage-de-covtraitsbasefactorisation-nloptbuiltin-vers-le-ve-step-zipln-1706"></a></h2>
+<p><strong>Fichiers</strong> : <code>src/covariance_zipln.h</code> (nouveau), <code>src/builtin_optim_zipln.h</code> (nouveau), <code>src/nlopt_optim_zipln.h</code> (nouveau), <code>src/wrappers_builtin_optim_zipln.cpp</code> (nouveau), <code>src/wrappers_nlopt_optim_zipln.cpp</code> (nouveau), <code>src/optim_zi-pln.cpp</code>, <code>R/utils-zipln.R</code>, <code>R/ZIPLNfit-class.R</code></p>
+<div class="section level3">
+<h3 id="motivation-12">Motivation<a class="anchor" aria-label="anchor" href="#motivation-12"></a></h3>
+<p>ZIPLN partage les 4 mêmes structures de covariance que PLN (full/diagonal/spherical/fixed), mais son VE-step (<code>ve_step_zipln_newton</code>/<code>ve_step_zipln_nlopt</code>, dans <code>optim_zi-pln.cpp</code>) était un unique couple de fonctions hand-rolled qui traitait Omega comme une matrice dense p×p dans tous les cas — y compris pour diagonal/spherical, où <code>M_mu * Omega</code> coûte <code>O(np²)</code> au lieu de <code>O(np)</code>. Demande explicite de l’utilisateur : portage complet (les deux backends, les 4 structures), en réutilisant la machinerie <code>CovTraitsBase</code> de <code>covariance_pln.h</code> plutôt que de dupliquer un second jeu de formules.</p>
+</div>
+<div class="section level3">
+<h3 id="équivalence-algébrique-exploitée">Équivalence algébrique exploitée<a class="anchor" aria-label="anchor" href="#%C3%A9quivalence-alg%C3%A9brique-exploit%C3%A9e"></a></h3>
+<p>ZIPLN n’a pas de poids par observation (<code>w</code> n’existe pas dans ses données) et le terme de données est barré par <code>(1-R)</code> (R = proba ZI variationnelle, nulle là où Y &gt; 0 par construction). Vérifié terme à terme : en posant <code>A_eff = (1-R) ⊙ A</code> et <code>w = ones(n)</code>, <code>CovTraitsBase::objective</code> et <code>CovTraitsBase::compute_joint_step_MS</code> (déjà utilisées par PLN) reproduisent <strong>exactement</strong> les formules ZIPLN — y compris le cas en apparence contradictoire où l’ELBO ZIPLN pondère à la fois <code>Y⊙Z</code> et <code>A</code> par <code>(1-R)</code> alors que <code>CovTraitsBase::objective</code> ne pondère que <code>A</code> : les deux coïncident car <code>R=0</code> partout où <code>Y≠0</code>.</p>
+</div>
+<div class="section level3">
+<h3 id="implémentation-6">Implémentation<a class="anchor" aria-label="anchor" href="#impl%C3%A9mentation-6"></a></h3>
+<ul><li>
+<code>covariance_zipln.h</code> : <code>zipln_update_R(A, logit_Pi, Y_zero)</code> (formule R* partagée) + <code>zipln_vestep_obj_grad&lt;Traits&gt;(...)</code> (gradient nlopt, miroir du <code>vestep_core</code> privé de <code>CovTraitsBase</code> mais avec <code>A_eff</code> fourni par l’appelant au lieu d’être recalculé en interne, puisque le facteur <code>(1-R)</code> n’appartient pas à l’abstraction <code>Traits</code>).</li>
+<li>
+<code>builtin_optim_zipln.h</code> : <code>ve_step_zipln_newton_impl&lt;Traits&gt;</code> — structure identique à la boucle interne de <code>builtin_optimize_pln_impl</code> (même profilage de B par projection sur <code>null(X')</code>, même pas de Newton joint via <code>CovTraitsBase::compute_joint_step_MS</code>), avec en plus la mise à jour de R à chaque itération externe (gelée pendant le pas Newton + line search) et la substitution <code>A → A_eff</code> partout.</li>
+<li>
+<code>nlopt_optim_zipln.h</code> : <code>ve_step_zipln_nlopt_impl&lt;Traits&gt;</code> — R gelé sur tout le solve nlopt (comme l’original), gradient via <code>zipln_vestep_obj_grad&lt;Traits&gt;</code>.</li>
+<li>8 wrappers exportés (<code>ve_step_zipln_{newton,nlopt}_{full,diagonal,spherical,fixed}</code>) dans 2 nouveaux fichiers, construisant le <code>Traits::State</code> à partir d’Omega puis déléguant aux templates ci-dessus. Les anciennes fonctions génériques <code>ve_step_zipln_newton</code>/<code>ve_step_zipln_nlopt</code> sont supprimées d’<code>optim_zi-pln.cpp</code> (aucune référence directe dans les tests).</li>
+<li>
+<code>R/utils-zipln.R</code> : nouveau helper <code>zipln_MS_optimizer(control, suffix)</code> — factorise le dispatch backend (builtin/nlopt) × structure de covariance vers le bon export C++, utilisé par <code>ZIPLNfit$initialize</code> (<code>"full"</code>) et les surcharges dans <code>ZIPLNfit_diagonal</code>/<code>_spherical</code>/<code>_fixed</code> (<code>ZIPLNfit_sparse</code> reste sur <code>"full"</code>, le glasso produisant une matrice Omega dense même si creuse).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="validation-3">Validation<a class="anchor" aria-label="anchor" href="#validation-3"></a></h3>
+<ul><li>Comparaison master vs branche sur trichoptera, 4 structures × 2 backends (8 combinaisons) : backend builtin → loglik <strong>identique au bit</strong> (<code>-1053.4283</code>, <code>-1111.7817</code>, <code>-1158.5411</code>, <code>-1160.0697</code>) confirmant le portage Newton exact ; backend nlopt → loglik très proche mais pas bit-exact (<code>-1055.42</code> vs <code>-1055.14</code> pour full, écarts similaires ailleurs), attendu car CCSAQ est sensible à l’ordre des opérations flottantes dans le lambda objectif/gradient (déjà observé pour d’autres refactos nlopt de cette session, cf. §39).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="tests--979-pass-0-fail-suite-complète-3">Tests : 979 PASS, 0 FAIL (suite complète)<a class="anchor" aria-label="anchor" href="#tests--979-pass-0-fail-suite-compl%C3%A8te-3"></a></h3>
+<hr></div>
+</div>
+<div class="section level2">
+<h2 id="id_51-zipln--alignement-des-conventions-dio-c-plndata-dataparamsconfig-make_zipln_vestep_result-1706">51. ZIPLN — alignement des conventions d’I/O C++ (<code>PlnData</code>, <code>(data,params,config)</code>, <code>make_zipln_vestep_result</code>) (17/06)<a class="anchor" aria-label="anchor" href="#id_51-zipln--alignement-des-conventions-dio-c-plndata-dataparamsconfig-make_zipln_vestep_result-1706"></a></h2>
+<p><strong>Fichiers</strong> : <code>src/utils.h</code>, <code>src/builtin_optim_zipln.h</code>, <code>src/nlopt_optim_zipln.h</code>, <code>src/wrappers_{builtin,nlopt}_optim_zipln.cpp</code>, <code>R/utils-zipln.R</code>, <code>R/ZIPLNfit-class.R</code></p>
+<div class="section level3">
+<h3 id="motivation-13">Motivation<a class="anchor" aria-label="anchor" href="#motivation-13"></a></h3>
+<p>Question de l’utilisateur après l’entrée 50 : le portage venait de réutiliser <code>CovTraitsBase</code> pour les <em>formules</em>, mais le code autour (signatures exportées, extraction des données, forme du retour) restait dans le style ad hoc préexistant de ZIPLN — pas <code>PlnData</code> (struct Y/X/O/w de <code>utils.h</code>), pas <code>make_vestep_result</code>/équivalent, pas la convention <code>(data, params, config)</code> adoptée pour PLN/PLNPCA à l’entrée 47. Demande explicite : aligner aussi ce niveau-là.</p>
+</div>
+<div class="section level3">
+<h3 id="implémentation-7">Implémentation<a class="anchor" aria-label="anchor" href="#impl%C3%A9mentation-7"></a></h3>
+<ul><li>
+<code>utils.h</code> : nouveau <code>make_zipln_vestep_result(M, S2, R, B, status, backend, objective_vec, iterations)</code>, miroir de <code>make_vestep_result</code> mais avec <code>R</code> à la place de <code>Ji</code> (la log-vraisemblance ZIPLN est recalculée côté R via <code>zipln_vloglik</code>, pas dans le VE-step) et <code>B</code> en plus (reprofilé depuis le M convergé — champ informationnel, jamais consommé côté R, conservé pour ne pas changer le contrat).</li>
+<li>
+<code>nlopt_optim_zipln.h::ve_step_zipln_nlopt_impl&lt;Traits&gt;</code> prend désormais <code>(const Rcpp::List &amp; data, const Rcpp::List &amp; params, const Rcpp::List &amp; config)</code> et fait toute l’extraction lui-même (<code>PlnData d(data)</code>, <code>params["M"|"S2"|"Pi"|"B"|"Omega"]</code>, <code>State</code> construit depuis <code>Omega</code>) — miroir exact de <code>nlopt_vestep_impl</code> (PLN). Les 4 wrappers nlopt deviennent des one-liners (<code>return ve_step_zipln_nlopt_impl&lt;FullCovTraits&gt;(data, params, config);</code>).</li>
+<li>
+<code>builtin_optim_zipln.h::ve_step_zipln_newton_impl&lt;Traits&gt;</code> prend <code>(const PlnData &amp; d, init_M, init_S2, Pi, B, state, maxiter, ftol_rel)</code> — miroir de <code>builtin_vestep_pln_impl</code>, où l’extraction de <code>params</code>/<code>NewtonConfig</code> reste dans le wrapper (asymétrie déjà présente entre les deux backends côté PLN, pas une invention de cette entrée). <code>arma::ones(n)</code> remplacé par <code>d.w</code> (la donnée est désormais threadée plutôt que reconstruite, sans changement de valeur).</li>
+<li>
+<code>objective_vec</code> (jusqu’ici calculé puis jeté côté nlopt, jamais rempli côté builtin) est maintenant effectivement renvoyé dans <code>monitoring$objective</code> des deux backends.</li>
+<li>Côté R : <code>zipln_MS_optimizer()</code> remplacé par <code>zipln_MS_fn(backend, suffix)</code> (simple sélecteur, sans logique de config) + nouvelle méthode privée <code>ZIPLNfit$setup_MS_optimizer(backend, suffix)</code> — miroir direct de <code>PLNfit$setup_optimizer</code>. <code>ZIPLNfit::optimize()</code> et <code>::optimize_vestep()</code> construisent désormais <code>data</code>/<code>params</code>/<code>config</code> et appellent <code>do.call(private$optimizer$MS, list(data=, params=, config=))</code>, comme <code>PLNfit::optimize()</code>/<code>::optimize_vestep()</code>.</li>
+<li>Le knob <code>maxit_ve</code> (utilisé par <code>ZIPLNnetwork</code> pour l’alternance GLASSO partielle, cf. entrée 44) n’existait auparavant que pour le backend builtin (le code nlopt l’ignorait silencieusement — vraisemblablement un oubli, pas un choix). Comportement <strong>préservé à l’identique</strong> : la traduction <code>maxit_ve → config$maxeval</code> reste appliquée seulement quand <code>backend == "builtin"</code>, maintenant faite dans <code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize()</a></code>/<code>optimize_vestep()</code> (R) avant le <code>do.call</code>, exactement comme <code>PLNnetworkfit-class.R::optimize()</code> le fait pour son <code>inner_config</code>.</li>
+<li>ZIPLN n’a pas de poids par observation au niveau utilisateur (<code>data$w</code> existe bien dans la liste extraite par <code>extract_model_zi()</code> mais n’est utilisé nulle part, ni avant ni après cette entrée — latent, hors-scope) ; <code>w = rep(1, n)</code> est construit explicitement côté R pour satisfaire <code>PlnData</code>, sans réutiliser le <code>data$w</code> existant (qui resterait silencieusement ignoré ailleurs — le threader maintenant aurait rendu les poids <em>partiellement</em> actifs, uniquement dans le VE-step, ce qui aurait été pire qu’une absence totale de support).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="validation-4">Validation<a class="anchor" aria-label="anchor" href="#validation-4"></a></h3>
+<ul><li>8 combinaisons (4 structures × 2 backends) sur trichoptera : loglik <strong>identiques</strong> aux valeurs de l’entrée 50 (donc identiques à master pour builtin, et à la version pré-alignement pour nlopt) — confirme que ce changement est une pure restructuration d’I/O, sans aucun effet numérique.</li>
+<li>
+<code>ZIPLNnetwork</code> (alternance GLASSO, <code>maxit_ve = 1L</code>, backend builtin) testé séparément sur trichoptera : converge normalement, BIC/loglik cohérents par penalité croissante.</li>
+<li>Suite complète : 979 PASS, 0 FAIL (identique à l’entrée 50).</li>
+</ul><hr></div>
+</div>
+<div class="section level2">
+<h2 id="id_52-zipln--nettoyage-post-portage--code-mort-redondances-calcul-inutile-1706">52. ZIPLN — nettoyage post-portage : code mort, redondances, calcul inutile (17/06)<a class="anchor" aria-label="anchor" href="#id_52-zipln--nettoyage-post-portage--code-mort-redondances-calcul-inutile-1706"></a></h2>
+<p><strong>Fichiers</strong> : <code>src/optim_zi-pln.cpp</code>, <code>src/utils.h</code>, <code>src/covariance_zipln.h</code>, <code>src/builtin_optim_zipln.h</code>, <code>src/nlopt_optim_zipln.h</code>, <code>src/wrappers_builtin_optim_zipln.cpp</code></p>
+<div class="section level3">
+<h3 id="motivation-14">Motivation<a class="anchor" aria-label="anchor" href="#motivation-14"></a></h3>
+<p>Relecture demandée par l’utilisateur de toute la partie C++ ZIPLN une fois les entrées 50-51 posées, pour traquer le code mort/redondances/optimisations simples restants.</p>
+</div>
+<div class="section level3">
+<h3 id="constats-et-corrections">Constats et corrections<a class="anchor" aria-label="anchor" href="#constats-et-corrections"></a></h3>
+<ol style="list-style-type: decimal"><li>
+<strong>Code mort</strong> : <code>optim_zipln_M</code> et <code>optim_zipln_psi</code> (<code>optim_zi-pln.cpp</code>) — optimiseurs nlopt mono-variable (M seul, ψ seul) laissés par l’introduction du VE-step joint (M,ψ,R), sans plus aucun appelant R (vérifié par grep sur <code>R/</code>, <code>tests/</code>, <code>NAMESPACE</code>, <code>man/</code>). Supprimés. Le commentaire d’en-tête du fichier (“All optimizers use the reparameterization ψ=log(S²)…”) ne décrivait plus que ce code mort — supprimé avec.</li>
+<li>
+<strong>Redondance</strong> : les 4 wrappers builtin répétaient à l’identique le bloc d’extraction (<code>PlnData</code>, <code>M</code>, <code>S2</code>, <code>Pi</code>, <code>B</code>, <code>Omega</code>, <code>NewtonConfig</code>). Factorisé en un template <code>ve_step_zipln_newton_wrapper&lt;Traits&gt;</code> (<code>builtin_optim_zipln.h</code>) ; les 4 exports de <code>wrappers_builtin_optim_zipln.cpp</code> sont désormais des one-liners, au même niveau de facilité que les wrappers nlopt.</li>
+<li>
+<strong>Redondance mineure</strong> : <code>logit(Pi)</code> et <code>Y &lt; 0.5</code> (le masque “R ne peut être non-nul que là où Y=0”) étaient recalculés indépendamment dans <code>builtin_optim_zipln.h</code> et <code>nlopt_optim_zipln.h</code>. Regroupés dans un petit struct <code>ZiplnRContext</code> (<code>covariance_zipln.h</code>), construit une fois par appel et passé à <code>zipln_update_R(A, ctx)</code>.</li>
+<li>
+<strong>Calcul payé pour rien</strong> : le champ <code>B</code> retourné par le VE-step (recalculé par <code><a href="https://rdrr.io/r/base/solve.html" class="external-link">solve()</a></code> côté nlopt, par <code>P_X * M</code> côté builtin) n’était lu par aucun site d’appel R — confirmé par grep sur <code>ZIPLNfit-class.R</code> (seuls <code>$M</code>, <code>$S2</code>, <code>$R</code> sont consommés). Supprimé de <code>make_zipln_vestep_result</code> (<code>utils.h</code>) et des deux impl ; <code>B</code> reste un paramètre d’entrée (toujours nécessaire pour initialiser <code>M_res</code>/<code>XB</code>), seul le calcul de sortie disparaît.</li>
+</ol></div>
+<div class="section level3">
+<h3 id="validation-5">Validation<a class="anchor" aria-label="anchor" href="#validation-5"></a></h3>
+<ul><li>8 combinaisons (4 structures × 2 backends) sur trichoptera : loglik et nombre d’itérations <strong>identiques au chiffre près</strong> à l’entrée 51 — confirme l’absence d’effet numérique de ce nettoyage.</li>
+<li>Suite complète : 979 PASS, 0 FAIL.</li>
+</ul><hr></div>
+</div>
+<div class="section level2">
+<h2 id="id_53-pln-full-covariance--exposition-de-nlopt_optimize_full_profiled-via-config_optimprofiled-1706">53. PLN full covariance — exposition de <code>nlopt_optimize_full_profiled</code> via <code>config_optim$profiled</code> (17/06)<a class="anchor" aria-label="anchor" href="#id_53-pln-full-covariance--exposition-de-nlopt_optimize_full_profiled-via-config_optimprofiled-1706"></a></h2>
+<p><strong>Fichiers</strong> : <code>R/utils.R</code>, <code>R/PLN.R</code>, <code>R/PLNfit-class.R</code>, <code>src/wrappers_nlopt_optim_pln.cpp</code></p>
+<div class="section level3">
+<h3 id="motivation-15">Motivation<a class="anchor" aria-label="anchor" href="#motivation-15"></a></h3>
+<p>Question de l’utilisateur : backend par défaut pour PLN, et comment choisir entre <code>nlopt_optimize_full</code> (boucle EM externe, Omega figé pendant chaque solve nlopt interne, B profilé en forme close) et <code>nlopt_optimize_full_profiled</code> (B et Omega profilés à chaque éval nlopt, pas de boucle EM) pour la covariance full. Constat : backend par défaut = <code>"builtin"</code> (premier élément de <code>PLN_param(backend = c("builtin","nlopt","torch"))</code>). <code>nlopt_optimize_full_profiled</code> existait déjà comme export C++ mais n’était câblée nulle part côté R — code mort côté API, accessible seulement via <code>:::</code>.</p>
+</div>
+<div class="section level3">
+<h3 id="implémentation-8">Implémentation<a class="anchor" aria-label="anchor" href="#impl%C3%A9mentation-8"></a></h3>
+<ul><li>Nouvelle entrée <code>profiled = FALSE</code> dans <code>config_default_nlopt</code> (<code>utils.R</code>) — partagée par tous les modèles nlopt, mais seulement interprétée pour PLN/covariance full.</li>
+<li>
+<code>PLNfit-class.R::initialize</code> (classe <code>PLNfit</code> = covariance full) : <code>nlopt_main_fn &lt;- if (isTRUE(control$config_optim$profiled)) nlopt_optimize_full_profiled else nlopt_optimize_full</code>, passé à <code>setup_optimizer</code>. Sélectionnable via <code>PLN_param(backend="nlopt", config_optim=list(profiled=TRUE))</code>.</li>
+<li>Documentation ajoutée dans <code><a href="reference/PLN_param.html">PLN_param()</a></code>/<code><a href="reference/PLNLDA_param.html">PLNLDA_param()</a></code>/etc. (bullet partagée, propagée aux 5 <code>man/*_param.Rd</code> via <code>devtools::document()</code>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="benchmark--résultat-surprenant">Benchmark — résultat surprenant<a class="anchor" aria-label="anchor" href="#benchmark--r%C3%A9sultat-surprenant"></a></h3>
+<p>Hypothèse initiale du commentaire C++ préexistant (“profiled recommandé seulement pour petit p, EM préférable pour grand p” — jamais vérifiée empiriquement, juste déduite du coût <code>O(np²+p³)</code> par éval). Benchmark sur données synthétiques (<code>create_parameters</code>+<code>rPLN</code>, Σ Toeplitz ρ=0.3), n ∈ {50,100,300}, p ∈ {10,…,600}, et sur <code>oaks</code> (n=116,p=114) :</p>
+<table class="table"><thead><tr><th>n</th>
+<th>p</th>
+<th>t_EM</th>
+<th>t_profiled</th>
+<th>speedup</th>
+<th>ll_EM</th>
+<th>ll_profiled</th>
+</tr></thead><tbody><tr><td>50</td>
+<td>150</td>
+<td>1.076s</td>
+<td>0.242s</td>
+<td>4.45×</td>
+<td>-26686.28</td>
+<td>-26663.10</td>
+</tr><tr><td>100</td>
+<td>150</td>
+<td>1.000s</td>
+<td>0.346s</td>
+<td>2.89×</td>
+<td>-61976.24</td>
+<td>-61956.07</td>
+</tr><tr><td>300</td>
+<td>600</td>
+<td>25.52s</td>
+<td>6.20s</td>
+<td>4.12×</td>
+<td>-520053.03</td>
+<td>-519958.92</td>
+</tr><tr><td>oaks (116,114)</td>
+<td>—</td>
+<td>2.249s</td>
+<td>1.218s</td>
+<td>1.85×</td>
+<td>-32048.18</td>
+<td>-32029.98</td>
+</tr></tbody></table><p><strong><code>profiled</code> est systématiquement plus rapide ET atteint un meilleur loglik, sur toute la grille testée</strong> (aucun cas où EM gagne sur les deux critères). Le commentaire C++ existant (“for large p, prefer EM”) était donc faux — corrigé en conséquence, avec la nuance que c’est une conclusion empirique (cette grille de tailles/structure de Σ), pas une preuve théorique.</p>
+</div>
+<div class="section level3">
+<h3 id="décision-1">Décision<a class="anchor" aria-label="anchor" href="#d%C3%A9cision-1"></a></h3>
+<p>Default conservé à <code>FALSE</code> (rétrocompatibilité — pas de changement de comportement par défaut sans décision explicite de l’utilisateur), mais <code>TRUE</code> semble être le meilleur choix sur la base de ce benchmark. Servira de point de départ si l’utilisateur décide de changer le défaut.</p>
+</div>
+<div class="section level3">
+<h3 id="tests--979-pass-0-fail-suite-complète-4">Tests : 979 PASS, 0 FAIL (suite complète)<a class="anchor" aria-label="anchor" href="#tests--979-pass-0-fail-suite-compl%C3%A8te-4"></a></h3>
+<hr></div>
+</div>
+<div class="section level2">
+<h2 id="id_54-pln-full-covariance--profiled-passé-à-true-par-défaut-sur-cette-branche-provisoire-1706">54. PLN full covariance — <code>profiled</code> passé à <code>TRUE</code> par défaut sur cette branche (provisoire) (17/06)<a class="anchor" aria-label="anchor" href="#id_54-pln-full-covariance--profiled-pass%C3%A9-%C3%A0-true-par-d%C3%A9faut-sur-cette-branche-provisoire-1706"></a></h2>
+<p><strong>Fichiers</strong> : <code>R/utils.R</code>, <code>R/PLN.R</code>, <code>R/PLNfit-class.R</code>, <code>src/wrappers_nlopt_optim_pln.cpp</code></p>
+<p>Suite à l’entrée 53, l’utilisateur décide de basculer le défaut : <code>config_default_nlopt$profiled</code> passe de <code>FALSE</code> à <code>TRUE</code>. Documentation (<code><a href="reference/PLN_param.html">PLN_param()</a></code>, <code>man/*_param.Rd</code> régénérés) et commentaires (<code>PLNfit-class.R</code>, <code>wrappers_nlopt_optim_pln.cpp</code>) mis à jour en conséquence.</p>
+<p><strong>Vérification complémentaire demandée par l’utilisateur</strong> : l’hypothèse qu’il avance pour expliquer le gain de l’entrée 53 — <code>profiled</code> réduit fortement le nombre d’évaluations nlopt nécessaires (compense le coût <code>O(np²+p³)</code> plus élevé par éval) — est confirmée par les compteurs <code>$optim_par$iterations</code> :</p>
+<table class="table"><thead><tr><th>n</th>
+<th>p</th>
+<th>iters EM</th>
+<th>iters profiled</th>
+<th>ratio</th>
+</tr></thead><tbody><tr><td>100</td>
+<td>60</td>
+<td>166</td>
+<td>80</td>
+<td>2.1×</td>
+</tr><tr><td>300</td>
+<td>150</td>
+<td>254</td>
+<td>97</td>
+<td>2.6×</td>
+</tr><tr><td>100</td>
+<td>300</td>
+<td>1594</td>
+<td>244</td>
+<td>6.5×</td>
+</tr></tbody></table><p><strong>Important — statut provisoire</strong> : l’utilisateur souligne explicitement que ce changement de défaut doit encore être benchmarké proprement (la grille de l’entrée 53 est synthétique/limitée) avant d’être considéré comme définitif. Pour l’instant le défaut <code>TRUE</code> ne vit que sur cette branche de développement (<code>code-enhancement</code>), pas une décision arrêtée pour une release.</p>
+<div class="section level3">
+<h3 id="tests--979-pass-0-fail-suite-complète-5">Tests : 979 PASS, 0 FAIL (suite complète)<a class="anchor" aria-label="anchor" href="#tests--979-pass-0-fail-suite-compl%C3%A8te-5"></a></h3>
+<hr></div>
+</div>
+<div class="section level2">
+<h2 id="id_55-zipln--renommage-des-fonctions-c-exportées-et-du-fichier-optim_zi-plncpp-1706">55. ZIPLN — renommage des fonctions C++ exportées et du fichier <code>optim_zi-pln.cpp</code> (17/06)<a class="anchor" aria-label="anchor" href="#id_55-zipln--renommage-des-fonctions-c-export%C3%A9es-et-du-fichier-optim_zi-plncpp-1706"></a></h2>
+<p><strong>Fichiers</strong> : <code>src/optim_zi-pln.cpp</code> → <code>src/optim_zipln_mstep.cpp</code>, <code>src/builtin_optim_zipln.h</code>, <code>src/nlopt_optim_zipln.h</code>, <code>src/wrappers_builtin_optim_zipln.cpp</code>, <code>src/wrappers_nlopt_optim_zipln.cpp</code>, <code>R/utils-zipln.R</code></p>
+<div class="section level3">
+<h3 id="motivation-16">Motivation<a class="anchor" aria-label="anchor" href="#motivation-16"></a></h3>
+<p>Question de l’utilisateur sur la cohérence des noms de fichiers/fonctions C++. Deux constats : 1. PLN et PLNPCA nomment leurs exports <code>{backend}_optimize_{type}</code> / <code>{backend}_optimize_vestep_{type}</code> (backend en premier, jamais le nom du modèle dans le nom de fonction — le fichier suffit). ZIPLN gardait la racine historique <code>ve_step_zipln_{backend}_{type}</code> (ordre inversé : <code>ve_step</code> puis <code>zipln</code> puis backend). <code>zipln</code> doit rester dans le nom (sinon collision avec les exports PLN, plats côté Rcpp), mais l’ordre des mots peut suivre la convention PLN. 2. <code>optim_zi-pln.cpp</code> est le seul fichier ZIPLN à écrire “zi-pln” avec un tiret ; tous les autres (créés/renommés lors du portage CRTP, entrées 50-52) écrivent “zipln” sans tiret. Son contenu (M-step Omega/B + paramètre ZI + <code>zipln_vloglik</code>) ne contient plus de VE-step depuis l’entrée 50 — <code>optim_zipln_mstep.cpp</code> est plus exact que <code>optim_zipln.cpp</code>.</p>
+</div>
+<div class="section level3">
+<h3 id="implémentation-9">Implémentation<a class="anchor" aria-label="anchor" href="#impl%C3%A9mentation-9"></a></h3>
+<ul><li>Renommage des 8 exports : <code>ve_step_zipln_newton_{full,diagonal,spherical,fixed}</code> → <code>builtin_optimize_vestep_zipln_{full,diagonal,spherical,fixed}</code> ; <code>ve_step_zipln_nlopt_{full,diagonal,spherical,fixed}</code> → <code>nlopt_optimize_vestep_zipln_{full,diagonal,spherical,fixed}</code>.</li>
+<li>Templates internes alignés sur la convention PLN (<code>builtin_vestep_pln_impl</code>/<code>nlopt_vestep_impl</code>) : <code>ve_step_zipln_newton_impl</code> → <code>builtin_vestep_zipln_impl</code>, <code>ve_step_zipln_nlopt_impl</code> → <code>nlopt_vestep_zipln_impl</code>, <code>ve_step_zipln_newton_wrapper</code> → <code>builtin_optimize_vestep_zipln_wrapper</code>.</li>
+<li>
+<code>git mv src/optim_zi-pln.cpp src/optim_zipln_mstep.cpp</code>.</li>
+<li>
+<code>R/utils-zipln.R::zipln_MS_fn</code> mis à jour pour référencer les nouveaux noms.</li>
+<li>
+<code>zipln_update_R</code>/<code>zipln_vestep_obj_grad</code> (covariance_zipln.h) inchangés : déjà cohérents avec le préfixe “modèle d’abord” utilisé par PLNPCA (<code>rank_obj_grad</code>, etc.).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="validation-6">Validation<a class="anchor" aria-label="anchor" href="#validation-6"></a></h3>
+<ul><li>8 combinaisons (4 structures × 2 backends) sur trichoptera : loglik identiques au chiffre près (pur renommage, aucun effet numérique attendu ni observé).</li>
+<li>Suite complète : 979 PASS, 0 FAIL.</li>
+</ul><hr></div>
+</div>
+<div class="section level2">
+<h2 id="id_56-zipln-m-step-omega--réutilisation-des-stateupdate-de-covariance_plnh-1706">56. ZIPLN M-step Omega — réutilisation des <code>State::update</code> de <code>covariance_pln.h</code> (17/06)<a class="anchor" aria-label="anchor" href="#id_56-zipln-m-step-omega--r%C3%A9utilisation-des-stateupdate-de-covariance_plnh-1706"></a></h2>
+<p><strong>Fichiers</strong> : <code>src/optim_zipln_mstep.cpp</code></p>
+<div class="section level3">
+<h3 id="motivation-17">Motivation<a class="anchor" aria-label="anchor" href="#motivation-17"></a></h3>
+<p>Nouvel audit demandé par l’utilisateur sur les fichiers C++ ZIPLN une fois le renommage fait (simplifications structurelles / optimisations simples). Constat : <code>optim_zipln_Omega_full</code>/<code>_spherical</code>/<code>_diagonal</code> réimplémentaient à la main des formules de M-step déjà présentes dans <code>covariance_pln.h</code> (<code>FullCovTraits::State::update</code>, <code>DiagonalCovTraits::State::update</code>, <code>SphericalCovTraits::State::update</code>) — vérifié terme à terme identiques avec <code>w=ones(n)</code>, <code>w_bar=n</code>. La formule du M-step vivait donc à deux endroits.</p>
+</div>
+<div class="section level3">
+<h3 id="implémentation-10">Implémentation<a class="anchor" aria-label="anchor" href="#impl%C3%A9mentation-10"></a></h3>
+<p>Les 3 fonctions construisent désormais le <code>State</code> correspondant (son constructeur 4-arguments appelle <code><a href="https://rdrr.io/r/stats/update.html" class="external-link">update()</a></code>) et en extraient la représentation dense : - <code>optim_zipln_Omega_full</code> : <code>FullCovTraits::State state(M-X*B, S2, ones(n), n); return state.Omega;</code> (Omega déjà dense, champ public de <code>DenseOmegaImpl::State</code>). - <code>optim_zipln_Omega_spherical</code>/<code>_diagonal</code> : <code>State</code> stocke <code>omega2</code> en <code>double</code>/<code>rowvec</code> (pas de p×p matérialisée, pour rester cohérent avec le choix de ne jamais allouer une matrice dense dans la boucle chaude PLN) — converti en <code>arma::diagmat(...)</code> à la sortie, seul endroit où ça coûte une allocation p×p (une fois par tour EM externe, négligeable).</p>
+</div>
+<div class="section level3">
+<h3 id="validation-7">Validation<a class="anchor" aria-label="anchor" href="#validation-7"></a></h3>
+<ul><li>Comparaison directe ancienne formule (R) vs nouvelle fonction C++ sur données aléatoires (n=30,p=8,d=2) : écarts <code>&lt; 4e-16</code> (bruit flottant), confirmant l’équivalence exacte.</li>
+<li>8 combinaisons (4 structures × 2 backends) sur trichoptera : loglik <strong>builtin identiques au chiffre près</strong> (Newton converge au même point fixe malgré le bruit <code>1e-16</code>) ; loglik <strong>nlopt dérive légèrement</strong> (4ᵉ décimale, ex. full : -1055.4227 → -1055.2413) — cohérent avec la sensibilité de CCSAQ à l’ordre des opérations flottantes déjà observée plusieurs fois cette session (cf. §39, §50), pas un signe de régression.</li>
+<li>Suite complète : 979 PASS, 0 FAIL.</li>
+</ul><hr></div>
+</div>
+<div class="section level2">
+<h2 id="id_57-préparation-du-merge-code-enhancement--master-1706">57. Préparation du merge <code>code-enhancement</code> → <code>master</code> (17/06)<a class="anchor" aria-label="anchor" href="#id_57-pr%C3%A9paration-du-merge-code-enhancement--master-1706"></a></h2>
+<p><strong>Fichiers</strong> : <code>NEWS.md</code>, <code>inst/benchmark/branch_comparison.csv</code></p>
+<div class="section level3">
+<h3 id="vérifications-de-préparation">Vérifications de préparation<a class="anchor" aria-label="anchor" href="#v%C3%A9rifications-de-pr%C3%A9paration"></a></h3>
+<ul><li>Suite complète : 979 PASS, 0 FAIL sur <code>code-enhancement</code> seul (sans les commits <code>genetic-cov</code>, restés sur leur branche dédiée — confirmé non mélangés).</li>
+<li>
+<code>devtools::document()</code> : aucun diff (man/NAMESPACE déjà synchronisés).</li>
+<li>
+<code>DESCRIPTION</code> : dépendances cohérentes (<code>future</code>/<code>future.apply</code>/<code>pscl</code> bien retirées des Imports).</li>
+<li>Aucun code de debug oublié dans les fichiers touchés par les 27 commits depuis le merge-base (<code>9221b6f4</code>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="décision-sur-config_optimprofiled">Décision sur <code>config_optim$profiled</code>
+<a class="anchor" aria-label="anchor" href="#d%C3%A9cision-sur-config_optimprofiled"></a></h3>
+<p>Rappel explicite à l’utilisateur du statut provisoire (cf. mémoire <code>project-pln-profiled-full</code>) avant le merge — question posée directement (garder TRUE / repasser FALSE / isoler le commit). <strong>Décision : garder <code>TRUE</code> et merger.</strong> Documenté dans <code>NEWS.md</code> comme défaut définitif (plus de réserve “provisoire” à rappeler dans les futures sessions).</p>
+</div>
+<div class="section level3">
+<h3 id="newsmd-complété-version-inchangée-130-9010">NEWS.md complété (version inchangée, <code>1.3.0-9010</code>)<a class="anchor" aria-label="anchor" href="#newsmd-compl%C3%A9t%C3%A9-version-inchang%C3%A9e-130-9010"></a></h3>
+<p>Nouvelle section “Internal refactoring (C++)” (abstraction CRTP partagée Full/Diagonal/Spherical/Fixed + réutilisation PLNPCA/ZIPLN, convention de nommage unifiée des exports), bullet <code>profiled=TRUE</code>, bullet fix PLNnetwork/ZIPLNnetwork inception (grille de pénalité fausse, −311 ll oaks — déjà fait plus tôt dans la session, juste documenté maintenant).</p>
+</div>
+<div class="section level3">
+<h3 id="rafraîchissement-du-benchmark-master-vs-code-enhancement">Rafraîchissement du benchmark master vs code-enhancement<a class="anchor" aria-label="anchor" href="#rafra%C3%AEchissement-du-benchmark-master-vs-code-enhancement"></a></h3>
+<p>Les fichiers committés (<code>branch_comparison.csv</code> etc.) dataient du merge-base (15-16/06), donc d’avant le flip <code>profiled</code> et la restructuration ZIPLN/PLNPCA. Relancé <code>run_branch.R</code> pour les deux branches (master installé via <code>git worktree add /tmp/PLNmodels-master master</code> + <code>R CMD INSTALL</code> dans des libs séparées, séquentiellement comme l’exige le script) puis <code>compare_branches.R</code>.</p>
+<p><strong>Résultats</strong> (24 runs/branche, trichoptera/barents/oaks) : - PLN nlopt (effet direct du flip <code>profiled</code>) : loglik et nb itérations nettement meilleurs sur les 3 datasets (ex. oaks : -32048.5→-32030.0, itérations 1738→598) — confirme une nouvelle fois le bénéfice du flag, cette fois en conditions de benchmark “officielles” pré-merge. - ZIPLN oaks : gain spectaculaire sur les deux backends (builtin -32680.7→-32097.3, nlopt -33351.4→-32090.0, +583 à +1261 ll) — cohérent avec tout le travail de portage CRTP/nettoyage de cette session. - PLNPCA : quasiment inchangé (builtin bit-identique, nlopt légèrement meilleur) — attendu, pur renommage côté C++. - <strong>PLNnetwork (oaks, trichoptera) : loglik apparemment <em>pire</em></strong> sur le “meilleur modèle par BIC” (-1376 ll sur oaks). Investigué : ce n’est <strong>pas une régression de qualité</strong> mais un artefact de grille — <code>max_pen</code> calculé par le nouvel init (“plus simple et meilleur”, déjà documenté) est ~2× plus grand que celui de master, donc la grille à <code>n_penalties=10</code> ne descend pas aussi bas en sparsité. Vérifié en forçant <code>code-enhancement</code> à explorer la même valeur extrême de pénalité que master (λ=1.136) : loglik <em>légèrement meilleur</em> que master au même point (-37593.7 vs -37603.2). Pas d’action corrective nécessaire, juste une note d’interprétation. - <code>inst/benchmark/branch_comparison.csv</code> mis à jour avec ces résultats frais ; <code>compare_backends_results.{csv,rds}</code> et les 3 PDF (issus de <code>compare_backends.R</code>, un script plus large sur 6 datasets incluant mollusk/microcosm/scRNA) <strong>non rafraîchis</strong> — hors du périmètre demandé pour ce merge, à voir séparément si besoin. - Nettoyage : worktree temporaire <code>/tmp/PLNmodels-master</code> et libs temporaires supprimés après usage.</p>
 </div>
 </div>
 </div>
