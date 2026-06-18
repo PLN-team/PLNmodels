@@ -166,7 +166,6 @@ plot_matrix = function(Mat, rowFG = "sample", colFG = "variable", clustering = N
     igraph::V(G)$label.cex <- V.deg / max(V.deg) + .5
     igraph::V(G)$size <- V.deg * 100
     igraph::V(G)$label.color <- rgb(0, 0, .2, .8)
-    igraph::V(G)$frame.color <- NA
     ## Nice edges
     igraph::E(G)$color <- ifelse(igraph::E(G)$weight > 0, edge.color[1], edge.color[2])
     if (type == "support")
@@ -177,7 +176,10 @@ plot_matrix = function(Mat, rowFG = "sample", colFG = "variable", clustering = N
     if (remove.isolated) {
       G <- delete.vertices(G, which(degree(G) == 0))
     }
-    if (plot) plot(G, layout = layout)
+    ## vertex.frame.color = NA must be passed as a plot() argument, not a vertex
+    ## attribute: as an attribute it triggers a spurious "contains NAs" warning
+    ## from igraph, even though NA is its own documented way of requesting no frame.
+    if (plot) plot(G, layout = layout, vertex.frame.color = NA)
   }
   if (output == "corrplot") {
     if (plot) {
