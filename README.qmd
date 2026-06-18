@@ -1,0 +1,113 @@
+---
+title: "PLNmodels: Poisson lognormal models for multivariate count data"
+format: gfm
+---
+
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/PLN-team/PLNmodels/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/PLN-team/PLNmodels/actions/workflows/R-CMD-check.yaml)
+[![Coverage status](https://codecov.io/gh/pln-team/PLNmodels/branch/master/graph/badge.svg)](https://codecov.io/github/pln-team/PLNmodels?branch=master)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/PLNmodels)](https://cran.r-project.org/package=PLNmodels)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html)
+[![](https://img.shields.io/github/last-commit/pln-team/PLNmodels.svg)](https://github.com/pln-team/PLNmodels/commits/master)
+<!-- badges: end -->
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo       = TRUE,
+  cache      = TRUE,
+  cache.lazy = FALSE, # R6 model objects don't survive knitr's lazy-load cache promises
+  fig.path   = "man/figures/README-",
+  fig.width  = 7, fig.height = 5
+)
+```
+
+## Description
+
+> The Poisson lognormal model and variants[^1] can be used for a variety of multivariate problems when count data are at play. This package implements efficient variational algorithms to fit such models, accompanied with a set of functions for visualization and diagnostic. See [this deck of slides](https://pln-team.github.io/slideshow/slides) for a comprehensive introduction.
+
+**PLNmodels** covers the following models, all built around the multivariate Poisson-lognormal distribution and sharing a common formula-based interface (covariates, offsets, weights) and a choice of optimization backends (a fast built-in Newton solver, NLOPT, and an experimental torch backend):
+
+- **PLN**: unpenalized multivariate Poisson regression, with several covariance structures (full, diagonal, spherical, fixed, or a genetic/heritability structure).
+- **PLNPCA**[^2]: probabilistic Poisson PCA — a rank-constrained covariance for dimension reduction and visualization.
+- **PLNLDA**: Poisson lognormal discriminant analysis[^3] for the supervised classification of count data.
+- **PLNnetwork**[^4]: sparse inverse-covariance (network) inference via a graphical-lasso-like penalty[^5].
+- **PLNmixture**: model-based clustering[^6] of count data via a mixture of PLN models.
+- **ZIPLN**: a zero-inflated extension of PLN for data with excess zeros, with the same family of covariance structures and an optional sparse (`ZIPLNnetwork`) variant.
+
+[^1]: J. Chiquet, M. Mariadassou and S. Robin: The Poisson-lognormal model as a versatile framework for the joint analysis of species abundances, Frontiers in Ecology and Evolution, 2021. [doi:10.3389/fevo.2021.588292](https://www.frontiersin.org/articles/10.3389/fevo.2021.588292/full)
+[^2]: J. Chiquet, M. Mariadassou and S. Robin: Variational inference for probabilistic Poisson PCA, the Annals of Applied Statistics, 12: 2674–2698, 2018. [doi:10.1214/18-AOAS1177](http://dx.doi.org/10.1214/18%2DAOAS1177)
+[^3]: Fisher, R. A. The use of multiple measurements in taxonomic problems. Annals of Eugenics, 7(2), 1936; Rao, C. R. The utilization of multiple measurements in problems of biological classification. JRSS B, 10(2), 1948.
+[^4]: J. Chiquet, M. Mariadassou and S. Robin: Variational inference for sparse network reconstruction from count data, Proceedings of the 36th International Conference on Machine Learning (ICML), 2019. [link](http://proceedings.mlr.press/v97/chiquet19a.html)
+[^5]: Friedman, J., Hastie, T. and Tibshirani, R. Sparse inverse covariance estimation with the graphical lasso. Biostatistics, 9(3), 2008.
+[^6]: Fraley, C. and Raftery, A. E. MCLUST: Software for model-based cluster analysis. Journal of Classification, 16(2), 1999.
+
+## Installation
+
+**PLNmodels** is available on [CRAN](https://cran.r-project.org/package=PLNmodels). The development version is available on [GitHub](https://github.com/pln-team/PLNmodels).
+
+```{r package CRAN, eval = FALSE}
+install.packages("PLNmodels")             # last stable version, from CRAN
+remotes::install_github("pln-team/PLNmodels")            # development version, from GitHub
+remotes::install_github("pln-team/PLNmodels@tag_number")  # a specific tagged release
+```
+
+## Illustration
+
+We illustrate the main models on the `barents` data set[^7]: the abundance of 30 fish species observed in 89 sites in the Barents sea, along with depth, temperature and geographic coordinates for each site.
+
+[^7]: Fossheim, M., Nilssen, E. M. and Aschan, M. Fish assemblages in the Barents Sea. Marine Biology Research, 2(4), 2006. [doi:10.1080/17451000600815698](https://doi.org/10.1080/17451000600815698)
+
+```{r load}
+library(PLNmodels)
+data(barents)
+## a simple North/South split of the sites, used below to illustrate PLNLDA
+barents$zone <- factor(ifelse(barents$Latitude > median(barents$Latitude), "North", "South"))
+```
+
+### PLN: fit and inspect the covariance structure
+
+```{r pln}
+myPLN <- PLN(Abundance ~ Depth + Temperature + offset(log(Offset)), data = barents)
+myPLN
+```
+
+```{r pln-corrplot}
+corrplot::corrplot(cov2cor(sigma(myPLN)), order = "AOE", type = "upper", tl.cex = 0.6)
+```
+
+### PLNLDA: discriminant analysis
+
+```{r plnlda}
+myLDA <- PLNLDA(Abundance ~ offset(log(Offset)), grouping = zone, data = barents)
+plot(myLDA)
+```
+
+### PLNPCA: dimension reduction
+
+```{r plnpca}
+myPCAs <- PLNPCA(Abundance ~ Depth + Temperature + offset(log(Offset)), data = barents, ranks = 1:5)
+myPCA  <- getBestModel(myPCAs)
+factoextra::fviz_pca_biplot(
+  myPCA, select.var = list(contrib = 10), col.ind = barents$Temperature,
+  title = "Biplot (10 most contributing species, sites colored by temperature)"
+) + ggplot2::labs(col = "Temperature") + ggplot2::scale_color_viridis_c()
+```
+
+### PLNnetwork: sparse network inference
+
+```{r plnnetwork}
+myNets <- PLNnetwork(Abundance ~ Depth + Temperature + offset(log(Offset)), data = barents)
+plot(getBestModel(myNets), remove.isolated = TRUE)
+```
+
+### PLNmixture: model-based clustering
+
+```{r plnmixture}
+my_mixtures <- PLNmixture(Abundance ~ offset(log(Offset)), data = barents, clusters = 1:4,
+                           control = PLNmixture_param(smoothing = "none"))
+myMixture <- getBestModel(my_mixtures)
+plot(myMixture, "pca", main = "Clustering membership in the individual factor map")
+table(cluster = myMixture$memberships, zone = barents$zone)
+```
+
+## References
