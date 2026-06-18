@@ -447,7 +447,6 @@ PLNLDAfit_diagonal <- R6Class(
           torch_sum(data$Y * params$Z - params$A + .5 * params$psi -
                       .5 * (torch_square(M_res) + S2) * omega_diag[NULL,], dim = 2)
       )
-      attr(Ji, "weights") <- as.numeric(data$w)
       Ji
     }
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -538,7 +537,6 @@ PLNLDAfit_spherical <- R6Class(
         torch_sum(data$Y * params$Z - params$A + .5 * (params$psi - torch_log(sigma2)) -
                     .5 * (torch_pow(M_res, 2) + S2)/sigma2, dim = 2)
       )
-      attr(Ji, "weights") <- as.numeric(data$w)
       Ji
     }
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

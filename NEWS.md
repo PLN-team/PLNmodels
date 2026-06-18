@@ -13,11 +13,26 @@
 
 * **torch backend marked experimental**: the torch backend is now clearly documented as experimental. It emits a message on use and is not recommended for PLNPCA (systematically lower loglik than nlopt/builtin). It remains available for PLN on diagonal/spherical covariance where it can be faster.
 
+* **Full covariance, nlopt backend**: `config_optim$profiled = TRUE` is now the default. Both B and Omega are profiled at every nlopt evaluation instead of running an EM loop (Omega fixed for the duration of each inner solve). Despite the extra per-evaluation cost, this is consistently faster (1.1x-4.5x) and reaches a slightly better loglik across a range of problem sizes, because it needs far fewer total evaluations than the EM loop. Set `profiled = FALSE` to recover the previous behaviour.
+
 * **ZIPLN  initialization**: `pscl::zeroinfl` is replaced by an internal
   `compute_ZIPLN_starting_point()` that uses a standard LM (for B) and a binomial
   GLM (for the ZI parameters). This is 60–240× faster and consistently finds better
   starting points (+1263 loglik on `oaks`, p=114). The `pscl` package is no longer
   a dependency.
+
+## Internal refactoring (C++)
+
+* **Shared covariance abstraction**: the optimization machinery for PLN's covariance
+  structures (full, diagonal, spherical, fixed) is now expressed once via a small set
+  of C++ traits (`CovTraitsBase` in `covariance_pln.h`) instead of being duplicated
+  per structure. PLNPCA and ZIPLN's variational step now reuse the same machinery
+  instead of separate hand-rolled implementations, removing a substantial amount of
+  duplicated code and fixing minor inefficiencies along the way (e.g. ZIPLN's VE-step
+  used to treat the precision matrix as dense even for diagonal/spherical covariance,
+  at unnecessary `O(np^2)` cost).
+* **Consistent C++ naming**: exported optimizer functions across PLN, PLNPCA and
+  ZIPLN now follow the same `{backend}_optimize_{structure}` convention.
 
 ## Other changes
 
@@ -30,6 +45,10 @@
   `parallel::mclapply` throughout (stability selection for PLNnetwork /
   ZIPLNnetwork). Use `options(mc.cores = N)` to set the number of cores.
 
+* **Fix PLNnetwork/ZIPLNnetwork inception bug**: the optimizer configuration used
+  for the inception (warm-start) model did not inherit `ftol_em`/`maxit_em` from
+  the user's `config_optim`, silently falling back to defaults and producing a
+  wrong penalty grid (e.g. -311 loglik on `oaks`).
 * various fix in ZIPLN model (prediction and initialization #146, #149, #150, #152)
 * Correctness fix in PLNPCA rank model: the objective
   function used `A − Y` where it should use `A − Y ⊙ Z`

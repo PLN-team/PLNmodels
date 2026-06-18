@@ -11,256 +11,6 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// builtin_optimize_full
-Rcpp::List builtin_optimize_full(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
-RcppExport SEXP _PLNmodels_builtin_optimize_full(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
-    rcpp_result_gen = Rcpp::wrap(builtin_optimize_full(data, params, config));
-    return rcpp_result_gen;
-END_RCPP
-}
-// builtin_optimize_vestep_full
-Rcpp::List builtin_optimize_vestep_full(const Rcpp::List& data, const Rcpp::List& params, const arma::mat& B, const arma::mat& Omega, const Rcpp::List& config);
-RcppExport SEXP _PLNmodels_builtin_optimize_vestep_full(SEXP dataSEXP, SEXP paramsSEXP, SEXP BSEXP, SEXP OmegaSEXP, SEXP configSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Omega(OmegaSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
-    rcpp_result_gen = Rcpp::wrap(builtin_optimize_vestep_full(data, params, B, Omega, config));
-    return rcpp_result_gen;
-END_RCPP
-}
-// builtin_optimize_diagonal
-Rcpp::List builtin_optimize_diagonal(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
-RcppExport SEXP _PLNmodels_builtin_optimize_diagonal(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
-    rcpp_result_gen = Rcpp::wrap(builtin_optimize_diagonal(data, params, config));
-    return rcpp_result_gen;
-END_RCPP
-}
-// builtin_optimize_vestep_diagonal
-Rcpp::List builtin_optimize_vestep_diagonal(const Rcpp::List& data, const Rcpp::List& params, const arma::mat& B, const arma::mat& Omega, const Rcpp::List& config);
-RcppExport SEXP _PLNmodels_builtin_optimize_vestep_diagonal(SEXP dataSEXP, SEXP paramsSEXP, SEXP BSEXP, SEXP OmegaSEXP, SEXP configSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Omega(OmegaSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
-    rcpp_result_gen = Rcpp::wrap(builtin_optimize_vestep_diagonal(data, params, B, Omega, config));
-    return rcpp_result_gen;
-END_RCPP
-}
-// builtin_optimize_spherical
-Rcpp::List builtin_optimize_spherical(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
-RcppExport SEXP _PLNmodels_builtin_optimize_spherical(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
-    rcpp_result_gen = Rcpp::wrap(builtin_optimize_spherical(data, params, config));
-    return rcpp_result_gen;
-END_RCPP
-}
-// builtin_optimize_vestep_spherical
-Rcpp::List builtin_optimize_vestep_spherical(const Rcpp::List& data, const Rcpp::List& params, const arma::mat& B, const arma::mat& Omega, const Rcpp::List& config);
-RcppExport SEXP _PLNmodels_builtin_optimize_vestep_spherical(SEXP dataSEXP, SEXP paramsSEXP, SEXP BSEXP, SEXP OmegaSEXP, SEXP configSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Omega(OmegaSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
-    rcpp_result_gen = Rcpp::wrap(builtin_optimize_vestep_spherical(data, params, B, Omega, config));
-    return rcpp_result_gen;
-END_RCPP
-}
-// builtin_optimize_fixed
-Rcpp::List builtin_optimize_fixed(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
-RcppExport SEXP _PLNmodels_builtin_optimize_fixed(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
-    rcpp_result_gen = Rcpp::wrap(builtin_optimize_fixed(data, params, config));
-    return rcpp_result_gen;
-END_RCPP
-}
-// builtin_optimize_rank
-Rcpp::List builtin_optimize_rank(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
-RcppExport SEXP _PLNmodels_builtin_optimize_rank(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
-    rcpp_result_gen = Rcpp::wrap(builtin_optimize_rank(data, params, config));
-    return rcpp_result_gen;
-END_RCPP
-}
-// builtin_optimize_vestep_rank
-Rcpp::List builtin_optimize_vestep_rank(const Rcpp::List& data, const Rcpp::List& params, const arma::mat& B, const arma::mat& C, const Rcpp::List& config);
-RcppExport SEXP _PLNmodels_builtin_optimize_vestep_rank(SEXP dataSEXP, SEXP paramsSEXP, SEXP BSEXP, SEXP CSEXP, SEXP configSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type C(CSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
-    rcpp_result_gen = Rcpp::wrap(builtin_optimize_vestep_rank(data, params, B, C, config));
-    return rcpp_result_gen;
-END_RCPP
-}
-// nlopt_optimize_diagonal
-Rcpp::List nlopt_optimize_diagonal(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
-RcppExport SEXP _PLNmodels_nlopt_optimize_diagonal(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
-    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_diagonal(data, params, config));
-    return rcpp_result_gen;
-END_RCPP
-}
-// nlopt_optimize_vestep_diagonal
-Rcpp::List nlopt_optimize_vestep_diagonal(const Rcpp::List& data, const Rcpp::List& params, const arma::mat& B, const arma::mat& Omega, const Rcpp::List& config);
-RcppExport SEXP _PLNmodels_nlopt_optimize_vestep_diagonal(SEXP dataSEXP, SEXP paramsSEXP, SEXP BSEXP, SEXP OmegaSEXP, SEXP configSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Omega(OmegaSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
-    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_vestep_diagonal(data, params, B, Omega, config));
-    return rcpp_result_gen;
-END_RCPP
-}
-// nlopt_optimize_fixed
-Rcpp::List nlopt_optimize_fixed(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
-RcppExport SEXP _PLNmodels_nlopt_optimize_fixed(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
-    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_fixed(data, params, config));
-    return rcpp_result_gen;
-END_RCPP
-}
-// nlopt_optimize_full
-Rcpp::List nlopt_optimize_full(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
-RcppExport SEXP _PLNmodels_nlopt_optimize_full(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
-    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_full(data, params, config));
-    return rcpp_result_gen;
-END_RCPP
-}
-// nlopt_optimize_vestep_full
-Rcpp::List nlopt_optimize_vestep_full(const Rcpp::List& data, const Rcpp::List& params, const arma::mat& B, const arma::mat& Omega, const Rcpp::List& config);
-RcppExport SEXP _PLNmodels_nlopt_optimize_vestep_full(SEXP dataSEXP, SEXP paramsSEXP, SEXP BSEXP, SEXP OmegaSEXP, SEXP configSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Omega(OmegaSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
-    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_vestep_full(data, params, B, Omega, config));
-    return rcpp_result_gen;
-END_RCPP
-}
-// nlopt_optimize_rank
-Rcpp::List nlopt_optimize_rank(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
-RcppExport SEXP _PLNmodels_nlopt_optimize_rank(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
-    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_rank(data, params, config));
-    return rcpp_result_gen;
-END_RCPP
-}
-// nlopt_optimize_vestep_rank
-Rcpp::List nlopt_optimize_vestep_rank(const Rcpp::List& data, const Rcpp::List& params, const arma::mat& B, const arma::mat& C, const Rcpp::List& config);
-RcppExport SEXP _PLNmodels_nlopt_optimize_vestep_rank(SEXP dataSEXP, SEXP paramsSEXP, SEXP BSEXP, SEXP CSEXP, SEXP configSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type C(CSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
-    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_vestep_rank(data, params, B, C, config));
-    return rcpp_result_gen;
-END_RCPP
-}
-// nlopt_optimize_spherical
-Rcpp::List nlopt_optimize_spherical(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
-RcppExport SEXP _PLNmodels_nlopt_optimize_spherical(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
-    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_spherical(data, params, config));
-    return rcpp_result_gen;
-END_RCPP
-}
-// nlopt_optimize_vestep_spherical
-Rcpp::List nlopt_optimize_vestep_spherical(const Rcpp::List& data, const Rcpp::List& params, const arma::mat& B, const arma::mat& Omega, const Rcpp::List& config);
-RcppExport SEXP _PLNmodels_nlopt_optimize_vestep_spherical(SEXP dataSEXP, SEXP paramsSEXP, SEXP BSEXP, SEXP OmegaSEXP, SEXP configSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Omega(OmegaSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
-    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_vestep_spherical(data, params, B, Omega, config));
-    return rcpp_result_gen;
-END_RCPP
-}
 // cpp_test_nlopt
 bool cpp_test_nlopt();
 RcppExport SEXP _PLNmodels_cpp_test_nlopt() {
@@ -375,115 +125,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// optim_zipln_R_var
-arma::mat optim_zipln_R_var(const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::mat& M, const arma::mat& S2, const arma::mat& Pi, const arma::mat& B);
-RcppExport SEXP _PLNmodels_optim_zipln_R_var(SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP MSEXP, SEXP S2SEXP, SEXP PiSEXP, SEXP BSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type M(MSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type S2(S2SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Pi(PiSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
-    rcpp_result_gen = Rcpp::wrap(optim_zipln_R_var(Y, X, O, M, S2, Pi, B));
-    return rcpp_result_gen;
-END_RCPP
-}
-// optim_zipln_R_exact
-arma::mat optim_zipln_R_exact(const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::mat& M, const arma::mat& S2, const arma::mat& Pi, const arma::mat& B);
-RcppExport SEXP _PLNmodels_optim_zipln_R_exact(SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP MSEXP, SEXP S2SEXP, SEXP PiSEXP, SEXP BSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type M(MSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type S2(S2SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Pi(PiSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
-    rcpp_result_gen = Rcpp::wrap(optim_zipln_R_exact(Y, X, O, M, S2, Pi, B));
-    return rcpp_result_gen;
-END_RCPP
-}
-// optim_zipln_M
-Rcpp::List optim_zipln_M(const arma::mat& init_M, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::mat& R, const arma::mat& S2, const arma::mat& B, const arma::mat& Omega, const Rcpp::List& configuration);
-RcppExport SEXP _PLNmodels_optim_zipln_M(SEXP init_MSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP RSEXP, SEXP S2SEXP, SEXP BSEXP, SEXP OmegaSEXP, SEXP configurationSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type init_M(init_MSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type R(RSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type S2(S2SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Omega(OmegaSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type configuration(configurationSEXP);
-    rcpp_result_gen = Rcpp::wrap(optim_zipln_M(init_M, Y, X, O, R, S2, B, Omega, configuration));
-    return rcpp_result_gen;
-END_RCPP
-}
-// optim_zipln_psi
-Rcpp::List optim_zipln_psi(const arma::mat& init_S2, const arma::mat& O, const arma::mat& M, const arma::mat& R, const arma::mat& B, const arma::vec& diag_Omega, const Rcpp::List& configuration);
-RcppExport SEXP _PLNmodels_optim_zipln_psi(SEXP init_S2SEXP, SEXP OSEXP, SEXP MSEXP, SEXP RSEXP, SEXP BSEXP, SEXP diag_OmegaSEXP, SEXP configurationSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type init_S2(init_S2SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type M(MSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type R(RSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type diag_Omega(diag_OmegaSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type configuration(configurationSEXP);
-    rcpp_result_gen = Rcpp::wrap(optim_zipln_psi(init_S2, O, M, R, B, diag_Omega, configuration));
-    return rcpp_result_gen;
-END_RCPP
-}
-// ve_step_zipln_nlopt
-Rcpp::List ve_step_zipln_nlopt(const arma::mat& init_M, const arma::mat& init_S2, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::mat& Pi, const arma::mat& B, const arma::mat& Omega, const Rcpp::List& configuration);
-RcppExport SEXP _PLNmodels_ve_step_zipln_nlopt(SEXP init_MSEXP, SEXP init_S2SEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP PiSEXP, SEXP BSEXP, SEXP OmegaSEXP, SEXP configurationSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type init_M(init_MSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type init_S2(init_S2SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Pi(PiSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Omega(OmegaSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type configuration(configurationSEXP);
-    rcpp_result_gen = Rcpp::wrap(ve_step_zipln_nlopt(init_M, init_S2, Y, X, O, Pi, B, Omega, configuration));
-    return rcpp_result_gen;
-END_RCPP
-}
-// ve_step_zipln_newton
-Rcpp::List ve_step_zipln_newton(const arma::mat& init_M, const arma::mat& init_S2, const arma::mat& Y, const arma::mat& X, const arma::mat& O, const arma::mat& Pi, const arma::mat& B, const arma::mat& Omega, const int maxiter, const double ftol_rel);
-RcppExport SEXP _PLNmodels_ve_step_zipln_newton(SEXP init_MSEXP, SEXP init_S2SEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP PiSEXP, SEXP BSEXP, SEXP OmegaSEXP, SEXP maxiterSEXP, SEXP ftol_relSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type init_M(init_MSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type init_S2(init_S2SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type O(OSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Pi(PiSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Omega(OmegaSEXP);
-    Rcpp::traits::input_parameter< const int >::type maxiter(maxiterSEXP);
-    Rcpp::traits::input_parameter< const double >::type ftol_rel(ftol_relSEXP);
-    rcpp_result_gen = Rcpp::wrap(ve_step_zipln_newton(init_M, init_S2, Y, X, O, Pi, B, Omega, maxiter, ftol_rel));
-    return rcpp_result_gen;
-END_RCPP
-}
 // cpp_test_packing
 bool cpp_test_packing();
 RcppExport SEXP _PLNmodels_cpp_test_packing() {
@@ -510,26 +151,359 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// builtin_optimize_full
+Rcpp::List builtin_optimize_full(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_builtin_optimize_full(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(builtin_optimize_full(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// builtin_optimize_vestep_full
+Rcpp::List builtin_optimize_vestep_full(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_builtin_optimize_vestep_full(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(builtin_optimize_vestep_full(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// builtin_optimize_diagonal
+Rcpp::List builtin_optimize_diagonal(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_builtin_optimize_diagonal(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(builtin_optimize_diagonal(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// builtin_optimize_vestep_diagonal
+Rcpp::List builtin_optimize_vestep_diagonal(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_builtin_optimize_vestep_diagonal(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(builtin_optimize_vestep_diagonal(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// builtin_optimize_spherical
+Rcpp::List builtin_optimize_spherical(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_builtin_optimize_spherical(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(builtin_optimize_spherical(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// builtin_optimize_vestep_spherical
+Rcpp::List builtin_optimize_vestep_spherical(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_builtin_optimize_vestep_spherical(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(builtin_optimize_vestep_spherical(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// builtin_optimize_fixed
+Rcpp::List builtin_optimize_fixed(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_builtin_optimize_fixed(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(builtin_optimize_fixed(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// builtin_optimize_rank
+Rcpp::List builtin_optimize_rank(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_builtin_optimize_rank(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(builtin_optimize_rank(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// builtin_optimize_vestep_rank
+Rcpp::List builtin_optimize_vestep_rank(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_builtin_optimize_vestep_rank(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(builtin_optimize_vestep_rank(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// builtin_optimize_vestep_zipln_full
+Rcpp::List builtin_optimize_vestep_zipln_full(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_builtin_optimize_vestep_zipln_full(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(builtin_optimize_vestep_zipln_full(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// builtin_optimize_vestep_zipln_diagonal
+Rcpp::List builtin_optimize_vestep_zipln_diagonal(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_builtin_optimize_vestep_zipln_diagonal(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(builtin_optimize_vestep_zipln_diagonal(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// builtin_optimize_vestep_zipln_spherical
+Rcpp::List builtin_optimize_vestep_zipln_spherical(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_builtin_optimize_vestep_zipln_spherical(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(builtin_optimize_vestep_zipln_spherical(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// builtin_optimize_vestep_zipln_fixed
+Rcpp::List builtin_optimize_vestep_zipln_fixed(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_builtin_optimize_vestep_zipln_fixed(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(builtin_optimize_vestep_zipln_fixed(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// nlopt_optimize_full
+Rcpp::List nlopt_optimize_full(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_nlopt_optimize_full(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_full(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// nlopt_optimize_full_profiled
+Rcpp::List nlopt_optimize_full_profiled(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_nlopt_optimize_full_profiled(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_full_profiled(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// nlopt_optimize_vestep_full
+Rcpp::List nlopt_optimize_vestep_full(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_nlopt_optimize_vestep_full(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_vestep_full(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// nlopt_optimize_fixed
+Rcpp::List nlopt_optimize_fixed(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_nlopt_optimize_fixed(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_fixed(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// nlopt_optimize_diagonal
+Rcpp::List nlopt_optimize_diagonal(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_nlopt_optimize_diagonal(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_diagonal(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// nlopt_optimize_vestep_diagonal
+Rcpp::List nlopt_optimize_vestep_diagonal(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_nlopt_optimize_vestep_diagonal(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_vestep_diagonal(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// nlopt_optimize_spherical
+Rcpp::List nlopt_optimize_spherical(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_nlopt_optimize_spherical(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_spherical(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// nlopt_optimize_vestep_spherical
+Rcpp::List nlopt_optimize_vestep_spherical(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_nlopt_optimize_vestep_spherical(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_vestep_spherical(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// nlopt_optimize_rank
+Rcpp::List nlopt_optimize_rank(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_nlopt_optimize_rank(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_rank(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// nlopt_optimize_vestep_rank
+Rcpp::List nlopt_optimize_vestep_rank(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_nlopt_optimize_vestep_rank(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_vestep_rank(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// nlopt_optimize_vestep_zipln_full
+Rcpp::List nlopt_optimize_vestep_zipln_full(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_nlopt_optimize_vestep_zipln_full(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_vestep_zipln_full(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// nlopt_optimize_vestep_zipln_diagonal
+Rcpp::List nlopt_optimize_vestep_zipln_diagonal(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_nlopt_optimize_vestep_zipln_diagonal(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_vestep_zipln_diagonal(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// nlopt_optimize_vestep_zipln_spherical
+Rcpp::List nlopt_optimize_vestep_zipln_spherical(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_nlopt_optimize_vestep_zipln_spherical(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_vestep_zipln_spherical(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// nlopt_optimize_vestep_zipln_fixed
+Rcpp::List nlopt_optimize_vestep_zipln_fixed(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_nlopt_optimize_vestep_zipln_fixed(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_vestep_zipln_fixed(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_PLNmodels_builtin_optimize_full", (DL_FUNC) &_PLNmodels_builtin_optimize_full, 3},
-    {"_PLNmodels_builtin_optimize_vestep_full", (DL_FUNC) &_PLNmodels_builtin_optimize_vestep_full, 5},
-    {"_PLNmodels_builtin_optimize_diagonal", (DL_FUNC) &_PLNmodels_builtin_optimize_diagonal, 3},
-    {"_PLNmodels_builtin_optimize_vestep_diagonal", (DL_FUNC) &_PLNmodels_builtin_optimize_vestep_diagonal, 5},
-    {"_PLNmodels_builtin_optimize_spherical", (DL_FUNC) &_PLNmodels_builtin_optimize_spherical, 3},
-    {"_PLNmodels_builtin_optimize_vestep_spherical", (DL_FUNC) &_PLNmodels_builtin_optimize_vestep_spherical, 5},
-    {"_PLNmodels_builtin_optimize_fixed", (DL_FUNC) &_PLNmodels_builtin_optimize_fixed, 3},
-    {"_PLNmodels_builtin_optimize_rank", (DL_FUNC) &_PLNmodels_builtin_optimize_rank, 3},
-    {"_PLNmodels_builtin_optimize_vestep_rank", (DL_FUNC) &_PLNmodels_builtin_optimize_vestep_rank, 5},
-    {"_PLNmodels_nlopt_optimize_diagonal", (DL_FUNC) &_PLNmodels_nlopt_optimize_diagonal, 3},
-    {"_PLNmodels_nlopt_optimize_vestep_diagonal", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_diagonal, 5},
-    {"_PLNmodels_nlopt_optimize_fixed", (DL_FUNC) &_PLNmodels_nlopt_optimize_fixed, 3},
-    {"_PLNmodels_nlopt_optimize_full", (DL_FUNC) &_PLNmodels_nlopt_optimize_full, 3},
-    {"_PLNmodels_nlopt_optimize_vestep_full", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_full, 5},
-    {"_PLNmodels_nlopt_optimize_rank", (DL_FUNC) &_PLNmodels_nlopt_optimize_rank, 3},
-    {"_PLNmodels_nlopt_optimize_vestep_rank", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_rank, 5},
-    {"_PLNmodels_nlopt_optimize_spherical", (DL_FUNC) &_PLNmodels_nlopt_optimize_spherical, 3},
-    {"_PLNmodels_nlopt_optimize_vestep_spherical", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_spherical, 5},
     {"_PLNmodels_cpp_test_nlopt", (DL_FUNC) &_PLNmodels_cpp_test_nlopt, 0},
     {"_PLNmodels_nlopt_optimize_genetic_modeling", (DL_FUNC) &_PLNmodels_nlopt_optimize_genetic_modeling, 7},
     {"_PLNmodels_zipln_vloglik", (DL_FUNC) &_PLNmodels_zipln_vloglik, 9},
@@ -538,14 +512,35 @@ static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_optim_zipln_Omega_diagonal", (DL_FUNC) &_PLNmodels_optim_zipln_Omega_diagonal, 4},
     {"_PLNmodels_optim_zipln_B_dense", (DL_FUNC) &_PLNmodels_optim_zipln_B_dense, 2},
     {"_PLNmodels_optim_zipln_zipar_covar", (DL_FUNC) &_PLNmodels_optim_zipln_zipar_covar, 4},
-    {"_PLNmodels_optim_zipln_R_var", (DL_FUNC) &_PLNmodels_optim_zipln_R_var, 7},
-    {"_PLNmodels_optim_zipln_R_exact", (DL_FUNC) &_PLNmodels_optim_zipln_R_exact, 7},
-    {"_PLNmodels_optim_zipln_M", (DL_FUNC) &_PLNmodels_optim_zipln_M, 9},
-    {"_PLNmodels_optim_zipln_psi", (DL_FUNC) &_PLNmodels_optim_zipln_psi, 7},
-    {"_PLNmodels_ve_step_zipln_nlopt", (DL_FUNC) &_PLNmodels_ve_step_zipln_nlopt, 9},
-    {"_PLNmodels_ve_step_zipln_newton", (DL_FUNC) &_PLNmodels_ve_step_zipln_newton, 10},
     {"_PLNmodels_cpp_test_packing", (DL_FUNC) &_PLNmodels_cpp_test_packing, 0},
     {"_PLNmodels_get_sandwich_variance_B", (DL_FUNC) &_PLNmodels_get_sandwich_variance_B, 6},
+    {"_PLNmodels_builtin_optimize_full", (DL_FUNC) &_PLNmodels_builtin_optimize_full, 3},
+    {"_PLNmodels_builtin_optimize_vestep_full", (DL_FUNC) &_PLNmodels_builtin_optimize_vestep_full, 3},
+    {"_PLNmodels_builtin_optimize_diagonal", (DL_FUNC) &_PLNmodels_builtin_optimize_diagonal, 3},
+    {"_PLNmodels_builtin_optimize_vestep_diagonal", (DL_FUNC) &_PLNmodels_builtin_optimize_vestep_diagonal, 3},
+    {"_PLNmodels_builtin_optimize_spherical", (DL_FUNC) &_PLNmodels_builtin_optimize_spherical, 3},
+    {"_PLNmodels_builtin_optimize_vestep_spherical", (DL_FUNC) &_PLNmodels_builtin_optimize_vestep_spherical, 3},
+    {"_PLNmodels_builtin_optimize_fixed", (DL_FUNC) &_PLNmodels_builtin_optimize_fixed, 3},
+    {"_PLNmodels_builtin_optimize_rank", (DL_FUNC) &_PLNmodels_builtin_optimize_rank, 3},
+    {"_PLNmodels_builtin_optimize_vestep_rank", (DL_FUNC) &_PLNmodels_builtin_optimize_vestep_rank, 3},
+    {"_PLNmodels_builtin_optimize_vestep_zipln_full", (DL_FUNC) &_PLNmodels_builtin_optimize_vestep_zipln_full, 3},
+    {"_PLNmodels_builtin_optimize_vestep_zipln_diagonal", (DL_FUNC) &_PLNmodels_builtin_optimize_vestep_zipln_diagonal, 3},
+    {"_PLNmodels_builtin_optimize_vestep_zipln_spherical", (DL_FUNC) &_PLNmodels_builtin_optimize_vestep_zipln_spherical, 3},
+    {"_PLNmodels_builtin_optimize_vestep_zipln_fixed", (DL_FUNC) &_PLNmodels_builtin_optimize_vestep_zipln_fixed, 3},
+    {"_PLNmodels_nlopt_optimize_full", (DL_FUNC) &_PLNmodels_nlopt_optimize_full, 3},
+    {"_PLNmodels_nlopt_optimize_full_profiled", (DL_FUNC) &_PLNmodels_nlopt_optimize_full_profiled, 3},
+    {"_PLNmodels_nlopt_optimize_vestep_full", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_full, 3},
+    {"_PLNmodels_nlopt_optimize_fixed", (DL_FUNC) &_PLNmodels_nlopt_optimize_fixed, 3},
+    {"_PLNmodels_nlopt_optimize_diagonal", (DL_FUNC) &_PLNmodels_nlopt_optimize_diagonal, 3},
+    {"_PLNmodels_nlopt_optimize_vestep_diagonal", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_diagonal, 3},
+    {"_PLNmodels_nlopt_optimize_spherical", (DL_FUNC) &_PLNmodels_nlopt_optimize_spherical, 3},
+    {"_PLNmodels_nlopt_optimize_vestep_spherical", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_spherical, 3},
+    {"_PLNmodels_nlopt_optimize_rank", (DL_FUNC) &_PLNmodels_nlopt_optimize_rank, 3},
+    {"_PLNmodels_nlopt_optimize_vestep_rank", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_rank, 3},
+    {"_PLNmodels_nlopt_optimize_vestep_zipln_full", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_zipln_full, 3},
+    {"_PLNmodels_nlopt_optimize_vestep_zipln_diagonal", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_zipln_diagonal, 3},
+    {"_PLNmodels_nlopt_optimize_vestep_zipln_spherical", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_zipln_spherical, 3},
+    {"_PLNmodels_nlopt_optimize_vestep_zipln_fixed", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_zipln_fixed, 3},
     {NULL, NULL, 0}
 };
 

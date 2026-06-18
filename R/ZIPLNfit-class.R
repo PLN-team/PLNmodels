@@ -114,19 +114,7 @@ ZIPLNfit <- R6Class(
         }
       )
       private$optimizer$Omega <- optim_zipln_Omega_full
-      # Dispatch VE step on backend: "builtin" = Newton, "nlopt" = CCSAQ/etc.
-      private$optimizer$MS <- if (control$backend == "builtin") {
-        ftol    <- if (!is.null(control$config_optim$ftol_in))  control$config_optim$ftol_in  else 1e-8
-        maxiter <- as.integer(
-          if (!is.null(control$config_optim$maxit_ve))  control$config_optim$maxit_ve
-          else if (!is.null(control$config_optim$maxeval)) control$config_optim$maxeval
-          else 10000L)
-        function(init_M, init_S2, Y, X, O, Pi, B, Omega, configuration)
-          ve_step_zipln_newton(init_M, init_S2, Y, X, O, Pi, B, Omega, maxiter, ftol)
-      } else {
-        function(init_M, init_S2, Y, X, O, Pi, B, Omega, configuration)
-          ve_step_zipln_nlopt(init_M, init_S2, Y, X, O, Pi, B, Omega, configuration)
-      }
+      private$setup_MS_optimizer(control$backend, "full")
 
     },
 
@@ -136,6 +124,14 @@ ZIPLNfit <- R6Class(
       ## Normalize X columns so all backends handle large-magnitude covariates well.
       nrm    <- normalize_covariates(data$X)
       data$X <- nrm$X_sc
+      ## ZIPLN does not (yet) support per-observation weights; ones() satisfies the
+      ## (data, params, config) C++ convention shared with PLN's PlnData (which expects w).
+      ve_data <- list(Y = data$Y, X = data$X, O = data$O, w = rep(1, nrow(data$Y)))
+      ## maxit_ve caps the VE-step's own Newton iteration count (builtin only — the
+      ## nlopt VE-step already reads "maxeval" from config directly).
+      ve_config <- control
+      if (control$backend == "builtin" && !is.null(control$maxit_ve))
+        ve_config$maxeval <- as.integer(control$maxit_ve)
 
       parameters <-
         list(Omega = NA, B0 = private$B0, B = sweep(private$B, 1, nrm$scales, "*"),
@@ -173,11 +169,11 @@ ZIPLNfit <- R6Class(
         new_Pi <- optim_new_zipar$Pi
 
         ### VE Step — joint (M, ψ, R): both CCSAQ and NEWTON handle R internally
-        MS_out <- private$optimizer$MS(
-          init_M = parameters$M, init_S2 = parameters$S2,
-          Y = data$Y, X = data$X, O = data$O,
-          Pi = new_Pi, B = new_B, Omega = new_Omega, configuration = control
-        )
+        MS_out <- do.call(private$optimizer$MS, list(
+          data   = ve_data,
+          params = list(M = parameters$M, S2 = parameters$S2, Pi = new_Pi, B = new_B, Omega = new_Omega),
+          config = ve_config
+        ))
         new_M  <- MS_out$M
         new_S2 <- MS_out$S2
         new_R  <- MS_out$R
@@ -264,6 +260,11 @@ ZIPLNfit <- R6Class(
                                Omega = self$model_par$Omega,
                                control = ZIPLN_param(backend = "nlopt")$config_optim) {
       n <- nrow(data$Y)
+      ve_data <- list(Y = data$Y, X = data$X, O = data$O, w = rep(1, n))
+      ve_config <- control
+      if (control$backend == "builtin" && !is.null(control$maxit_ve))
+        ve_config$maxeval <- as.integer(control$maxit_ve)
+
       parameters <-
         list(M = matrix(0, n, self$p), S2 = matrix(.01, n, self$p), R = matrix(0, n, self$p))
 
@@ -289,11 +290,11 @@ ZIPLNfit <- R6Class(
         )$Pi
 
         # VE Step — joint (M, ψ, R): R handled internally by optimizer
-        MS_out <- private$optimizer$MS(
-          init_M = parameters$M, init_S2 = parameters$S2,
-          Y = data$Y, X = data$X, O = data$O,
-          Pi = Pi, B = B, Omega = Omega, configuration = control
-        )
+        MS_out <- do.call(private$optimizer$MS, list(
+          data   = ve_data,
+          params = list(M = parameters$M, S2 = parameters$S2, Pi = Pi, B = B, Omega = Omega),
+          config = ve_config
+        ))
         new_M  <- MS_out$M
         new_S2 <- MS_out$S2
         new_R  <- MS_out$R
@@ -479,7 +480,14 @@ ZIPLNfit <- R6Class(
     covariance = NA, # a string describing the covariance model
     ziparam    = NA, # a string describing the ZI model (single, col, row, covar)
     optimizer  = list(), # list of links to the functions doing the optimization
-    monitoring = list()  # list with optimization monitoring quantities
+    monitoring = list(), # list with optimization monitoring quantities
+
+    ## Set optimizer$MS to the covariance-specific C++ VE-step export matching
+    ## control$backend (mirrors PLNfit's private$setup_optimizer). Called by
+    ## every subclass initialize() so the dispatch logic lives once.
+    setup_MS_optimizer = function(backend, suffix) {
+      private$optimizer$MS <- zipln_MS_fn(backend, suffix)
+    }
   ),
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ##  ACTIVE BINDINGS ----
@@ -585,6 +593,7 @@ ZIPLNfit_diagonal <- R6Class(
     initialize = function(data, control) {
       super$initialize(data, control)
       private$optimizer$Omega <- optim_zipln_Omega_diagonal
+      private$setup_MS_optimizer(control$backend, "diagonal")
     }
   ),
   active = list(
@@ -628,6 +637,7 @@ ZIPLNfit_spherical <- R6Class(
     initialize = function(data, control) {
       super$initialize(data, control)
       private$optimizer$Omega <- optim_zipln_Omega_spherical
+      private$setup_MS_optimizer(control$backend, "spherical")
     }
   ),
   active = list(
@@ -676,6 +686,7 @@ ZIPLNfit_fixed <- R6Class(
       super$initialize(data, control)
       private$Omega <- control$Omega
       private$optimizer$Omega <- function(M, X, B, S2) {private$Omega}
+      private$setup_MS_optimizer(control$backend, "fixed")
     }
   ),
   active = list(

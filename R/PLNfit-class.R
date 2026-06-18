@@ -96,8 +96,6 @@ PLNfit <- R6Class(
         .5 * torch_sum(torch_mm(M_res, params$Omega) * M_res + S2 * torch_diag(params$Omega), dim = 2)
       Ji <- - torch_sum(.logfactorial_torch(data$Y), dim = 2) + Ji_tmp
       Ji <- .5 * self$p + as.numeric(Ji$cpu())
-
-      attr(Ji, "weights") <- as.numeric(data$w$cpu())
       Ji
     },
 
@@ -390,8 +388,14 @@ PLNfit <- R6Class(
         private$M  <- start_point$M
         private$S2 <- start_point$S2
       }
+      ## "profiled" (nlopt only, default TRUE): profile both B and Omega at every nlopt eval
+      ## instead of running an EM loop (Omega fixed per inner nlopt solve, B profiled in
+      ## closed form). Benchmarked faster than the EM loop (1.1x-4.5x) with a slightly
+      ## better loglik across n in [50,300], p in [10,600] and on oaks (see PLN_param() docs).
+      ## Set config_optim$profiled = FALSE to recover the EM loop (nlopt_optimize_full).
+      nlopt_main_fn <- if (isTRUE(control$config_optim$profiled)) nlopt_optimize_full_profiled else nlopt_optimize_full
       private$setup_optimizer(control$backend,
-        nlopt_optimize_full,         builtin_optimize_full,
+        nlopt_main_fn,                builtin_optimize_full,
         nlopt_optimize_vestep_full,  builtin_optimize_vestep_full)
     },
 
@@ -456,11 +460,11 @@ PLNfit <- R6Class(
       } else {
         params0 <- list(M = self$var_par$M, S2 = self$var_par$S2)
       }
+      ## B, Omega are fixed and passed alongside the variational parameters
+      params0$B     <- as.matrix(B)
+      params0$Omega <- as.matrix(Omega)
       args <- list(data = list(Y = responses, X = covariates, O = offsets, w = weights),
-                   ## Initialize the variational parameters with the new dimension of the data
                    params = params0,
-                   B = as.matrix(B),
-                   Omega = as.matrix(Omega),
                    config = control$config_optim)
       optim_out <- do.call(private$optimizer$vestep, args)
       optim_out
@@ -809,7 +813,6 @@ PLNfit_diagonal <- R6Class(
           torch_sum(data$Y * params$Z - params$A + .5 * params$psi -
                       .5 * (torch_square(M_res) + S2) * omega_diag[NULL,], dim = 2)
       )
-      attr(Ji, "weights") <- as.numeric(data$w)
       Ji
     }
 
@@ -894,7 +897,6 @@ PLNfit_spherical <- R6Class(
         torch_sum(data$Y * params$Z - params$A + .5 * (params$psi - torch_log(sigma2)) -
                     .5 * (torch_pow(M_res, 2) + S2)/sigma2, dim = 2)
       )
-      attr(Ji, "weights") <- as.numeric(data$w)
       Ji
     }
 

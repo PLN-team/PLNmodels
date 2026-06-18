@@ -1,0 +1,122 @@
+#include <RcppArmadillo.h>
+
+// [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::depends(nloptr)]]
+
+#include "nlopt_wrapper.h"
+#include "packing.h"
+#include "utils.h"
+#include "covariance_pln.h"
+
+// [[Rcpp::export]]
+arma::vec zipln_vloglik(
+    const arma::mat & Y,      // responses (n,p)
+    const arma::mat & X,      // covariates (n,d)
+    const arma::mat & O,      // offsets (n,p)
+    const arma::mat & Pi,     // (d,p)
+    const arma::mat & Omega,  // (p,p)
+    const arma::mat & B,      // (d,p)
+    const arma::mat & R,      // (n,p)
+    const arma::mat & M,      // (n,p)
+    const arma::mat & S2      // (n,p) variational variance
+) {
+    const arma::uword p = Y.n_cols;
+
+    const arma::mat A    = trunc_exp(O + M + .5 * S2) ;
+    const arma::mat M_mu = M - X * B ;
+    const arma::mat mu0  = logit(Pi) ;
+    return (
+        0.5 * real(log_det(Omega)) + 0.5 * double(p)
+        + sum(
+            (1 - R) % ( Y % (O + M) - A - logfact_mat(Y) )
+            + R % mu0 - trunc_log( 1 + exp(mu0) )
+            + 0.5 * trunc_log(S2) - 0.5 * ((M_mu * Omega) % M_mu + S2.each_row() % diagvec(Omega).t())
+            - R % trunc_log(R) - (1 - R) % trunc_log(1-R), 1)
+    ) ;
+}
+
+// The 3 M-step formulas below (full/spherical/diagonal) are exactly the
+// State::update formulas already implemented in covariance_pln.h for PLN
+// (with w = ones(n), w_bar = n) — reused here instead of duplicated by hand.
+
+// [[Rcpp::export]]
+arma::mat optim_zipln_Omega_full(
+    const arma::mat & M,  // (n,p)
+    const arma::mat & X,  // (n,d)
+    const arma::mat & B,  // (d,p)
+    const arma::mat & S2  // (n,p) variational variance
+) {
+    const arma::uword n = M.n_rows;
+    FullCovTraits::State state(M - X * B, S2, arma::ones(n), double(n));
+    return state.Omega;
+}
+
+// [[Rcpp::export]]
+arma::mat optim_zipln_Omega_spherical(
+    const arma::mat & M,  // (n,p)
+    const arma::mat & X,  // (n,d)
+    const arma::mat & B,  // (d,p)
+    const arma::mat & S2  // (n,p) variational variance
+) {
+    const arma::uword n = M.n_rows, p = M.n_cols;
+    SphericalCovTraits::State state(M - X * B, S2, arma::ones(n), double(n));
+    return arma::diagmat(arma::ones(p) * state.omega2);
+}
+
+// [[Rcpp::export]]
+arma::mat optim_zipln_Omega_diagonal(
+    const arma::mat & M,  // (n,p)
+    const arma::mat & X,  // (n,d)
+    const arma::mat & B,  // (d,p)
+    const arma::mat & S2  // (n,p) variational variance
+) {
+    const arma::uword n = M.n_rows;
+    DiagonalCovTraits::State state(M - X * B, S2, arma::ones(n), double(n));
+    return arma::diagmat(state.omega2);
+}
+
+// [[Rcpp::export]]
+arma::mat optim_zipln_B_dense(
+    const arma::mat & M, // (n,p)
+    const arma::mat & X  // (n,d)
+) {
+    // X^T X is sympd, provide this indications to solve()
+    return solve(X.t() * X, X.t() * M, arma::solve_opts::likely_sympd);
+}
+
+// [[Rcpp::export]]
+Rcpp::List optim_zipln_zipar_covar(
+    const arma::mat & R,        // (n,p)
+    const arma::mat & init_B0,  // (d0,p)
+    const arma::mat & X0,       // covariates (n,d0)
+    const Rcpp::List & configuration // List of config values ; xtol_abs is B0 only (double or mat)
+) {
+    const auto metadata = tuple_metadata(init_B0);
+    enum { B0_ID }; // Names for metadata indexes
+
+    auto parameters = std::vector<double>(metadata.packed_size);
+    metadata.map<B0_ID>(parameters.data()) = init_B0;
+
+    auto optimizer = new_nlopt_optimizer(configuration, parameters.size());
+
+    const arma::mat Xt_R = X0.t() * R;
+    const arma::mat X0t = X0.t();
+
+    // Optimize
+    auto objective_and_grad = [&metadata, &X0, &X0t, &Xt_R](const double * params, double * grad) -> double {
+        const arma::mat B0 = metadata.map<B0_ID>(params);
+
+        arma::mat e_mu0 = exp(X0 * B0);
+        double objective = -accu(Xt_R % B0) + accu(log(1. + e_mu0));
+        metadata.map<B0_ID>(grad) = -Xt_R + X0t * (e_mu0 / (1. + e_mu0)) ;
+        return objective;
+    };
+    OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
+
+    arma::mat B0 = metadata.copy<B0_ID>(parameters.data());
+    return Rcpp::List::create(
+        Rcpp::Named("status") = static_cast<int>(result.status),
+        Rcpp::Named("iterations") = result.nb_iterations,
+        Rcpp::Named("B0") = B0,
+        Rcpp::Named("Pi") = logistic(X0 * B0));
+}

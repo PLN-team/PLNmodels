@@ -26,69 +26,140 @@ inline arma::mat logit(arma::mat M) {
   return arma::trunc_log(M) - arma::trunc_log(1 - M) ;
 }
 
-// ---- Newton step for B: diagonal Hessian approximation with Armijo line search ----
-// Updates B, Z, A in-place (Z = O + X*B + M and A = exp(Z + S²/2) after update).
-// Requires Xw = X.*w and Xw2 = X².*w precomputed outside the loop.
-inline void newton_step_B(
-    const arma::mat & Xw, const arma::mat & Xw2,
-    const arma::mat & X,  const arma::mat & Y,
-    const arma::mat & O,  const arma::vec & w,
-    const arma::mat & M,  const arma::mat & S2,
-    arma::mat & B, arma::mat & Z, arma::mat & A
-) {
-    constexpr double c1 = 1e-4;
-    arma::mat grad_B = Xw.t() * (A - Y);
-    arma::mat hess_B = Xw2.t() * A;
-    hess_B.clamp(1e-10, arma::datum::inf);
-    const arma::mat step_B  = grad_B / hess_B;
-    const arma::mat XstepB  = X * step_B;
-    const double f0_B    = arma::accu(w.t() * (A - Y % Z));
-    const double slope_B = -arma::accu(grad_B % step_B);
-    double alpha_B = 1.0;
-    for (int ls = 0; ls < 20; ls++) {
-        const arma::mat Zt = Z - alpha_B * XstepB;
-        if (arma::accu(w.t() * (arma::exp(Zt + 0.5 * S2) - Y % Zt))
-            <= f0_B + c1 * alpha_B * slope_B) break;
-        alpha_B *= 0.5;
-    }
-    B -= alpha_B * step_B;
-    Z  = O + X * B + M;
-    A  = arma::exp(Z + 0.5 * S2);
-}
-
-// ---- Fixed-point update for ψ = log(S²) (overflow-safe) ----
-// Exact minimiser of F(ψ) for fixed A: ψ = −log(A + cov_diag).
-// cov_diag: diagonal of Omega broadcast to (n,p) — arma::mat or double (scalar broadcast).
-// Updates A, ψ, S2 = exp(ψ) in-place.  S is not stored: recover via exp(0.5*ψ) at output.
-template<typename CovDiagType>
-inline void fixed_point_psi(
-    arma::mat & psi, arma::mat & S2,
-    const arma::mat & Z, arma::mat & A,
-    const CovDiagType & cov_diag
-) {
-    A = arma::exp(Z + 0.5 * S2);
-    const arma::mat psi_cand = -arma::log(A + cov_diag);
-    const arma::mat psi_ub   = arma::log(arma::clamp(700. - Z, 1., arma::datum::inf));
-    psi = arma::clamp(arma::min(psi_cand, psi_ub), -40., arma::datum::inf);
-    S2  = arma::exp(psi);
-}
-
 // ---- Relative convergence test: |val - prev| < tol * (1 + |prev|) ----
 inline bool converged(double val, double prev, double tol) {
     return std::abs(val - prev) < tol * (1.0 + std::abs(prev));
 }
 
 // ---- Config extraction for builtin Newton optimizers ----
-// Centralises the containsElementNamed pattern replicated across all newton_*.cpp files.
+// Centralises the containsElementNamed pattern used by builtin_optim_pln.*, nlopt_optim_pln.h
+// and builtin_optim_plnpca.cpp. Defaults are constructor arguments (not in-class initializers)
+// so callers with different historical defaults (e.g. PLNPCA's 10000/1e-9) can opt in without
+// changing behavior for the rest of the codebase.
 struct NewtonConfig {
-    int    maxiter            = 200;
-    double ftol               = 1e-8;
-    int    max_em             = 50;
-    double em_tol             = 1e-8;
-    explicit NewtonConfig(const Rcpp::List & cfg) {
+    int    maxiter;
+    double ftol;
+    int    max_em;
+    double em_tol;
+    explicit NewtonConfig(const Rcpp::List & cfg,
+                           int default_maxiter = 200, double default_ftol = 1e-8,
+                           int default_max_em = 50,    double default_em_tol = 1e-8)
+        : maxiter(default_maxiter), ftol(default_ftol), max_em(default_max_em), em_tol(default_em_tol) {
         if (cfg.containsElementNamed("maxeval"))  maxiter = Rcpp::as<int>(cfg["maxeval"]);
         if (cfg.containsElementNamed("ftol_in"))  ftol    = Rcpp::as<double>(cfg["ftol_in"]);
         if (cfg.containsElementNamed("maxit_em")) max_em  = Rcpp::as<int>(cfg["maxit_em"]);
         if (cfg.containsElementNamed("ftol_em"))  em_tol  = Rcpp::as<double>(cfg["ftol_em"]);
     }
 };
+
+// ---- PLN data extraction: Y, X, O, w from the R-side `data` list ----
+// Centralises the Rcpp::as<...> pattern replicated across all PLN optimizers (builtin and nlopt).
+struct PlnData {
+    arma::mat Y, X, O;
+    arma::vec w;
+    explicit PlnData(const Rcpp::List & data) :
+        Y(Rcpp::as<arma::mat>(data["Y"])),
+        X(Rcpp::as<arma::mat>(data["X"])),
+        O(Rcpp::as<arma::mat>(data["O"])),
+        w(Rcpp::as<arma::vec>(data["w"])) {}
+};
+
+// ---- Result assembly for PLN optimizers ----
+// Centralises the two Rcpp::List::create shapes replicated across all PLN optimizers.
+// "Full" result: joint (B, Sigma/Omega) optimizers (nlopt EM/profiled, builtin Newton).
+inline Rcpp::List make_pln_result(
+    const arma::mat & B, const arma::mat & M, const arma::mat & S2,
+    const arma::mat & Z, const arma::mat & A,
+    const Rcpp::List & cov_out,   // List(Sigma, Omega)
+    const arma::vec & loglik,     // per-observation log-likelihood Ji (auto-wrapped by Rcpp::Named)
+    int status, const char * backend,
+    const std::vector<double> & objective_vec, int iterations
+) {
+    return Rcpp::List::create(
+        Rcpp::Named("B",     B               ),
+        Rcpp::Named("M",     M               ),
+        Rcpp::Named("S2",    S2              ),
+        Rcpp::Named("Z",     Z               ),
+        Rcpp::Named("A",     A               ),
+        Rcpp::Named("Sigma", cov_out["Sigma"]),
+        Rcpp::Named("Omega", cov_out["Omega"]),
+        Rcpp::Named("Ji",    loglik          ),
+        Rcpp::Named("monitoring", Rcpp::List::create(
+            Rcpp::Named("status",     status        ),
+            Rcpp::Named("backend",    backend       ),
+            Rcpp::Named("objective",  objective_vec ),
+            Rcpp::Named("iterations", iterations    )
+        ))
+    );
+}
+
+// "Rank" result: like the "Full" shape above, plus the loadings matrix C (PLNPCA only).
+inline Rcpp::List make_plnpca_result(
+    const arma::mat & B, const arma::mat & C, const arma::mat & M, const arma::mat & S2,
+    const arma::mat & Z, const arma::mat & A,
+    const Rcpp::List & cov_out,   // List(Sigma, Omega)
+    const arma::vec & loglik,
+    int status, const char * backend,
+    const std::vector<double> & objective_vec, int iterations
+) {
+    return Rcpp::List::create(
+        Rcpp::Named("B",     B               ),
+        Rcpp::Named("C",     C               ),
+        Rcpp::Named("M",     M               ),
+        Rcpp::Named("S2",    S2              ),
+        Rcpp::Named("Z",     Z               ),
+        Rcpp::Named("A",     A               ),
+        Rcpp::Named("Sigma", cov_out["Sigma"]),
+        Rcpp::Named("Omega", cov_out["Omega"]),
+        Rcpp::Named("Ji",    loglik          ),
+        Rcpp::Named("monitoring", Rcpp::List::create(
+            Rcpp::Named("status",     status        ),
+            Rcpp::Named("backend",    backend       ),
+            Rcpp::Named("objective",  objective_vec ),
+            Rcpp::Named("iterations", iterations    )
+        ))
+    );
+}
+
+// "VE-step" result: B and Omega fixed, only (M, S2) optimized.
+inline Rcpp::List make_vestep_result(
+    const arma::mat & M, const arma::mat & S2,
+    const arma::vec & loglik,
+    int status, const char * backend,
+    const std::vector<double> & objective_vec, int iterations
+) {
+    return Rcpp::List::create(
+        Rcpp::Named("M")  = M,
+        Rcpp::Named("S2") = S2,
+        Rcpp::Named("Ji") = loglik,
+        Rcpp::Named("monitoring", Rcpp::List::create(
+            Rcpp::Named("status",     status        ),
+            Rcpp::Named("backend",    backend       ),
+            Rcpp::Named("objective",  objective_vec ),
+            Rcpp::Named("iterations", iterations    )
+        ))
+    );
+}
+
+// "ZIPLN VE-step" result: like the "VE-step" shape above, but for the joint
+// (M, S2, R) VE-step (B and Omega fixed): R replaces Ji (the R caller computes
+// the log-likelihood separately via zipln_vloglik). No B field: the converged
+// B was only ever re-profiled for an "informational" return value that no R
+// call site reads — dropped along with the solve()/P_X*M that computed it.
+inline Rcpp::List make_zipln_vestep_result(
+    const arma::mat & M, const arma::mat & S2, const arma::mat & R,
+    int status, const char * backend,
+    const std::vector<double> & objective_vec, int iterations
+) {
+    return Rcpp::List::create(
+        Rcpp::Named("M")  = M,
+        Rcpp::Named("S2") = S2,
+        Rcpp::Named("R")  = R,
+        Rcpp::Named("monitoring", Rcpp::List::create(
+            Rcpp::Named("status",     status        ),
+            Rcpp::Named("backend",    backend       ),
+            Rcpp::Named("objective",  objective_vec ),
+            Rcpp::Named("iterations", iterations    )
+        ))
+    );
+}

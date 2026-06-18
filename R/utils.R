@@ -20,7 +20,10 @@ config_default_nlopt <-
     xtol_rel      = 1e-6   ,
     ftol_abs      = 0.0    ,
     xtol_abs      = 0.0    ,
-    maxtime       = -1
+    maxtime       = -1     ,
+    profiled      = TRUE   # PLN, full covariance only: profile B and Omega at every nlopt
+                            # eval instead of the EM loop (see PLNfit-class.R) -- benchmarked
+                            # faster with a better loglik across a wide range of (n,p)
   )
 
 
