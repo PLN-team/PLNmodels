@@ -29,6 +29,14 @@
   than plain nlopt at essentially the same speed (+34 trichoptera, +123 barents, +676 oaks).
   Set `backend = "nlopt"` to recover the previous default.
 
+* **ZIPLNnetwork default backend switched to `"builtin"`**: an oscillatory interaction
+  between the Newton VE-step and the alternating GLASSO M-step previously made `"builtin"`
+  perform worse than nlopt on larger datasets; this is no longer the case after the joint
+  (M, ψ, R) Newton VE-step and the surrounding refactoring, and `"builtin"` now finds a
+  consistently better ELBO across the penalty path (e.g. +300 to +384 loglik on oaks, p=114),
+  at the cost of being slower (~3.6x on oaks). Set `backend = "nlopt"` to recover the
+  previous default.
+
 * **ZIPLN  initialization**: `pscl::zeroinfl` is replaced by an internal
   `compute_ZIPLN_starting_point()` that uses a standard LM (for B) and a binomial
   GLM (for the ZI parameters). This is 60–240× faster and consistently finds better

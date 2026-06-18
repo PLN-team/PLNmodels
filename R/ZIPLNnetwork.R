@@ -54,7 +54,7 @@ ZIPLNnetwork <- function(formula, data, subset, weights, zi = c("single", "row",
 #' @inheritParams PLNnetwork_param
 #'
 #' @inherit PLN_param details return
-#' @param backend optimization backend, either `"nlopt"` (default, CCSAQ — recommended for ZIPLNnetwork: stable under alternating GLASSO/VE-step EM) or `"builtin"` (Newton joint on (M,ψ,R) — can be better on small datasets but may oscillate on large ones).
+#' @param backend optimization backend, either `"builtin"` (default, joint Newton on (M,ψ,R), combined with the partial E-step `maxit_ve = 1`) or `"nlopt"` (CCSAQ). `"builtin"` consistently finds a better ELBO across the penalty path (e.g. +300 to +384 loglik on oaks, p=114) at the cost of being slower (~3.6x on oaks).
 #' @details See [PLNnetwork_param()] for a full description of the optimization parameters. Note that some defaults values are different than those used in [PLNnetwork_param()]:
 #' * "ftol_out" (outer loop convergence tolerance the objective function) is set by default to 1e-6
 #' * "maxit_out" (max number of iterations for the outer loop) is set by default to 50
@@ -62,7 +62,7 @@ ZIPLNnetwork <- function(formula, data, subset, weights, zi = c("single", "row",
 #' @seealso [PLNnetwork_param()] and [PLN_param()]
 #' @export
 ZIPLNnetwork_param <- function(
-    backend           = c("nlopt", "builtin"),
+    backend           = c("builtin", "nlopt"),
     inception_cov     = c("full", "spherical", "diagonal"),
     trace             = 1      ,
     n_penalties       = 30     ,
