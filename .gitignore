@@ -77,3 +77,6 @@ snowflake.log
 
 # Claude memory notes (kept local only, not part of the package)
 /memory/
+
+/.quarto/
+**/*.quarto_ipynb
