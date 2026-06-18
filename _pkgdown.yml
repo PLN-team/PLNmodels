@@ -32,6 +32,8 @@ navbar:
         href: articles/PLNLDA.html
       - text: "PLNmixture: Model-based clustering for counts"
         href: articles/PLNmixture.html
+      - text: "ZIPLN: Zero-inflated models for counts with excess zeros"
+        href: articles/ZIPLN.html
 
 reference:
 - title: 'Top-level fitting functions'

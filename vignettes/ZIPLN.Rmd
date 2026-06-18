@@ -1,0 +1,152 @@
+---
+title: "Zero-inflated PLN models for multivariate count data with excess zeros"
+author: "PLN team"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 3
+bibliography: article/PLNreferences.bib
+link-citations: yes
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Zero-inflated PLN models for multivariate count data with excess zeros}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  rows.print = 5,
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 7, fig.height = 5)
+set.seed(177813)
+```
+
+## Preliminaries
+
+This vignette illustrates the `ZIPLN` and `ZIPLNnetwork` functions and the methods accompanying the R6 classes `ZIPLNfit` and `ZIPLNnetworkfamily`. These models extend `PLN` and `PLNnetwork` (see the corresponding vignettes) to count data with an excess of zeros that a (sparse) Poisson lognormal model alone cannot capture.
+
+### Requirements
+
+The packages required for the analysis are **PLNmodels** plus some others for data manipulation and representation:
+
+```{r requirement}
+library(PLNmodels)
+library(ggplot2)
+```
+
+### Data set
+
+We illustrate zero-inflation with the `microcosm` data set [@microcosm]: the evolution of the microbiota of lactating cows, sampled in 4 body sites (oral, nasal, vaginal, milk) at several time points, with **p = 259** taxa, **n = 880** samples and an average of 90% zeroes. To keep this vignette fast to compile while remaining representative, we restrict the analysis to the **30 most abundant taxa**, which still display substantial zero-inflation:
+
+```{r data_load}
+data(microcosm)
+most_abundant <- order(colSums(microcosm$Abundance), decreasing = TRUE)[1:30]
+microcosm$Abundance <- microcosm$Abundance[, most_abundant]
+mean(microcosm$Abundance == 0)
+```
+
+### Mathematical background
+
+The zero-inflated PLN model (ZIPLN) combines the Poisson lognormal model [@AiH89] -- see [the PLN vignette](PLN.html) -- with a zero-inflation mechanism: each count $Y_{ij}$ is either a structural zero (with probability $\pi_{ij}$) or drawn from the usual PLN generative process:
+\begin{equation}
+  \begin{array}{rcl}
+  \text{latent space } &   \mathbf{Z}_i \sim \mathcal{N}\left({\boldsymbol\mu},\boldsymbol\Sigma\right) & \\
+  \text{zero-inflation } &  W_{ij} \sim \mathcal{B}(\pi_{ij}) & \text{independent of } \mathbf{Z}_i\\
+  \text{observation space } &  Y_{ij} \,|\, Z_{ij}, W_{ij} = 0 \sim \mathcal{P}\left(\exp\{Z_{ij}\}\right), &  Y_{ij} \,|\, W_{ij} = 1 \;=\; 0
+  \end{array}
+\end{equation}
+
+Just like PLN, ${\boldsymbol\mu}$ generalizes to $\mathbf{o}_i + \mathbf{x}_i^\top\mathbf{B}$ to account for offsets and covariates. The zero-inflation probabilities $\pi_{ij}$ can be parameterized in several ways, controlled by the `zi` argument of `ZIPLN()`:
+
+- `"single"`: a single $\pi$ shared by all entries (default).
+- `"row"`: one $\pi_i$ per sample.
+- `"col"`: one $\pi_j$ per species.
+- covariates: $\text{logit}(\pi_{ij}) = \mathbf{x}_{0,i}^\top\mathbf{B}_{0,j}$, specified with the formula syntax `Y ~ PLN effect | ZI effect` (see below).
+
+`ZIPLNnetwork` further adds a sparsity penalty on $\boldsymbol\Omega = \boldsymbol\Sigma^{-1}$, exactly as `PLNnetwork` does for PLN (see [the PLNnetwork vignette](PLNnetwork.html) and @PLNnetwork), so that both the excess of zeros and the residual dependency structure between taxa are accounted for.
+
+## Analysis of microcosm with ZIPLN
+
+### Comparing zero-inflation parameterizations
+
+We fit a plain `PLN` model and the four `ZIPLN` parameterizations, all with the sampling site as a covariate for the count part, to check how much accounting for zero-inflation improves the fit:
+
+```{r zi_param, results = FALSE}
+myPLN     <- PLN(Abundance ~ site + offset(log(Offset)), data = microcosm)
+zi_single <- ZIPLN(Abundance ~ site + offset(log(Offset)), data = microcosm)
+zi_row    <- ZIPLN(Abundance ~ site + offset(log(Offset)), data = microcosm, zi = "row")
+zi_col    <- ZIPLN(Abundance ~ site + offset(log(Offset)), data = microcosm, zi = "col")
+zi_site   <- ZIPLN(Abundance ~ site + offset(log(Offset)) | site, data = microcosm)
+```
+
+```{r zi_param_table}
+data.frame(
+  model  = c("PLN", "ZIPLN (single)", "ZIPLN (row)", "ZIPLN (col)", "ZIPLN (site-dependent)"),
+  loglik = c(myPLN$loglik, zi_single$loglik, zi_row$loglik, zi_col$loglik, zi_site$loglik),
+  BIC    = c(myPLN$BIC, zi_single$BIC, zi_row$BIC, zi_col$BIC, zi_site$BIC),
+  ICL    = c(myPLN$ICL, zi_single$ICL, zi_row$ICL, zi_col$ICL, zi_site$ICL)
+) %>% knitr::kable(digits = 1)
+```
+
+Accounting for zero-inflation brings a large improvement over plain `PLN`, and letting the zero-inflation probability depend on the body site (`zi_site`) gives the best BIC and ICL among the parameterizations considered -- not surprising given how different the four body sites are.
+
+### Inspecting the fit
+
+As for `PLN`, fitted values stay close to the observed counts:
+
+```{r fitted, fig.cap = "fitted value vs. observation"}
+data.frame(
+  fitted   = as.vector(fitted(zi_site)),
+  observed = as.vector(microcosm$Abundance)
+) %>%
+  ggplot(aes(x = observed, y = fitted)) +
+    geom_point(size = .5, alpha = .25) +
+    scale_x_log10(limits = c(1, NA)) +
+    scale_y_log10(limits = c(1, NA)) +
+    theme_bw() + ggplot2::annotation_logticks()
+```
+
+The site-dependent model also lets us recover, for each species, an estimated zero-inflation probability per body site (`model_par$Pi`), revealing substantial heterogeneity:
+
+```{r zi_by_site, fig.cap = "Estimated zero-inflation probability by body site, across the 30 species"}
+one_obs_per_site <- !duplicated(microcosm$site)
+pi_hat <- zi_site$model_par$Pi[one_obs_per_site, ]
+rownames(pi_hat) <- as.character(microcosm$site[one_obs_per_site])
+
+data.frame(site = rep(rownames(pi_hat), ncol(pi_hat)), zi_prob = as.vector(pi_hat)) %>%
+  ggplot(aes(x = site, y = zi_prob)) +
+    geom_boxplot() + theme_bw() +
+    labs(x = "Body site", y = "Zero-inflation probability (per species)")
+```
+
+## Sparse network inference with ZIPLNnetwork
+
+`ZIPLNnetwork` adjusts the model for a series of penalties controlling the number of edges in the network, just like `PLNnetwork`, but on top of a zero-inflation component. We keep the default `zi = "single"` here for simplicity and focus on the network:
+
+```{r ziplnnetwork, results = FALSE}
+zi_models <- ZIPLNnetwork(Abundance ~ site + offset(log(Offset)), data = microcosm)
+```
+
+As for `PLNnetwork`, a diagnostic plot and the evolution of the criteria along the path are available:
+
+```{r ziplnnetwork_diagnostic, fig.cap = "diagnostic of the ZIPLNnetwork fits"}
+plot(zi_models, "diagnostic")
+```
+
+```{r ziplnnetwork_criteria, fig.cap = "evolution of model selection criteria"}
+plot(zi_models)
+```
+
+We select a network with `getBestModel()` and represent it:
+
+```{r ziplnnetwork_best, fig.cap = "sparse residual network between the 30 most abundant taxa"}
+zi_net <- getBestModel(zi_models, "BIC")
+plot(zi_net)
+```
+
+As for `PLNnetwork`, a more robust (but more computationally intensive) `stability_selection()`-based choice of penalty is available -- we do not run it here to keep this vignette fast, see [the PLNnetwork vignette](PLNnetwork.html) for an example.
+
+## References
