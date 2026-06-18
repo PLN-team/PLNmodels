@@ -68,6 +68,7 @@ ZIPLN <- function(formula, data, subset, zi = c("single", "row", "col"), control
 #'
 #' @inheritParams PLN_param
 #' @inheritParams PLNnetwork_param
+#' @param covariance character setting the model for the covariance matrix. Either "full", "diagonal", "spherical", "fixed" or "sparse". Default is "full".
 #' @param backend optimization backend, either `"builtin"` (default, built-in Newton optimizer for the joint VE step) or `"nlopt"` (NLOPT-based CCSAQ).
 #' @param penalty a user-defined penalty to sparsify the residual covariance. Defaults to 0 (no sparsity).
 #' @return list of parameters used during the fit and post-processing steps

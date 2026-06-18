@@ -7,8 +7,9 @@
 PLN_param(
   backend = c("builtin", "nlopt", "torch"),
   trace = 1,
-  covariance = c("full", "diagonal", "spherical", "fixed"),
+  covariance = c("full", "diagonal", "spherical", "fixed", "genpop"),
   Omega = NULL,
+  C = NULL,
   config_post = list(),
   config_optim = list(),
   inception = NULL,
@@ -23,9 +24,12 @@ accurate backend, especially for large p with full covariance.
 
 \item{trace}{a integer for verbosity.}
 
-\item{covariance}{character setting the model for the covariance matrix. Either "full", "diagonal", "spherical" or "fixed". Default is "full".}
+\item{covariance}{character setting the model for the covariance matrix. Either "full", "diagonal", "spherical", "fixed" or "genpop". Default is "full".}
 
 \item{Omega}{precision matrix of the latent variables. Inverse of Sigma. Must be specified if \code{covariance} is "fixed"}
+
+\item{C}{a fixed p x p correlation matrix (e.g. a genetic relationship matrix). Must be specified if \code{covariance} is "genpop": the
+residual covariance is then modeled as \code{Sigma = sigma2 * (rho * C + (1 - rho) * I)}, with \code{sigma2} and \code{rho} estimated.}
 
 \item{config_post}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details}
 

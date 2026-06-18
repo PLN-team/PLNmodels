@@ -22,7 +22,7 @@ ZIPLN_param(
 
 \item{trace}{a integer for verbosity.}
 
-\item{covariance}{character setting the model for the covariance matrix. Either "full", "diagonal", "spherical" or "fixed". Default is "full".}
+\item{covariance}{character setting the model for the covariance matrix. Either "full", "diagonal", "spherical", "fixed" or "sparse". Default is "full".}
 
 \item{Omega}{precision matrix of the latent variables. Inverse of Sigma. Must be specified if \code{covariance} is "fixed"}
 
