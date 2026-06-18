@@ -72,6 +72,9 @@
     <li>
       <a href="../articles/PLNmixture.html">PLNmixture: Model-based clustering for counts</a>
     </li>
+    <li>
+      <a href="../articles/ZIPLN.html">ZIPLN: Zero-inflated models for counts with excess zeros</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -263,7 +266,7 @@ for each species:</p>
 <code class="sourceCode R"><span><span class="va">myPLN</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PLN.html">PLN</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span>, <span class="va">trichoptera</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">##  Initialization...</span></span>
-<span><span class="co">##  Adjusting a full covariance PLN model with builtin optimizer</span></span>
+<span><span class="co">##  Adjusting a full covariance PLN model with nlopt optimizer</span></span>
 <span><span class="co">##  Post-treatments...</span></span>
 <span><span class="co">##  DONE!</span></span></code></pre>
 <p>Note the use of the <code>formula</code> object to specify the model:
@@ -287,7 +290,7 @@ when printing/showing such an object in the <code>R</code> console:</p>
 <pre><code><span><span class="co">## A multivariate Poisson Lognormal fit with full covariance model.</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">##  nb_param    loglik       BIC       AIC       ICL</span></span>
-<span><span class="co">##       170 -1129.559 -1460.364 -1299.559 -2301.741</span></span>
+<span><span class="co">##       170 -1129.624 -1460.429 -1299.624 -2270.936</span></span>
 <span><span class="co">## ==================================================================</span></span>
 <span><span class="co">## * Useful fields</span></span>
 <span><span class="co">##     $model_par, $latent, $latent_pos, $var_par, $optim_par</span></span>
@@ -304,11 +307,11 @@ when printing/showing such an object in the <code>R</code> console:</p>
 just like with a traditional list, <em>e.g.</em>,</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">myPLN</span><span class="op">$</span><span class="va">loglik</span>, <span class="va">myPLN</span><span class="op">$</span><span class="va">BIC</span>, <span class="va">myPLN</span><span class="op">$</span><span class="va">ICL</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] -1129.559 -1460.364 -2301.741</span></span></code></pre>
+<pre><code><span><span class="co">## [1] -1129.624 -1460.429 -2270.936</span></span></code></pre>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myPLN</span><span class="op">$</span><span class="va">criteria</span></span></code></pre></div>
 <pre><code><span><span class="co">##   nb_param    loglik       BIC       AIC       ICL</span></span>
-<span><span class="co">## 1      170 -1129.559 -1460.364 -1299.559 -2301.741</span></span></code></pre>
+<span><span class="co">## 1      170 -1129.624 -1460.429 -1299.624 -2270.936</span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="glm-like-interface">GLM-like interface<a class="anchor" aria-label="anchor" href="#glm-like-interface"></a>
@@ -417,17 +420,17 @@ log-likelihood is higher with the same number of parameters<a href="#fn3" class=
 <tbody>
 <tr class="odd">
 <td align="right">170</td>
-<td align="right">-1129.559</td>
-<td align="right">-1460.364</td>
-<td align="right">-1299.559</td>
-<td align="right">-2301.741</td>
+<td align="right">-1129.624</td>
+<td align="right">-1460.429</td>
+<td align="right">-1299.624</td>
+<td align="right">-2270.936</td>
 </tr>
 <tr class="even">
 <td align="right">170</td>
-<td align="right">-1051.757</td>
-<td align="right">-1382.562</td>
-<td align="right">-1221.757</td>
-<td align="right">-2230.057</td>
+<td align="right">-1051.721</td>
+<td align="right">-1382.526</td>
+<td align="right">-1221.721</td>
+<td align="right">-2209.459</td>
 </tr>
 </tbody>
 </table>
@@ -436,7 +439,7 @@ log-likelihood is higher with the same number of parameters<a href="#fn3" class=
 <code class="sourceCode R"><span><span class="va">myPLN_wind</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PLN.html">PLN</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">Wind</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">##  Initialization...</span></span>
-<span><span class="co">##  Adjusting a full covariance PLN model with builtin optimizer</span></span>
+<span><span class="co">##  Adjusting a full covariance PLN model with nlopt optimizer</span></span>
 <span><span class="co">##  Post-treatments...</span></span>
 <span><span class="co">##  DONE!</span></span></code></pre>
 <p>When we compare the models, the gain is clear in terms of
@@ -458,17 +461,17 @@ variable:</p>
 <tbody>
 <tr class="odd">
 <td align="right">170</td>
-<td align="right">-1051.757</td>
-<td align="right">-1382.562</td>
-<td align="right">-1221.757</td>
-<td align="right">-2230.057</td>
+<td align="right">-1051.721</td>
+<td align="right">-1382.526</td>
+<td align="right">-1221.721</td>
+<td align="right">-2209.459</td>
 </tr>
 <tr class="even">
 <td align="right">187</td>
-<td align="right">-1027.933</td>
-<td align="right">-1391.818</td>
-<td align="right">-1214.933</td>
-<td align="right">-2107.708</td>
+<td align="right">-1027.974</td>
+<td align="right">-1391.859</td>
+<td align="right">-1214.974</td>
+<td align="right">-2071.767</td>
 </tr>
 </tbody>
 </table>
@@ -513,7 +516,7 @@ are equivalents:</p>
 <span>  <span class="fu"><a href="../reference/PLN.html">PLN</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">trichoptera</span>, <span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">##  Initialization...</span></span>
-<span><span class="co">##  Adjusting a full covariance PLN model with builtin optimizer</span></span>
+<span><span class="co">##  Adjusting a full covariance PLN model with nlopt optimizer</span></span>
 <span><span class="co">##  Post-treatments...</span></span>
 <span><span class="co">##  DONE!</span></span></code></pre>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
@@ -521,7 +524,7 @@ are equivalents:</p>
 <span>  <span class="fu"><a href="../reference/PLN.html">PLN</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">trichoptera</span>, control <span class="op">=</span> <span class="fu"><a href="../reference/PLN_param.html">PLN_param</a></span><span class="op">(</span>covariance <span class="op">=</span> <span class="st">"full"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">##  Initialization...</span></span>
-<span><span class="co">##  Adjusting a full covariance PLN model with builtin optimizer</span></span>
+<span><span class="co">##  Adjusting a full covariance PLN model with nlopt optimizer</span></span>
 <span><span class="co">##  Post-treatments...</span></span>
 <span><span class="co">##  DONE!</span></span></code></pre>
 <p>Different covariance models can then be compared with the usual
@@ -549,26 +552,26 @@ additional parameters:</p>
 <tr class="odd">
 <td align="left">full</td>
 <td align="right">170</td>
-<td align="right">-1051.757</td>
-<td align="right">-1382.562</td>
-<td align="right">-1221.757</td>
-<td align="right">-2230.057</td>
+<td align="right">-1051.721</td>
+<td align="right">-1382.526</td>
+<td align="right">-1221.721</td>
+<td align="right">-2209.459</td>
 </tr>
 <tr class="even">
 <td align="left">diagonal</td>
 <td align="right">34</td>
-<td align="right">-1109.713</td>
-<td align="right">-1175.874</td>
-<td align="right">-1143.713</td>
-<td align="right">-2094.579</td>
+<td align="right">-1109.653</td>
+<td align="right">-1175.814</td>
+<td align="right">-1143.653</td>
+<td align="right">-2068.655</td>
 </tr>
 <tr class="odd">
 <td align="left">spherical</td>
 <td align="right">18</td>
-<td align="right">-1158.439</td>
-<td align="right">-1193.465</td>
-<td align="right">-1176.439</td>
-<td align="right">-2155.640</td>
+<td align="right">-1158.440</td>
+<td align="right">-1193.467</td>
+<td align="right">-1176.440</td>
+<td align="right">-2153.219</td>
 </tr>
 </tbody>
 </table>
@@ -596,24 +599,24 @@ covariate, which gives a slight improvement.</p>
 <tbody>
 <tr class="odd">
 <td align="right">187</td>
-<td align="right">-1027.933</td>
-<td align="right">-1391.818</td>
-<td align="right">-1214.933</td>
-<td align="right">-2107.708</td>
+<td align="right">-1027.974</td>
+<td align="right">-1391.859</td>
+<td align="right">-1214.974</td>
+<td align="right">-2071.767</td>
 </tr>
 <tr class="even">
 <td align="right">34</td>
-<td align="right">-1109.713</td>
-<td align="right">-1175.874</td>
-<td align="right">-1143.713</td>
-<td align="right">-2094.579</td>
+<td align="right">-1109.653</td>
+<td align="right">-1175.814</td>
+<td align="right">-1143.653</td>
+<td align="right">-2068.655</td>
 </tr>
 <tr class="odd">
 <td align="right">51</td>
-<td align="right">-1073.255</td>
-<td align="right">-1172.496</td>
-<td align="right">-1124.255</td>
-<td align="right">-1848.181</td>
+<td align="right">-1073.028</td>
+<td align="right">-1172.269</td>
+<td align="right">-1124.028</td>
+<td align="right">-1777.223</td>
 </tr>
 </tbody>
 </table>

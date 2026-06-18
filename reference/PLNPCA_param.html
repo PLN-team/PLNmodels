@@ -55,6 +55,9 @@
     <li>
       <a href="../articles/PLNmixture.html">PLNmixture: Model-based clustering for counts</a>
     </li>
+    <li>
+      <a href="../articles/ZIPLN.html">ZIPLN: Zero-inflated models for counts with excess zeros</a>
+    </li>
   </ul></li>
 <li>
   <a href="../news/index.html">Changelog</a>
@@ -130,7 +133,7 @@ LM-based starting point and gives the highest-quality initialisation for large r
 When <code>NULL</code> (default), see <code>init_method</code>. <code>init_method</code> is ignored when <code>inception</code> is set.
 <strong>Recommendation</strong>: for large ranks (<code>rank &gt; sqrt(p)</code>) on complex datasets, prefer
 <code>init_method = "EM"</code> (cheap, most gains) or <code>inception = PLN(formula, data)</code> (maximum
-quality, full convergence cost). Benchmark: up to +135 loglik at rank=20, oaks p=114.</p></dd>
+quality, full convergence cost).</p></dd>
 
 
 <dt id="arg-init-method">init_method<a class="anchor" aria-label="anchor" href="#arg-init-method"></a></dt>
@@ -140,9 +143,8 @@ small to moderate ranks (<code>rank &lt;= sqrt(p)</code>). Recommended default.<
 recommended.</p></li>
 <li><p><code>"EM"</code>: run <code>init_niter</code> variational EM iterations of a full PLN (builtin backend)
 before computing the SVD, giving a latent mean M closer to the true posterior.
-<strong>Recommended for large ranks</strong> (<code>rank &gt; sqrt(p)</code>): benchmark on oaks (p=114)
-shows +135 loglik at rank=20 vs <code>"LM"</code>, with negligible extra cost (5 EM iterations).
-Caution: hurts for small ranks (e.g. rank=5, p=114: −800 loglik) because an
+<strong>Recommended for large ranks</strong> (<code>rank &gt; sqrt(p)</code>), where it noticeably improves the
+loglik at negligible extra cost. Caution: hurts for small ranks, because an
 over-converged M reduces low-rank SVD discriminability. Ignored when <code>inception</code>
 is provided.</p></li>
 </ul></dd>

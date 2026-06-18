@@ -74,6 +74,9 @@
     <li>
       <a href="articles/PLNmixture.html">PLNmixture: Model-based clustering for counts</a>
     </li>
+    <li>
+      <a href="articles/ZIPLN.html">ZIPLN: Zero-inflated models for counts with excess zeros</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -99,109 +102,205 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
+
 <div class="section level1">
-<div class="page-header"><h1 id="plnmodels-poisson-lognormal-models-">PLNmodels: Poisson lognormal models <img src="reference/figures/logo.png" align="right" width="155" height="180"><a class="anchor" aria-label="anchor" href="#plnmodels-poisson-lognormal-models-"></a>
+<div class="page-header"><h1 id="plnmodels-poisson-lognormal-models-for-multivariate-count-data">PLNmodels: Poisson lognormal models for multivariate count data<a class="anchor" aria-label="anchor" href="#plnmodels-poisson-lognormal-models-for-multivariate-count-data"></a>
 </h1></div>
 <!-- badges: start -->
 
+<div class="section level2">
+<h2 id="description">Description<a class="anchor" aria-label="anchor" href="#description"></a>
+</h2>
 <blockquote>
-<p>The Poisson lognormal model and variants can be used for a variety of multivariate problems when count data are at play (including PCA, LDA and network inference for count data). This package implements efficient algorithms to fit such models accompanied with a set of functions for visualization and diagnostic. See <a href="https://pln-team.github.io/slideshow/" class="external-link">this deck of slides</a> for a comprehensive introduction.</p>
+<p>The Poisson lognormal model and variants<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> can be used for a variety of multivariate problems when count data are at play. This package implements efficient variational algorithms to fit such models, accompanied with a set of functions for visualization and diagnostic. See <a href="https://pln-team.github.io/slideshow/slides" class="external-link">this deck of slides</a> for a comprehensive introduction.</p>
 </blockquote>
+<p><strong>PLNmodels</strong> covers the following models, all built around the multivariate Poisson-lognormal distribution and sharing a common formula-based interface (covariates, offsets, weights) and a choice of optimization backends (a fast built-in Newton solver, NLOPT, and an experimental torch backend):</p>
+<ul>
+<li>
+<strong>PLN</strong>: unpenalized multivariate Poisson regression, with several covariance structures (full, diagonal, spherical, fixed, or a genetic/heritability structure).</li>
+<li>
+<strong>PLNPCA</strong><a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>: probabilistic Poisson PCA — a rank-constrained covariance for dimension reduction and visualization.</li>
+<li>
+<strong>PLNLDA</strong>: Poisson lognormal discriminant analysis<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> for the supervised classification of count data.</li>
+<li>
+<strong>PLNnetwork</strong><a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a>: sparse inverse-covariance (network) inference via a graphical-lasso-like penalty<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a>.</li>
+<li>
+<strong>PLNmixture</strong>: model-based clustering<a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a> of count data via a mixture of PLN models.</li>
+<li>
+<strong>ZIPLN</strong>: a zero-inflated extension of PLN for data with excess zeros, with the same family of covariance structures and an optional sparse (<code>ZIPLNnetwork</code>) variant.</li>
+</ul>
+</div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p><strong>PLNmodels</strong> is available on <a href="https://cran.r-project.org/package=PLNmodels" class="external-link">CRAN</a>. The development version is available on <a href="https://github.com/pln-team/PLNmodels" class="external-link">Github</a>.</p>
-<div class="section level3">
-<h3 id="r-package-installation">R Package installation<a class="anchor" aria-label="anchor" href="#r-package-installation"></a>
-</h3>
-<!-- #### CRAN dependencies -->
-<!-- **PLNmodels** needs the following CRAN R packages, so check that they are are installed on your computer. -->
-<!-- ```{r CRAN dependencies, eval = FALSE} -->
-<!-- required_CRAN <- c("R6", "glassoFast", "Matrix", "Rcpp", "RcppArmadillo", -->
-<!--                    "nloptr", "igraph", "grid", "gridExtra", "dplyr", -->
-<!--                    "tidyr", "ggplot2", "corrplot", "magrittr", "devtools") -->
-<!-- not_installed_CRAN <- setdiff(required_CRAN, rownames(installed.packages())) -->
-<!-- if (length(not_installed_CRAN) > 0) install.packages(not_installed_CRAN) -->
-<!-- ``` -->
-<!-- #### Bioconductor dependencies -->
-<!-- **PLNmodels** also needs two BioConductor packages -->
-<!-- ```{r Bioconductor dependencies, eval = FALSE} -->
-<!-- required_BioC <- c("phyloseq", "biomformat") -->
-<!-- not_installed_BioC <- setdiff(required_BioC, rownames(installed.packages())) -->
-<!-- if (length(not_installed_BioC) > 0) BiocManager::install(not_installed_BioC) -->
-<!-- ``` -->
-<div class="section level4">
-<h4 id="installing-plnmodels">Installing PLNmodels<a class="anchor" aria-label="anchor" href="#installing-plnmodels"></a>
-</h4>
-<ul>
-<li>For the last stable version, use the CRAN version</li>
-</ul>
+<p><strong>PLNmodels</strong> is available on <a href="https://cran.r-project.org/package=PLNmodels" class="external-link">CRAN</a>. The development version is available on <a href="https://github.com/pln-team/PLNmodels" class="external-link">GitHub</a>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"PLNmodels"</span><span class="op">)</span></span></code></pre></div>
-<ul>
-<li>For the development version, use the github install</li>
-</ul>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"pln-team/PLNmodels"</span><span class="op">)</span></span></code></pre></div>
-<ul>
-<li>For a specific tagged release, use</li>
-</ul>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"pln-team/PLNmodels@tag_number"</span><span class="op">)</span></span></code></pre></div>
-</div>
-</div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"PLNmodels"</span><span class="op">)</span>             <span class="co"># last stable version, from CRAN</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"pln-team/PLNmodels"</span><span class="op">)</span>            <span class="co"># development version, from GitHub</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"pln-team/PLNmodels@tag_number"</span><span class="op">)</span>  <span class="co"># a specific tagged release</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="usage-and-main-fitting-functions">Usage and main fitting functions<a class="anchor" aria-label="anchor" href="#usage-and-main-fitting-functions"></a>
+<h2 id="illustration">Illustration<a class="anchor" aria-label="anchor" href="#illustration"></a>
 </h2>
-<p>The package comes with an ecological data set to present the functionality</p>
+<p>We illustrate the main models on the <code>barents</code> data set<a href="#fn7" class="footnote-ref" id="fnref7"><sup>7</sup></a>: the abundance of 30 fish species observed in 89 sites in the Barents sea, along with depth, temperature and geographic coordinates for each site.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pln-team.github.io/PLNmodels/">PLNmodels</a></span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>This is package <span class="st">'PLNmodels'</span> version <span class="dv">1</span>.<span class="fl">3.0</span><span class="dv">-9010</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pln-team.github.io/PLNmodels/">PLNmodels</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">)</span></span>
-<span><span class="va">trichoptera</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/prepare_data.html">prepare_data</a></span><span class="op">(</span><span class="va">trichoptera</span><span class="op">$</span><span class="va">Abundance</span>, <span class="va">trichoptera</span><span class="op">$</span><span class="va">Covariate</span><span class="op">)</span></span></code></pre></div>
-<p>The main fitting functions work with the usual <code>R formula</code> notations, with mutivariate responses on the left hand side. You probably want to start by one of them. Check the corresponding vignette and documentation page. There is a dedicated vignettes for each model in the package (See <a href="https://pln-team.github.io/PLNmodels/articles/" class="uri">https://pln-team.github.io/PLNmodels/articles/</a>).</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">barents</span><span class="op">)</span></span>
+<span><span class="co">## a simple North/South split of the sites, used below to illustrate PLNLDA</span></span>
+<span><span class="va">barents</span><span class="op">$</span><span class="va">zone</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">barents</span><span class="op">$</span><span class="va">Latitude</span> <span class="op">&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">barents</span><span class="op">$</span><span class="va">Latitude</span><span class="op">)</span>, <span class="st">"North"</span>, <span class="st">"South"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
-<h3 id="unpenalized-poisson-lognormal-model-aka-pln">Unpenalized Poisson lognormal model (aka PLN)<a class="anchor" aria-label="anchor" href="#unpenalized-poisson-lognormal-model-aka-pln"></a>
+<h3 id="pln-fit-and-inspect-the-covariance-structure">PLN: fit and inspect the covariance structure<a class="anchor" aria-label="anchor" href="#pln-fit-and-inspect-the-covariance-structure"></a>
 </h3>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">myPLN</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/PLN.html">PLN</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="rank-constrained-poisson-lognormal-for-poisson-principal-component-analysis-aka-plnpca">Rank Constrained Poisson lognormal for Poisson Principal Component Analysis (aka PLNPCA)<a class="anchor" aria-label="anchor" href="#rank-constrained-poisson-lognormal-for-poisson-principal-component-analysis-aka-plnpca"></a>
-</h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">myPCA</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/PLNPCA.html">PLNPCA</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">trichoptera</span>, ranks <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="poisson-lognormal-discriminant-analysis-aka-plnlda">Poisson lognormal discriminant analysis (aka PLNLDA)<a class="anchor" aria-label="anchor" href="#poisson-lognormal-discriminant-analysis-aka-plnlda"></a>
-</h3>
+<code class="sourceCode R"><span><span class="va">myPLN</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/PLN.html">PLN</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="va">Depth</span> <span class="op">+</span> <span class="va">Temperature</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">barents</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a> Initialization...</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a> Adjusting a full covariance PLN model with nlopt optimizer</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a> Post<span class="sc">-</span>treatments...</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a> DONE<span class="sc">!</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">myLDA</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/PLNLDA.html">PLNLDA</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span>, grouping <span class="op">=</span> <span class="va">Group</span>, data <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="sparse-poisson-lognormal-model-for-sparse-covariance-inference-for-counts-aka-plnnetwork">Sparse Poisson lognormal model for sparse covariance inference for counts (aka PLNnetwork)<a class="anchor" aria-label="anchor" href="#sparse-poisson-lognormal-model-for-sparse-covariance-inference-for-counts-aka-plnnetwork"></a>
-</h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">myPLNnetwork</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/PLNnetwork.html">PLNnetwork</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="mixture-of-poisson-lognormal-models-for-model-based-clustering-of-counts-aka-plnmixture">Mixture of Poisson lognormal models for model-based clustering of counts (aka PLNmixture)<a class="anchor" aria-label="anchor" href="#mixture-of-poisson-lognormal-models-for-model-based-clustering-of-counts-aka-plnmixture"></a>
-</h3>
+<code class="sourceCode R"><span><span class="va">myPLN</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>A multivariate Poisson Lognormal fit with full covariance model.</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="sc">==</span><span class="er">================================================================</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a> nb_param    loglik       BIC       AIC      ICL</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>      <span class="dv">555</span> <span class="sc">-</span><span class="fl">4412.201</span> <span class="sc">-</span><span class="fl">5657.797</span> <span class="sc">-</span><span class="fl">4967.201</span> <span class="sc">-</span><span class="fl">8203.81</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="sc">==</span><span class="er">================================================================</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="er">*</span> Useful fields</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>    <span class="sc">$</span>model_par, <span class="sc">$</span>latent, <span class="sc">$</span>latent_pos, <span class="sc">$</span>var_par, <span class="sc">$</span>optim_par</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>    <span class="sc">$</span>loglik, <span class="sc">$</span>BIC, <span class="sc">$</span>ICL, <span class="sc">$</span>loglik_vec, <span class="sc">$</span>nb_param, <span class="sc">$</span>criteria</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="sc">*</span> Useful S3 methods</span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>    <span class="fu">print</span>(), <span class="fu">coef</span>(), <span class="fu">sigma</span>(), <span class="fu">vcov</span>(), <span class="fu">fitted</span>()</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>    <span class="fu">predict</span>(), <span class="fu">predict_cond</span>(), <span class="fu">standard_error</span>()</span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">myPLNmixture</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/PLNmixture.html">PLNmixture</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">corrplot</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html" class="external-link">corrplot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cov2cor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/sigma.html" class="external-link">sigma</a></span><span class="op">(</span><span class="va">myPLN</span><span class="op">)</span><span class="op">)</span>, order <span class="op">=</span> <span class="st">"AOE"</span>, type <span class="op">=</span> <span class="st">"upper"</span>, tl.cex <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-pln-corrplot-1.png"></p>
+</div>
+<div class="section level3">
+<h3 id="plnlda-discriminant-analysis">PLNLDA: discriminant analysis<a class="anchor" aria-label="anchor" href="#plnlda-discriminant-analysis"></a>
+</h3>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">myLDA</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/PLNLDA.html">PLNLDA</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>, grouping <span class="op">=</span> <span class="va">zone</span>, data <span class="op">=</span> <span class="va">barents</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a> Performing discriminant Analysis...</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a> DONE<span class="sc">!</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">myLDA</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-plnlda-1.png"></p>
+</div>
+<div class="section level3">
+<h3 id="plnpca-dimension-reduction">PLNPCA: dimension reduction<a class="anchor" aria-label="anchor" href="#plnpca-dimension-reduction"></a>
+</h3>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">myPCAs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/PLNPCA.html">PLNPCA</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="va">Depth</span> <span class="op">+</span> <span class="va">Temperature</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">barents</span>, ranks <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a> Initialization...</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a> Adjusting <span class="dv">5</span> PLN models <span class="cf">for</span> PCA analysis.</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>     Rank approximation <span class="ot">=</span> <span class="dv">1</span> </span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>     Rank approximation <span class="ot">=</span> <span class="dv">2</span> </span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>     Rank approximation <span class="ot">=</span> <span class="dv">3</span> </span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>     Rank approximation <span class="ot">=</span> <span class="dv">4</span> </span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>     Rank approximation <span class="ot">=</span> <span class="dv">5</span> </span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a> Post<span class="sc">-</span>treatments</span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a> DONE<span class="sc">!</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">myPCA</span>  <span class="op">&lt;-</span> <span class="fu"><a href="reference/getBestModel.html">getBestModel</a></span><span class="op">(</span><span class="va">myPCAs</span><span class="op">)</span></span>
+<span><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html" class="external-link">fviz_pca_biplot</a></span><span class="op">(</span></span>
+<span>  <span class="va">myPCA</span>, select.var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>contrib <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>, col.ind <span class="op">=</span> <span class="va">barents</span><span class="op">$</span><span class="va">Temperature</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Biplot (10 most contributing species, sites colored by temperature)"</span></span>
+<span><span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"Temperature"</span><span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_color_viridis_c</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-plnpca-1.png"></p>
+</div>
+<div class="section level3">
+<h3 id="plnnetwork-sparse-network-inference">PLNnetwork: sparse network inference<a class="anchor" aria-label="anchor" href="#plnnetwork-sparse-network-inference"></a>
+</h3>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">myNets</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/PLNnetwork.html">PLNnetwork</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="va">Depth</span> <span class="op">+</span> <span class="va">Temperature</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">barents</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a> Initialization...</span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a> Adjusting <span class="dv">30</span> PLN with sparse inverse covariance estimation</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>    Joint optimization alternating gradient descent and graphical<span class="sc">-</span>lasso</span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">3.77829</span> </span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">3.489896</span> </span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">3.223515</span> </span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">2.977467</span> </span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">2.7502</span> </span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">2.540279</span> </span>
+<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">2.346382</span> </span>
+<span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">2.167285</span> </span>
+<span id="cb17-12"><a href="#cb17-12" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">2.001858</span> </span>
+<span id="cb17-13"><a href="#cb17-13" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">1.849058</span> </span>
+<span id="cb17-14"><a href="#cb17-14" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">1.707921</span> </span>
+<span id="cb17-15"><a href="#cb17-15" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">1.577557</span> </span>
+<span id="cb17-16"><a href="#cb17-16" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">1.457143</span> </span>
+<span id="cb17-17"><a href="#cb17-17" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">1.345921</span> </span>
+<span id="cb17-18"><a href="#cb17-18" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">1.243188</span> </span>
+<span id="cb17-19"><a href="#cb17-19" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">1.148296</span> </span>
+<span id="cb17-20"><a href="#cb17-20" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">1.060648</span> </span>
+<span id="cb17-21"><a href="#cb17-21" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.9796893</span> </span>
+<span id="cb17-22"><a href="#cb17-22" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.9049105</span> </span>
+<span id="cb17-23"><a href="#cb17-23" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.8358394</span> </span>
+<span id="cb17-24"><a href="#cb17-24" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.7720405</span> </span>
+<span id="cb17-25"><a href="#cb17-25" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.7131113</span> </span>
+<span id="cb17-26"><a href="#cb17-26" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.6586802</span> </span>
+<span id="cb17-27"><a href="#cb17-27" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.6084037</span> </span>
+<span id="cb17-28"><a href="#cb17-28" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.5619647</span> </span>
+<span id="cb17-29"><a href="#cb17-29" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.5190704</span> </span>
+<span id="cb17-30"><a href="#cb17-30" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.4794502</span> </span>
+<span id="cb17-31"><a href="#cb17-31" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.4428542</span> </span>
+<span id="cb17-32"><a href="#cb17-32" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.4090515</span> </span>
+<span id="cb17-33"><a href="#cb17-33" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.377829</span> </span>
+<span id="cb17-34"><a href="#cb17-34" tabindex="-1"></a> Post<span class="sc">-</span>treatments</span>
+<span id="cb17-35"><a href="#cb17-35" tabindex="-1"></a> DONE<span class="sc">!</span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="reference/getBestModel.html">getBestModel</a></span><span class="op">(</span><span class="va">myNets</span><span class="op">)</span>, remove.isolated <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-plnnetwork-1.png"></p>
+</div>
+<div class="section level3">
+<h3 id="plnmixture-model-based-clustering">PLNmixture: model-based clustering<a class="anchor" aria-label="anchor" href="#plnmixture-model-based-clustering"></a>
+</h3>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">my_mixtures</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/PLNmixture.html">PLNmixture</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">barents</span>, clusters <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>,</span>
+<span>                           control <span class="op">=</span> <span class="fu"><a href="reference/PLNmixture_param.html">PLNmixture_param</a></span><span class="op">(</span>smoothing <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a> Initialization...</span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a> Adjusting <span class="dv">4</span> PLN mixture models.</span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a>    number of cluster <span class="ot">=</span> <span class="dv">1</span> </span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a>    number of cluster <span class="ot">=</span> <span class="dv">2</span> </span>
+<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a>    number of cluster <span class="ot">=</span> <span class="dv">3</span> </span>
+<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a>    number of cluster <span class="ot">=</span> <span class="dv">4</span> </span>
+<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a> Post<span class="sc">-</span>treatments</span>
+<span id="cb20-9"><a href="#cb20-9" tabindex="-1"></a> DONE<span class="sc">!</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">myMixture</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getBestModel.html">getBestModel</a></span><span class="op">(</span><span class="va">my_mixtures</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">myMixture</span>, <span class="st">"pca"</span>, main <span class="op">=</span> <span class="st">"Clustering membership in the individual factor map"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-plnmixture-1.png"></p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span>cluster <span class="op">=</span> <span class="va">myMixture</span><span class="op">$</span><span class="va">memberships</span>, zone <span class="op">=</span> <span class="va">barents</span><span class="op">$</span><span class="va">zone</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a>       zone</span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>cluster North South</span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>      <span class="dv">1</span>     <span class="dv">1</span>    <span class="dv">17</span></span>
+<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a>      <span class="dv">2</span>    <span class="dv">11</span>     <span class="dv">0</span></span>
+<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a>      <span class="dv">3</span>    <span class="dv">11</span>    <span class="dv">22</span></span>
+<span id="cb23-6"><a href="#cb23-6" tabindex="-1"></a>      <span class="dv">4</span>    <span class="dv">21</span>     <span class="dv">6</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<p>Please cite our work using the following references:</p>
-<ul>
-<li><p>J. Chiquet, M. Mariadassou and S. Robin: The Poisson-lognormal model as a versatile framework for the joint analysis of species abundances, Frontiers in Ecology and Evolution, 2021. <a href="https://www.frontiersin.org/articles/10.3389/fevo.2021.588292/full" class="external-link">link</a></p></li>
-<li><p>J. Chiquet, M. Mariadassou and S. Robin: Variational inference for sparse network reconstruction from count data, Proceedings of the 36th International Conference on Machine Learning (ICML), 2019. <a href="http://proceedings.mlr.press/v97/chiquet19a.html" class="external-link">link</a></p></li>
-<li><p>J. Chiquet, M. Mariadassou and S. Robin: Variational inference for probabilistic Poisson PCA, the Annals of Applied Statistics, 12: 2674–2698, 2018. <a href="http://dx.doi.org/10.1214/18%2DAOAS1177" class="external-link">link</a></p></li>
-</ul>
 </div>
 </div>
+<div class="footnotes footnotes-end-of-document">
+<hr>
+<ol>
+<li id="fn1"><p>J. Chiquet, M. Mariadassou and S. Robin: The Poisson-lognormal model as a versatile framework for the joint analysis of species abundances, Frontiers in Ecology and Evolution, 2021. <a href="https://www.frontiersin.org/articles/10.3389/fevo.2021.588292/full" class="external-link">doi:10.3389/fevo.2021.588292</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>J. Chiquet, M. Mariadassou and S. Robin: Variational inference for probabilistic Poisson PCA, the Annals of Applied Statistics, 12: 2674–2698, 2018. <a href="http://dx.doi.org/10.1214/18%2DAOAS1177" class="external-link">doi:10.1214/18-AOAS1177</a><a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p>Fisher, R. A. The use of multiple measurements in taxonomic problems. Annals of Eugenics, 7(2), 1936; Rao, C. R. The utilization of multiple measurements in problems of biological classification. JRSS B, 10(2), 1948.<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+<li id="fn4"><p>J. Chiquet, M. Mariadassou and S. Robin: Variational inference for sparse network reconstruction from count data, Proceedings of the 36th International Conference on Machine Learning (ICML), 2019. <a href="http://proceedings.mlr.press/v97/chiquet19a.html" class="external-link">link</a><a href="#fnref4" class="footnote-back">↩︎</a></p></li>
+<li id="fn5"><p>Friedman, J., Hastie, T. and Tibshirani, R. Sparse inverse covariance estimation with the graphical lasso. Biostatistics, 9(3), 2008.<a href="#fnref5" class="footnote-back">↩︎</a></p></li>
+<li id="fn6"><p>Fraley, C. and Raftery, A. E. MCLUST: Software for model-based cluster analysis. Journal of Classification, 16(2), 1999.<a href="#fnref6" class="footnote-back">↩︎</a></p></li>
+<li id="fn7"><p>Fossheim, M., Nilssen, E. M. and Aschan, M. Fish assemblages in the Barents Sea. Marine Biology Research, 2(4), 2006. <a href="https://doi.org/10.1080/17451000600815698" class="external-link">doi:10.1080/17451000600815698</a><a href="#fnref7" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -243,9 +342,9 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/pln-team/PLNmodels/actions" class="external-link"><img src="https://github.com/pln-team/PLNmodels/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
+<li><a href="https://github.com/PLN-team/PLNmodels/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/PLN-team/PLNmodels/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://codecov.io/github/pln-team/PLNmodels?branch=master" class="external-link"><img src="https://codecov.io/gh/pln-team/PLNmodels/branch/master/graph/badge.svg" alt="Coverage status"></a></li>
-<li><a href="https://cran.r-project.org/package=PLNmodels" class="external-link"><img src="http://www.r-pkg.org/badges/version/PLNmodels" alt="CRAN_Status_Badge"></a></li>
+<li><a href="https://cran.r-project.org/package=PLNmodels" class="external-link"><img src="http://www.r-pkg.org/badges/version/PLNmodels.png" alt="CRAN_Status_Badge"></a></li>
 <li><a href="https://lifecycle.r-lib.org/articles/stages.html" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-blue.svg" alt="Lifecycle: stable"></a></li>
 <li><a href="https://github.com/pln-team/PLNmodels/commits/master" class="external-link"><img src="https://img.shields.io/github/last-commit/pln-team/PLNmodels.svg"></a></li>
 </ul>

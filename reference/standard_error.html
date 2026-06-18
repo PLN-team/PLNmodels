@@ -55,6 +55,9 @@
     <li>
       <a href="../articles/PLNmixture.html">PLNmixture: Model-based clustering for counts</a>
     </li>
+    <li>
+      <a href="../articles/ZIPLN.html">ZIPLN: Zero-inflated models for counts with excess zeros</a>
+    </li>
   </ul></li>
 <li>
   <a href="../news/index.html">Changelog</a>
@@ -168,16 +171,16 @@
 <span class="r-in"><span>              control <span class="op">=</span> <span class="fu"><a href="PLN_param.html">PLN_param</a></span><span class="op">(</span>config_post <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sandwich_var <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Initialization...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Adjusting a full covariance PLN model with builtin optimizer</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Adjusting a full covariance PLN model with nlopt optimizer</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Post-treatments...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  DONE!</span>
 <span class="r-in"><span><span class="fu">standard_error</span><span class="op">(</span><span class="va">myPLN</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   Che       Hyc       Hym       Hys        Psy       Aga</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept) 0.6865203 0.5932607 0.1892372 0.4861739 0.04810924 0.2073406</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   Glo       Ath      Cea       Ced       Set       All</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept) 0.3437699 0.3433776 0.267077 0.1886134 0.2583348 0.2803181</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   Che       Hyc       Hym       Hys       Psy       Aga</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept) 0.6747981 0.5667258 0.1891566 0.4849124 0.0480875 0.2073636</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   Glo       Ath       Cea       Ced       Set       All</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept) 0.3432676 0.3427704 0.2504953 0.1885027 0.2585972 0.2802204</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                   Han       Hfo       Hsp       Hve       Sta</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept) 0.3720736 0.3897049 0.3040114 0.4038903 0.1777916</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept) 0.3723373 0.3901035 0.3038571 0.4027642 0.1777478</span>
 </code></pre></div>
     </div>
   </div>

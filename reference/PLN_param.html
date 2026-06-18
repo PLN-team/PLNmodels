@@ -55,6 +55,9 @@
     <li>
       <a href="../articles/PLNmixture.html">PLNmixture: Model-based clustering for counts</a>
     </li>
+    <li>
+      <a href="../articles/ZIPLN.html">ZIPLN: Zero-inflated models for counts with excess zeros</a>
+    </li>
   </ul></li>
 <li>
   <a href="../news/index.html">Changelog</a>
@@ -85,7 +88,7 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">PLN_param</span><span class="op">(</span></span>
-<span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"builtin"</span>, <span class="st">"nlopt"</span>, <span class="st">"torch"</span><span class="op">)</span>,</span>
+<span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nlopt"</span>, <span class="st">"builtin"</span>, <span class="st">"torch"</span><span class="op">)</span>,</span>
 <span>  trace <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  covariance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"full"</span>, <span class="st">"diagonal"</span>, <span class="st">"spherical"</span>, <span class="st">"fixed"</span>, <span class="st">"genpop"</span><span class="op">)</span>,</span>
 <span>  Omega <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -102,9 +105,11 @@
 
 
 <dl><dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
-<dd><p>optimization backend, either <code>"builtin"</code> (default), <code>"nlopt"</code> or <code>"torch"</code>.
-<code>"builtin"</code> is the built-in envelope-theorem Newton optimizer; it is the fastest and most
-accurate backend, especially for large p with full covariance.
+<dd><p>optimization backend, either <code>"nlopt"</code> (default), <code>"builtin"</code> or <code>"torch"</code>.
+<code>"nlopt"</code> (CCSAQ, with <code>config_optim$profiled = TRUE</code>) is consistently faster than <code>"builtin"</code>.
+<code>"builtin"</code> is the built-in envelope-theorem Newton optimizer; it can reach a slightly better
+optimum, an advantage that tends to grow with p — prefer it when the last bit of ELBO matters
+more than speed, typically for large p.
 <code>"torch"</code> is <strong>experimental</strong>: it may converge to suboptimal solutions or fail on some datasets.</p></dd>
 
 

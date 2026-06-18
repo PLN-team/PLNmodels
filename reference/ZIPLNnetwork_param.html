@@ -55,6 +55,9 @@
     <li>
       <a href="../articles/PLNmixture.html">PLNmixture: Model-based clustering for counts</a>
     </li>
+    <li>
+      <a href="../articles/ZIPLN.html">ZIPLN: Zero-inflated models for counts with excess zeros</a>
+    </li>
   </ul></li>
 <li>
   <a href="../news/index.html">Changelog</a>
@@ -85,7 +88,7 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ZIPLNnetwork_param</span><span class="op">(</span></span>
-<span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nlopt"</span>, <span class="st">"builtin"</span><span class="op">)</span>,</span>
+<span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"builtin"</span>, <span class="st">"nlopt"</span><span class="op">)</span>,</span>
 <span>  inception_cov <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"full"</span>, <span class="st">"spherical"</span>, <span class="st">"diagonal"</span><span class="op">)</span>,</span>
 <span>  trace <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_penalties <span class="op">=</span> <span class="fl">30</span>,</span>
@@ -103,7 +106,7 @@
 
 
 <dl><dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
-<dd><p>optimization backend, either <code>"nlopt"</code> (default, CCSAQ — recommended for ZIPLNnetwork: stable under alternating GLASSO/VE-step EM) or <code>"builtin"</code> (Newton joint on (M,ψ,R) — can be better on small datasets but may oscillate on large ones).</p></dd>
+<dd><p>optimization backend, either <code>"builtin"</code> (default, joint Newton on (M,ψ,R), combined with the partial E-step <code>maxit_ve = 1</code>) or <code>"nlopt"</code> (CCSAQ). <code>"builtin"</code> consistently finds a better ELBO across the penalty path at the cost of being slower.</p></dd>
 
 
 <dt id="arg-inception-cov">inception_cov<a class="anchor" aria-label="anchor" href="#arg-inception-cov"></a></dt>

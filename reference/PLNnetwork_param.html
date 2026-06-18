@@ -55,6 +55,9 @@
     <li>
       <a href="../articles/PLNmixture.html">PLNmixture: Model-based clustering for counts</a>
     </li>
+    <li>
+      <a href="../articles/ZIPLN.html">ZIPLN: Zero-inflated models for counts with excess zeros</a>
+    </li>
   </ul></li>
 <li>
   <a href="../news/index.html">Changelog</a>
@@ -85,7 +88,7 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">PLNnetwork_param</span><span class="op">(</span></span>
-<span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nlopt"</span>, <span class="st">"builtin"</span>, <span class="st">"torch"</span><span class="op">)</span>,</span>
+<span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"builtin"</span>, <span class="st">"nlopt"</span>, <span class="st">"torch"</span><span class="op">)</span>,</span>
 <span>  inception_cov <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"full"</span>, <span class="st">"spherical"</span>, <span class="st">"diagonal"</span><span class="op">)</span>,</span>
 <span>  inception_backend <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  inception_niter <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -106,11 +109,12 @@
 
 
 <dl><dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
-<dd><p>optimization backend, either <code>"nlopt"</code> (default, CCSAQ), <code>"builtin"</code> (Newton) or
-<code>"torch"</code>. For the per-penalty GLASSO alternation, <code>"builtin"</code> with <code>maxit_ve = 1</code> and
-<code>inception_backend = "builtin"</code> + <code>inception_niter = 5</code> is the <strong>recommended combination</strong>:
-it consistently finds the best ELBO across datasets (see <code>maxit_ve</code> and <code>inception_backend</code>).
-Without a good inception, <code>"builtin"</code> alone can converge to a poor basin on large datasets.</p></dd>
+<dd><p>optimization backend, either <code>"builtin"</code> (Newton, default) or
+<code>"nlopt"</code> (CCSAQ) or <code>"torch"</code>. The default combines <code>"builtin"</code> with <code>maxit_ve = 1</code> and
+<code>inception_niter = 5</code> (see <code>maxit_ve</code> and <code>inception_backend</code>): this consistently finds a
+better ELBO than plain <code>"nlopt"</code>, at essentially the same speed. Without a good inception,
+<code>"builtin"</code> alone (<code>maxit_ve = NULL</code>) can converge to a poor basin on large datasets — use
+<code>"nlopt"</code> if you want to opt out of the whole combination.</p></dd>
 
 
 <dt id="arg-inception-cov">inception_cov<a class="anchor" aria-label="anchor" href="#arg-inception-cov"></a></dt>
@@ -122,32 +126,29 @@ avoiding the broken <code>max_pen = 0</code> that previously occurred with diago
 
 
 <dt id="arg-inception-backend">inception_backend<a class="anchor" aria-label="anchor" href="#arg-inception-backend"></a></dt>
-<dd><p>character or <code>NULL</code> (default). Backend for the inception PLN
-only; the penalty grid models always use <code>backend</code>. <strong>Recommended</strong>: set
-<code>inception_backend = "builtin"</code> with <code>inception_niter = 5</code> for a consistently
-better starting basin — especially important when <code>backend = "builtin"</code>. Benchmark
-on three datasets (trichoptera p=17, barents p=30, oaks p=114) for the full recommended
-combination <code>backend="builtin", maxit_ve=1, inception_backend="builtin", inception_niter=5</code>:</p><table class="table table"><tr><td>dataset</td><td>Δ loglik (vs nlopt default)</td><td>time</td></tr><tr><td>trichoptera</td><td>+34</td><td>~1×</td></tr><tr><td>barents</td><td>+123</td><td>~1×</td></tr><tr><td>oaks</td><td>+676</td><td>~1×</td></tr></table><p>Ignored when <code>inception</code> is supplied by the user.</p></dd>
+<dd><p>character or <code>NULL</code> (default, i.e. same as <code>backend</code>). Backend for
+the inception PLN only; the penalty grid models always use <code>backend</code>.
+Ignored when <code>inception</code> is supplied by the user.</p></dd>
 
 
 <dt id="arg-inception-niter">inception_niter<a class="anchor" aria-label="anchor" href="#arg-inception-niter"></a></dt>
-<dd><p>integer or <code>NULL</code> (default). Limits the inception PLN to at most
+<dd><p>integer or <code>NULL</code>. Limits the inception PLN to at most
 this many iterations (EM iterations for <code>"builtin"</code>, function evaluations × 10 for
-<code>"nlopt"</code>). <strong>Recommended value: 5–10</strong> when used with <code>inception_backend = "builtin"</code>:
-fewer iterations keep the latent mean M from over-converging toward the unconstrained
-optimum, which would make it harder to warm-start the sparse penalty models. Values
-above ~20 typically hurt. When <code>inception_cov != "full"</code> or <code>inception_niter</code> is set,
+<code>"nlopt"</code>). Default is <code>5L</code> when <code>backend = "builtin"</code> (<code>NULL</code>, i.e. full convergence,
+otherwise): fewer iterations keep the latent mean M from over-converging toward the
+unconstrained optimum, which would make it harder to warm-start the sparse penalty models.
+Values above ~20 typically hurt. When <code>inception_cov != "full"</code> or <code>inception_niter</code> is set,
 the penalty grid uses the empirical residual covariance <code>crossprod(M − X·B) / n</code>
 for <code>max_pen</code>.</p></dd>
 
 
 <dt id="arg-maxit-ve">maxit_ve<a class="anchor" aria-label="anchor" href="#arg-maxit-ve"></a></dt>
-<dd><p>integer or <code>NULL</code> (default). Maximum number of inner VE-step iterations
-per outer GLASSO alternation turn. When <code>NULL</code> (default), inner VE step runs to full
-convergence (<code>maxit_em</code> for <code>"builtin"</code>, <code>maxeval</code> for <code>"nlopt"</code>). Setting <code>maxit_ve = 1</code>
-implements a <strong>partial E-step</strong> (generalized EM): one Newton step per outer turn prevents
-over-convergence that causes oscillations with the GLASSO M-step. <strong>Recommended value: 1</strong>
-when <code>backend = "builtin"</code> — see <code>backend</code> for the full recommended combination.</p></dd>
+<dd><p>integer or <code>NULL</code>. Maximum number of inner VE-step iterations
+per outer GLASSO alternation turn. Default is <code>1L</code> when <code>backend = "builtin"</code> (<code>NULL</code>, i.e.
+full convergence — <code>maxit_em</code> for <code>"builtin"</code>, <code>maxeval</code> for <code>"nlopt"</code> — otherwise).
+<code>maxit_ve = 1</code> implements a <strong>partial E-step</strong> (generalized EM): one Newton step per outer
+turn prevents over-convergence that causes oscillations with the GLASSO M-step — see
+<code>backend</code> for the full default combination and its benchmark.</p></dd>
 
 
 <dt id="arg-trace">trace<a class="anchor" aria-label="anchor" href="#arg-trace"></a></dt>

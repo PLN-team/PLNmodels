@@ -9,7 +9,8 @@ articles:
   PLNnetwork: PLNnetwork.html
   PLNPCA: PLNPCA.html
   Trichoptera: Trichoptera.html
-last_built: 2026-06-18T10:22Z
+  ZIPLN: ZIPLN.html
+last_built: 2026-06-18T19:44Z
 urls:
   reference: https://pln-team.github.io/PLNmodels/reference
   article: https://pln-team.github.io/PLNmodels/articles

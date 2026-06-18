@@ -55,6 +55,9 @@
     <li>
       <a href="../articles/PLNmixture.html">PLNmixture: Model-based clustering for counts</a>
     </li>
+    <li>
+      <a href="../articles/ZIPLN.html">ZIPLN: Zero-inflated models for counts with excess zeros</a>
+    </li>
   </ul></li>
 <li>
   <a href="../news/index.html">Changelog</a>
@@ -123,6 +126,11 @@
 <dd><p>additional parameters for S3 compatibility. Not used</p></dd>
 
 </dl></div>
+    <div id="value">
+    <h2>Value</h2>
+    <p>A matrix of predicted log-counts (if <code>type = "link"</code>) or predicted counts,
+accounting for zero-inflation (if <code>type = "response"</code>) or not (if <code>type = "deflated"</code>).</p>
+    </div>
     <div id="details">
     <h2>Details</h2>
     <p>Note that <code>level = 1</code> can only be used if responses are provided,
