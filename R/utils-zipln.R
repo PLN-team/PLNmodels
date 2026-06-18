@@ -98,16 +98,16 @@ parameter_list_converged <- function(oldp, newp, xtol_abs = NULL, xtol_rel = NUL
 zipln_MS_fn <- function(backend, suffix) {
   if (backend == "builtin") {
     switch(suffix,
-      full      = ve_step_zipln_newton_full,
-      diagonal  = ve_step_zipln_newton_diagonal,
-      spherical = ve_step_zipln_newton_spherical,
-      fixed     = ve_step_zipln_newton_fixed)
+      full      = builtin_optimize_vestep_zipln_full,
+      diagonal  = builtin_optimize_vestep_zipln_diagonal,
+      spherical = builtin_optimize_vestep_zipln_spherical,
+      fixed     = builtin_optimize_vestep_zipln_fixed)
   } else {
     switch(suffix,
-      full      = ve_step_zipln_nlopt_full,
-      diagonal  = ve_step_zipln_nlopt_diagonal,
-      spherical = ve_step_zipln_nlopt_spherical,
-      fixed     = ve_step_zipln_nlopt_fixed)
+      full      = nlopt_optimize_vestep_zipln_full,
+      diagonal  = nlopt_optimize_vestep_zipln_diagonal,
+      spherical = nlopt_optimize_vestep_zipln_spherical,
+      fixed     = nlopt_optimize_vestep_zipln_fixed)
   }
 }
 

@@ -21,7 +21,7 @@
 // Mirrors nlopt_vestep_impl (nlopt_optim_pln.h): same (data, params, config)
 // signature, State built from params["Omega"] inside the function.
 template <typename Traits>
-Rcpp::List ve_step_zipln_nlopt_impl(
+Rcpp::List nlopt_vestep_zipln_impl(
     const Rcpp::List & data,    // List(Y, X, O, w)
     const Rcpp::List & params,  // List(M, S2, Pi, B, Omega) — Pi, B, Omega fixed
     const Rcpp::List & config

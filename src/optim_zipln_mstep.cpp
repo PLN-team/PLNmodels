@@ -6,6 +6,7 @@
 #include "nlopt_wrapper.h"
 #include "packing.h"
 #include "utils.h"
+#include "covariance_pln.h"
 
 // [[Rcpp::export]]
 arma::vec zipln_vloglik(
@@ -34,6 +35,10 @@ arma::vec zipln_vloglik(
     ) ;
 }
 
+// The 3 M-step formulas below (full/spherical/diagonal) are exactly the
+// State::update formulas already implemented in covariance_pln.h for PLN
+// (with w = ones(n), w_bar = n) — reused here instead of duplicated by hand.
+
 // [[Rcpp::export]]
 arma::mat optim_zipln_Omega_full(
     const arma::mat & M,  // (n,p)
@@ -42,8 +47,8 @@ arma::mat optim_zipln_Omega_full(
     const arma::mat & S2  // (n,p) variational variance
 ) {
     const arma::uword n = M.n_rows;
-    arma::mat M_mu = M - X * B;
-    return (double(n) * inv_sympd(M_mu.t() * M_mu + diagmat(sum(S2, 0))));
+    FullCovTraits::State state(M - X * B, S2, arma::ones(n), double(n));
+    return state.Omega;
 }
 
 // [[Rcpp::export]]
@@ -53,10 +58,9 @@ arma::mat optim_zipln_Omega_spherical(
     const arma::mat & B,  // (d,p)
     const arma::mat & S2  // (n,p) variational variance
 ) {
-    const arma::uword n = M.n_rows;
-    const arma::uword p = M.n_cols;
-    double sigma2 = accu( arma::square(M - X * B) + S2 ) / double(n * p) ;
-    return arma::diagmat(arma::ones(p)/sigma2) ;
+    const arma::uword n = M.n_rows, p = M.n_cols;
+    SphericalCovTraits::State state(M - X * B, S2, arma::ones(n), double(n));
+    return arma::diagmat(arma::ones(p) * state.omega2);
 }
 
 // [[Rcpp::export]]
@@ -67,7 +71,8 @@ arma::mat optim_zipln_Omega_diagonal(
     const arma::mat & S2  // (n,p) variational variance
 ) {
     const arma::uword n = M.n_rows;
-    return arma::diagmat(double(n) / sum( arma::square(M - X * B) + S2, 0)) ;
+    DiagonalCovTraits::State state(M - X * B, S2, arma::ones(n), double(n));
+    return arma::diagmat(state.omega2);
 }
 
 // [[Rcpp::export]]

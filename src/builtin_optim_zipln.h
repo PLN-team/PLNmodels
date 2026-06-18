@@ -24,7 +24,7 @@
 // dynamic B-profiling was tested and found necessary for ZIPLN's joint
 // (M, ψ, R) VE step to track the moving optimum.
 template <typename Traits>
-Rcpp::List ve_step_zipln_newton_impl(
+Rcpp::List builtin_vestep_zipln_impl(
     const PlnData & d,
     const arma::mat & init_M, const arma::mat & init_S2,
     const arma::mat & Pi, const arma::mat & B,
@@ -97,10 +97,11 @@ Rcpp::List ve_step_zipln_newton_impl(
 }
 
 // Thin wrapper: extracts params/config (mirroring builtin_vestep_pln_impl's wrappers)
-// and delegates to ve_step_zipln_newton_impl. One instantiation per covariance structure
-// in wrappers_builtin_optim_zipln.cpp — each export is a one-line call to this template.
+// and delegates to builtin_vestep_zipln_impl. One instantiation per covariance structure
+// in wrappers_builtin_optim_zipln.cpp — each export (builtin_optimize_vestep_zipln_<type>)
+// is a one-line call to this template.
 template <typename Traits>
-Rcpp::List ve_step_zipln_newton_wrapper(
+Rcpp::List builtin_optimize_vestep_zipln_wrapper(
     const Rcpp::List & data, const Rcpp::List & params, const Rcpp::List & config
 ) {
     const PlnData d(data);
@@ -111,5 +112,5 @@ Rcpp::List ve_step_zipln_newton_wrapper(
     const auto Omega   = Rcpp::as<arma::mat>(params["Omega"]);
     const NewtonConfig cfg(config);
     typename Traits::State state(Omega);
-    return ve_step_zipln_newton_impl<Traits>(d, init_M, init_S2, Pi, B, state, cfg.maxiter, cfg.ftol);
+    return builtin_vestep_zipln_impl<Traits>(d, init_M, init_S2, Pi, B, state, cfg.maxiter, cfg.ftol);
 }
