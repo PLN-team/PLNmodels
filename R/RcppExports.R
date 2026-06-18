@@ -69,6 +69,14 @@ builtin_optimize_fixed <- function(data, params, config) {
     .Call('_PLNmodels_builtin_optimize_fixed', PACKAGE = 'PLNmodels', data, params, config)
 }
 
+builtin_optimize_genetic <- function(data, params, config) {
+    .Call('_PLNmodels_builtin_optimize_genetic', PACKAGE = 'PLNmodels', data, params, config)
+}
+
+builtin_optimize_vestep_genetic <- function(data, params, config) {
+    .Call('_PLNmodels_builtin_optimize_vestep_genetic', PACKAGE = 'PLNmodels', data, params, config)
+}
+
 builtin_optimize_rank <- function(data, params, config) {
     .Call('_PLNmodels_builtin_optimize_rank', PACKAGE = 'PLNmodels', data, params, config)
 }
@@ -107,6 +115,14 @@ nlopt_optimize_vestep_full <- function(data, params, config) {
 
 nlopt_optimize_fixed <- function(data, params, config) {
     .Call('_PLNmodels_nlopt_optimize_fixed', PACKAGE = 'PLNmodels', data, params, config)
+}
+
+nlopt_optimize_genetic <- function(data, params, config) {
+    .Call('_PLNmodels_nlopt_optimize_genetic', PACKAGE = 'PLNmodels', data, params, config)
+}
+
+nlopt_optimize_vestep_genetic <- function(data, params, config) {
+    .Call('_PLNmodels_nlopt_optimize_vestep_genetic', PACKAGE = 'PLNmodels', data, params, config)
 }
 
 nlopt_optimize_diagonal <- function(data, params, config) {

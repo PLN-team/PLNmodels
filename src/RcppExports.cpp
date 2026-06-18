@@ -242,6 +242,32 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// builtin_optimize_genetic
+Rcpp::List builtin_optimize_genetic(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_builtin_optimize_genetic(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(builtin_optimize_genetic(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// builtin_optimize_vestep_genetic
+Rcpp::List builtin_optimize_vestep_genetic(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_builtin_optimize_vestep_genetic(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(builtin_optimize_vestep_genetic(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
 // builtin_optimize_rank
 Rcpp::List builtin_optimize_rank(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
 RcppExport SEXP _PLNmodels_builtin_optimize_rank(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
@@ -369,6 +395,32 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
     Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
     rcpp_result_gen = Rcpp::wrap(nlopt_optimize_fixed(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// nlopt_optimize_genetic
+Rcpp::List nlopt_optimize_genetic(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_nlopt_optimize_genetic(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_genetic(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
+// nlopt_optimize_vestep_genetic
+Rcpp::List nlopt_optimize_vestep_genetic(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_nlopt_optimize_vestep_genetic(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(nlopt_optimize_vestep_genetic(data, params, config));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -521,6 +573,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_builtin_optimize_spherical", (DL_FUNC) &_PLNmodels_builtin_optimize_spherical, 3},
     {"_PLNmodels_builtin_optimize_vestep_spherical", (DL_FUNC) &_PLNmodels_builtin_optimize_vestep_spherical, 3},
     {"_PLNmodels_builtin_optimize_fixed", (DL_FUNC) &_PLNmodels_builtin_optimize_fixed, 3},
+    {"_PLNmodels_builtin_optimize_genetic", (DL_FUNC) &_PLNmodels_builtin_optimize_genetic, 3},
+    {"_PLNmodels_builtin_optimize_vestep_genetic", (DL_FUNC) &_PLNmodels_builtin_optimize_vestep_genetic, 3},
     {"_PLNmodels_builtin_optimize_rank", (DL_FUNC) &_PLNmodels_builtin_optimize_rank, 3},
     {"_PLNmodels_builtin_optimize_vestep_rank", (DL_FUNC) &_PLNmodels_builtin_optimize_vestep_rank, 3},
     {"_PLNmodels_builtin_optimize_vestep_zipln_full", (DL_FUNC) &_PLNmodels_builtin_optimize_vestep_zipln_full, 3},
@@ -531,6 +585,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_nlopt_optimize_full_profiled", (DL_FUNC) &_PLNmodels_nlopt_optimize_full_profiled, 3},
     {"_PLNmodels_nlopt_optimize_vestep_full", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_full, 3},
     {"_PLNmodels_nlopt_optimize_fixed", (DL_FUNC) &_PLNmodels_nlopt_optimize_fixed, 3},
+    {"_PLNmodels_nlopt_optimize_genetic", (DL_FUNC) &_PLNmodels_nlopt_optimize_genetic, 3},
+    {"_PLNmodels_nlopt_optimize_vestep_genetic", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_genetic, 3},
     {"_PLNmodels_nlopt_optimize_diagonal", (DL_FUNC) &_PLNmodels_nlopt_optimize_diagonal, 3},
     {"_PLNmodels_nlopt_optimize_vestep_diagonal", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_diagonal, 3},
     {"_PLNmodels_nlopt_optimize_spherical", (DL_FUNC) &_PLNmodels_nlopt_optimize_spherical, 3},

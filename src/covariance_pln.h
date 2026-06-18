@@ -344,3 +344,109 @@ struct FixedCovTraits : DenseOmegaImpl, CovTraitsBase<FixedCovTraits> {
 
     static constexpr bool has_em = false;
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Genetic / heritability covariance: Sigma = sigma2 * (rho * C + (1-rho) * I_p),
+// C a fixed p×p correlation matrix supplied by the user (e.g. a genetic
+// relationship matrix). With C = V * diag(Lambda) * V' (eigendecomposition,
+// computed once and cached in State — never recomputed by update()):
+//   Sigma  = sigma2 * V * diag(u) * V',  u_j = rho * Lambda_j + (1 - rho)
+//   Omega  =          V * diag(1 / (sigma2 * u)) * V'
+// sigma2 has a closed form given rho (envelope theorem, same trick as the
+// other profiled traits); rho itself has no closed form and is found by 1-D
+// bisection on its profiled gradient — see VEM-PLN-struct_var.tex, section
+// "A covariance modeling heritability", for the derivation (math verified
+// term-by-term against that document and against the pre-existing, separate
+// nlopt_optimize_genetic_modeling in optim_genet_cov.cpp before this port).
+// Because Omega ends up dense, Genetic reuses DenseOmegaImpl's primitives
+// (times_Omega, diag_scale, add_diag, penalty_S, final_loglik) unchanged —
+// the only genuinely new code is State::update() below.
+// ─────────────────────────────────────────────────────────────────────────────
+struct GeneticCovTraits : DenseOmegaImpl, CovTraitsBase<GeneticCovTraits> {
+    struct State : DenseOmegaImpl::State {
+        arma::mat V;
+        arma::vec Lambda;
+        double sigma2 = 1.0;
+        double rho    = 0.5;
+
+        State() = default;
+        // VE-step use: Omega given externally (already the result of a previous
+        // M-step) — V/Lambda/sigma2/rho are not needed by the VE-step itself.
+        explicit State(const arma::mat & omega) {
+            Omega      = omega;
+            diag_Omega = arma::diagvec(omega);
+        }
+        // One-time setup from the fixed correlation matrix C: eigendecomposition
+        // only (cost O(p^3), same order as Full's inv_sympd, paid once per EM
+        // iteration — not on every nlopt eval). Call update() right after to get
+        // a usable (rho, sigma2, Omega) fit.
+        static State from_correlation(const arma::mat & C) {
+            State s;
+            arma::eig_sym(s.Lambda, s.V, C);
+            s.Lambda = arma::clamp(s.Lambda, 0.0, arma::datum::inf);  // guard tiny negative eigenvalues
+            return s;
+        }
+        void update(const arma::mat & M, const arma::mat & S2, const arma::vec & w, double w_bar) {
+            const arma::uword p = M.n_cols;
+            const arma::mat R = V.t() * (M.t() * (M.each_col() % w) + arma::diagmat(w.t() * S2)) * V;
+            const arma::vec Rdiag = arma::diagvec(R);
+
+            rho = solve_rho(Rdiag, w_bar);
+            const arma::vec u = arma::clamp(rho * Lambda + (1.0 - rho), 1e-12, arma::datum::inf);
+            sigma2 = arma::accu(Rdiag / u) / (double(p) * w_bar);
+
+            Omega      = V * arma::diagmat(1.0 / (sigma2 * u)) * V.t();
+            diag_Omega = arma::diagvec(Omega);
+        }
+
+    private:
+        // Profiled dJ/drho (sigma2 substituted at its closed-form optimum via the
+        // envelope theorem) — see proposition "Gradient of J" (heritability) in
+        // VEM-PLN-struct_var.tex.
+        double dJ_drho(double r, const arma::vec & Rdiag, double w_bar) const {
+            const arma::vec u      = arma::clamp(r * Lambda + (1.0 - r), 1e-12, arma::datum::inf);
+            const arma::vec lam_m1 = Lambda - 1.0;
+            const double s2        = arma::accu(Rdiag / u) / (double(Rdiag.n_elem) * w_bar);
+            return -0.5 * w_bar * arma::accu(lam_m1 / u)
+                  + 0.5 / s2 * arma::accu(Rdiag % lam_m1 / arma::square(u));
+        }
+        // J(rho) is a single variance-ratio profile, unimodal in practice over
+        // (0,1); bisection on the sign of dJ/drho is robust and cheap (O(p) per
+        // eval) — falls back to the nearest boundary if the gradient never
+        // changes sign (optimum at rho = 0 or rho = 1).
+        double solve_rho(const arma::vec & Rdiag, double w_bar) const {
+            constexpr double eps = 1e-8;
+            double lo = eps, hi = 1.0 - eps;
+            const double g_lo = dJ_drho(lo, Rdiag, w_bar);
+            const double g_hi = dJ_drho(hi, Rdiag, w_bar);
+            if (g_lo <= 0.0) return lo;
+            if (g_hi >= 0.0) return hi;
+            for (int it = 0; it < 60; it++) {
+                const double mid = 0.5 * (lo + hi);
+                if (dJ_drho(mid, Rdiag, w_bar) > 0.0) lo = mid; else hi = mid;
+            }
+            return 0.5 * (lo + hi);
+        }
+    };
+
+    static void mstep(State & s, const arma::mat & M, const arma::mat & S2,
+                      const arma::vec & w, double w_bar, arma::uword /*p*/) {
+        s.update(M, S2, w, w_bar);
+    }
+
+    static double elbo_cov(const State & s, double w_bar, arma::uword p) {
+        const arma::vec u = arma::clamp(s.rho * s.Lambda + (1.0 - s.rho), 1e-12, arma::datum::inf);
+        return -0.5 * w_bar * (double(p) * std::log(s.sigma2) + arma::accu(arma::log(u)));
+    }
+
+    static Rcpp::List output_cov(const arma::mat & /*M*/, const arma::mat & /*S2*/,
+                                  const arma::vec & /*w*/, double /*w_bar*/, const State & s) {
+        const arma::vec u = arma::clamp(s.rho * s.Lambda + (1.0 - s.rho), 1e-12, arma::datum::inf);
+        const arma::mat Sigma = s.V * arma::diagmat(s.sigma2 * u) * s.V.t();
+        return Rcpp::List::create(
+            Rcpp::Named("Sigma",  Sigma),    Rcpp::Named("Omega", s.Omega),
+            Rcpp::Named("sigma2", s.sigma2), Rcpp::Named("rho",   s.rho));
+    }
+
+    static constexpr bool has_em = true;
+};
