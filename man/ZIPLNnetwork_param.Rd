@@ -18,7 +18,7 @@ ZIPLNnetwork_param(
 )
 }
 \arguments{
-\item{backend}{optimization backend, either \code{"builtin"} (default, joint Newton on (M,ψ,R), combined with the partial E-step \code{maxit_ve = 1}) or \code{"nlopt"} (CCSAQ). \code{"builtin"} consistently finds a better ELBO across the penalty path (e.g. +300 to +384 loglik on oaks, p=114) at the cost of being slower (~3.6x on oaks).}
+\item{backend}{optimization backend, either \code{"builtin"} (default, joint Newton on (M,ψ,R), combined with the partial E-step \code{maxit_ve = 1}) or \code{"nlopt"} (CCSAQ). \code{"builtin"} consistently finds a better ELBO across the penalty path at the cost of being slower.}
 
 \item{inception_cov}{Covariance structure used for the inception PLN:
 \code{"full"} (default), \code{"diagonal"} or \code{"spherical"}. Non-full structures are now

@@ -75,11 +75,11 @@ Just like PLN, ${\boldsymbol\mu}$ generalizes to $\mathbf{o}_i + \mathbf{x}_i^\t
 We fit a plain `PLN` model and the four `ZIPLN` parameterizations, all with the sampling site as a covariate for the count part, to check how much accounting for zero-inflation improves the fit:
 
 ```{r zi_param, results = FALSE}
-myPLN     <- PLN(Abundance ~ site + offset(log(Offset)), data = microcosm)
-zi_single <- ZIPLN(Abundance ~ site + offset(log(Offset)), data = microcosm)
-zi_row    <- ZIPLN(Abundance ~ site + offset(log(Offset)), data = microcosm, zi = "row")
-zi_col    <- ZIPLN(Abundance ~ site + offset(log(Offset)), data = microcosm, zi = "col")
-zi_site   <- ZIPLN(Abundance ~ site + offset(log(Offset)) | site, data = microcosm)
+myPLN     <- PLN(Abundance ~ 0 + site + offset(log(Offset)), data = microcosm)
+zi_single <- ZIPLN(Abundance ~ 0 + site + offset(log(Offset)), data = microcosm)
+zi_row    <- ZIPLN(Abundance ~ 0 + site + offset(log(Offset)), data = microcosm, zi = "row")
+zi_col    <- ZIPLN(Abundance ~ 0 + site + offset(log(Offset)), data = microcosm, zi = "col")
+zi_site   <- ZIPLN(Abundance ~ 0 + site + offset(log(Offset)) | 0 + site, data = microcosm)
 ```
 
 ```{r zi_param_table}
@@ -111,6 +111,7 @@ data.frame(
 
 The site-dependent model also lets us recover, for each species, an estimated zero-inflation probability per body site (`model_par$Pi`), revealing substantial heterogeneity:
 
+
 ```{r zi_by_site, fig.cap = "Estimated zero-inflation probability by body site, across the 30 species"}
 one_obs_per_site <- !duplicated(microcosm$site)
 pi_hat <- zi_site$model_par$Pi[one_obs_per_site, ]
@@ -122,12 +123,22 @@ data.frame(site = rep(rownames(pi_hat), ncol(pi_hat)), zi_prob = as.vector(pi_ha
     labs(x = "Body site", y = "Zero-inflation probability (per species)")
 ```
 
+Coefficient matrices for the count and zero-inflation parts can be inspected with `coefficients()` -- here both components share the same `site` design, so rows of $\mathbf{B}$ (count) and $\mathbf{B}_0$ (zero-inflation) line up one-to-one with body sites:
+
+```{r zi_coef_B0, fig.cap = "Estimated regression coefficients of the zero-inflation component ($B_0$)"}
+pheatmap::pheatmap(coefficients(zi_site, "zero"), cluster_rows = FALSE)
+```
+
+```{r zi_coef_B, fig.cap = "Estimated regression coefficients of the count component ($B$)"}
+pheatmap::pheatmap(coefficients(zi_site, "count"), cluster_rows = FALSE)
+```
+
 ## Sparse network inference with ZIPLNnetwork
 
-`ZIPLNnetwork` adjusts the model for a series of penalties controlling the number of edges in the network, just like `PLNnetwork`, but on top of a zero-inflation component. We keep the default `zi = "single"` here for simplicity and focus on the network:
+`ZIPLNnetwork` adjusts the model for a series of penalties controlling the number of edges in the network, just like `PLNnetwork`, but on top of a zero-inflation component. We keep the default `zi = "single"` here for simplicity and focus on the network. The default `backend = "builtin"` is used (it now finds a consistently better ELBO than `"nlopt"` here, at the cost of being slower); we lower `min_ratio` to explore a wider, sparser range of the penalty path:
 
 ```{r ziplnnetwork, results = FALSE}
-zi_models <- ZIPLNnetwork(Abundance ~ site + offset(log(Offset)), data = microcosm)
+zi_models <- ZIPLNnetwork(Abundance ~ site + offset(log(Offset)), data = microcosm, control = ZIPLNnetwork_param(min_ratio = 0.01))
 ```
 
 As for `PLNnetwork`, a diagnostic plot and the evolution of the criteria along the path are available:
@@ -143,7 +154,7 @@ plot(zi_models)
 We select a network with `getBestModel()` and represent it:
 
 ```{r ziplnnetwork_best, fig.cap = "sparse residual network between the 30 most abundant taxa"}
-zi_net <- getBestModel(zi_models, "BIC")
+zi_net <- getBestModel(zi_models, "EBIC")
 plot(zi_net)
 ```
 
