@@ -5,7 +5,7 @@
 \title{Control of a PLN fit}
 \usage{
 PLN_param(
-  backend = c("builtin", "nlopt", "torch"),
+  backend = c("nlopt", "builtin", "torch"),
   trace = 1,
   covariance = c("full", "diagonal", "spherical", "fixed", "genpop"),
   Omega = NULL,
@@ -17,9 +17,11 @@ PLN_param(
 )
 }
 \arguments{
-\item{backend}{optimization backend, either \code{"builtin"} (default), \code{"nlopt"} or \code{"torch"}.
-\code{"builtin"} is the built-in envelope-theorem Newton optimizer; it is the fastest and most
-accurate backend, especially for large p with full covariance.
+\item{backend}{optimization backend, either \code{"nlopt"} (default), \code{"builtin"} or \code{"torch"}.
+\code{"nlopt"} (CCSAQ, with \code{config_optim$profiled = TRUE}) is consistently faster than \code{"builtin"}.
+\code{"builtin"} is the built-in envelope-theorem Newton optimizer; it can reach a slightly better
+optimum, an advantage that tends to grow with p — prefer it when the last bit of ELBO matters
+more than speed, typically for large p.
 \code{"torch"} is \strong{experimental}: it may converge to suboptimal solutions or fail on some datasets.}
 
 \item{trace}{a integer for verbosity.}

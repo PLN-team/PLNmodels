@@ -60,7 +60,7 @@ test_that("PLN: Check consistency of observation weights - fully parameterized c
   ## equivalent weigths
   expect_output(model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1.0, nrow(trichoptera))),
                 paste("\n Initialization...",
-                      "Adjusting a full covariance PLN model with builtin optimizer",
+                      "Adjusting a full covariance PLN model with nlopt optimizer",
                       "Post-treatments...",
                       "DONE!", sep = "\n "), fixed = TRUE)
 

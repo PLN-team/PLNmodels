@@ -388,7 +388,7 @@ compute_ZIPLN_starting_point <- function(Y, X, X0, O, w = NULL) {
   B0 <- if (!is.null(d0) && d0 > 0) {
     binom_fam <- binomial()
     vapply(seq_len(p), function(j)
-      glm.fit(X0, zero_ind[, j], family = binom_fam)$coefficients,
+      suppressWarnings(glm.fit(X0, zero_ind[, j], family = binom_fam))$coefficients,
       numeric(d0))
   } else {
     matrix(0.0, 0L, p)

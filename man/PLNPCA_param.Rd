@@ -37,7 +37,7 @@ LM-based starting point and gives the highest-quality initialisation for large r
 When \code{NULL} (default), see \code{init_method}. \code{init_method} is ignored when \code{inception} is set.
 \strong{Recommendation}: for large ranks (\code{rank > sqrt(p)}) on complex datasets, prefer
 \code{init_method = "EM"} (cheap, most gains) or \code{inception = PLN(formula, data)} (maximum
-quality, full convergence cost). Benchmark: up to +135 loglik at rank=20, oaks p=114.}
+quality, full convergence cost).}
 
 \item{init_method}{character: strategy used to compute the starting point for the shared SVD.
 \itemize{
@@ -47,9 +47,8 @@ small to moderate ranks (\code{rank <= sqrt(p)}). Recommended default.
 recommended.
 \item \code{"EM"}: run \code{init_niter} variational EM iterations of a full PLN (builtin backend)
 before computing the SVD, giving a latent mean M closer to the true posterior.
-\strong{Recommended for large ranks} (\code{rank > sqrt(p)}): benchmark on oaks (p=114)
-shows +135 loglik at rank=20 vs \code{"LM"}, with negligible extra cost (5 EM iterations).
-Caution: hurts for small ranks (e.g. rank=5, p=114: −800 loglik) because an
+\strong{Recommended for large ranks} (\code{rank > sqrt(p)}), where it noticeably improves the
+loglik at negligible extra cost. Caution: hurts for small ranks, because an
 over-converged M reduces low-rank SVD discriminability. Ignored when \code{inception}
 is provided.
 }}

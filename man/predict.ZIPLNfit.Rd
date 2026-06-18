@@ -26,6 +26,10 @@
 
 \item{...}{additional parameters for S3 compatibility. Not used}
 }
+\value{
+A matrix of predicted log-counts (if \code{type = "link"}) or predicted counts,
+accounting for zero-inflation (if \code{type = "response"}) or not (if \code{type = "deflated"}).
+}
 \description{
 Predict counts of a new sample
 }

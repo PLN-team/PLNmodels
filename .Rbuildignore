@@ -18,7 +18,9 @@
 ^README.html$
 ^LICENSE$
 ^.editorconfig$
-^README.Rmd
+^README\.qmd$
+^README_cache$
+^README_files$
 ^appveyor\.yml$
 ^vignettes/*_cache/
 ^vignettes/cache/

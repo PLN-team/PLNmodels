@@ -21,9 +21,10 @@ isZIPLNfit <- function(Robject) {inherits(Robject, "ZIPLNfit")}
 #' values with \eqn{(1 - \pi)A}, where \eqn{A} is the average count in
 #' the PLN part of the model and \eqn{\pi} the probability of zero-inflation,
 #' whereas `type = "deflated"` corresponds to \eqn{A}.
-
 #'
 #' @param object an R6 object with class [`ZIPLNfit`]
+#' @return A matrix of predicted log-counts (if `type = "link"`) or predicted counts,
+#' accounting for zero-inflation (if `type = "response"`) or not (if `type = "deflated"`).
 #' @export
 predict.ZIPLNfit <- function(object, newdata, responses = NULL, level = 1, type = c("link", "response", "deflated"), ...) {
   stopifnot(isZIPLNfit(object))

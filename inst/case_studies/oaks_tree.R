@@ -11,19 +11,19 @@ system.time(myPLN <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks
 system.time(myPLN_diagonal <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLN_param(covariance = "diagonal")))
 system.time(myPLN_spherical <- PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLN_param(covariance = "spherical")))
 
-## Genetic model : mixture between fixed correlation matrix + I sigma^2
-# C <- toeplitz(0.5^(1:ncol(oaks$Abundance) - 1))
-# system.time(myPLN_genetic <-
-#    PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks,
-#        control = list(covariance = "genetic", corr_matrix = C)))
+# Genetic model : mixture between fixed correlation matrix + I sigma^2
+C <- toeplitz(0.5^(1:ncol(oaks$Abundance) - 1))
+system.time(myPLN_genetic <-
+   PLN(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks,
+       control = PLN_param(covariance = "genpop", C = C)))
 
 rbind(
   myPLN$criteria,
   myPLN_diagonal$criteria,
-  myPLN_spherical$criteria
-  # myPLN_genetic$criteria
+  myPLN_spherical$criteria,
+  myPLN_genetic$criteria
 ) %>%
-  as.data.frame(row.names = c("full", "diagonal", "spherical")) %>%
+  as.data.frame(row.names = c("full", "diagonal", "spherical", "genpop")) %>%
   knitr::kable()
 
 ## ZIPLN

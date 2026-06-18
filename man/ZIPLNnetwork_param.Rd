@@ -5,7 +5,7 @@
 \title{Control of ZIPLNnetwork fit}
 \usage{
 ZIPLNnetwork_param(
-  backend = c("nlopt", "builtin"),
+  backend = c("builtin", "nlopt"),
   inception_cov = c("full", "spherical", "diagonal"),
   trace = 1,
   n_penalties = 30,
@@ -18,7 +18,7 @@ ZIPLNnetwork_param(
 )
 }
 \arguments{
-\item{backend}{optimization backend, either \code{"nlopt"} (default, CCSAQ — recommended for ZIPLNnetwork: stable under alternating GLASSO/VE-step EM) or \code{"builtin"} (Newton joint on (M,ψ,R) — can be better on small datasets but may oscillate on large ones).}
+\item{backend}{optimization backend, either \code{"builtin"} (default, joint Newton on (M,ψ,R), combined with the partial E-step \code{maxit_ve = 1}) or \code{"nlopt"} (CCSAQ). \code{"builtin"} consistently finds a better ELBO across the penalty path at the cost of being slower.}
 
 \item{inception_cov}{Covariance structure used for the inception PLN:
 \code{"full"} (default), \code{"diagonal"} or \code{"spherical"}. Non-full structures are now

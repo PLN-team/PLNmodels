@@ -2,60 +2,28 @@
 
 ## New backends and optimizers
 
-* **New built-in Newton optimizer** (`backend = "builtin"`) for PLN, ZIPLN and PLNPCA, now the default for PLN and ZIPLN. Uses envelope-theorem Newton steps with strong Wolfe line search; does not depend on NLOPT. Substantially faster and more accurate than nlopt on large datasets with full covariance (e.g. +30 000 loglik on microcosm, p=259).
+* **New built-in Newton optimizer** (`backend = "builtin"`) for PLN, ZIPLN and PLNPCA: envelope-theorem Newton steps with strong Wolfe line search, no dependency on NLOPT. Substantially faster and more accurate than nlopt on large datasets with full covariance.
 
-* **Fix critical convergence bug** in PLN/PLNPCA with nlopt: premature termination due to ill-conditioned X scaling triggered the XTOL stopping criterion after very few iterations
-  (e.g. 14 iter on barents, loglik -8520 instead of -4400). The built-in backend is immune to this bug; nlopt is also fixed via better parameter scaling.
+* **Backend defaults revisited package-wide**, based on extensive benchmarking: PLN keeps `"nlopt"` (now consistently faster thanks to `profiled = TRUE`, see below); PLNnetwork and ZIPLNnetwork now default to `"builtin"`, which finds a better optimum at a modest speed cost; ZIPLN keeps its `"builtin"` default. All four remain configurable via the `backend` argument; see the corresponding `*_param()` documentation for the trade-offs. The `torch` backend is now clearly marked **experimental** everywhere.
 
-* **ZIPLN joint VE step** (`backend = "builtin"`): variational parameters (M, ψ, R) are now optimised jointly in a single Newton step per EM iteration, instead of sequentially. Gains up to +666 loglik on oaks compared to the nlopt sequential approach.
+* **Quality and speed improvements**: `config_optim$profiled = TRUE` is now the default for full-covariance nlopt fits (faster, slightly better loglik); ZIPLN's variational step now optimises `(M, ψ, R)` jointly via Newton instead of sequentially; PLNPCA shares a single SVD initialisation across ranks and can warm-start from a pre-fitted `PLNfit` for large ranks (`inception`/`init_method`, see `?PLNPCA_param`); ZIPLN's starting point no longer relies on `pscl::zeroinfl` (now an internal LM + binomial GLM routine), which is both much faster and a better starting point — `pscl` is no longer a dependency.
 
-* **PLNPCA warm-start and shared SVD init**: the collection of PLNPCA models now shares a single SVD initialisation computed once from a fast LM (`init_method = "LM"`, default). A pre-fitted PLNfit can be supplied via `inception = PLN(...)` to improve convergence for large ranks (e.g. rank > `sqrt(p)`); see `?PLNPCA_param` for details.
-
-* **torch backend marked experimental**: the torch backend is now clearly documented as experimental. It emits a message on use and is not recommended for PLNPCA (systematically lower loglik than nlopt/builtin). It remains available for PLN on diagonal/spherical covariance where it can be faster.
-
-* **Full covariance, nlopt backend**: `config_optim$profiled = TRUE` is now the default. Both B and Omega are profiled at every nlopt evaluation instead of running an EM loop (Omega fixed for the duration of each inner solve). Despite the extra per-evaluation cost, this is consistently faster (1.1x-4.5x) and reaches a slightly better loglik across a range of problem sizes, because it needs far fewer total evaluations than the EM loop. Set `profiled = FALSE` to recover the previous behaviour.
-
-* **ZIPLN  initialization**: `pscl::zeroinfl` is replaced by an internal
-  `compute_ZIPLN_starting_point()` that uses a standard LM (for B) and a binomial
-  GLM (for the ZI parameters). This is 60–240× faster and consistently finds better
-  starting points (+1263 loglik on `oaks`, p=114). The `pscl` package is no longer
-  a dependency.
+* **Fixed a critical nlopt convergence bug** affecting PLN/PLNPCA: ill-conditioned covariate scaling could trigger the XTOL stopping criterion after very few iterations, well before convergence. The built-in backend was never affected; nlopt is now also fixed via better parameter scaling.
 
 ## Internal refactoring (C++)
 
-* **Shared covariance abstraction**: the optimization machinery for PLN's covariance
-  structures (full, diagonal, spherical, fixed) is now expressed once via a small set
-  of C++ traits (`CovTraitsBase` in `covariance_pln.h`) instead of being duplicated
-  per structure. PLNPCA and ZIPLN's variational step now reuse the same machinery
-  instead of separate hand-rolled implementations, removing a substantial amount of
-  duplicated code and fixing minor inefficiencies along the way (e.g. ZIPLN's VE-step
-  used to treat the precision matrix as dense even for diagonal/spherical covariance,
-  at unnecessary `O(np^2)` cost).
-* **Consistent C++ naming**: exported optimizer functions across PLN, PLNPCA and
-  ZIPLN now follow the same `{backend}_optimize_{structure}` convention.
+* **Shared covariance abstraction**: the optimization machinery for PLN's covariance structures (full, diagonal, spherical, fixed) is now expressed once via a small set of C++ traits (`CovTraitsBase` in `covariance_pln.h`) instead of being duplicated per structure. PLNPCA and ZIPLN's variational step now reuse the same machinery instead of separate hand-rolled implementations, removing a substantial amount of duplicated code and fixing minor inefficiencies along the way (e.g. ZIPLN's VE-step used to treat the precision matrix as dense even for diagonal/spherical covariance, at unnecessary `O(np^2)` cost).
+* **Consistent C++ naming**: exported optimizer functions across PLN, PLNPCA and ZIPLN now follow the same `{backend}_optimize_{structure}` convention.
 
 ## Other changes
 
-* **Uniform covariate normalization**: a `normalize_covariates()` helper (zero
-  mean, unit variance per column) is now applied consistently in all `optimize()`
-  methods (PLN, PLNPCA, PLNnetwork, ZIPLN). This makes the nlopt XTOL criterion
-  scale-invariant and stabilises the torch backend.
+* **Uniform covariate normalization**: a `normalize_covariates()` helper (zero mean, unit variance per column) is now applied consistently in all `optimize()` methods (PLN, PLNPCA, PLNnetwork, ZIPLN). This makes the nlopt XTOL criterion scale-invariant and stabilises the torch backend.
 
-* **Parallelism backend**: `future.apply::future_lapply` is replaced by
-  `parallel::mclapply` throughout (stability selection for PLNnetwork /
-  ZIPLNnetwork). Use `options(mc.cores = N)` to set the number of cores.
+* **Parallelism backend**: `future.apply::future_lapply` is replaced by `parallel::mclapply` throughout (stability selection for PLNnetwork / ZIPLNnetwork). Use `options(mc.cores = N)` to set the number of cores.
 
-* **Fix PLNnetwork/ZIPLNnetwork inception bug**: the optimizer configuration used
-  for the inception (warm-start) model did not inherit `ftol_em`/`maxit_em` from
-  the user's `config_optim`, silently falling back to defaults and producing a
-  wrong penalty grid (e.g. -311 loglik on `oaks`).
-* various fix in ZIPLN model (prediction and initialization #146, #149, #150, #152)
-* Correctness fix in PLNPCA rank model: the objective
-  function used `A − Y` where it should use `A − Y ⊙ Z`
-* inception an init improvement in ZIPLNnetwork
-* microcosm data now included (#153, #154)
-* add AIC for PLN and ZIPLN classes (#151)
-* other fixes (#155)
+* **Bug fixes**: PLNnetwork/ZIPLNnetwork's inception (warm-start) model didn't inherit `ftol_em`/`maxit_em` from the user's `config_optim`, silently falling back to defaults and producing a wrong penalty grid; the PLNPCA rank-model objective used `A − Y` where it should use `A − Y ⊙ Z`; various ZIPLN prediction/initialization fixes (#146, #149, #150, #152).
+
+* microcosm data now included (#153, #154); AIC added for PLN and ZIPLN classes (#151); other fixes (#155).
 
 # PLNmodels 1.2.2 (2025-03-21)
 
