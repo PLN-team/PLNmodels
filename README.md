@@ -197,9 +197,6 @@ myNets <- PLNnetwork(Abundance ~ Depth + Temperature + offset(log(Offset)), data
 plot(getBestModel(myNets), remove.isolated = TRUE)
 ```
 
-    Warning: vertex attribute frame.color contains NAs. Replacing with default
-    value black
-
 ![](man/figures/README-plnnetwork-1.png)
 
 ### PLNmixture: model-based clustering
@@ -234,9 +231,9 @@ table(cluster = myMixture$memberships, zone = barents$zone)
            zone
     cluster North South
           1     1    17
-          2    21     6
-          3    11     0
-          4    11    22
+          2    11     0
+          3    11    22
+          4    21     6
 
 ## References
 
