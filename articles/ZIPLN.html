@@ -109,10 +109,9 @@ taxa</strong>, which still display substantial zero-inflation:</p>
 <div class="section level3">
 <h3 id="mathematical-background">Mathematical background<a class="anchor" aria-label="anchor" href="#mathematical-background"></a>
 </h3>
-<p>The zero-inflated PLN model (ZIPLN) combines the Poisson lognormal
-model <span class="citation">(<a href="#ref-AiH89">Aitchison and Ho
-1989</a>)</span> – see <a href="PLN.html">the PLN vignette</a> – with a
-zero-inflation mechanism: each count
+<p>The zero-inflated PLN model (ZIPLN) <span class="citation">(<a href="#ref-ZIPLN">Batardière et al. 2025</a>)</span> combines the
+Poisson lognormal model <span class="citation">(<a href="#ref-AiH89">Aitchison and Ho 1989</a>)</span> – see <a href="PLN.html">the PLN vignette</a> – with a zero-inflation mechanism:
+each count
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>Y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">Y_{ij}</annotation></semantics></math>
 is either a structural zero (with probability
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>π</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">\pi_{ij}</annotation></semantics></math>)
@@ -154,7 +153,8 @@ specified with the formula syntax
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝛀</mi><mo>=</mo><msup><mi>𝚺</mi><mrow><mi>−</mi><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">\boldsymbol\Omega = \boldsymbol\Sigma^{-1}</annotation></semantics></math>,
 exactly as <code>PLNnetwork</code> does for PLN (see <a href="PLNnetwork.html">the PLNnetwork vignette</a> and <span class="citation">Chiquet et al. (<a href="#ref-PLNnetwork">2019</a>)</span>), so that both the excess of
 zeros and the residual dependency structure between taxa are accounted
-for.</p>
+for. See <span class="citation">Tous et al. (<a href="#ref-ZIPLNnetwork">2025</a>)</span> for an application to species
+association networks from count data with structural zeros.</p>
 </div>
 </div>
 <div class="section level2">
@@ -341,6 +341,11 @@ for an example.</p>
 Aitchison, J., and C. H. Ho. 1989. <span>“The Multivariate Poisson-Log
 Normal Distribution.”</span> <em>Biometrika</em> 76 (4): 643–53.
 </div>
+<div id="ref-ZIPLN" class="csl-entry">
+Batardière, Bastien, Julien Chiquet, François Gindraud, and Mahendra
+Mariadassou. 2025. <span>“Zero-Inflation in the Multivariate Poisson
+Lognormal Family.”</span> <em>Statistics and Computing</em> 35. <a href="https://doi.org/10.1007/s11222-025-10729-0" class="external-link">https://doi.org/10.1007/s11222-025-10729-0</a>.
+</div>
 <div id="ref-PLNnetwork" class="csl-entry">
 Chiquet, Julien, Stephane Robin, and Mahendra Mariadassou. 2019.
 <span>“Variational Inference for Sparse Network Reconstruction from
@@ -355,6 +360,12 @@ Constant, et al.</span> 2023. <span>“Microbiota Members from Body Sites
 of Dairy Cows Are Largely Shared Within Individual Hosts Throughout
 Lactation but Sharing Is Limited in the Herd.”</span> <em>Animal
 Microbiome</em> 5 (32). <a href="https://doi.org/10.1186/s42523-023-00252-w" class="external-link">https://doi.org/10.1186/s42523-023-00252-w</a>.
+</div>
+<div id="ref-ZIPLNnetwork" class="csl-entry">
+Tous, Jeanne, Julien Chiquet, Amy E. Deacon, Ada Fontrodona-Eslava,
+Douglas F. Fraser, and Anne E. Magurran. 2025. <span>“A JSDM with
+Zero-Inflation to Improve Inference of Association Networks from Count
+Community Data with Structural Zeros.”</span> <a href="https://doi.org/10.1101/2025.07.24.666553" class="external-link">https://doi.org/10.1101/2025.07.24.666553</a>.
 </div>
 </div>
 </div>

@@ -41,8 +41,9 @@ mean(microcosm$Abundance == 0)
 
 ### Mathematical background
 
-The zero-inflated PLN model (ZIPLN) combines the Poisson lognormal model
-([Aitchison and Ho 1989](#ref-AiH89)) – see [the PLN
+The zero-inflated PLN model (ZIPLN) ([Batardière et al.
+2025](#ref-ZIPLN)) combines the Poisson lognormal model ([Aitchison and
+Ho 1989](#ref-AiH89)) – see [the PLN
 vignette](https://pln-team.github.io/PLNmodels/articles/PLN.md) – with a
 zero-inflation mechanism: each count $`Y_{ij}`$ is either a structural
 zero (with probability $`\pi_{ij}`$) or drawn from the usual PLN
@@ -77,7 +78,9 @@ does for PLN (see [the PLNnetwork
 vignette](https://pln-team.github.io/PLNmodels/articles/PLNnetwork.md)
 and Chiquet et al. ([2019](#ref-PLNnetwork))), so that both the excess
 of zeros and the residual dependency structure between taxa are
-accounted for.
+accounted for. See Tous et al. ([2025](#ref-ZIPLNnetwork)) for an
+application to species association networks from count data with
+structural zeros.
 
 ## Analysis of microcosm with ZIPLN
 
@@ -253,6 +256,11 @@ for an example.
 Aitchison, J., and C. H. Ho. 1989. “The Multivariate Poisson-Log Normal
 Distribution.” *Biometrika* 76 (4): 643–53.
 
+Batardière, Bastien, Julien Chiquet, François Gindraud, and Mahendra
+Mariadassou. 2025. “Zero-Inflation in the Multivariate Poisson Lognormal
+Family.” *Statistics and Computing* 35.
+<https://doi.org/10.1007/s11222-025-10729-0>.
+
 Chiquet, Julien, Stephane Robin, and Mahendra Mariadassou. 2019.
 “Variational Inference for Sparse Network Reconstruction from Count
 Data.” In *Proceedings of the 36th International Conference on Machine
@@ -265,3 +273,9 @@ Mariadassou, Mahendra, Lucie X Nouvel, Fabienne Constant, et al. 2023.
 Within Individual Hosts Throughout Lactation but Sharing Is Limited in
 the Herd.” *Animal Microbiome* 5 (32).
 <https://doi.org/10.1186/s42523-023-00252-w>.
+
+Tous, Jeanne, Julien Chiquet, Amy E. Deacon, Ada Fontrodona-Eslava,
+Douglas F. Fraser, and Anne E. Magurran. 2025. “A JSDM with
+Zero-Inflation to Improve Inference of Association Networks from Count
+Community Data with Structural Zeros.”
+<https://doi.org/10.1101/2025.07.24.666553>.
