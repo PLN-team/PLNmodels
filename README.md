@@ -6,7 +6,7 @@
 [![R-CMD-check](https://github.com/PLN-team/PLNmodels/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/PLN-team/PLNmodels/actions/workflows/R-CMD-check.yaml)
 [![Coverage
 status](https://codecov.io/gh/pln-team/PLNmodels/branch/master/graph/badge.svg)](https://codecov.io/github/pln-team/PLNmodels?branch=master)
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/PLNmodels.png)](https://cran.r-project.org/package=PLNmodels)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/PLNmodels)](https://cran.r-project.org/package=PLNmodels)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![](https://img.shields.io/github/last-commit/pln-team/PLNmodels.svg)](https://github.com/pln-team/PLNmodels/commits/master)
@@ -28,20 +28,20 @@ formula-based interface (covariates, offsets, weights) and a choice of
 optimization backends (a fast built-in Newton solver, NLOPT, and an
 experimental torch backend):
 
-- **PLN**[^2]: unpenalized multivariate Poisson regression, with several
-  covariance structures (full, diagonal, spherical, fixed, or a
+- **PLN**[^2][^3]: unpenalized multivariate Poisson regression, with
+  several covariance structures (full, diagonal, spherical, fixed, or a
   genetic/heritability structure).
-- **PLNPCA**[^3]: probabilistic Poisson PCA — a rank-constrained
+- **PLNPCA**[^4]: probabilistic Poisson PCA — a rank-constrained
   covariance for dimension reduction and visualization.
-- **PLNLDA**: Poisson lognormal discriminant analysis[^4] for the
+- **PLNLDA**[^5]: Poisson lognormal discriminant analysis[^6] for the
   supervised classification of count data.
-- **PLNnetwork**[^5]: sparse inverse-covariance (network) inference via
-  a graphical-lasso-like penalty[^6].
-- **PLNmixture**: model-based clustering[^7] of count data via a mixture
+- **PLNnetwork**[^7]: sparse inverse-covariance (network) inference via
+  a graphical-lasso-like penalty[^8].
+- **PLNmixture**: model-based clustering[^9] of count data via a mixture
   of PLN models.
-- **ZIPLN**[^8]: a zero-inflated extension of PLN for data with excess
+- **ZIPLN**[^10]: a zero-inflated extension of PLN for data with excess
   zeros, with the same family of covariance structures and an optional
-  sparse (`ZIPLNnetwork`[^9]) variant.
+  sparse (`ZIPLNnetwork`[^11]) variant.
 
 ## Installation
 
@@ -57,7 +57,7 @@ remotes::install_github("pln-team/PLNmodels@tag_number")  # a specific tagged re
 
 ## Illustration
 
-We illustrate the main models on the `barents` data set[^10]: the
+We illustrate the main models on the `barents` data set[^12]: the
 abundance of 30 fish species observed in 89 sites in the Barents sea,
 along with depth, temperature and geographic coordinates for each site.
 
@@ -243,42 +243,52 @@ table(cluster = myMixture$memberships, zone = barents$zone)
     abundances, Frontiers in Ecology and Evolution, 2021.
     [doi:10.3389/fevo.2021.588292](https://www.frontiersin.org/articles/10.3389/fevo.2021.588292/full)
 
-[^2]: Aitchison, J. and Ho, C. H. The multivariate Poisson-log normal
+[^2]: J. Chiquet, M. Mariadassou and S. Robin: The Poisson-lognormal
+    model as a versatile framework for the joint analysis of species
+    abundances, Frontiers in Ecology and Evolution, 2021.
+    [doi:10.3389/fevo.2021.588292](https://www.frontiersin.org/articles/10.3389/fevo.2021.588292/full)
+
+[^3]: Aitchison, J. and Ho, C. H. The multivariate Poisson-log normal
     distribution. Biometrika, 76(4), 1989, 643–653.
 
-[^3]: J. Chiquet, M. Mariadassou and S. Robin: Variational inference for
+[^4]: J. Chiquet, M. Mariadassou and S. Robin: Variational inference for
     probabilistic Poisson PCA, the Annals of Applied Statistics, 12:
     2674–2698, 2018.
     [doi:10.1214/18-AOAS1177](http://dx.doi.org/10.1214/18%2DAOAS1177)
 
-[^4]: Fisher, R. A. The use of multiple measurements in taxonomic
+[^5]: J. Chiquet, M. Mariadassou and S. Robin: The Poisson-lognormal
+    model as a versatile framework for the joint analysis of species
+    abundances, Frontiers in Ecology and Evolution, 2021.
+    [doi:10.3389/fevo.2021.588292](https://www.frontiersin.org/articles/10.3389/fevo.2021.588292/full)
+
+[^6]: Fisher, R. A. The use of multiple measurements in taxonomic
     problems. Annals of Eugenics, 7(2), 1936; Rao, C. R. The utilization
     of multiple measurements in problems of biological classification.
     JRSS B, 10(2), 1948.
 
-[^5]: J. Chiquet, M. Mariadassou and S. Robin: Variational inference for
+[^7]: J. Chiquet, M. Mariadassou and S. Robin: Variational inference for
     sparse network reconstruction from count data, Proceedings of the
     36th International Conference on Machine Learning (ICML), 2019.
     [link](http://proceedings.mlr.press/v97/chiquet19a.html)
 
-[^6]: Friedman, J., Hastie, T. and Tibshirani, R. Sparse inverse
+[^8]: Friedman, J., Hastie, T. and Tibshirani, R. Sparse inverse
     covariance estimation with the graphical lasso. Biostatistics, 9(3),
     2008.
 
-[^7]: Fraley, C. and Raftery, A. E. MCLUST: Software for model-based
+[^9]: Fraley, C. and Raftery, A. E. MCLUST: Software for model-based
     cluster analysis. Journal of Classification, 16(2), 1999.
 
-[^8]: Batardière, B., Chiquet, J., Gindraud, F. and Mariadassou, M.
+[^10]: Batardière, B., Chiquet, J., Gindraud, F. and Mariadassou, M.
     Zero-inflation in the multivariate Poisson lognormal family.
     Statistics and Computing, 35, 2025.
     [doi:10.1007/s11222-025-10729-0](https://doi.org/10.1007/s11222-025-10729-0)
 
-[^9]: Tous, J., Chiquet, J., Deacon, A. E., Fontrodona-Eslava, A.,
+[^11]: Tous, J., Chiquet, J., Deacon, A. E., Fontrodona-Eslava, A.,
     Fraser, D. F. and Magurran, A. E. A JSDM with zero-inflation to
     improve inference of association networks from count community data
     with structural zeros. bioRxiv preprint, 2025.
     [doi:10.1101/2025.07.24.666553](https://doi.org/10.1101/2025.07.24.666553)
 
-[^10]: Fossheim, M., Nilssen, E. M. and Aschan, M. Fish assemblages in
+[^12]: Fossheim, M., Nilssen, E. M. and Aschan, M. Fish assemblages in
     the Barents Sea. Marine Biology Research, 2(4), 2006.
     [doi:10.1080/17451000600815698](https://doi.org/10.1080/17451000600815698)
