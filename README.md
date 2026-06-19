@@ -6,7 +6,7 @@
 [![R-CMD-check](https://github.com/PLN-team/PLNmodels/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/PLN-team/PLNmodels/actions/workflows/R-CMD-check.yaml)
 [![Coverage
 status](https://codecov.io/gh/pln-team/PLNmodels/branch/master/graph/badge.svg)](https://codecov.io/github/pln-team/PLNmodels?branch=master)
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/PLNmodels.png)](https://cran.r-project.org/package=PLNmodels)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/PLNmodels)](https://cran.r-project.org/package=PLNmodels)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![](https://img.shields.io/github/last-commit/pln-team/PLNmodels.svg)](https://github.com/pln-team/PLNmodels/commits/master)
@@ -18,8 +18,9 @@ stable](https://img.shields.io/badge/lifecycle-stable-blue.svg)](https://lifecyc
 > of multivariate problems when count data are at play. This package
 > implements efficient variational algorithms to fit such models,
 > accompanied with a set of functions for visualization and diagnostic.
-> See [this deck of slides](https://pln-team.github.io/slideshow/slides)
-> for a comprehensive introduction.
+> See [all the dedicated
+> vignettes](https://pln-team.github.io/PLNmodels/articles/) for a
+> comprehensive introduction.
 
 **PLNmodels** covers the following models, all built around the
 multivariate Poisson-lognormal distribution and sharing a common
@@ -40,7 +41,7 @@ experimental torch backend):
   of PLN models.
 - **ZIPLN**[^8]: a zero-inflated extension of PLN for data with excess
   zeros, with the same family of covariance structures and an optional
-  sparse (`ZIPLNnetwork`) variant.
+  sparse (`ZIPLNnetwork`[^9]) variant.
 
 ## Installation
 
@@ -56,7 +57,7 @@ remotes::install_github("pln-team/PLNmodels@tag_number")  # a specific tagged re
 
 ## Illustration
 
-We illustrate the main models on the `barents` data set[^9]: the
+We illustrate the main models on the `barents` data set[^10]: the
 abundance of 30 fish species observed in 89 sites in the Barents sea,
 along with depth, temperature and geographic coordinates for each site.
 
@@ -272,6 +273,12 @@ table(cluster = myMixture$memberships, zone = barents$zone)
     Statistics and Computing, 35, 2025.
     [doi:10.1007/s11222-025-10729-0](https://doi.org/10.1007/s11222-025-10729-0)
 
-[^9]: Fossheim, M., Nilssen, E. M. and Aschan, M. Fish assemblages in
+[^9]: Tous, J., Chiquet, J., Deacon, A. E., Fontrodona-Eslava, A.,
+    Fraser, D. F. and Magurran, A. E. A JSDM with zero-inflation to
+    improve inference of association networks from count community data
+    with structural zeros. bioRxiv preprint, 2025.
+    [doi:10.1101/2025.07.24.666553](https://doi.org/10.1101/2025.07.24.666553)
+
+[^10]: Fossheim, M., Nilssen, E. M. and Aschan, M. Fish assemblages in
     the Barents Sea. Marine Biology Research, 2(4), 2006.
     [doi:10.1080/17451000600815698](https://doi.org/10.1080/17451000600815698)
