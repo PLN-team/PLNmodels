@@ -27,12 +27,12 @@ knitr::opts_chunk$set(
 
 **PLNmodels** covers the following models, all built around the multivariate Poisson-lognormal distribution and sharing a common formula-based interface (covariates, offsets, weights) and a choice of optimization backends (a fast built-in Newton solver, NLOPT, and an experimental torch backend):
 
-- **PLN**[^2]: unpenalized multivariate Poisson regression, with several covariance structures (full, diagonal, spherical, fixed, or a genetic/heritability structure).
+- **PLN**[^1][^2]: unpenalized multivariate Poisson regression, with several covariance structures (full, diagonal, spherical, fixed, or a genetic/heritability structure).
 - **PLNPCA**[^3]: probabilistic Poisson PCA — a rank-constrained covariance for dimension reduction and visualization.
-- **PLNLDA**: Poisson lognormal discriminant analysis[^4] for the supervised classification of count data.
+- **PLNLDA**[^1]: Poisson lognormal discriminant analysis[^4] for the supervised classification of count data.
 - **PLNnetwork**[^5]: sparse inverse-covariance (network) inference via a graphical-lasso-like penalty[^6].
 - **PLNmixture**: model-based clustering[^7] of count data via a mixture of PLN models.
-- **ZIPLN**[^8]: a zero-inflated extension of PLN for data with excess zeros, with the same family of covariance structures and an optional sparse (`ZIPLNnetwork`) variant.
+- **ZIPLN**[^8]: a zero-inflated extension of PLN for data with excess zeros, with the same family of covariance structures and an optional sparse (`ZIPLNnetwork`[^9]) variant.
 
 [^1]: J. Chiquet, M. Mariadassou and S. Robin: The Poisson-lognormal model as a versatile framework for the joint analysis of species abundances, Frontiers in Ecology and Evolution, 2021. [doi:10.3389/fevo.2021.588292](https://www.frontiersin.org/articles/10.3389/fevo.2021.588292/full)
 [^2]: Aitchison, J. and Ho, C. H. The multivariate Poisson-log normal distribution. Biometrika, 76(4), 1989, 643–653.
@@ -42,6 +42,7 @@ knitr::opts_chunk$set(
 [^6]: Friedman, J., Hastie, T. and Tibshirani, R. Sparse inverse covariance estimation with the graphical lasso. Biostatistics, 9(3), 2008.
 [^7]: Fraley, C. and Raftery, A. E. MCLUST: Software for model-based cluster analysis. Journal of Classification, 16(2), 1999.
 [^8]: Batardière, B., Chiquet, J., Gindraud, F. and Mariadassou, M. Zero-inflation in the multivariate Poisson lognormal family. Statistics and Computing, 35, 2025. [doi:10.1007/s11222-025-10729-0](https://doi.org/10.1007/s11222-025-10729-0)
+[^9]: Tous, J., Chiquet, J., Deacon, A. E., Fontrodona-Eslava, A., Fraser, D. F. and Magurran, A. E. A JSDM with zero-inflation to improve inference of association networks from count community data with structural zeros. bioRxiv preprint, 2025. [doi:10.1101/2025.07.24.666553](https://doi.org/10.1101/2025.07.24.666553)
 
 ## Installation
 
@@ -55,9 +56,9 @@ remotes::install_github("pln-team/PLNmodels@tag_number")  # a specific tagged re
 
 ## Illustration
 
-We illustrate the main models on the `barents` data set[^9]: the abundance of 30 fish species observed in 89 sites in the Barents sea, along with depth, temperature and geographic coordinates for each site.
+We illustrate the main models on the `barents` data set[^10]: the abundance of 30 fish species observed in 89 sites in the Barents sea, along with depth, temperature and geographic coordinates for each site.
 
-[^9]: Fossheim, M., Nilssen, E. M. and Aschan, M. Fish assemblages in the Barents Sea. Marine Biology Research, 2(4), 2006. [doi:10.1080/17451000600815698](https://doi.org/10.1080/17451000600815698)
+[^10]: Fossheim, M., Nilssen, E. M. and Aschan, M. Fish assemblages in the Barents Sea. Marine Biology Research, 2(4), 2006. [doi:10.1080/17451000600815698](https://doi.org/10.1080/17451000600815698)
 
 ```{r load}
 library(PLNmodels)

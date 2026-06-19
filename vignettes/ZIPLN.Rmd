@@ -50,7 +50,7 @@ mean(microcosm$Abundance == 0)
 
 ### Mathematical background
 
-The zero-inflated PLN model (ZIPLN) combines the Poisson lognormal model [@AiH89] -- see [the PLN vignette](PLN.html) -- with a zero-inflation mechanism: each count $Y_{ij}$ is either a structural zero (with probability $\pi_{ij}$) or drawn from the usual PLN generative process:
+The zero-inflated PLN model (ZIPLN) [@ZIPLN] combines the Poisson lognormal model [@AiH89] -- see [the PLN vignette](PLN.html) -- with a zero-inflation mechanism: each count $Y_{ij}$ is either a structural zero (with probability $\pi_{ij}$) or drawn from the usual PLN generative process:
 \begin{equation}
   \begin{array}{rcl}
   \text{latent space } &   \mathbf{Z}_i \sim \mathcal{N}\left({\boldsymbol\mu},\boldsymbol\Sigma\right) & \\
@@ -66,7 +66,7 @@ Just like PLN, ${\boldsymbol\mu}$ generalizes to $\mathbf{o}_i + \mathbf{x}_i^\t
 - `"col"`: one $\pi_j$ per species.
 - covariates: $\text{logit}(\pi_{ij}) = \mathbf{x}_{0,i}^\top\mathbf{B}_{0,j}$, specified with the formula syntax `Y ~ PLN effect | ZI effect` (see below).
 
-`ZIPLNnetwork` further adds a sparsity penalty on $\boldsymbol\Omega = \boldsymbol\Sigma^{-1}$, exactly as `PLNnetwork` does for PLN (see [the PLNnetwork vignette](PLNnetwork.html) and @PLNnetwork), so that both the excess of zeros and the residual dependency structure between taxa are accounted for.
+`ZIPLNnetwork` further adds a sparsity penalty on $\boldsymbol\Omega = \boldsymbol\Sigma^{-1}$, exactly as `PLNnetwork` does for PLN (see [the PLNnetwork vignette](PLNnetwork.html) and @PLNnetwork), so that both the excess of zeros and the residual dependency structure between taxa are accounted for. See @ZIPLNnetwork for an application to species association networks from count data with structural zeros.
 
 ## Analysis of microcosm with ZIPLN
 
