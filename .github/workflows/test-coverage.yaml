@@ -45,6 +45,10 @@ jobs:
           plugins: noop
           disable_search: true
           token: ${{ secrets.CODECOV_TOKEN }}
+          # GPG verification of the codecov CLI binary against a public keyserver is
+          # flaky in CI (intermittent "no valid OpenPGP data found" / "No public key"),
+          # unrelated to our config; skip it as recommended by Codecov.
+          skip_validation: true
 
       - name: Show testthat output
         if: always()

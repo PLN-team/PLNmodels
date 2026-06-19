@@ -9,9 +9,6 @@ navbar:
     right: [github]
   components:
     home: ~
-    slideshow:
-      text: "Slideshow on PLN"
-      href: "https://pln-team.github.io/slideshow/slides"
     articles:
       text: "Vignettes"
       menu:

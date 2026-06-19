@@ -154,11 +154,10 @@ model_BIC <- getBestModel(network_models, "BIC")   # if no criteria is specified
 
 An alternative strategy is to use StARS [@stars], which performs resampling to evaluate the robustness of the network along the path of solutions in a similar fashion as the stability selection approach of @stabilitySelection, but in a network inference context.
 
-Resampling can be computationally demanding but is easily parallelized: the function `stability_selection` integrates some features of the **future** package to perform parallel computing. We set our plan to speed the process by relying on 2 workers:
+Resampling can be computationally demanding but is easily parallelized: the function `stability_selection` relies on `parallel::mclapply` to perform parallel computing. Set the number of workers with the `mc.cores` option (forking-based, so only effective on Unix-like systems; ignored on Windows):
 
-```{r future, eval = FALSE}
-library(future)
-plan(multisession, workers = 2)
+```{r mc-cores, eval = FALSE}
+options(mc.cores = 2)
 ```
 
 We first invoke `stability_selection` explicitly for pedagogical purpose. In this case, we need to build our sub-samples manually:
@@ -181,10 +180,10 @@ When "StARS" is requested for the first time, `getBestModel` automatically calls
 plot(network_models, "stability")
 ```
 
-When you are done, do not forget to get back to the standard sequential plan with *future*.
+When you are done, do not forget to get back to the default (sequential) behavior.
 
-```{r future_off, eval = FALSE}
-future::plan("sequential")
+```{r mc-cores-off, eval = FALSE}
+options(mc.cores = 1)
 ```
 
 ### Structure of a `PLNnetworkfit`
