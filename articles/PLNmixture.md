@@ -17,14 +17,15 @@ library(PLNmodels)
 library(factoextra)
 ```
 
-The main function `PLNmixture` integrates some features of the
-**future** package to perform parallel computing: you can set your plan
-to speed the fit by relying on 2 workers as follows:
+The main function `PLNmixture` relies on
+[`parallel::mclapply`](https://rdrr.io/r/parallel/mclapply.html) to
+perform parallel computing: set the number of workers with the
+`mc.cores` option (forking-based, so only effective on Unix-like
+systems; ignored on Windows):
 
 ``` r
 
-library(future)
-plan(multisession, workers = 2)
+options(mc.cores = 2)
 ```
 
 ### Data set
@@ -506,12 +507,12 @@ prcomp(predicted.position) %>%
 
 ![](PLNmixture_files/figure-html/predicted_position-1.png)
 
-When you are done, do not forget to get back to the standard sequential
-plan with *future*.
+When you are done, do not forget to get back to the default (sequential)
+behavior.
 
 ``` r
 
-future::plan("sequential")
+options(mc.cores = 1)
 ```
 
 ## References

@@ -333,8 +333,8 @@ myPLN_diagonal <-
   )
 ```
 
-Note that, by default, the model chosen is `covariance = "spherical"`,
-so that the two following calls are equivalents:
+Note that, by default, the model chosen is `covariance = "full"`, so
+that the two following calls are equivalents:
 
 ``` r
 

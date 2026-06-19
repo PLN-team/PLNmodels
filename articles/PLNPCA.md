@@ -18,14 +18,15 @@ library(corrplot)
 library(factoextra)
 ```
 
-The main function `PLNPCA` integrates some features of the **future**
-package to perform parallel computing: you can set your plan now to
-speed the fit by relying on 2 workers as follows:
+The main function `PLNPCA` relies on
+[`parallel::mclapply`](https://rdrr.io/r/parallel/mclapply.html) to
+perform parallel computing: set the number of workers with the
+`mc.cores` option (forking-based, so only effective on Unix-like
+systems; ignored on Windows):
 
 ``` r
 
-library(future)
-plan(multisession, workers = 2)
+options(mc.cores = 2)
 ```
 
 ### Data set
@@ -565,12 +566,12 @@ data.frame(
 
 fitted value vs. observation
 
-When you are done, do not forget to get back to the standard sequential
-plan with *future*.
+When you are done, do not forget to get back to the default (sequential)
+behavior.
 
 ``` r
 
-future::plan("sequential")
+options(mc.cores = 1)
 ```
 
 ## References

@@ -283,14 +283,15 @@ selection approach of Meinshausen and Bühlmann
 ([2010](#ref-stabilitySelection)), but in a network inference context.
 
 Resampling can be computationally demanding but is easily parallelized:
-the function `stability_selection` integrates some features of the
-**future** package to perform parallel computing. We set our plan to
-speed the process by relying on 2 workers:
+the function `stability_selection` relies on
+[`parallel::mclapply`](https://rdrr.io/r/parallel/mclapply.html) to
+perform parallel computing. Set the number of workers with the
+`mc.cores` option (forking-based, so only effective on Unix-like
+systems; ignored on Windows):
 
 ``` r
 
-library(future)
-plan(multisession, workers = 2)
+options(mc.cores = 2)
 ```
 
 We first invoke `stability_selection` explicitly for pedagogical
@@ -327,12 +328,12 @@ plot(network_models, "stability")
 
 ![](PLNnetwork_files/figure-html/plot%20stability-1.png)
 
-When you are done, do not forget to get back to the standard sequential
-plan with *future*.
+When you are done, do not forget to get back to the default (sequential)
+behavior.
 
 ``` r
 
-future::plan("sequential")
+options(mc.cores = 1)
 ```
 
 ### Structure of a `PLNnetworkfit`
@@ -377,10 +378,10 @@ my_graph <- plot(model_StARS, plot = FALSE)
 my_graph
 ```
 
-    ## IGRAPH fd49e8b UNW- 17 1 -- 
+    ## IGRAPH 6fb3197 UNW- 17 1 -- 
     ## + attr: name (v/c), label (v/c), label.cex (v/n), size (v/n),
     ## | label.color (v/c), weight (e/n), color (e/c), width (e/n)
-    ## + edge from fd49e8b (vertex names):
+    ## + edge from 6fb3197 (vertex names):
     ## [1] Hfo--Hsp
 
 ``` r
