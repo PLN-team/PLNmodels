@@ -1,0 +1,199 @@
+# Control of a PLN fit
+
+Helper to define list of parameters to control the PLN fit. All
+arguments have defaults.
+
+## Usage
+
+``` r
+PLN_param(
+  backend = c("nlopt", "builtin", "torch"),
+  trace = 1,
+  covariance = c("full", "diagonal", "spherical", "fixed", "genpop"),
+  Omega = NULL,
+  C = NULL,
+  config_post = list(),
+  config_optim = list(),
+  inception = NULL,
+  init_method = c("LM", "GLM")
+)
+```
+
+## Arguments
+
+- backend:
+
+  optimization backend, either `"nlopt"` (default), `"builtin"` or
+  `"torch"`. `"nlopt"` (CCSAQ, with `config_optim$profiled = TRUE`) is
+  consistently faster than `"builtin"`. `"builtin"` is the built-in
+  envelope-theorem Newton optimizer; it can reach a slightly better
+  optimum, an advantage that tends to grow with p — prefer it when the
+  last bit of ELBO matters more than speed, typically for large p.
+  `"torch"` is **experimental**: it may converge to suboptimal solutions
+  or fail on some datasets.
+
+- trace:
+
+  a integer for verbosity.
+
+- covariance:
+
+  character setting the model for the covariance matrix. Either "full",
+  "diagonal", "spherical", "fixed" or "genpop". Default is "full".
+
+- Omega:
+
+  precision matrix of the latent variables. Inverse of Sigma. Must be
+  specified if `covariance` is "fixed"
+
+- C:
+
+  a fixed p x p correlation matrix (e.g. a genetic relationship matrix).
+  Must be specified if `covariance` is "genpop": the residual covariance
+  is then modeled as `Sigma = sigma2 * (rho * C + (1 - rho) * I)`, with
+  `sigma2` and `rho` estimated.
+
+- config_post:
+
+  a list for controlling the post-treatments (optional bootstrap,
+  jackknife, R2, etc.). See details
+
+- config_optim:
+
+  a list for controlling the optimizer (either "nlopt" or "torch"
+  backend). See details
+
+- inception:
+
+  Set up the parameters initialization: by default, the model is
+  initialized with a multivariate linear model applied on
+  log-transformed data, and with the same formula as the one provided by
+  the user. However, the user can provide a PLNfit (typically obtained
+  from a previous fit), which sometimes speeds up the inference.
+
+- init_method:
+
+  character: strategy for the starting-point computation (ignored when
+  `inception` is a PLNfit). Either `"LM"` (default) or `"GLM"` (p
+  independent Poisson GLMs, better for complex or unbalanced designs).
+  See
+  [`compute_PLN_starting_point()`](https://pln-team.github.io/PLNmodels/reference/compute_PLN_starting_point.md).
+
+## Value
+
+list of parameters configuring the fit.
+
+## Details
+
+The list of parameters `config_optim` controls the optimizers. When
+"nlopt" is chosen the following entries are relevant
+
+- "algorithm" the optimization method used by NLOPT among LD type, e.g.
+  "CCSAQ", "MMA", "LBFGS". See NLOPT documentation for further details.
+  Default is "CCSAQ".
+
+- "maxeval" stop when the number of iteration exceeds maxeval. Default
+  is 10000
+
+- "ftol_rel" stop when an optimization step changes the objective
+  function by less than ftol multiplied by the absolute value of the
+  parameter. Default is 1e-8
+
+- "xtol_rel" stop when an optimization step changes every parameters by
+  less than xtol multiplied by the absolute value of the parameter.
+  Default is 1e-6
+
+- "ftol_abs" stop when an optimization step changes the objective
+  function by less than ftol_abs. Default is 0.0 (disabled)
+
+- "xtol_abs" stop when an optimization step changes every parameters by
+  less than xtol_abs. Default is 0.0 (disabled)
+
+- "maxtime" stop when the optimization time (in seconds) exceeds
+  maxtime. Default is -1 (disabled)
+
+- "profiled" (full covariance only) if TRUE, profile both B and Omega at
+  every nlopt evaluation instead of running an EM loop (Omega fixed for
+  the duration of each inner nlopt solve, B profiled in closed form at
+  every evaluation). Despite the extra `O(n*p^2 + p^3)` cost per
+  evaluation, benchmarks found it consistently faster than the EM loop
+  (and with a slightly better loglik) across a range of problem sizes.
+  Default is TRUE; set to FALSE to recover the EM loop.
+
+When "torch" backend is used (only for PLN and PLNLDA for now), the
+following entries are relevant:
+
+- "algorithm" the optimizer used by torch among RPROP (default),
+  RMSPROP, ADAM and ADAGRAD
+
+- "maxeval" stop when the number of iteration exceeds maxeval. Default
+  is 10 000
+
+- "numepoch" stop training once this number of epochs exceeds numepoch.
+  Set to -1 to enable infinite training. Default is 1 000
+
+- "num_batch" number of batches to use during training. Defaults to 1
+  (use full dataset at each epoch)
+
+- "ftol_rel" stop when an optimization step changes the objective
+  function by less than ftol multiplied by the absolute value of the
+  parameter. Default is 1e-8
+
+- "xtol_rel" stop when an optimization step changes every parameters by
+  less than xtol multiplied by the absolute value of the parameter.
+  Default is 1e-6
+
+- "lr" learning rate. Default is 0.1.
+
+- "momentum" momentum factor. Default is 0 (no momentum). Only used in
+  RMSPROP
+
+- "weight_decay" Weight decay penalty. Default is 0 (no decay). Not used
+  in RPROP
+
+- "step_sizes" pair of minimal (default: 1e-6) and maximal (default: 50)
+  allowed step sizes. Only used in RPROP
+
+- "etas" pair of multiplicative increase and decrease factors. Default
+  is (0.5, 1.2). Only used in RPROP
+
+- "centered" if TRUE, compute the centered RMSProp where the gradient is
+  normalized by an estimation of its variance weight_decay (L2 penalty).
+  Default to FALSE. Only used in RMSPROP
+
+When "builtin" backend is used, the following entries are relevant
+
+- "maxeval" stop when the number of Newton steps in the inner loop
+  exceeds maxeval. Default is 10000
+
+- "ftol_in" stop the inner loop when the objective changes by less than
+  ftol_in (relative). Default is 1e-8
+
+- "maxit_em" stop the EM outer loop when the number of EM iterations
+  exceeds maxit_em. Default is 50
+
+- "ftol_em" stop the EM outer loop when the ELBO changes by less than
+  ftol_em (relative). Default is 1e-8
+
+The list of parameters `config_post` controls the post-treatment
+processing (for most `PLN*()` functions), with the following entries
+(defaults may vary depending on the specific function, check
+`config_post_default_*` for defaults values):
+
+- jackknife boolean indicating whether jackknife should be performed to
+  evaluate bias and variance of the model parameters. Default is FALSE.
+
+- bootstrap integer indicating the number of bootstrap resamples
+  generated to evaluate the variance of the model parameters. Default is
+  0 (inactivated).
+
+- variational_var boolean indicating whether variational Fisher
+  information matrix should be computed to estimate the variance of the
+  model parameters (highly underestimated). Default is FALSE.
+
+- sandwich_var boolean indicating whether sandwich estimation should be
+  used to estimate the variance of the model parameters (highly
+  underestimated). Default is FALSE.
+
+- rsquared boolean indicating whether approximation of R2 based on
+  deviance should be computed. Default is TRUE
