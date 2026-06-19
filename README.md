@@ -18,8 +18,9 @@ stable](https://img.shields.io/badge/lifecycle-stable-blue.svg)](https://lifecyc
 > of multivariate problems when count data are at play. This package
 > implements efficient variational algorithms to fit such models,
 > accompanied with a set of functions for visualization and diagnostic.
-> See [this deck of slides](https://pln-team.github.io/slideshow/slides)
-> for a comprehensive introduction.
+> See [all the dedicated
+> vignettes](https://pln-team.github.io/PLNmodels/articles/) for a
+> comprehensive introduction.
 
 **PLNmodels** covers the following models, all built around the
 multivariate Poisson-lognormal distribution and sharing a common
