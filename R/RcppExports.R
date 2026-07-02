@@ -165,3 +165,7 @@ nlopt_optimize_vestep_zipln_fixed <- function(data, params, config) {
     .Call('_PLNmodels_nlopt_optimize_vestep_zipln_fixed', PACKAGE = 'PLNmodels', data, params, config)
 }
 
+trnewton_optimize_rank <- function(data, params, config) {
+    .Call('_PLNmodels_trnewton_optimize_rank', PACKAGE = 'PLNmodels', data, params, config)
+}
+

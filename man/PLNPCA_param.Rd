@@ -5,7 +5,7 @@
 \title{Control of PLNPCA fit}
 \usage{
 PLNPCA_param(
-  backend = c("nlopt", "builtin", "torch"),
+  backend = c("nlopt", "builtin", "torch", "trnewton"),
   trace = 1,
   config_optim = list(),
   config_post = list(),
@@ -22,7 +22,13 @@ the singular-value ratio d1/sqrt(n) is large), \code{"builtin"} (joint L-BFGS wi
 Wolfe line search on all parameters simultaneously — faster per iteration but may
 converge to inferior local optima on ill-conditioned datasets),
 or \code{"torch"} (\strong{experimental}: automatic differentiation via the torch package; tends to
-find lower loglik than \code{"nlopt"} and \code{"builtin"} on most datasets — not recommended).}
+find lower loglik than \code{"nlopt"} and \code{"builtin"} on most datasets — not recommended).
+\code{"trnewton"} is a profiled trust-region Newton: it profiles out the variational
+parameters \verb{(M, S)} with a per-observation Newton VE-step and optimises the loadings
+\verb{(B, C)} with a saddle-aware trust-region Newton on the resulting objective (analytic
+Schur Hessian-vector products, Jacobi-preconditioned Steihaug-CG). It reliably reaches
+higher loglik than \code{"nlopt"} and is faster on moderate \code{p}; tuning keys in
+\code{config_optim}: \code{cg_maxit}, \code{maxit_out}, \code{ftol_out}, \code{gtol}, \code{delta0}.}
 
 \item{trace}{a integer for verbosity.}
 

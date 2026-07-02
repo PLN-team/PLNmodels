@@ -554,6 +554,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// trnewton_optimize_rank
+Rcpp::List trnewton_optimize_rank(const Rcpp::List& data, const Rcpp::List& params, const Rcpp::List& config);
+RcppExport SEXP _PLNmodels_trnewton_optimize_rank(SEXP dataSEXP, SEXP paramsSEXP, SEXP configSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type config(configSEXP);
+    rcpp_result_gen = Rcpp::wrap(trnewton_optimize_rank(data, params, config));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_cpp_test_nlopt", (DL_FUNC) &_PLNmodels_cpp_test_nlopt, 0},
@@ -597,6 +610,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_PLNmodels_nlopt_optimize_vestep_zipln_diagonal", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_zipln_diagonal, 3},
     {"_PLNmodels_nlopt_optimize_vestep_zipln_spherical", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_zipln_spherical, 3},
     {"_PLNmodels_nlopt_optimize_vestep_zipln_fixed", (DL_FUNC) &_PLNmodels_nlopt_optimize_vestep_zipln_fixed, 3},
+    {"_PLNmodels_trnewton_optimize_rank", (DL_FUNC) &_PLNmodels_trnewton_optimize_rank, 3},
     {NULL, NULL, 0}
 };
 
