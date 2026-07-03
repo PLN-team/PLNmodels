@@ -69,6 +69,11 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
 #'   Jacobi-preconditioned Steihaug-CG). It reliably reaches a higher variational bound than
 #'   `"nlopt"` on small/moderate data at comparable speed, and is faster on large data;
 #'   tuning keys in `config_optim`: `cg_maxit`, `maxit_out`, `ftol_out`, `gtol`, `delta0`.
+#'   On large data (many samples and variables) the reduced-Hessian landscape is indefinite
+#'   and the outer trust-region iteration converges slowly but keeps improving the bound, so
+#'   it is capped by `maxit_out` (default 150) rather than by the gradient tolerance: the
+#'   higher ranks then trade quality for time. For the best variational bound on large data,
+#'   raise it, e.g. `config_optim = list(maxit_out = 300)`.
 #' @inheritParams PLN_param trace config_optim config_post
 #' @param init_method character: strategy used to compute the starting point for the shared SVD.
 #'   - `"LM"` (default): fast multivariate `lm.fit` on log-transformed counts. Good for
