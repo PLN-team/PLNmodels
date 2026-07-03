@@ -27,6 +27,10 @@
     <li><a class="dropdown-item" href="articles/PLNmixture.html">PLNmixture: Model-based clustering for counts</a></li>
     <li><a class="dropdown-item" href="articles/ZIPLN.html">ZIPLN: Zero-inflated models for counts with excess zeros</a></li>
   </ul></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="articles/optimization.html">Optimization in PLNmodels</a></li>
+  </ul></li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/pln-team/PLNmodels/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul></div>
@@ -2069,7 +2073,7 @@ PLN torch et PLNPCA torch (barents, oaks) divergent systématiquement dans maste
 <p><strong>Fichiers</strong> : <code>R/utils.R</code>, <code>R/ZIPLNfit-class.R</code>, <code>DESCRIPTION</code></p>
 <div class="section level3">
 <h3 id="motivation-7">Motivation<a class="anchor" aria-label="anchor" href="#motivation-7"></a></h3>
-<p>L’initialisation de ZIPLN parcourait toutes les <code>p</code> espèces en boucle et ajustait un modèle ZI Poisson univarié par espèce via <code><a href="https://rdrr.io/pkg/pscl/man/zeroinfl.html" class="external-link">pscl::zeroinfl</a></code> (EM complet, 2 GLM par itération). Sur oaks (p=114), cela représentait ~2 s d’init avant même de commencer l’EM ELBO.</p>
+<p>L’initialisation de ZIPLN parcourait toutes les <code>p</code> espèces en boucle et ajustait un modèle ZI Poisson univarié par espèce via <code>pscl::zeroinfl</code> (EM complet, 2 GLM par itération). Sur oaks (p=114), cela représentait ~2 s d’init avant même de commencer l’EM ELBO.</p>
 <p>Le point de départ n’a pas besoin d’être la solution exacte du modèle ZI Poisson univarié — il suffit d’être dans le bon voisinage pour que l’ELBO converge. De plus, le modèle univarié ignore la structure de covariance jointe, ce qui peut en fait orienter l’init vers un mauvais bassin pour l’ELBO multivarié.</p>
 </div>
 <div class="section level3">

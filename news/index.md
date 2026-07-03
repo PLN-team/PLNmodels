@@ -5,18 +5,31 @@
 ### New backends and optimizers
 
 - **New built-in Newton optimizer** (`backend = "builtin"`) for PLN,
-  ZIPLN and PLNPCA: envelope-theorem Newton steps with strong Wolfe line
-  search, no dependency on NLOPT. Substantially faster and more accurate
-  than nlopt on large datasets with full covariance.
+  ZIPLN and PLNnetwork: envelope-theorem Newton steps with strong Wolfe
+  line search, no dependency on NLOPT. Substantially faster and more
+  accurate than nlopt on large datasets with full covariance.
+
+- **PLNPCA’s `"builtin"` backend rewritten as a profiled trust-region
+  Newton**: the variational block `(M, S)` is profiled out with a
+  per-observation Newton VE-step, and the loadings `(B, C)` are
+  optimised with a saddle-aware trust-region Newton on the resulting
+  objective (analytic Schur-complement Hessian-vector products,
+  Jacobi-preconditioned Steihaug-CG) — replacing the previous spectral
+  projected-gradient `"builtin"`. It reliably reaches a higher
+  variational bound than `"nlopt"` at comparable-to-better speed; tuning
+  keys `cg_maxit`, `maxit_out`, `ftol_out`, `gtol`, `delta0` in
+  `config_optim` (see
+  [`?PLNPCA_param`](https://pln-team.github.io/PLNmodels/reference/PLNPCA_param.md)).
+  `"nlopt"` remains the default for `PLNPCA`.
 
 - **Backend defaults revisited package-wide**, based on extensive
-  benchmarking: PLN keeps `"nlopt"` (now consistently faster thanks to
-  `profiled = TRUE`, see below); PLNnetwork and ZIPLNnetwork now default
-  to `"builtin"`, which finds a better optimum at a modest speed cost;
-  ZIPLN keeps its `"builtin"` default. All four remain configurable via
-  the `backend` argument; see the corresponding `*_param()`
-  documentation for the trade-offs. The `torch` backend is now clearly
-  marked **experimental** everywhere.
+  benchmarking: PLN and PLNPCA keep `"nlopt"` (PLN now consistently
+  faster thanks to `profiled = TRUE`, see below); PLNnetwork and
+  ZIPLNnetwork now default to `"builtin"`, which finds a better optimum
+  at a modest speed cost; ZIPLN keeps its `"builtin"` default. All
+  backends remain configurable via the `backend` argument; see the
+  corresponding `*_param()` documentation for the trade-offs. The
+  `torch` backend is now clearly marked **experimental** everywhere.
 
 - **Quality and speed improvements**: `config_optim$profiled = TRUE` is
   now the default for full-covariance nlopt fits (faster, slightly
@@ -25,8 +38,7 @@
   initialisation across ranks and can warm-start from a pre-fitted
   `PLNfit` for large ranks (`inception`/`init_method`, see
   [`?PLNPCA_param`](https://pln-team.github.io/PLNmodels/reference/PLNPCA_param.md));
-  ZIPLN’s starting point no longer relies on
-  [`pscl::zeroinfl`](https://rdrr.io/pkg/pscl/man/zeroinfl.html) (now an
+  ZIPLN’s starting point no longer relies on `pscl::zeroinfl` (now an
   internal LM + binomial GLM routine), which is both much faster and a
   better starting point — `pscl` is no longer a dependency.
 
@@ -59,9 +71,7 @@
   (PLN, PLNPCA, PLNnetwork, ZIPLN). This makes the nlopt XTOL criterion
   scale-invariant and stabilises the torch backend.
 
-- **Parallelism backend**:
-  [`future.apply::future_lapply`](https://future.apply.futureverse.org/reference/future_lapply.html)
-  is replaced by
+- **Parallelism backend**: `future.apply::future_lapply` is replaced by
   [`parallel::mclapply`](https://rdrr.io/r/parallel/mclapply.html)
   throughout (stability selection for PLNnetwork / ZIPLNnetwork). Use
   `options(mc.cores = N)` to set the number of cores.

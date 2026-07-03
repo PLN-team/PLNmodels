@@ -27,6 +27,10 @@
     <li><a class="dropdown-item" href="../articles/PLNmixture.html">PLNmixture: Model-based clustering for counts</a></li>
     <li><a class="dropdown-item" href="../articles/ZIPLN.html">ZIPLN: Zero-inflated models for counts with excess zeros</a></li>
   </ul></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/optimization.html">Optimization in PLNmodels</a></li>
+  </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/pln-team/PLNmodels/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul></div>
@@ -66,11 +70,21 @@
 <dl><dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
 <dd><p>optimization backend, either <code>"nlopt"</code> (default, NLOPT/CCSAQ, recommended
 for PLNPCA: conservative per-variable steps reliably find the global basin even when
-the singular-value ratio d1/sqrt(n) is large), <code>"builtin"</code> (joint L-BFGS with strong
-Wolfe line search on all parameters simultaneously — faster per iteration but may
-converge to inferior local optima on ill-conditioned datasets),
-or <code>"torch"</code> (<strong>experimental</strong>: automatic differentiation via the torch package; tends to
-find lower loglik than <code>"nlopt"</code> and <code>"builtin"</code> on most datasets — not recommended).</p></dd>
+the singular-value ratio d1/sqrt(n) is large), <code>"builtin"</code> (the home-made optimizer, a
+profiled trust-region Newton), or <code>"torch"</code> (<strong>experimental</strong>: automatic differentiation
+via the torch package; tends to find lower loglik than <code>"nlopt"</code> and <code>"builtin"</code> on most
+datasets — not recommended).
+The <code>"builtin"</code> backend profiles out the variational parameters <code>(M, S)</code> with a
+per-observation Newton VE-step and optimises the loadings <code>(B, C)</code> with a saddle-aware
+trust-region Newton on the resulting objective (analytic Schur Hessian-vector products,
+Jacobi-preconditioned Steihaug-CG). It reliably reaches a higher variational bound than
+<code>"nlopt"</code> on small/moderate data at comparable speed, and is faster on large data;
+tuning keys in <code>config_optim</code>: <code>cg_maxit</code>, <code>maxit_out</code>, <code>ftol_out</code>, <code>gtol</code>, <code>delta0</code>.
+On large data (many samples and variables) the reduced-Hessian landscape is indefinite
+and the outer trust-region iteration converges slowly but keeps improving the bound, so
+it is capped by <code>maxit_out</code> (default 150) rather than by the gradient tolerance: the
+higher ranks then trade quality for time. For the best variational bound on large data,
+raise it, e.g. <code>config_optim = list(maxit_out = 300)</code>.</p></dd>
 
 
 <dt id="arg-trace">trace<a class="anchor" aria-label="anchor" href="#arg-trace"></a></dt>

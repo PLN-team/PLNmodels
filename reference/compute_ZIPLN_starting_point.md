@@ -2,8 +2,7 @@
 
 Fast LM-based starting point for ZIPLN: one multivariate `lm.fit` for
 the PLN component and empirical zero rates / binomial GLMs for the ZI
-component. Replaces the previous per-species
-[`pscl::zeroinfl`](https://rdrr.io/pkg/pscl/man/zeroinfl.html) loop.
+component. Replaces the previous per-species `pscl::zeroinfl` loop.
 
 ## Usage
 

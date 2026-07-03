@@ -4,6 +4,8 @@
 
 - [Data importation in
   PLNmodels](https://pln-team.github.io/PLNmodels/articles/Import_data.md):
+- [Optimization methods in
+  PLNmodels](https://pln-team.github.io/PLNmodels/articles/optimization.md):
 - [Analyzing multivariate count data with the Poisson log-normal
   model](https://pln-team.github.io/PLNmodels/articles/PLN.md):
 - [Supervized classification of multivariate count table with the
