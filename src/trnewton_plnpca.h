@@ -52,8 +52,10 @@ inline double ve_solve(const PlnData & d, const arma::mat & XB, const arma::mat 
         for (arma::uword i = 0; i < n; ++i) {
             arma::mat DC = C; DC.each_col() %= A.row(i).t();
             arma::mat H  = C.t() * DC + Iq;
-            dM.row(i) = arma::solve(H, gM.row(i).t(),
-                                    arma::solve_opts::likely_sympd + arma::solve_opts::no_approx).t();
+            arma::vec step;                               // robust: fall back to 0 if solve fails
+            if (!arma::solve(step, H, gM.row(i).t(), arma::solve_opts::likely_sympd))
+                step = arma::zeros(q);
+            dM.row(i) = step.t();
         }
         double t = 1.0, f1 = ve_obj(d, XB, C, C2, M - t * dM, psi);
         while ((!std::isfinite(f1) || f1 > f0 + 1e-12) && t > 1e-6) { t *= 0.5; f1 = ve_obj(d, XB, C, C2, M - t * dM, psi); }
@@ -96,7 +98,11 @@ inline arma::cube inner_blocks_inv(const PlnData & d, const arma::mat & XB, cons
         Hi.submat(q, 0, 2 * q - 1, q - 1)     = Hmp.t();
         Hi.submat(q, q, 2 * q - 1, 2 * q - 1) = Hpp;
         Hi *= d.w(i);
-        Hinv.slice(i) = arma::inv_sympd(Hi + 1e-8 * I2);
+        // relative ridge (large counts make Hi large) + robust fallback to pinv
+        const double reg = 1e-8 * (arma::trace(Hi) / (2.0 * q) + 1.0);
+        arma::mat Hii;
+        if (!arma::inv_sympd(Hii, Hi + reg * I2)) Hii = arma::pinv(Hi);
+        Hinv.slice(i) = Hii;
     }
     return Hinv;
 }

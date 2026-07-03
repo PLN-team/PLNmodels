@@ -130,8 +130,8 @@ PLNPCA_param <- function(
   config_opt <- make_config_optim(backend, config_optim, trace,
                                   builtin_default = config_default_plnpca,
                                   extra = if (backend == "trnewton")
-                                    list(maxit_out = 60L, ftol_out = 1e-8, cg_maxit = 8L,
-                                         gtol = 1e-4, delta0 = 1.0)
+                                    list(maxit_out = 150L, ftol_out = 1e-8, cg_maxit = 8L,
+                                         gtol = 1e-3, delta0 = 1.0)
                                   else list())
   config_opt$sequential <- sequential
 

@@ -108,11 +108,15 @@ Rcpp::List trnewton_optimize_rank(
     objective_vec.push_back(f);
 
     int it = 0;
+    double g0norm = 0.0;   // ‖∇g‖ at the start, for a scale-invariant stopping rule
     for (; it < maxit_out; ++it) {
         rank_obj_grad(d, Xw, B, C, M, psi, gB0, gC0, gM0, gPS0);  // envelope grad = gB0,gC0
         Th g{ gB0, gC0 };
         double gnorm = nrm(g);
-        if (gnorm < gtol) { status = 3; break; }
+        if (it == 0) g0norm = gnorm;
+        // relative gradient tolerance: absolute ‖g‖ scales with n and the counts, so an
+        // absolute threshold never triggers on large datasets.
+        if (gnorm <= gtol * std::max(g0norm, 1.0)) { status = 3; break; }
 
         const mat S2cur = arma::exp(psi);
         const mat Acur  = arma::exp(arma::clamp(d.O + XB + M * C.t() + 0.5 * S2cur * C2.t(),
