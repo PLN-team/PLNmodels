@@ -7,6 +7,9 @@ format:
     toc-depth: 3
     number-sections: true
     html-math-method: katex
+  pdf:
+    toc: true
+    number-sections: true
 ---
 
 ```{r setup, include=FALSE}
