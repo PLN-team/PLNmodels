@@ -1,283 +1,177 @@
 #include "RcppArmadillo.h"
-
 // [[Rcpp::depends(RcppArmadillo)]]
 
 #include "utils.h"
 #include "covariance_plnpca.h"
+#include "builtin_plnpca.h"
 
-// ---------------------------------------------------------------------------------------
-// Rank-constrained PLN — Joint L-BFGS with strong Wolfe line search
-//
-// All parameters [vec(B); vec(C); vec(M); vec(ψ)] are optimised simultaneously.
-// Strong Wolfe line search guarantees s^T y > 0 at every accepted step, so the
-// L-BFGS history always accumulates valid curvature pairs including the bilinear
-// M·Cᵀ cross-curvature that block-coordinate methods miss.
-//
-// Note: for datasets with large d[1]/sqrt(n) (e.g. barents), joint L-BFGS may
-// converge to a local optimum inferior to nlopt-CCSAQ. The nlopt backend is
-// recommended when solution quality is the priority.
+using arma::mat; using arma::vec; using arma::cube;
 
-// ---------------------------------------------------------------------------------------
-// L-BFGS two-loop recursion: returns search direction p = -H_k · g
+// A point in θ-space = (B, C). Small helpers for the CG on θ.
+namespace {
+struct Th { mat B, C; };
+inline double dot(const Th & a, const Th & b) { return arma::accu(a.B % b.B) + arma::accu(a.C % b.C); }
+inline double nrm(const Th & a) { return std::sqrt(dot(a, a)); }
+inline Th axpy(double s, const Th & x, const Th & y) { return { s * x.B + y.B, s * x.C + y.C }; } // s*x + y
+inline Th scal(double s, const Th & x) { return { s * x.B, s * x.C }; }
+// preconditioner helpers (P = diag, stored as a Th of positive diagonal entries)
+inline double dotP(const Th & a, const Th & b, const Th & p) {
+    return arma::accu(p.B % a.B % b.B) + arma::accu(p.C % a.C % b.C); }
+inline Th Pinv(const Th & r, const Th & p) { return { r.B / p.B, r.C / p.C }; }
+} // namespace
 
-static arma::vec lbfgs_direction(
-    const arma::vec & g,
-    const std::deque<arma::vec> & sv,
-    const std::deque<arma::vec> & yv
-) {
-    const int m = (int)sv.size();
-    arma::vec q = g, alpha(m, arma::fill::zeros);
-    for (int i = m-1; i >= 0; i--) {
-        double rho = 1.0 / arma::dot(yv[i], sv[i]);
-        alpha(i) = rho * arma::dot(sv[i], q);
-        q -= alpha(i) * yv[i];
-    }
-    arma::vec r = q;
-    if (m > 0) {
-        double sy = arma::dot(sv.back(), yv.back());
-        double yy = arma::dot(yv.back(), yv.back());
-        if (sy > 0 && yy > 1e-20) r *= (sy / yy);
-    }
-    for (int i = 0; i < m; i++) {
-        double rho  = 1.0 / arma::dot(yv[i], sv[i]);
-        double beta = rho * arma::dot(yv[i], r);
-        r += sv[i] * (alpha(i) - beta);
-    }
-    return -r;
-}
-
-// ---------------------------------------------------------------------------------------
-// Strong Wolfe line search (Nocedal & Wright, Algorithm 3.5/3.6).
-// Guarantees s^T y > 0 when slope0 < 0 and a descent direction is given.
-
-struct WolfeStep { double scale; double f; arma::vec g; };
-
-template<typename FG>
-static WolfeStep wolfe_ls(
-    const arma::vec & x0, const arma::vec & d,
-    double f0, double slope0, FG && fg,
-    const double c1 = 1e-4, const double c2 = 0.9
-) {
-    auto zoom = [&](double alo, double ahi, double flo) -> WolfeStep {
-        for (int j = 0; j < 20; j++) {
-            double a = 0.5 * (alo + ahi);
-            auto res = fg(x0 + a * d);
-            double fa = res.first; arma::vec ga = res.second;
-            if (fa > f0 + c1*a*slope0 || fa >= flo) { ahi = a; }
-            else {
-                double da = arma::dot(ga, d);
-                if (std::abs(da) <= -c2 * slope0) return {a, fa, ga};
-                if (da * (ahi - alo) >= 0) ahi = alo;
-                alo = a;  flo = fa;
-            }
-        }
-        double a = 0.5 * (alo + ahi);
-        auto res = fg(x0 + a * d);
-        return {a, res.first, res.second};
-    };
-    double a = 1.0, ap = 0, fp = f0;
-    for (int i = 0; i < 20; i++) {
-        auto res = fg(x0 + a * d);
-        double fa = res.first; arma::vec ga = res.second;
-        if (fa > f0 + c1*a*slope0 || (i > 0 && fa >= fp)) return zoom(ap, a, fp);
-        double da = arma::dot(ga, d);
-        if (std::abs(da) <= -c2 * slope0) return {a, fa, ga};
-        if (da >= 0) return zoom(a, ap, fa);
-        ap = a;  fp = fa;
-        a  = std::min(2.0 * a, 1e6);
-    }
-    auto res = fg(x0 + a * d);
-    return {a, res.first, res.second};
-}
-
-// ---------------------------------------------------------------------------------------
-// Shared L-BFGS driver: runs to convergence (relative + windowed-min plateau check),
-// used identically by the joint and VE-step rank optimizers below.
-// status: 3 = converged, 4 = degenerate slope, 5 = maxiter reached without internal break.
-
-struct LbfgsResult { arma::vec x; std::vector<double> objective_vec; int total_iter; int status; };
-
-template<typename FG>
-static LbfgsResult run_lbfgs(
-    arma::vec x, FG && fg, int maxiter, double ftol, int m_hist = 10
-) {
-    constexpr int win = 100;
-    auto res0 = fg(x); double f_cur = res0.first; arma::vec g_cur = res0.second;
-    const arma::uword N = x.n_elem;
-
-    std::deque<arma::vec> sv, yv;
-    std::vector<double> objective_vec;
-    double obj_prev = arma::datum::inf;
-    int total_iter = 0, status = 5;
-
-    for (int it = 0; it < maxiter; it++) {
-        objective_vec.push_back(f_cur);
-        total_iter++;
-
-        if (it > 0 && converged(f_cur, obj_prev, ftol)) { status = 3; break; }
-        obj_prev = f_cur;
-        if (it > 0 && it % win == 0 && (int)objective_vec.size() >= 2*win) {
-            double m1 = *std::min_element(objective_vec.end()-win,   objective_vec.end());
-            double m2 = *std::min_element(objective_vec.end()-2*win, objective_vec.end()-win);
-            if (converged(m1, m2, ftol)) { status = 3; break; }
-        }
-
-        // L-BFGS direction
-        arma::vec d_lbfgs;
-        if (sv.empty()) {
-            double gn = arma::norm(g_cur);
-            d_lbfgs = (gn > 1e-20) ? arma::vec(-g_cur / gn)
-                                    : arma::vec(N, arma::fill::zeros);
-        } else {
-            d_lbfgs = lbfgs_direction(g_cur, sv, yv);
-            if (arma::dot(d_lbfgs, g_cur) >= 0) {
-                sv.clear(); yv.clear();
-                d_lbfgs = -g_cur / (arma::norm(g_cur) + 1e-20);
-            }
-        }
-
-        double slope = arma::dot(d_lbfgs, g_cur);
-        if (std::abs(slope) < 1e-20) { status = 4; break; }
-
-        WolfeStep ws = wolfe_ls(x, d_lbfgs, f_cur, slope, fg);
-
-        arma::vec s_new = ws.scale * d_lbfgs;
-        arma::vec y_new = ws.g - g_cur;
-        double sy = arma::dot(s_new, y_new), ss = arma::dot(s_new, s_new);
-        if (sy > 1e-10 * ss && ss > 1e-20) {
-            sv.push_back(s_new); yv.push_back(y_new);
-            if ((int)sv.size() > m_hist) { sv.pop_front(); yv.pop_front(); }
-        }
-
-        x     = x + ws.scale * d_lbfgs;
-        f_cur = ws.f;
-        g_cur = std::move(ws.g);
-    }
-
-    return {std::move(x), std::move(objective_vec), total_iter, status};
-}
-
-// ---------------------------------------------------------------------------------------
 // [[Rcpp::export]]
 Rcpp::List builtin_optimize_rank(
-    const Rcpp::List & data  ,
-    const Rcpp::List & params,
-    const Rcpp::List & config
+    const Rcpp::List & data  , // List(Y, X, O, w)
+    const Rcpp::List & params, // List(B, C, M, S2)
+    const Rcpp::List & config  // List(maxit_out, ftol_out, cg_maxit, delta0, trace)
 ) {
-    const PlnData D(data);
-    arma::mat B  = Rcpp::as<arma::mat>(params["B"]);
-    arma::mat C  = Rcpp::as<arma::mat>(params["C"]);
-    arma::mat M  = Rcpp::as<arma::mat>(params["M"]);
-    arma::mat S2 = Rcpp::as<arma::mat>(params["S2"]);
+    const PlnData d(data);
+    mat B   = Rcpp::as<mat>(params["B"]);
+    mat C   = Rcpp::as<mat>(params["C"]);
+    mat M   = Rcpp::as<mat>(params["M"]);
+    mat psi = arma::log(Rcpp::as<mat>(params["S2"]));
 
-    const NewtonConfig cfg(config, 10000, 1e-9);
+    const int    maxit_out = config.containsElementNamed("maxit_out") ? Rcpp::as<int>(config["maxit_out"]) : 50;
+    const double ftol_out  = config.containsElementNamed("ftol_out")  ? Rcpp::as<double>(config["ftol_out"]) : 1e-8;
+    const int    cg_maxit  = config.containsElementNamed("cg_maxit")  ? Rcpp::as<int>(config["cg_maxit"]) : 25;
+    const double gtol      = config.containsElementNamed("gtol")      ? Rcpp::as<double>(config["gtol"]) : 1e-4;
+    double       Delta     = config.containsElementNamed("delta0")    ? Rcpp::as<double>(config["delta0"]) : 1.0;
+    const int    trace     = config.containsElementNamed("trace")     ? Rcpp::as<int>(config["trace"]) : 0;
 
-    const arma::uword n = D.Y.n_rows, p = D.Y.n_cols, q = M.n_cols, d = B.n_rows;
+    const arma::uword n = d.Y.n_rows, q = C.n_cols;
+    const mat Xw = d.X.each_col() % d.w;
 
-    // Packed-parameter offsets: x = [vec(B); vec(C); vec(M); vec(ψ)]
-    const arma::uword oB = 0, oC = d*p, oM = d*p + p*q, oPsi = d*p + p*q + n*q;
-    const arma::uword N  = d*p + p*q + 2*n*q;
+    std::vector<double> objective_vec;
+    int status = 5;
 
-    // Warm-start ψ with one fixed-point step
-    arma::mat C2  = C % C;
-    arma::mat psi = arma::log(S2);
-    arma::mat Z   = D.O + D.X * B + M * C.t();
-    arma::mat A   = arma::exp(Z + 0.5 * S2 * C2.t());
-    psi = arma::clamp(-arma::log(1. + A * C2), -40., 40.);
-    S2  = arma::exp(psi);
-    A   = arma::exp(Z + 0.5 * S2 * C2.t());
+    mat XB = d.X * B, C2 = C % C;   // kept in sync with B, C across accepted steps
+    const mat XX = d.X % d.X;       // for the Jacobi preconditioner (diag L_BB)
 
-    const arma::mat Xw = D.X.each_col() % D.w;
+    // base gradients at (B,C,M,psi); envelope grad = (gB0,gC0)
+    mat gB0, gC0, gM0, gPS0;
+    const mat zB = arma::zeros(B.n_rows, B.n_cols), zC = arma::zeros(C.n_rows, C.n_cols);
+    const mat zMq = arma::zeros(n, q);
 
-    // Joint fg evaluator for all parameters
-    auto fg = [&](const arma::vec & x) -> std::pair<double, arma::vec> {
-        arma::mat B_   = arma::reshape(x.subvec(oB,   oC-1   ), d, p);
-        arma::mat C_   = arma::reshape(x.subvec(oC,   oM-1   ), p, q);
-        arma::mat M_   = arma::reshape(x.subvec(oM,   oPsi-1 ), n, q);
-        arma::mat psi_ = arma::reshape(x.subvec(oPsi, N-1    ), n, q);
-        arma::mat gB_, gC_, gM_, gPs_;
-        double f = rank_obj_grad(D, Xw, B_, C_, M_, psi_, gB_, gC_, gM_, gPs_);
-        arma::vec g = arma::join_cols(
-            arma::join_cols(arma::vectorise(gB_), arma::vectorise(gC_)),
-            arma::join_cols(arma::vectorise(gM_), arma::vectorise(gPs_)));
-        return {f, g};
+    // Schur reduced Hessian-vector product H_red·v = L_θθ v − L_θφ L_φφ⁻¹ L_φθ v.
+    // All blocks computed ANALYTICALLY via `hess_dir`: one call with the θ-direction v
+    // yields L_θθ v (θ part) and L_φθ v (φ part); one call with the φ-direction w=L_φφ⁻¹(…)
+    // yields L_θφ w (θ part). A, S2 are current values (recomputed once per outer iter).
+    auto hessvec = [&](const Th & v, const cube & Hinv, const mat & A, const mat & S2) -> Th {
+        mat Ltt_B, Ltt_C, Lft_M, Lft_P;
+        builtin::hess_dir(d, Xw, C, C2, M, A, S2, v.B, v.C, zMq, zMq, Ltt_B, Ltt_C, Lft_M, Lft_P);
+        mat wM(n, q), wP(n, q);
+        for (arma::uword i = 0; i < n; ++i) {          // w = L_φφ⁻¹ (L_φθ v), per observation
+            vec x = Hinv.slice(i) * arma::join_cols(Lft_M.row(i).t(), Lft_P.row(i).t());
+            wM.row(i) = x.head(q).t();
+            wP.row(i) = x.tail(q).t();
+        }
+        mat Ltf_B, Ltf_C, dummyM, dummyP;
+        builtin::hess_dir(d, Xw, C, C2, M, A, S2, zB, zC, wM, wP, Ltf_B, Ltf_C, dummyM, dummyP);
+        return { Ltt_B - Ltf_B, Ltt_C - Ltf_C };
     };
 
-    // Initial packed state
-    arma::vec x0 = arma::join_cols(
-        arma::join_cols(arma::vectorise(B), arma::vectorise(C)),
-        arma::join_cols(arma::vectorise(M), arma::vectorise(psi)));
-
-    LbfgsResult res = run_lbfgs(x0, fg, cfg.maxiter, cfg.ftol);
-
-    // Unpack final parameters
-    B   = arma::reshape(res.x.subvec(oB,   oC-1  ), d, p);
-    C   = arma::reshape(res.x.subvec(oC,   oM-1  ), p, q);
-    M   = arma::reshape(res.x.subvec(oM,   oPsi-1), n, q);
-    psi = arma::reshape(res.x.subvec(oPsi, N-1   ), n, q);
-    S2  = arma::exp(psi);
-    C2  = C % C;
-    Z   = D.O + D.X * B + M * C.t();
-    A   = arma::exp(Z + 0.5 * S2 * C2.t());
-
-    const double w_bar = arma::accu(D.w);
-    Rcpp::List cov_out = rank_output_cov(M, C, S2, D.w, w_bar);
-    arma::vec loglik   = rank_final_loglik(D.Y, Z, A, M, S2, psi);
-
-    return make_plnpca_result(B, C, M, S2, Z, A, cov_out, loglik,
-                                 res.status, "lbfgs", res.objective_vec, res.total_iter);
-}
-
-// ---------------------------------------------------------------------------------------
-// VE step only (project): B and C fixed, update (M, ψ).
-
-// [[Rcpp::export]]
-Rcpp::List builtin_optimize_vestep_rank(
-    const Rcpp::List & data  ,
-    const Rcpp::List & params,
-    const Rcpp::List & config
-) {
-    const PlnData D(data);
-    arma::mat M  = Rcpp::as<arma::mat>(params["M"]);
-    arma::mat S2 = Rcpp::as<arma::mat>(params["S2"]);
-    arma::mat B  = Rcpp::as<arma::mat>(params["B"]);
-    arma::mat C  = Rcpp::as<arma::mat>(params["C"]);
-
-    const NewtonConfig cfg(config, 10000, 1e-9);
-
-    const arma::uword n = D.Y.n_rows, q = M.n_cols;
-    const arma::uword oM = 0, oPsi = n*q, N = 2*n*q;
-    const arma::mat C2 = C % C;
-    const arma::mat XB = D.X * B;
-
-    // Warm-start ψ
-    arma::mat psi = arma::log(S2);
-    arma::mat Z   = D.O + XB + M * C.t();
-    arma::mat A   = arma::exp(Z + 0.5 * S2 * C2.t());
-    psi = arma::clamp(-arma::log(1. + A * C2), -40., 40.);
-    S2  = arma::exp(psi);
-    A   = arma::exp(Z + 0.5 * S2 * C2.t());
-
-    auto fg = [&](const arma::vec & x) -> std::pair<double, arma::vec> {
-        arma::mat M_   = arma::reshape(x.subvec(oM,   oPsi-1), n, q);
-        arma::mat psi_ = arma::reshape(x.subvec(oPsi, N-1   ), n, q);
-        arma::mat gM_, gPs_;
-        double f = rank_vestep_obj_grad(D, XB, C, C2, M_, psi_, gM_, gPs_);
-        return {f, arma::join_cols(arma::vectorise(gM_), arma::vectorise(gPs_))};
+    // Preconditioned Steihaug-CG: approx-minimise m(s)=g·s+½ sᵀH s over the P-norm
+    // ball ‖s‖_P ≤ Δ (P = Jacobi preconditioner). Handles negative curvature; the
+    // P-metric absorbs the B-vs-C scale disparity, cutting the CG iteration count.
+    int cg_it_out = 0, cg_exit_out = 0; double cg_res_out = 0.0;  // CG diagnostics (trace)
+    auto steihaug = [&](const Th & g, const cube & Hinv, const mat & A, const mat & S2, const Th & p) -> Th {
+        Th z{ arma::zeros(B.n_rows, B.n_cols), arma::zeros(C.n_rows, C.n_cols) };
+        Th r = g;                       // ∇m at z=0
+        Th y = Pinv(r, p);
+        Th dvec = scal(-1.0, y);        // preconditioned steepest descent
+        double ry = dot(r, y);
+        const double r0 = std::sqrt(std::abs(ry)), tol = 1e-8 * r0;
+        auto to_boundary = [&](const Th & zz, const Th & dd) -> Th {  // ‖zz+τ dd‖_P = Δ, τ>0
+            double a = dotP(dd, dd, p), b = 2 * dotP(zz, dd, p), c = dotP(zz, zz, p) - Delta * Delta;
+            double tau = (-b + std::sqrt(std::max(b * b - 4 * a * c, 0.0))) / (2 * a);
+            return axpy(tau, dd, zz);
+        };
+        int j = 0;
+        for (; j < cg_maxit; ++j) {
+            cg_res_out = std::sqrt(std::abs(ry)) / (r0 + 1e-300);
+            if (std::sqrt(std::abs(ry)) <= tol) { cg_it_out = j; cg_exit_out = 0; return z; }  // converged
+            Th Hd = hessvec(dvec, Hinv, A, S2);
+            double dHd = dot(dvec, Hd);
+            if (dHd <= 0) { cg_it_out = j; cg_exit_out = 1; return to_boundary(z, dvec); }      // neg curvature
+            double alpha = ry / dHd;
+            Th z_new = axpy(alpha, dvec, z);
+            if (dotP(z_new, z_new, p) >= Delta * Delta) { cg_it_out = j; cg_exit_out = 2; return to_boundary(z, dvec); } // TR bound
+            z = z_new;
+            Th r_new = axpy(alpha, Hd, r);
+            Th y_new = Pinv(r_new, p);
+            double ry_new = dot(r_new, y_new);
+            dvec = axpy(ry_new / ry, dvec, scal(-1.0, y_new));        // d = -y_new + β d
+            r = r_new; y = y_new; ry = ry_new;
+        }
+        cg_it_out = j; cg_exit_out = 3; cg_res_out = std::sqrt(std::abs(ry)) / (r0 + 1e-300);   // hit cg_maxit
+        return z;
     };
 
-    arma::vec x0 = arma::join_cols(arma::vectorise(M), arma::vectorise(psi));
-    LbfgsResult res = run_lbfgs(x0, fg, cfg.maxiter, cfg.ftol);
+    double f = builtin::ve_solve(d, XB, C, C2, M, psi);   // profile out (M,ψ) at start
+    objective_vec.push_back(f);
 
-    M   = arma::reshape(res.x.subvec(oM,   oPsi-1), n, q);
-    psi = arma::reshape(res.x.subvec(oPsi, N-1   ), n, q);
-    S2  = arma::exp(psi);
-    Z   = D.O + XB + M * C.t();
-    A   = arma::exp(Z + 0.5 * S2 * C2.t());
+    int it = 0;
+    double g0norm = 0.0, gnorm = 0.0;   // ‖∇g‖ (current and at start) for a scale-invariant stop
+    Th g, pcond; cube Hinv; mat Acur, S2cur;
+    bool recompute = true;              // only the gradient/Hessian/preconditioner (point-dependent)
+                                        // are refreshed on ACCEPT; a rejected step leaves the point
+                                        // unchanged, so the expensive quantities are reused.
+    for (; it < maxit_out; ++it) {
+        if (recompute) {
+            rank_obj_grad(d, Xw, B, C, M, psi, gB0, gC0, gM0, gPS0);  // envelope grad = gB0,gC0
+            g = Th{ gB0, gC0 };
+            gnorm = nrm(g);
+            if (it == 0) g0norm = gnorm;
+            // relative tolerance: absolute ‖g‖ scales with n and the counts.
+            if (gnorm <= gtol * std::max(g0norm, 1.0)) { status = 3; break; }
+            S2cur = arma::exp(psi);
+            Acur  = arma::exp(arma::clamp(d.O + XB + M * C.t() + 0.5 * S2cur * C2.t(),
+                                          -arma::datum::inf, 30.0));
+            Hinv  = builtin::inner_blocks_inv(d, XB, C, C2, M, psi);
+            builtin::precond_diag(d, XX, C, C2, M, Acur, S2cur, pcond.B, pcond.C);
+            if (it == 0) Delta = std::max(1e-6, 0.25 * std::sqrt(dot(g, Pinv(g, pcond))));
+            recompute = false;
+        }
+        Th s = steihaug(g, Hinv, Acur, S2cur, pcond);
 
-    arma::vec loglik = rank_final_loglik(D.Y, Z, A, M, S2, psi);
+        // predicted reduction  -m(s) = -(g·s + ½ sᵀH s)
+        Th Hs = hessvec(s, Hinv, Acur, S2cur);
+        double pred = -(dot(g, s) + 0.5 * dot(s, Hs));
 
-    // status hardcoded to 3 (converged), matching prior behavior: this VE-step
-    // never surfaced run_lbfgs's internal status (4 = degenerate slope, 5 = maxiter).
-    return make_vestep_result(M, S2, loglik, 3, "lbfgs", res.objective_vec, res.total_iter);
+        // actual reduction: profile at trial (B+sB, C+sC)
+        mat Bt = B + s.B, Ct = C + s.C, C2t = Ct % Ct, XBt = d.X * Bt;
+        mat Mt = M, psit = psi;
+        double f_new = builtin::ve_solve(d, XBt, Ct, C2t, Mt, psit);
+        double ared = f - f_new;
+        double rho = (std::abs(pred) > 1e-14 && std::isfinite(f_new)) ? ared / pred : -1.0;
+
+        if (rho > 0.1 && std::isfinite(f_new)) {       // accept: point moves, refresh next round
+            B = Bt; C = Ct; C2 = C2t; XB = XBt; M = Mt; psi = psit;
+            double df = f - f_new; f = f_new;
+            objective_vec.push_back(f);
+            recompute = true;
+            if (std::abs(df) <= ftol_out * std::abs(f)) { status = 3; break; }
+        }
+        // trust-region radius update (in the P-norm): shrink to a fraction of the failed step,
+        // grow only on strong agreement at the boundary.
+        double snorm = std::sqrt(dotP(s, s, pcond));
+        if (rho < 0.25)                             Delta = 0.25 * snorm;
+        else if (rho > 0.75 && snorm > 0.9 * Delta) Delta = std::min(2.0 * Delta, 1e8);
+        if (Delta < 1e-12) { status = 4; break; }
+        if (trace > 1) Rcpp::Rcout << "  TR it " << it << " f=" << f << " |g|=" << gnorm
+                                   << " rho=" << rho << " Delta=" << Delta
+                                   << " cg=" << cg_it_out << " ex=" << cg_exit_out
+                                   << " cgres=" << cg_res_out << "\n";
+    }
+
+    // outputs
+    mat S2 = arma::exp(psi);
+    mat Z  = d.O + d.X * B + M * C.t();
+    mat A  = arma::exp(Z + 0.5 * S2 * (C % C).t());
+    const double w_bar = arma::accu(d.w);
+    Rcpp::List cov_out = rank_output_cov(M, C, S2, d.w, w_bar);
+    vec loglik = rank_final_loglik(d.Y, Z, A, M, S2, psi);
+
+    return make_plnpca_result(B, C, M, S2, Z, A, cov_out, loglik, status, "builtin", objective_vec, it);
 }

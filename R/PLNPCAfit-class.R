@@ -253,7 +253,9 @@ PLNPCAfit <- R6Class(
         } else {
           private$optimizer$main <- nlopt_optimize_rank
         }
-        private$optimizer$vestep <- if (control$backend == "builtin") builtin_optimize_vestep_rank else nlopt_optimize_vestep_rank
+        ## The builtin (trust-region Newton) backend has no dedicated VE-step;
+        ## prediction reuses the nlopt VE-step for every backend.
+        private$optimizer$vestep <- nlopt_optimize_vestep_rank
         if (!is.null(control$svdM)) {
           svdM <- control$svdM
         } else {
@@ -303,7 +305,12 @@ PLNPCAfit <- R6Class(
       ## Optimization ----------------------
       #' @description Call to the C++ optimizer and update of the relevant fields
       optimize = function(responses, covariates, offsets, weights, config) {
-        nrm  <- normalize_covariates(covariates)
+        ## The builtin (trust-region Newton) backend is naturally well-conditioned
+        ## (analytic Hessian) and its trust region is not scale-invariant, so covariate
+        ## normalization degrades it: keep the natural scale for that backend.
+        nrm  <- if (identical(private$optimizer$main, builtin_optimize_rank))
+                  list(X_sc = covariates, scales = rep(1, ncol(covariates)))
+                else normalize_covariates(covariates)
         args <- list(data   = list(Y = responses, X = nrm$X_sc, O = offsets, w = weights),
                      params = list(B = sweep(private$B, 1, nrm$scales, "*"),
                                    C = private$C, M = private$M, S2 = private$S2),

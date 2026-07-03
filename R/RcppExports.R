@@ -81,10 +81,6 @@ builtin_optimize_rank <- function(data, params, config) {
     .Call('_PLNmodels_builtin_optimize_rank', PACKAGE = 'PLNmodels', data, params, config)
 }
 
-builtin_optimize_vestep_rank <- function(data, params, config) {
-    .Call('_PLNmodels_builtin_optimize_vestep_rank', PACKAGE = 'PLNmodels', data, params, config)
-}
-
 builtin_optimize_vestep_zipln_full <- function(data, params, config) {
     .Call('_PLNmodels_builtin_optimize_vestep_zipln_full', PACKAGE = 'PLNmodels', data, params, config)
 }

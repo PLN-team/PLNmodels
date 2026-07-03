@@ -178,3 +178,27 @@ sep = "\n")
                 output,
                 fixed = TRUE)
 })
+
+test_that("PLNPCA builtin (trust-region Newton) backend fits and reaches a bound >= nlopt", {
+  models_builtin <- PLNPCA(Abundance ~ 1, data = trichoptera,
+                           control = PLNPCA_param(backend = "builtin", trace = 0))
+  expect_is(models_builtin, "PLNPCAfamily")
+  expect_equal(models_builtin$ranks, models$ranks)
+
+  ## the saddle-aware profiled Newton reaches at least as good a variational bound as nlopt
+  ll_builtin <- sapply(models_builtin$models, function(m) m$loglik)
+  ll_nlopt   <- sapply(models$models,         function(m) m$loglik)
+  expect_true(all(ll_builtin >= ll_nlopt - 1))
+
+  ## the fitted model behaves like any PLNPCAfit (also exercises post-treatment / getters)
+  fit_b <- getModel(models_builtin, 3)
+  expect_is(fit_b, "PLNPCAfit")
+  expect_equal(sum(fit_b$loglik_vec), fit_b$loglik)
+  expect_lt(fit_b$BIC, fit_b$loglik)
+
+  ## user-tunable trust-region keys are honoured
+  models_tuned <- PLNPCA(Abundance ~ 1, data = trichoptera, ranks = 1:2,
+                         control = PLNPCA_param(backend = "builtin", trace = 0,
+                                                config_optim = list(cg_maxit = 5L, maxit_out = 50L)))
+  expect_is(models_tuned, "PLNPCAfamily")
+})

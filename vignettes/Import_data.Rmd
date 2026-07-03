@@ -7,7 +7,7 @@ output:
     toc: true
     toc_depth: 4
     df_print: paged
-bibliography: article/PLNreferences.bib
+bibliography: bib/PLNreferences.bib
 link-citations: yes
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}

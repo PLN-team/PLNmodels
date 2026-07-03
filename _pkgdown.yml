@@ -5,11 +5,11 @@ template:
 
 navbar:
   structure:
-    left:  [home, reference, slideshow, articles, news]
+    left:  [home, reference, vignettes, articles, news]
     right: [github]
   components:
     home: ~
-    articles:
+    vignettes:
       text: "Vignettes"
       menu:
       - text: "The trichoptera data set"
@@ -28,6 +28,13 @@ navbar:
         href: articles/PLNmixture.html
       - text: "ZIPLN: Zero-inflated models for counts with excess zeros"
         href: articles/ZIPLN.html
+
+    articles:
+      text: "Articles"
+      menu:
+      - text: "Optimization in PLNmodels"
+        href: articles/optimization.html
+
 
 reference:
 - title: 'Top-level fitting functions'
