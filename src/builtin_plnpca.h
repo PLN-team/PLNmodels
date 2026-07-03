@@ -13,9 +13,10 @@
 // saddle-aware trust-region Newton, whose reduced (Schur-complement) Hessian
 //     H_red = L_θθ − L_θφ L_φφ⁻¹ L_φθ ,   θ = (B,C),  φ = (M,ψ)
 // is applied matrix-free: L_φφ is block-diagonal per observation (2q×2q,
-// analytic below); the cross/θθ terms use directional finite differences of the
-// analytic gradient `rank_obj_grad`. Block-coordinate ascent gets stuck at
-// saddles of this non-convex landscape; the negative-curvature-aware TR does not.
+// analytic below); the cross/θθ terms come from `hess_dir`, the analytic
+// directional Hessian of the joint objective (same nonlinearity, A=exp(η), as
+// `rank_obj_grad`). Block-coordinate ascent gets stuck at saddles of this
+// non-convex landscape; the negative-curvature-aware TR does not.
 // ─────────────────────────────────────────────────────────────────────────────
 
 namespace builtin {
