@@ -39,7 +39,7 @@ library(ggplot2)
 
 ### Data set
 
-We illustrate zero-inflation with the `microcosm` data set [@microcosm]: the evolution of the microbiota of lactating cows, sampled in 4 body sites (oral, nasal, vaginal, milk) at several time points, with **p = 259** taxa, **n = 880** samples and an average of 90% zeroes. To keep this vignette fast to compile while remaining representative, we restrict the analysis to the **30 most abundant taxa**, which still display substantial zero-inflation:
+We illustrate zero-inflation with the `microcosm` data set [@microcosm]: the evolution of the microbiota of lactating cows, sampled in 4 body sites (Oral, Nasal, Vaginal, Milk) at several time points, with **p = 259** taxa, **n = 880** samples and an average of 90% zeroes. To keep this vignette fast to compile while remaining representative, we restrict the analysis to the **30 most abundant taxa**, which still display substantial zero-inflation:
 
 ```{r data_load}
 data(microcosm)
@@ -91,13 +91,13 @@ data.frame(
 ) %>% knitr::kable(digits = 1)
 ```
 
-Accounting for zero-inflation brings a large improvement over plain `PLN`, and letting the zero-inflation probability depend on the body site (`zi_site`) gives the best BIC and ICL among the parameterizations considered -- not surprising given how different the four body sites are.
+Accounting for zero-inflation brings a large improvement over plain `PLN`, and letting the zero-inflation probability depend on the body site (`zi_site` / "ZIPLN (site-dependent)) gives the best BIC and ICL among the parameterizations considered -- not surprising given how different the four body sites are.
 
 ### Inspecting the fit
 
 As for `PLN`, fitted values stay close to the observed counts:
 
-```{r fitted, fig.cap = "fitted value vs. observation"}
+```{r fitted, fig.cap = "Fitted vs. observed values"}
 data.frame(
   fitted   = as.vector(fitted(zi_site)),
   observed = as.vector(microcosm$Abundance)
@@ -143,21 +143,21 @@ zi_models <- ZIPLNnetwork(Abundance ~ site + offset(log(Offset)), data = microco
 
 As for `PLNnetwork`, a diagnostic plot and the evolution of the criteria along the path are available:
 
-```{r ziplnnetwork_diagnostic, fig.cap = "diagnostic of the ZIPLNnetwork fits"}
+```{r ziplnnetwork_diagnostic, fig.cap = "Diagnostic of the ZIPLNnetwork fits"}
 plot(zi_models, "diagnostic")
 ```
 
-```{r ziplnnetwork_criteria, fig.cap = "evolution of model selection criteria"}
+```{r ziplnnetwork_criteria, fig.cap = "Evolution of model selection criteria"}
 plot(zi_models)
 ```
 
 We select a network with `getBestModel()` and represent it:
 
-```{r ziplnnetwork_best, fig.cap = "sparse residual network between the 30 most abundant taxa"}
+```{r ziplnnetwork_best, fig.cap = "Sparse residual network between the 30 most abundant taxa"}
 zi_net <- getBestModel(zi_models, "EBIC")
 plot(zi_net)
 ```
 
-As for `PLNnetwork`, a more robust (but more computationally intensive) `stability_selection()`-based choice of penalty is available -- we do not run it here to keep this vignette fast, see [the PLNnetwork vignette](PLNnetwork.html) for an example.
+As for `PLNnetwork`, a more robust (but more computationally intensive) `stability_selection()`-based choice of penalty is available. We do not use it here to keep the runtime of this vignette fast, see [the PLNnetwork vignette](PLNnetwork.html) for an example.
 
 ## References
