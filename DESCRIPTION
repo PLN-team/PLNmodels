@@ -54,6 +54,7 @@ Suggests:
     pheatmap,
     rmarkdown,
     spelling,
+    quarto,
     testthat
 LinkingTo:
     nloptr,
