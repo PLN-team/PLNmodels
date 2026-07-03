@@ -1,4 +1,4 @@
-# PLNmodels 1.3.0-9010
+# PLNmodels 1.3.0
 
 ## New backends and optimizers
 
