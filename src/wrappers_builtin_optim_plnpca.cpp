@@ -108,24 +108,27 @@ Rcpp::List builtin_optimize_rank(
     objective_vec.push_back(f);
 
     int it = 0;
-    double g0norm = 0.0;   // ‖∇g‖ at the start, for a scale-invariant stopping rule
+    double g0norm = 0.0, gnorm = 0.0;   // ‖∇g‖ (current and at start) for a scale-invariant stop
+    Th g, pcond; cube Hinv; mat Acur, S2cur;
+    bool recompute = true;              // only the gradient/Hessian/preconditioner (point-dependent)
+                                        // are refreshed on ACCEPT; a rejected step leaves the point
+                                        // unchanged, so the expensive quantities are reused.
     for (; it < maxit_out; ++it) {
-        rank_obj_grad(d, Xw, B, C, M, psi, gB0, gC0, gM0, gPS0);  // envelope grad = gB0,gC0
-        Th g{ gB0, gC0 };
-        double gnorm = nrm(g);
-        if (it == 0) g0norm = gnorm;
-        // relative gradient tolerance: absolute ‖g‖ scales with n and the counts, so an
-        // absolute threshold never triggers on large datasets.
-        if (gnorm <= gtol * std::max(g0norm, 1.0)) { status = 3; break; }
-
-        const mat S2cur = arma::exp(psi);
-        const mat Acur  = arma::exp(arma::clamp(d.O + XB + M * C.t() + 0.5 * S2cur * C2.t(),
-                                                -arma::datum::inf, 30.0));
-        cube Hinv = builtin::inner_blocks_inv(d, XB, C, C2, M, psi);
-        Th pcond;
-        builtin::precond_diag(d, XX, C, C2, M, Acur, S2cur, pcond.B, pcond.C);
-        // radius lives in the P-norm now; seed it from the preconditioned gradient scale
-        if (it == 0) Delta = std::max(1e-6, std::sqrt(dot(g, Pinv(g, pcond))));
+        if (recompute) {
+            rank_obj_grad(d, Xw, B, C, M, psi, gB0, gC0, gM0, gPS0);  // envelope grad = gB0,gC0
+            g = Th{ gB0, gC0 };
+            gnorm = nrm(g);
+            if (it == 0) g0norm = gnorm;
+            // relative tolerance: absolute ‖g‖ scales with n and the counts.
+            if (gnorm <= gtol * std::max(g0norm, 1.0)) { status = 3; break; }
+            S2cur = arma::exp(psi);
+            Acur  = arma::exp(arma::clamp(d.O + XB + M * C.t() + 0.5 * S2cur * C2.t(),
+                                          -arma::datum::inf, 30.0));
+            Hinv  = builtin::inner_blocks_inv(d, XB, C, C2, M, psi);
+            builtin::precond_diag(d, XX, C, C2, M, Acur, S2cur, pcond.B, pcond.C);
+            if (it == 0) Delta = std::max(1e-6, 0.25 * std::sqrt(dot(g, Pinv(g, pcond))));
+            recompute = false;
+        }
         Th s = steihaug(g, Hinv, Acur, S2cur, pcond);
 
         // predicted reduction  -m(s) = -(g·s + ½ sᵀH s)
@@ -139,17 +142,19 @@ Rcpp::List builtin_optimize_rank(
         double ared = f - f_new;
         double rho = (std::abs(pred) > 1e-14 && std::isfinite(f_new)) ? ared / pred : -1.0;
 
-        if (rho > 0.1 && std::isfinite(f_new)) {       // accept
+        if (rho > 0.1 && std::isfinite(f_new)) {       // accept: point moves, refresh next round
             B = Bt; C = Ct; C2 = C2t; XB = XBt; M = Mt; psi = psit;
             double df = f - f_new; f = f_new;
             objective_vec.push_back(f);
+            recompute = true;
             if (std::abs(df) <= ftol_out * std::abs(f)) { status = 3; break; }
         }
-        // trust-region radius update (radius is in the P-norm)
+        // trust-region radius update (in the P-norm): shrink to a fraction of the failed step,
+        // grow only on strong agreement at the boundary.
         double snorm = std::sqrt(dotP(s, s, pcond));
-        if (rho < 0.25)                    Delta = 0.25 * Delta;
-        else if (rho > 0.75 && snorm > 0.9 * Delta) Delta = std::min(2.0 * Delta, 1e6);
-        if (Delta < 1e-10) { status = 4; break; }
+        if (rho < 0.25)                             Delta = 0.25 * snorm;
+        else if (rho > 0.75 && snorm > 0.9 * Delta) Delta = std::min(2.0 * Delta, 1e8);
+        if (Delta < 1e-12) { status = 4; break; }
         if (trace > 1) Rcpp::Rcout << "  TR it " << it << " f=" << f << " |g|=" << gnorm
                                    << " rho=" << rho << " Delta=" << Delta << "\n";
     }
