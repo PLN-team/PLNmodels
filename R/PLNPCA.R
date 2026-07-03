@@ -59,17 +59,16 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
 #'
 #' @param backend optimization backend, either `"nlopt"` (default, NLOPT/CCSAQ, recommended
 #'   for PLNPCA: conservative per-variable steps reliably find the global basin even when
-#'   the singular-value ratio d1/sqrt(n) is large), `"builtin"` (joint L-BFGS with strong
-#'   Wolfe line search on all parameters simultaneously — faster per iteration but may
-#'   converge to inferior local optima on ill-conditioned datasets),
-#'   or `"torch"` (**experimental**: automatic differentiation via the torch package; tends to
-#'   find lower loglik than `"nlopt"` and `"builtin"` on most datasets — not recommended).
-#'   `"trnewton"` is a profiled trust-region Newton: it profiles out the variational
-#'   parameters `(M, S)` with a per-observation Newton VE-step and optimises the loadings
-#'   `(B, C)` with a saddle-aware trust-region Newton on the resulting objective (analytic
-#'   Schur Hessian-vector products, Jacobi-preconditioned Steihaug-CG). It reliably reaches
-#'   higher loglik than `"nlopt"` and is faster on moderate `p`; tuning keys in
-#'   `config_optim`: `cg_maxit`, `maxit_out`, `ftol_out`, `gtol`, `delta0`.
+#'   the singular-value ratio d1/sqrt(n) is large), `"builtin"` (the home-made optimizer, a
+#'   profiled trust-region Newton), or `"torch"` (**experimental**: automatic differentiation
+#'   via the torch package; tends to find lower loglik than `"nlopt"` and `"builtin"` on most
+#'   datasets — not recommended).
+#'   The `"builtin"` backend profiles out the variational parameters `(M, S)` with a
+#'   per-observation Newton VE-step and optimises the loadings `(B, C)` with a saddle-aware
+#'   trust-region Newton on the resulting objective (analytic Schur Hessian-vector products,
+#'   Jacobi-preconditioned Steihaug-CG). It reliably reaches a higher variational bound than
+#'   `"nlopt"` on small/moderate data at comparable speed, and is faster on large data;
+#'   tuning keys in `config_optim`: `cg_maxit`, `maxit_out`, `ftol_out`, `gtol`, `delta0`.
 #' @inheritParams PLN_param trace config_optim config_post
 #' @param init_method character: strategy used to compute the starting point for the shared SVD.
 #'   - `"LM"` (default): fast multivariate `lm.fit` on log-transformed counts. Good for
@@ -105,7 +104,7 @@ PLNPCA <- function(formula, data, subset, weights, ranks = 1:5, control = PLNPCA
 #' @inherit PLN_param details
 #' @export
 PLNPCA_param <- function(
-    backend       = c("nlopt", "builtin", "torch", "trnewton"),
+    backend       = c("nlopt", "builtin", "torch"),
     trace         = 1      ,
     config_optim  = list() ,
     config_post   = list() ,
@@ -129,7 +128,7 @@ PLNPCA_param <- function(
     message("torch backend is experimental: may converge to suboptimal solutions or fail on some datasets.")
   config_opt <- make_config_optim(backend, config_optim, trace,
                                   builtin_default = config_default_plnpca,
-                                  extra = if (backend == "trnewton")
+                                  extra = if (backend == "builtin")
                                     list(maxit_out = 150L, ftol_out = 1e-8, cg_maxit = 8L,
                                          gtol = 1e-3, delta0 = 1.0)
                                   else list())

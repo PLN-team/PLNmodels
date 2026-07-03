@@ -18,7 +18,7 @@
 // saddles of this non-convex landscape; the negative-curvature-aware TR does not.
 // ─────────────────────────────────────────────────────────────────────────────
 
-namespace trnewton {
+namespace builtin {
 
 // Objective (minimisation convention, matching rank_obj_grad) at fixed (B,C).
 inline double ve_obj(const PlnData & d, const arma::mat & XB, const arma::mat & C,
@@ -155,4 +155,4 @@ inline void precond_diag(const PlnData & d, const arma::mat & XX,   // XX = X⊙
     pC = arma::clamp(pC, 1e-8, arma::datum::inf);
 }
 
-} // namespace trnewton
+} // namespace builtin
