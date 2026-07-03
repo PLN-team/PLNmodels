@@ -6,7 +6,7 @@ output:
   rmarkdown::html_vignette:
     toc: true
     toc_depth: 4
-bibliography: article/PLNreferences.bib
+bibliography: bib/PLNreferences.bib
 link-citations: yes
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
