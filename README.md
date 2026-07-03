@@ -10,17 +10,18 @@ status](https://codecov.io/gh/pln-team/PLNmodels/branch/master/graph/badge.svg)]
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![](https://img.shields.io/github/last-commit/pln-team/PLNmodels.svg)](https://github.com/pln-team/PLNmodels/commits/master)
+
 <!-- badges: end -->
 
 ## Description
 
-> The Poisson lognormal model and variants[^1] can be used for a variety
-> of multivariate problems when count data are at play. This package
-> implements efficient variational algorithms to fit such models,
-> accompanied with a set of functions for visualization and diagnostic.
-> See [all the dedicated
-> vignettes](https://pln-team.github.io/PLNmodels/articles/) for a
-> comprehensive introduction.
+> The Poisson lognormal model and variants ([Chiquet et al.
+> 2021](#ref-chiquet2021)) can be used for a variety of multivariate
+> problems when count data are at play. This package implements
+> efficient variational algorithms to fit such models, accompanied with
+> a set of functions for visualization and diagnostic. See [all the
+> dedicated vignettes](https://pln-team.github.io/PLNmodels/articles/)
+> for a comprehensive introduction.
 
 **PLNmodels** covers the following models, all built around the
 multivariate Poisson-lognormal distribution and sharing a common
@@ -28,20 +29,25 @@ formula-based interface (covariates, offsets, weights) and a choice of
 optimization backends (a fast built-in Newton solver, NLOPT, and an
 experimental torch backend):
 
-- **PLN**[^2]: unpenalized multivariate Poisson regression, with several
-  covariance structures (full, diagonal, spherical, fixed, or a
-  genetic/heritability structure).
-- **PLNPCA**[^3]: probabilistic Poisson PCA — a rank-constrained
-  covariance for dimension reduction and visualization.
-- **PLNLDA**: Poisson lognormal discriminant analysis[^4] for the
-  supervised classification of count data.
-- **PLNnetwork**[^5]: sparse inverse-covariance (network) inference via
-  a graphical-lasso-like penalty[^6].
-- **PLNmixture**: model-based clustering[^7] of count data via a mixture
-  of PLN models.
-- **ZIPLN**[^8]: a zero-inflated extension of PLN for data with excess
-  zeros, with the same family of covariance structures and an optional
-  sparse (`ZIPLNnetwork`[^9]) variant.
+- **PLN** ([Aitchison and Ho 1989](#ref-AiH89)): unpenalized
+  multivariate Poisson regression, with several covariance structures
+  (full, diagonal, spherical, fixed, or a genetic/heritability
+  structure).
+- **PLNPCA** ([Chiquet et al. 2018](#ref-PLNPCA)): probabilistic Poisson
+  PCA — a rank-constrained covariance for dimension reduction and
+  visualization.
+- **PLNLDA**: Poisson lognormal discriminant analysis ([Fisher
+  1936](#ref-fisher1936)) for the supervised classification of count
+  data.
+- **PLNnetwork** ([Chiquet et al. 2019](#ref-PLNnetwork)): sparse
+  inverse-covariance (network) inference via a graphical-lasso-like
+  penalty ([Friedman et al. 2008](#ref-FHT08)).
+- **PLNmixture**: model-based clustering ([Fraley and Raftery
+  1999](#ref-fraley1999)) of count data via a mixture of PLN models.
+- **ZIPLN** ([Batardière et al. 2025](#ref-ZIPLN)): a zero-inflated
+  extension of PLN for data with excess zeros, with the same family of
+  covariance structures and an optional sparse (`ZIPLNnetwork`) variant
+  ([Tous et al. 2025](#ref-ZIPLNnetwork)).
 
 ## Installation
 
@@ -57,9 +63,10 @@ remotes::install_github("pln-team/PLNmodels@tag_number")  # a specific tagged re
 
 ## Illustration
 
-We illustrate the main models on the `barents` data set[^10]: the
-abundance of 30 fish species observed in 89 sites in the Barents sea,
-along with depth, temperature and geographic coordinates for each site.
+We illustrate the main models on the `barents` data set ([Fossheim et
+al. 2006](#ref-fossheim2006)): the abundance of 30 fish species observed
+in 89 sites in the Barents sea, along with depth, temperature and
+geographic coordinates for each site.
 
 ``` r
 library(PLNmodels)
@@ -91,8 +98,8 @@ myPLN
 
     A multivariate Poisson Lognormal fit with full covariance model.
     ==================================================================
-     nb_param    loglik       BIC       AIC      ICL
-          555 -4412.201 -5657.797 -4967.201 -8203.81
+     nb_param    loglik       BIC       AIC       ICL
+          555 -4412.385 -5657.981 -4967.385 -8194.015
     ==================================================================
     * Useful fields
         $model_par, $latent, $latent_pos, $var_par, $optim_par
@@ -231,54 +238,99 @@ table(cluster = myMixture$memberships, zone = barents$zone)
 
            zone
     cluster North South
-          1     1    17
-          2    11     0
-          3    11    22
+          1    11     0
+          2    11    22
+          3     1    17
           4    21     6
 
 ## References
 
-[^1]: J. Chiquet, M. Mariadassou and S. Robin: The Poisson-lognormal
-    model as a versatile framework for the joint analysis of species
-    abundances, Frontiers in Ecology and Evolution, 2021.
-    [doi:10.3389/fevo.2021.588292](https://www.frontiersin.org/articles/10.3389/fevo.2021.588292/full)
+<div id="refs" class="references csl-bib-body hanging-indent">
 
-[^2]: Aitchison, J. and Ho, C. H. The multivariate Poisson-log normal
-    distribution. Biometrika, 76(4), 1989, 643–653.
+<div id="ref-AiH89" class="csl-entry">
 
-[^3]: J. Chiquet, M. Mariadassou and S. Robin: Variational inference for
-    probabilistic Poisson PCA, the Annals of Applied Statistics, 12:
-    2674–2698, 2018.
-    [doi:10.1214/18-AOAS1177](http://dx.doi.org/10.1214/18%2DAOAS1177)
+Aitchison, J., and C. H. Ho. 1989. “The Multivariate Poisson-Log Normal
+Distribution.” *Biometrika* 76 (4): 643–53.
 
-[^4]: Fisher, R. A. The use of multiple measurements in taxonomic
-    problems. Annals of Eugenics, 7(2), 1936; Rao, C. R. The utilization
-    of multiple measurements in problems of biological classification.
-    JRSS B, 10(2), 1948.
+</div>
 
-[^5]: J. Chiquet, M. Mariadassou and S. Robin: Variational inference for
-    sparse network reconstruction from count data, Proceedings of the
-    36th International Conference on Machine Learning (ICML), 2019.
-    [link](http://proceedings.mlr.press/v97/chiquet19a.html)
+<div id="ref-ZIPLN" class="csl-entry">
 
-[^6]: Friedman, J., Hastie, T. and Tibshirani, R. Sparse inverse
-    covariance estimation with the graphical lasso. Biostatistics, 9(3),
-    2008.
+Batardière, Bastien, Julien Chiquet, François Gindraud, and Mahendra
+Mariadassou. 2025. “Zero-Inflation in the Multivariate Poisson Lognormal
+Family.” *Statistics and Computing* 35.
+<https://doi.org/10.1007/s11222-025-10729-0>.
 
-[^7]: Fraley, C. and Raftery, A. E. MCLUST: Software for model-based
-    cluster analysis. Journal of Classification, 16(2), 1999.
+</div>
 
-[^8]: Batardière, B., Chiquet, J., Gindraud, F. and Mariadassou, M.
-    Zero-inflation in the multivariate Poisson lognormal family.
-    Statistics and Computing, 35, 2025.
-    [doi:10.1007/s11222-025-10729-0](https://doi.org/10.1007/s11222-025-10729-0)
+<div id="ref-PLNPCA" class="csl-entry">
 
-[^9]: Tous, J., Chiquet, J., Deacon, A. E., Fontrodona-Eslava, A.,
-    Fraser, D. F. and Magurran, A. E. A JSDM with zero-inflation to
-    improve inference of association networks from count community data
-    with structural zeros. bioRxiv preprint, 2025.
-    [doi:10.1101/2025.07.24.666553](https://doi.org/10.1101/2025.07.24.666553)
+Chiquet, Julien, Mahendra Mariadassou, and Stéphane Robin. 2018.
+“Variational Inference for Probabilistic Poisson PCA.” *The Annals of
+Applied Statistics* 12: 2674–98.
 
-[^10]: Fossheim, M., Nilssen, E. M. and Aschan, M. Fish assemblages in
-    the Barents Sea. Marine Biology Research, 2(4), 2006.
-    [doi:10.1080/17451000600815698](https://doi.org/10.1080/17451000600815698)
+</div>
+
+<div id="ref-chiquet2021" class="csl-entry">
+
+Chiquet, Julien, Mahendra Mariadassou, and Stéphane Robin. 2021. “The
+Poisson-Lognormal Model as a Versatile Framework for the Joint Analysis
+of Species Abundances.” *Frontiers in Ecology and Evolution* 9 (March):
+588292. <https://doi.org/10.3389/fevo.2021.588292>.
+
+</div>
+
+<div id="ref-PLNnetwork" class="csl-entry">
+
+Chiquet, Julien, Stephane Robin, and Mahendra Mariadassou. 2019.
+“Variational Inference for Sparse Network Reconstruction from Count
+Data.” In *Proceedings of the 36th International Conference on Machine
+Learning*, edited by Kamalika Chaudhuri and Ruslan Salakhutdinov, vol.
+97. Proceedings of Machine Learning Research. PMLR.
+<http://proceedings.mlr.press/v97/chiquet19a.html>.
+
+</div>
+
+<div id="ref-fisher1936" class="csl-entry">
+
+Fisher, R. A. 1936. “The Use of Multiple Measurements in Taxonomic
+Problems.” *Annals of Eugenics* 7 (2): 179–88.
+<https://doi.org/10.1111/j.1469-1809.1936.tb02137.x>.
+
+</div>
+
+<div id="ref-fossheim2006" class="csl-entry">
+
+Fossheim, Maria, Einar M. Nilssen, and Michaela Aschan. 2006. “Fish
+Assemblages in the Barents Sea.” *Marine Biology Research* 2 (4):
+260–69. <https://doi.org/10.1080/17451000600815698>.
+
+</div>
+
+<div id="ref-fraley1999" class="csl-entry">
+
+Fraley, Chris, and Adrian E. Raftery. 1999. “MCLUST: Software for
+Model-Based Cluster Analysis.” *Journal of Classification* 16 (2):
+297–306. <https://doi.org/10.1007/s003579900058>.
+
+</div>
+
+<div id="ref-FHT08" class="csl-entry">
+
+Friedman, J., T. Hastie, and R. Tibshirani. 2008. “Sparse Inverse
+Covariance Estimation with the Graphical Lasso.” *Biostatistics* 9 (3):
+432–41.
+
+</div>
+
+<div id="ref-ZIPLNnetwork" class="csl-entry">
+
+Tous, Jeanne, Julien Chiquet, Amy E. Deacon, Ada Fontrodona-Eslava,
+Douglas F. Fraser, and Anne E. Magurran. 2025. “A JSDM with
+Zero-Inflation to Improve Inference of Association Networks from Count
+Community Data with Structural Zeros.”
+<https://doi.org/10.1101/2025.07.24.666553>.
+
+</div>
+
+</div>
