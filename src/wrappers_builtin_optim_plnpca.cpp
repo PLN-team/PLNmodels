@@ -74,26 +74,29 @@ Rcpp::List builtin_optimize_rank(
     // Preconditioned Steihaug-CG: approx-minimise m(s)=g·s+½ sᵀH s over the P-norm
     // ball ‖s‖_P ≤ Δ (P = Jacobi preconditioner). Handles negative curvature; the
     // P-metric absorbs the B-vs-C scale disparity, cutting the CG iteration count.
+    int cg_it_out = 0, cg_exit_out = 0; double cg_res_out = 0.0;  // CG diagnostics (trace)
     auto steihaug = [&](const Th & g, const cube & Hinv, const mat & A, const mat & S2, const Th & p) -> Th {
         Th z{ arma::zeros(B.n_rows, B.n_cols), arma::zeros(C.n_rows, C.n_cols) };
         Th r = g;                       // ∇m at z=0
         Th y = Pinv(r, p);
         Th dvec = scal(-1.0, y);        // preconditioned steepest descent
         double ry = dot(r, y);
-        const double tol = 1e-8 * std::sqrt(std::abs(ry));
+        const double r0 = std::sqrt(std::abs(ry)), tol = 1e-8 * r0;
         auto to_boundary = [&](const Th & zz, const Th & dd) -> Th {  // ‖zz+τ dd‖_P = Δ, τ>0
             double a = dotP(dd, dd, p), b = 2 * dotP(zz, dd, p), c = dotP(zz, zz, p) - Delta * Delta;
             double tau = (-b + std::sqrt(std::max(b * b - 4 * a * c, 0.0))) / (2 * a);
             return axpy(tau, dd, zz);
         };
-        for (int j = 0; j < cg_maxit; ++j) {
-            if (std::sqrt(std::abs(ry)) <= tol) break;
+        int j = 0;
+        for (; j < cg_maxit; ++j) {
+            cg_res_out = std::sqrt(std::abs(ry)) / (r0 + 1e-300);
+            if (std::sqrt(std::abs(ry)) <= tol) { cg_it_out = j; cg_exit_out = 0; return z; }  // converged
             Th Hd = hessvec(dvec, Hinv, A, S2);
             double dHd = dot(dvec, Hd);
-            if (dHd <= 0) return to_boundary(z, dvec);                 // negative curvature
+            if (dHd <= 0) { cg_it_out = j; cg_exit_out = 1; return to_boundary(z, dvec); }      // neg curvature
             double alpha = ry / dHd;
             Th z_new = axpy(alpha, dvec, z);
-            if (dotP(z_new, z_new, p) >= Delta * Delta) return to_boundary(z, dvec);
+            if (dotP(z_new, z_new, p) >= Delta * Delta) { cg_it_out = j; cg_exit_out = 2; return to_boundary(z, dvec); } // TR bound
             z = z_new;
             Th r_new = axpy(alpha, Hd, r);
             Th y_new = Pinv(r_new, p);
@@ -101,6 +104,7 @@ Rcpp::List builtin_optimize_rank(
             dvec = axpy(ry_new / ry, dvec, scal(-1.0, y_new));        // d = -y_new + β d
             r = r_new; y = y_new; ry = ry_new;
         }
+        cg_it_out = j; cg_exit_out = 3; cg_res_out = std::sqrt(std::abs(ry)) / (r0 + 1e-300);   // hit cg_maxit
         return z;
     };
 
@@ -156,7 +160,9 @@ Rcpp::List builtin_optimize_rank(
         else if (rho > 0.75 && snorm > 0.9 * Delta) Delta = std::min(2.0 * Delta, 1e8);
         if (Delta < 1e-12) { status = 4; break; }
         if (trace > 1) Rcpp::Rcout << "  TR it " << it << " f=" << f << " |g|=" << gnorm
-                                   << " rho=" << rho << " Delta=" << Delta << "\n";
+                                   << " rho=" << rho << " Delta=" << Delta
+                                   << " cg=" << cg_it_out << " ex=" << cg_exit_out
+                                   << " cgres=" << cg_res_out << "\n";
     }
 
     // outputs
