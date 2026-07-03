@@ -33,11 +33,11 @@
 ^inst/simus_ZIPLN$
 ^inst/benchmark$
 ^inst/binom$
+^inst/devlog$
 ^\.github$
 ^data-raw$
 ^CRAN-SUBMISSION$
 ^AUTHORS$
 ^dev$
 ^\.claude$
-^DEVLOG.*\.md$
 snowflake.log

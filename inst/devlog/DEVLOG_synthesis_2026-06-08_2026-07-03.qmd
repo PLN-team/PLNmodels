@@ -1,0 +1,97 @@
+---
+title: "Synthèse des sessions de développement — optimiseurs PLNmodels"
+subtitle: "8-17 juin 2026 (branche `code-enhancement`) et 2-3 juillet 2026 (branche `optim-plnpca`)"
+date: 2026-07-03
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+---
+
+Ce document consolide les journaux de développement `DEVLOG_2026-06-08-17.md` et
+`DEVLOG_2026-07-02-03.md` (racine du dépôt) en une synthèse : l'état effectivement
+implémenté dans le package, les pistes explorées avec leur verdict, et un résumé
+bref des bugs corrigés. Le détail complet (chiffres, code, benchmarks) reste dans
+les DEVLOG originaux ; ce document sert de point d'entrée rapide.
+
+# Ce qui est effectivement implémenté dans le package aujourd'hui
+
+## Architecture commune (`covariance_pln.h`)
+
+Les cinq structures de covariance PLN (full, diagonal, spherical, fixed, **genpop**)
+partagent un unique moteur via CRTP statique (`CovTraitsBase<Derived>`) :
+gradient/objectif/pas de Newton joint (M, ψ) factorisés une seule fois, plus
+`diag_scale`/`add_diag` pour éviter les allocations p×p inutiles. Le CRTP statique a
+été préféré au polymorphisme virtuel : pas de vtable dans la boucle chaude, `has_em`
+exploité comme `constexpr bool` dans un `if constexpr`, et `State` de forme variable
+selon la structure (matrice dense, `rowvec`, ou deux `double`). ZIPLN réutilise cette
+même machinerie (`A_eff = (1-R) ⊙ A`, `w = ones(n)`) au lieu d'un second jeu de
+formules dupliqué.
+
+## Backends par modèle (état final)
+
+| Modèle | Défaut | Backends disponibles | Optimiseur `builtin` |
+|---|---|---|---|
+| PLN / PLNLDA | **nlopt** (`profiled=TRUE`) | nlopt, builtin, torch (exp.) | Newton joint (M,ψ), B profilé par enveloppe |
+| PLNPCA | **nlopt** | nlopt, builtin, torch (exp.) | Newton profilé à région de confiance (Steihaug-CG préconditionné) — remplace l'ancien spectral BB |
+| PLNnetwork | **builtin** (`maxit_ve=1`, inception builtin K=5) | builtin, nlopt | Newton VE-step + M-step glasso |
+| ZIPLN | **builtin** | builtin, nlopt | Newton joint (M,ψ,R), B profilé |
+| ZIPLNnetwork | **builtin** (depuis le 18/06) | builtin, nlopt | idem ZIPLN + glasso |
+| PLNmixture | builtin | builtin, nlopt, torch (exp.) | composants PLNfit standards |
+
+## Autres changements livrés
+
+- Normalisation uniforme des covariables (`normalize_covariates()`) dans tous les `optimize()`.
+- `future`/`future.apply` → `parallel::mclapply` (10 sites), pilotable via `options(mc.cores=N)`.
+- Init ZIPLN par LM + GLM binomial (`pscl` retiré des dépendances, ×60-240 plus rapide).
+- Init PLNPCA par LM par défaut ; EM tronqué (`init_method="EM"`) en option pour les grands rangs.
+- `PLNnetwork`/`ZIPLNnetwork` héritent correctement de `config_optim` pour leur modèle d'inception.
+- README.qmd (exécuté, sur `barents`) et vignette ZIPLN (sur `microcosm`) ajoutés.
+- 5ᵉ covariance `genpop` (héritabilité, $\Sigma = \sigma^2(\rho C + (1-\rho)I)$) câblée pour `PLN()` seul.
+
+## Session de juillet (branche `optim-plnpca`, en cours)
+
+Nouveau backend `builtin` pour PLNPCA : Newton profilé à région de confiance avec
+complément de Schur, remplaçant l'ancien optimiseur spectral (supprimé). `nlopt`
+reste le défaut.
+
+# Pistes explorées — conservées vs abandonnées
+
+| Piste | Statut | Pourquoi |
+|---|---|---|
+| Newton coordonnée (`homemade`) puis B profilé par enveloppe (`homemade_alt`) | **Conservé**, fusionné en un seul backend `builtin` | B profilé + Armijo à pente projetée (Q_step) élimine le cold-start et bat l'ancienne version partout |
+| `hybrid` (nlopt → Newton) | **Abandonné**, supprimé | Ne dépasse jamais `builtin` seul, systématiquement plus lent |
+| Hessienne M exacte (bloc p×p par obs.) / `block_newton_thresh` | **Abandonné**, supprimé | Coût O(np³) prohibitif, aucun gain de loglik vs l'approximation diagonale par blocs |
+| Pas Newton conjoint (M,ψ) avec terme croisé | **Conservé** | Capture le couplage M-S, remplace le point fixe séparé (plus lent) |
+| Warm-start Ω dans GLASSO (intra/inter-modèles) | **Abandonné**, reverté | Pire en qualité ET en temps (Σ change trop entre itérations / path de pénalités dans le mauvais sens) |
+| `maxit_ve` (E-step Newton partiel) pour PLNnetwork/ZIPLNnetwork | **Conservé** | Neutralise les oscillations de l'alternance GLASSO↔VE-step sur-convergée |
+| Inception tronquée (`inception_niter`, `init_method="EM"`) | **Conservé**, en option | Aide les grands rangs/modèles pénalisés (M "à mi-chemin") ; nuit aux petits rangs (sur-convergence) — sweet spot K=2–10 |
+| `approx_ZI` (formule Lambert W "exacte" pour R) | **Abandonné**, supprimé | La formule σ(·) est l'optimum exact de l'ELBO ; Lambert W optimise une autre fonctionnelle et donne un ELBO pire de 77-86 points |
+| L-BFGS bloc-alterné (EM) pour PLNPCA | **Abandonné** | 7-10× plus lent que le joint, gain de loglik nul (convergence EM extérieure linéaire) |
+| L-BFGS joint + Wolfe fort (PLNPCA, ancien "builtin") | **Conservé un temps puis remplacé** en juillet | Battait nlopt sur 6/9 cas, mais surclassé par le nouveau Newton région de confiance (juillet) |
+| SQUAREM (accélération EM) sur ZIPLN/PLNmixture | **Abandonné** (pas de défaut) | Coupe les cycles externes mais chaque cycle coûte plus cher ; net plus lent (25-40%) ; léger mieux d'ELBO seulement |
+| Newton région de confiance + Schur pour PLNPCA | **Conservé**, devient `builtin` | Bat nlopt et l'ancien builtin sur qualité et vitesse ; convergence lente à grand n comprise et acceptée (indéfini du Hessien réduit) |
+| Garde-fou CG "stop si résidu grossit" | **Abandonné** | Empire les résultats (les itérations errantes produisent quand même de bons pas) |
+| Warm-start entre rangs PLNPCA (`sequential`) | **Abandonné par défaut**, gardé en option | Net négatif pour Newton-TR (coût dans la rampe indéfinie, pas dans la distance à l'init) |
+| GLTR/Lanczos (solveur TR indéfini exact) | **Non retenu** | ROI incertain, ~150 lignes, pas déjà quasi-exacts |
+
+# Bugs corrigés (résumé)
+
+- `ifelse()` au lieu de `if/else` dans le dispatch backend de PLNLDAfit (diagonal/spherical) → crash torch.
+- `PLNfit_fixedcov` : VE-step manquant dans `setup_optimizer` → crash `predict(level=1)`.
+- PLNmixture : clé `maxit_out` au lieu de `maxit_em` → smoothing 25× trop lent.
+- `do.call` sensible à l'ordre des noms dans jackknife/bootstrap PLNfit.
+- M sans `colnames` après VE-step → perte des noms d'espèces en prédiction.
+- `latent_pos` de PLNmixturefit utilisait M_full au lieu de M_res → k-means biaisé.
+- `compute_PLN_starting_point` : NA non protégés, `singular.ok=FALSE` rendait un garde-fou inaccessible.
+- `extract_model` : détection de formule incomplète (`is.symbol` → `!inherits`).
+- Gradient faux dans `nlopt_optimize_vestep_spherical` (signe/direction M vs ω²).
+- `solve()` sur matrice 0×0 quand formule sans covariable (`~0`).
+- Initialisation M de PLNPCA : mauvais indexage SVD (`v[1:q,1:q]` au lieu des colonnes) → résidu ‖M·Cᵀ−M_PLN‖ divisé par ~100 après fix.
+- Bug XTOL nlopt prématuré sur covariables mal conditionnées (barents Depth~300) → régression majeure (+4118 ll après fix).
+- ZIPLNnetwork bloqué à `nlopt` par un `stopifnot` alors qu'architecturalement compatible avec builtin.
+- `browser()` oublié en debug dans ZIPLNfit.
+- Warning igraph (`frame.color` NA comme attribut au lieu d'argument `plot()`).
+- Signe de `dJ/dρ` dans la bissection de la covariance `genpop` (ρ convergeait toujours vers la borne basse).
+- (Session juillet) crash `solve()` et non-convergence à l'échelle pour le nouveau Newton-TR PLNPCA (tolérance absolue au lieu de relative) ; normalisation X incompatible avec la région de confiance.
