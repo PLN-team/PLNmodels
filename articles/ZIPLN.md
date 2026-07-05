@@ -23,7 +23,7 @@ library(ggplot2)
 
 We illustrate zero-inflation with the `microcosm` data set ([Mariadassou
 et al. 2023](#ref-microcosm)): the evolution of the microbiota of
-lactating cows, sampled in 4 body sites (oral, nasal, vaginal, milk) at
+lactating cows, sampled in 4 body sites (Oral, Nasal, Vaginal, Milk) at
 several time points, with **p = 259** taxa, **n = 880** samples and an
 average of 90% zeroes. To keep this vignette fast to compile while
 remaining representative, we restrict the analysis to the **30 most
@@ -111,7 +111,7 @@ data.frame(
 
 | model                  |   loglik |      BIC |       ICL |
 |:-----------------------|---------:|---------:|----------:|
-| PLN                    | -51716.2 | -53699.3 | -100954.0 |
+| PLN                    | -51733.9 | -53717.1 | -100735.3 |
 | ZIPLN (single)         | -48847.5 | -50834.0 |  -89988.5 |
 | ZIPLN (row)            | -46875.9 | -51842.2 |  -89899.3 |
 | ZIPLN (col)            | -48147.4 | -50232.3 |  -87715.3 |
@@ -119,8 +119,9 @@ data.frame(
 
 Accounting for zero-inflation brings a large improvement over plain
 `PLN`, and letting the zero-inflation probability depend on the body
-site (`zi_site`) gives the best BIC and ICL among the parameterizations
-considered – not surprising given how different the four body sites are.
+site (`zi_site` / “ZIPLN (site-dependent)) gives the best BIC and ICL
+among the parameterizations considered – not surprising given how
+different the four body sites are.
 
 ### Inspecting the fit
 
@@ -139,9 +140,9 @@ data.frame(
     theme_bw() + ggplot2::annotation_logticks()
 ```
 
-![fitted value vs. observation](ZIPLN_files/figure-html/fitted-1.png)
+![Fitted vs. observed values](ZIPLN_files/figure-html/fitted-1.png)
 
-fitted value vs. observation
+Fitted vs. observed values
 
 The site-dependent model also lets us recover, for each species, an
 estimated zero-inflation probability per body site (`model_par$Pi`),
@@ -214,20 +215,20 @@ along the path are available:
 plot(zi_models, "diagnostic")
 ```
 
-![diagnostic of the ZIPLNnetwork
+![Diagnostic of the ZIPLNnetwork
 fits](ZIPLN_files/figure-html/ziplnnetwork_diagnostic-1.png)
 
-diagnostic of the ZIPLNnetwork fits
+Diagnostic of the ZIPLNnetwork fits
 
 ``` r
 
 plot(zi_models)
 ```
 
-![evolution of model selection
+![Evolution of model selection
 criteria](ZIPLN_files/figure-html/ziplnnetwork_criteria-1.png)
 
-evolution of model selection criteria
+Evolution of model selection criteria
 
 We select a network with
 [`getBestModel()`](https://pln-team.github.io/PLNmodels/reference/getBestModel.md)
@@ -239,15 +240,15 @@ zi_net <- getBestModel(zi_models, "EBIC")
 plot(zi_net)
 ```
 
-![sparse residual network between the 30 most abundant
+![Sparse residual network between the 30 most abundant
 taxa](ZIPLN_files/figure-html/ziplnnetwork_best-1.png)
 
-sparse residual network between the 30 most abundant taxa
+Sparse residual network between the 30 most abundant taxa
 
 As for `PLNnetwork`, a more robust (but more computationally intensive)
 [`stability_selection()`](https://pln-team.github.io/PLNmodels/reference/stability_selection.md)-based
-choice of penalty is available – we do not run it here to keep this
-vignette fast, see [the PLNnetwork
+choice of penalty is available. We do not use it here to keep the
+runtime of this vignette fast, see [the PLNnetwork
 vignette](https://pln-team.github.io/PLNmodels/articles/PLNnetwork.md)
 for an example.
 
