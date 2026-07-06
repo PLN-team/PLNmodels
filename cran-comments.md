@@ -28,8 +28,9 @@ Full details in NEWS.md.
 
 * tested locally on Ubuntu Linux 24.04 LTS, R 4.6.1, GCC 13.3.0 (`R CMD check --as-cran`)
 
-* remote checks (rhub / win-builder / github-action) to be run before submission —
-  results to be appended here.
+* remote checks 
+  - win-builder: R-devel, R-release, R-oldrel, Status: OK
+  - github-actions: macOS-latest (R-release), windows-latest (R-devel, R-release), ubuntu-latest (R-devel, R-release), Status: OK
 
 ## R CMD check results (local)
 
