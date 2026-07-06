@@ -58,7 +58,7 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #' @param inception_cov Covariance structure used for the inception PLN:
 #'   `"full"` (default), `"diagonal"` or `"spherical"`. Non-full structures are now
 #'   fully supported: when `inception_cov != "full"`, the penalty grid is built from the
-#'   empirical covariance of latent residuals `M − X·B` (a full-rank proxy for Σ),
+#'   empirical covariance of latent residuals \eqn{M - XB} (a full-rank proxy for \eqn{\Sigma}),
 #'   avoiding the broken `max_pen = 0` that previously occurred with diagonal/spherical.
 #' @param inception_backend character or `NULL` (default, i.e. same as `backend`). Backend for
 #'   the inception PLN only; the penalty grid models always use `backend`.
@@ -69,7 +69,7 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #'   otherwise): fewer iterations keep the latent mean M from over-converging toward the
 #'   unconstrained optimum, which would make it harder to warm-start the sparse penalty models.
 #'   Values above ~20 typically hurt. When `inception_cov != "full"` or `inception_niter` is set,
-#'   the penalty grid uses the empirical residual covariance `crossprod(M − X·B) / n`
+#'   the penalty grid uses the empirical residual covariance \eqn{crossprod(M - XB) / n}
 #'   for `max_pen`.
 #' @param maxit_ve integer or `NULL`. Maximum number of inner VE-step iterations
 #'   per outer GLASSO alternation turn. Default is `1L` when `backend = "builtin"` (`NULL`, i.e.

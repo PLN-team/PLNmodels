@@ -18,12 +18,12 @@ ZIPLNnetwork_param(
 )
 }
 \arguments{
-\item{backend}{optimization backend, either \code{"builtin"} (default, joint Newton on (M,ψ,R), combined with the partial E-step \code{maxit_ve = 1}) or \code{"nlopt"} (CCSAQ). \code{"builtin"} consistently finds a better ELBO across the penalty path at the cost of being slower.}
+\item{backend}{optimization backend, either \code{"builtin"} (default, joint Newton on (M,\eqn{\psi},R), combined with the partial E-step \code{maxit_ve = 1}) or \code{"nlopt"} (CCSAQ). \code{"builtin"} consistently finds a better ELBO across the penalty path at the cost of being slower.}
 
 \item{inception_cov}{Covariance structure used for the inception PLN:
 \code{"full"} (default), \code{"diagonal"} or \code{"spherical"}. Non-full structures are now
 fully supported: when \code{inception_cov != "full"}, the penalty grid is built from the
-empirical covariance of latent residuals \verb{M − X·B} (a full-rank proxy for Σ),
+empirical covariance of latent residuals \eqn{M - XB} (a full-rank proxy for \eqn{\Sigma}),
 avoiding the broken \code{max_pen = 0} that previously occurred with diagonal/spherical.}
 
 \item{trace}{a integer for verbosity.}

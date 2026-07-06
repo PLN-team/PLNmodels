@@ -31,7 +31,7 @@ better ELBO than plain \code{"nlopt"}, at essentially the same speed. Without a 
 \item{inception_cov}{Covariance structure used for the inception PLN:
 \code{"full"} (default), \code{"diagonal"} or \code{"spherical"}. Non-full structures are now
 fully supported: when \code{inception_cov != "full"}, the penalty grid is built from the
-empirical covariance of latent residuals \verb{M − X·B} (a full-rank proxy for Σ),
+empirical covariance of latent residuals \eqn{M - XB} (a full-rank proxy for \eqn{\Sigma}),
 avoiding the broken \code{max_pen = 0} that previously occurred with diagonal/spherical.}
 
 \item{inception_backend}{character or \code{NULL} (default, i.e. same as \code{backend}). Backend for
@@ -44,7 +44,7 @@ this many iterations (EM iterations for \code{"builtin"}, function evaluations �
 otherwise): fewer iterations keep the latent mean M from over-converging toward the
 unconstrained optimum, which would make it harder to warm-start the sparse penalty models.
 Values above ~20 typically hurt. When \code{inception_cov != "full"} or \code{inception_niter} is set,
-the penalty grid uses the empirical residual covariance \verb{crossprod(M − X·B) / n}
+the penalty grid uses the empirical residual covariance \eqn{crossprod(M - XB) / n}
 for \code{max_pen}.}
 
 \item{maxit_ve}{integer or \code{NULL}. Maximum number of inner VE-step iterations
