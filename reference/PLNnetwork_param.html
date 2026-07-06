@@ -85,7 +85,7 @@ better ELBO than plain <code>"nlopt"</code>, at essentially the same speed. With
 <dd><p>Covariance structure used for the inception PLN:
 <code>"full"</code> (default), <code>"diagonal"</code> or <code>"spherical"</code>. Non-full structures are now
 fully supported: when <code>inception_cov != "full"</code>, the penalty grid is built from the
-empirical covariance of latent residuals <code>M − X·B</code> (a full-rank proxy for Σ),
+empirical covariance of latent residuals \(M - XB\) (a full-rank proxy for \(\Sigma\)),
 avoiding the broken <code>max_pen = 0</code> that previously occurred with diagonal/spherical.</p></dd>
 
 
@@ -102,7 +102,7 @@ this many iterations (EM iterations for <code>"builtin"</code>, function evaluat
 otherwise): fewer iterations keep the latent mean M from over-converging toward the
 unconstrained optimum, which would make it harder to warm-start the sparse penalty models.
 Values above ~20 typically hurt. When <code>inception_cov != "full"</code> or <code>inception_niter</code> is set,
-the penalty grid uses the empirical residual covariance <code>crossprod(M − X·B) / n</code>
+the penalty grid uses the empirical residual covariance \(crossprod(M - XB) / n\)
 for <code>max_pen</code>.</p></dd>
 
 

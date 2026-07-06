@@ -70,14 +70,14 @@
 
 
 <dl><dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
-<dd><p>optimization backend, either <code>"builtin"</code> (default, joint Newton on (M,ψ,R), combined with the partial E-step <code>maxit_ve = 1</code>) or <code>"nlopt"</code> (CCSAQ). <code>"builtin"</code> consistently finds a better ELBO across the penalty path at the cost of being slower.</p></dd>
+<dd><p>optimization backend, either <code>"builtin"</code> (default, joint Newton on (M,\(\psi\),R), combined with the partial E-step <code>maxit_ve = 1</code>) or <code>"nlopt"</code> (CCSAQ). <code>"builtin"</code> consistently finds a better ELBO across the penalty path at the cost of being slower.</p></dd>
 
 
 <dt id="arg-inception-cov">inception_cov<a class="anchor" aria-label="anchor" href="#arg-inception-cov"></a></dt>
 <dd><p>Covariance structure used for the inception PLN:
 <code>"full"</code> (default), <code>"diagonal"</code> or <code>"spherical"</code>. Non-full structures are now
 fully supported: when <code>inception_cov != "full"</code>, the penalty grid is built from the
-empirical covariance of latent residuals <code>M − X·B</code> (a full-rank proxy for Σ),
+empirical covariance of latent residuals \(M - XB\) (a full-rank proxy for \(\Sigma\)),
 avoiding the broken <code>max_pen = 0</code> that previously occurred with diagonal/spherical.</p></dd>
 
 

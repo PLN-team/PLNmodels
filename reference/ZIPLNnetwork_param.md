@@ -25,18 +25,18 @@ ZIPLNnetwork_param(
 - backend:
 
   optimization backend, either `"builtin"` (default, joint Newton on
-  (M,ψ,R), combined with the partial E-step `maxit_ve = 1`) or `"nlopt"`
-  (CCSAQ). `"builtin"` consistently finds a better ELBO across the
-  penalty path at the cost of being slower.
+  (M,\\\psi\\,R), combined with the partial E-step `maxit_ve = 1`) or
+  `"nlopt"` (CCSAQ). `"builtin"` consistently finds a better ELBO across
+  the penalty path at the cost of being slower.
 
 - inception_cov:
 
   Covariance structure used for the inception PLN: `"full"` (default),
   `"diagonal"` or `"spherical"`. Non-full structures are now fully
   supported: when `inception_cov != "full"`, the penalty grid is built
-  from the empirical covariance of latent residuals `M − X·B` (a
-  full-rank proxy for Σ), avoiding the broken `max_pen = 0` that
-  previously occurred with diagonal/spherical.
+  from the empirical covariance of latent residuals \\M - XB\\ (a
+  full-rank proxy for \\\Sigma\\), avoiding the broken `max_pen = 0`
+  that previously occurred with diagonal/spherical.
 
 - trace:
 

@@ -41,9 +41,9 @@ PLNnetwork_param(
   Covariance structure used for the inception PLN: `"full"` (default),
   `"diagonal"` or `"spherical"`. Non-full structures are now fully
   supported: when `inception_cov != "full"`, the penalty grid is built
-  from the empirical covariance of latent residuals `M − X·B` (a
-  full-rank proxy for Σ), avoiding the broken `max_pen = 0` that
-  previously occurred with diagonal/spherical.
+  from the empirical covariance of latent residuals \\M - XB\\ (a
+  full-rank proxy for \\\Sigma\\), avoiding the broken `max_pen = 0`
+  that previously occurred with diagonal/spherical.
 
 - inception_backend:
 
@@ -61,7 +61,7 @@ PLNnetwork_param(
   would make it harder to warm-start the sparse penalty models. Values
   above ~20 typically hurt. When `inception_cov != "full"` or
   `inception_niter` is set, the penalty grid uses the empirical residual
-  covariance `crossprod(M − X·B) / n` for `max_pen`.
+  covariance \\crossprod(M - XB) / n\\ for `max_pen`.
 
 - maxit_ve:
 
