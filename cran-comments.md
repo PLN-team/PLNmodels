@@ -35,9 +35,16 @@ Full details in NEWS.md.
   - win-builder: R-devel, R-release, R-oldrel, Status: OK
   - github-actions: macOS-latest (R-release), windows-latest (R-devel, R-release), ubuntu-latest (R-devel, R-release), Status: OK
 
-## R CMD check results (local)
+── R CMD check results ─────────────────────────────────────────────────────── PLNmodels 1.3.0 ────
+Duration: 4m 51s
 
-0 errors ✔ | 0 warnings ✔ | 4 notes ✖
+0 errors ✔ | 0 warnings ✔ | 2 notes ✖
+
+❯ checking pragmas in C/C++ headers and code ... NOTE
+  File which contains pragma(s) suppressing diagnostics:
+    ‘src/packing.cpp’
+As requested by CRAN maintainers, we fix WARN found at https://cran.r-project.org/web/checks/check_results_PLNmodels.html
+by silencing GCC -Wmismatched-new-delete false positive in packing.cpp
 
 ❯ checking compilation flags used ... NOTE
   Compilation used the following non-portable flag(s):
@@ -46,17 +53,10 @@ Full details in NEWS.md.
   CFLAGS/CXXFLAGS (visible in `R CMD config CFLAGS`), not from the package's
   `src/Makevars`. Not expected to reproduce identically on CRAN's build machines.
 
-❯ checking examples ... NOTE
-  A number of examples (PLNmixture*, PLNnetwork*) show CPU (user+system) time
-  above 5s, but elapsed time stays under 3s in every case. The gap is caused by
-  multithreaded BLAS on the local machine, not by actual wall-clock runtime.
-
 installed size is 34.3Mb (libs 27.3Mb: RcppArmadillo, nlopt, torch), consistent
 with previous submissions.
 
 * the usual NOTE about libs size (RcppArmadillo, nlopt, torch), if it reappears
   on CRAN's machines
-* possibly a note about the number of dependencies (Imports currently includes
-  torch, needed for the experimental `backend = "torch"` option)
 
 R CMD check succeeded locally; awaiting remote check results before final submission.
