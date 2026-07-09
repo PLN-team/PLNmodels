@@ -1,5 +1,15 @@
 #include "packing.h"
 
+// PackingMetadata<T>::map() returns arma::mat/vec objects that borrow memory from
+// 'packed' (never owning/freeing it). GCC's -Wmismatched-new-delete cannot see this
+// through the inlined arma::Mat/Col destructors and flags a false positive when the
+// borrowed buffer and the borrowing object are destroyed in the same function.
+// See https://gcc.gnu.org/bugzilla/show_bug.cgi?id=100876
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmismatched-new-delete"
+#endif
+
 // [[Rcpp::export]]
 bool cpp_test_packing() {
     bool success = true;
@@ -53,3 +63,7 @@ bool cpp_test_packing() {
 
     return success;
 }
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
