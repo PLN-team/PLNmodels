@@ -1,6 +1,9 @@
 
 Submitting PLNmodels version 1.3.0 to CRAN
 
+Fix WARN found at https://cran.r-project.org/web/checks/check_results_PLNmodels.html
+(Silence GCC -Wmismatched-new-delete false positive in packing.cpp)
+
 ## Summary of changes since 1.2.2
 
 This is a feature/optimizer release, not just a bugfix release:
@@ -28,7 +31,7 @@ Full details in NEWS.md.
 
 * tested locally on Ubuntu Linux 24.04 LTS, R 4.6.1, GCC 13.3.0 (`R CMD check --as-cran`)
 
-* remote checks 
+* remote checks
   - win-builder: R-devel, R-release, R-oldrel, Status: OK
   - github-actions: macOS-latest (R-release), windows-latest (R-devel, R-release), ubuntu-latest (R-devel, R-release), Status: OK
 
