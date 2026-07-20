@@ -296,7 +296,7 @@ test_that("offset_numeric fails when the offsets are incompatible with the count
   # A 1 4
   # B 2 5
   # C 3 6
-  counts <- structure(1:6, .Dim = 3:2, .Dimnames = list(c("A", "B", "C"),
+  counts <- structure(1:6, dim = 3:2, dimnames = list(c("A", "B", "C"),
                                                       c("a", "b")))
   offset <- counts
   ## No sample names
@@ -322,7 +322,7 @@ test_that("offset_numeric works for vectors and column-matrices.", {
   # A 1 4
   # B 2 5
   # C 3 6
-  counts <- structure(1:6, .Dim = 3:2, .Dimnames = list(c("A", "B", "C"),
+  counts <- structure(1:6, dim = 3:2, dimnames = list(c("A", "B", "C"),
                                                         c("a", "b")))
   offset <- c(A = 1, C = 3, B = 2)
   ## No difference between vectors and column matrices
@@ -344,7 +344,7 @@ test_that("offset_numeric works for matrices.", {
   # A 1 4
   # B 2 5
   # C 3 6
-  counts <- structure(1:6, .Dim = 3:2, .Dimnames = list(c("A", "B", "C"),
+  counts <- structure(1:6, dim = 3:2, dimnames = list(c("A", "B", "C"),
                                                         c("a", "b")))
   offset <- rbind(counts, counts)
   rownames(offset) <- LETTERS[6:1] ## too many offsets
