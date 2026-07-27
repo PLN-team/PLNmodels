@@ -47,9 +47,10 @@ Full details in NEWS.md.
 * the `-Wmismatched-new-delete` fix and the `src/Makevars` change were each
   verified by compiling `src/packing.cpp` in isolation with the flags used by
   CRAN's checks (`-Wall -pedantic -O2`): no warning, no pragma.
-* resubmitting to win-builder (R-devel, R-release, R-oldrel) to confirm the
-  previously reported WARN and NOTEs are gone before a full local/remote
-  `R CMD check --as-cran` pass.
+* win-builder (R-devel, R-release, R-oldrel) now confirms the
+  previously reported WARN and NOTEs are gone
+* Also check via github action against R-devel, R-release and R-oldrel on Linux 
+  (Ubuntu 22.04) and macOS (R 4.3.1, clang 16.0.0) with the same results.
 
 * possibly a NOTE about installed size (34.3Mb, libs: RcppArmadillo, nlopt,
   torch), consistent with previous submissions.
