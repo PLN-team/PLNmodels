@@ -1,8 +1,23 @@
 
 Submitting PLNmodels version 1.3.0 to CRAN
 
-Fix WARN found at https://cran.r-project.org/web/checks/check_results_PLNmodels.html
-(Silence GCC -Wmismatched-new-delete false positive in packing.cpp)
+Resubmission fixing the issues found at
+https://cran.r-project.org/web/checks/check_results_PLNmodels.html and in the
+win-builder pretest of a previous 1.3.0 submission attempt:
+
+* the `-Wmismatched-new-delete` WARN (g++ 15/16 on Linux) was a GCC false
+  positive in `src/packing.cpp`'s internal test helper: an arma::mat/vec view
+  borrowing memory from a `std::vector` was flagged as freeing it, because GCC
+  could inline both the allocation and the (unrelated) destructor into the
+  same function. A first attempt silenced this with
+  `#pragma GCC diagnostic ignored`, but that pragma itself triggered the
+  "checking pragmas in C/C++ headers and code" NOTE. The current fix instead
+  isolates the allocation in a separate `noinline` function so GCC can no
+  longer correlate the two; no pragma is used anymore.
+* an unused `-fopenmp` flag in `src/Makevars` was removed: the package uses no
+  OpenMP directive of its own, but the flag was inadvertently turning on
+  Armadillo's internal OpenMP parallelisation, which was the likely cause of
+  the "CPU time > 2x elapsed time" NOTEs on several examples on Linux.
 
 ## Summary of changes since 1.2.2
 
@@ -29,34 +44,12 @@ Full details in NEWS.md.
 
 ## Tested environments
 
-* tested locally on Ubuntu Linux 24.04 LTS, R 4.6.1, GCC 13.3.0 (`R CMD check --as-cran`)
+* the `-Wmismatched-new-delete` fix and the `src/Makevars` change were each
+  verified by compiling `src/packing.cpp` in isolation with the flags used by
+  CRAN's checks (`-Wall -pedantic -O2`): no warning, no pragma.
+* resubmitting to win-builder (R-devel, R-release, R-oldrel) to confirm the
+  previously reported WARN and NOTEs are gone before a full local/remote
+  `R CMD check --as-cran` pass.
 
-* remote checks
-  - win-builder: R-devel, R-release, R-oldrel, Status: OK
-  - github-actions: macOS-latest (R-release), windows-latest (R-devel, R-release), ubuntu-latest (R-devel, R-release), Status: OK
-
-── R CMD check results ─────────────────────────────────────────────────────── PLNmodels 1.3.0 ────
-Duration: 4m 51s
-
-0 errors ✔ | 0 warnings ✔ | 2 notes ✖
-
-❯ checking pragmas in C/C++ headers and code ... NOTE
-  File which contains pragma(s) suppressing diagnostics:
-    ‘src/packing.cpp’
-As requested by CRAN maintainers, we fix WARN found at https://cran.r-project.org/web/checks/check_results_PLNmodels.html
-by silencing GCC -Wmismatched-new-delete false positive in packing.cpp
-
-❯ checking compilation flags used ... NOTE
-  Compilation used the following non-portable flag(s):
-    ‘-mno-omit-leaf-frame-pointer’
-  This comes from the local Ubuntu-patched R toolchain's default hardening
-  CFLAGS/CXXFLAGS (visible in `R CMD config CFLAGS`), not from the package's
-  `src/Makevars`. Not expected to reproduce identically on CRAN's build machines.
-
-installed size is 34.3Mb (libs 27.3Mb: RcppArmadillo, nlopt, torch), consistent
-with previous submissions.
-
-* the usual NOTE about libs size (RcppArmadillo, nlopt, torch), if it reappears
-  on CRAN's machines
-
-R CMD check succeeded locally; awaiting remote check results before final submission.
+* possibly a NOTE about installed size (34.3Mb, libs: RcppArmadillo, nlopt,
+  torch), consistent with previous submissions.
