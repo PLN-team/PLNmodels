@@ -1,14 +1,16 @@
 #include "packing.h"
 
-// PackingMetadata<T>::map() returns arma::mat/vec objects that borrow memory from
-// 'packed' (never owning/freeing it). GCC's -Wmismatched-new-delete cannot see this
-// through the inlined arma::Mat/Col destructors and flags a false positive when the
-// borrowed buffer and the borrowing object are destroyed in the same function.
+// Allocate the packed buffer in a separate, never-inlined function. Otherwise GCC's
+// -Wmismatched-new-delete incorrectly correlates this allocation with the (unrelated)
+// destructor of arma objects mapped onto it below, since PackingMetadata<T>::map()
+// returns arma::mat/vec objects that borrow this memory without ever freeing it.
 // See https://gcc.gnu.org/bugzilla/show_bug.cgi?id=100876
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmismatched-new-delete"
+#if defined(__GNUC__)
+__attribute__((noinline))
 #endif
+static std::vector<double> make_packed_buffer(std::size_t n) {
+    return std::vector<double>(n);
+}
 
 // [[Rcpp::export]]
 bool cpp_test_packing() {
@@ -34,7 +36,7 @@ bool cpp_test_packing() {
     check(std::get<3>(metadata.elements).offset == 4 * 10 + 7, "metadata offset 3");
 
     // Pack values
-    auto packed = std::vector<double>(metadata.packed_size);
+    auto packed = make_packed_buffer(metadata.packed_size);
     metadata.map<0>(packed.data()) = z;
     metadata.map<1>(packed.data()) = a;
     metadata.map<2>(packed.data()) = b;
@@ -63,7 +65,3 @@ bool cpp_test_packing() {
 
     return success;
 }
-
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic pop
-#endif
