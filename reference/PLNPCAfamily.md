@@ -127,7 +127,7 @@ Call to the C++ optimizer on all models of the collection
 ### `PLNPCAfamily$getModel()`
 
 Extract model from collection and add "PCA" class for compatibility with
-[`factoextra::fviz()`](https://rdrr.io/pkg/factoextra/man/fviz.html)
+[`factoextra::fviz()`](https://rpkgs.datanovia.com/factoextra/reference/fviz.html)
 
 #### Usage
 

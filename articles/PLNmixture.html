@@ -68,7 +68,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Clustering of multivariate count data with PLN-mixture</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2026-07-20</h4>
+            <h4 data-toc-skip class="date">2026-07-27</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/PLNmixture.Rmd" class="external-link"><code>vignettes/PLNmixture.Rmd</code></a></small>
       <div class="d-none name"><code>PLNmixture.Rmd</code></div>
@@ -664,7 +664,7 @@ mean.</p>
 <code class="sourceCode R"><span><span class="va">predicted.position</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">myMix_BIC</span>, newdata <span class="op">=</span> <span class="va">trichoptera</span>, </span>
 <span>                              prior <span class="op">=</span> <span class="va">myMix_BIC</span><span class="op">$</span><span class="va">posteriorProb</span>, type <span class="op">=</span> <span class="st">"position"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/prcomp.html" class="external-link">prcomp</a></span><span class="op">(</span><span class="va">predicted.position</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html" class="external-link">fviz_pca_ind</a></span><span class="op">(</span>col.ind <span class="op">=</span> <span class="va">predicted.class</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rpkgs.datanovia.com/factoextra/reference/fviz_pca.html" class="external-link">fviz_pca_ind</a></span><span class="op">(</span>col.ind <span class="op">=</span> <span class="va">predicted.class</span><span class="op">)</span></span></code></pre></div>
 <p><img src="PLNmixture_files/figure-html/predicted_position-1.png" class="r-plt" alt="" width="672"></p>
 <p>When you are done, do not forget to get back to the default
 (sequential) behavior.</p>

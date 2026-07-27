@@ -68,7 +68,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Dimension reduction of multivariate count data with PLN-PCA</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2026-07-20</h4>
+            <h4 data-toc-skip class="date">2026-07-27</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/PLNPCA.Rmd" class="external-link"><code>vignettes/PLNPCA.Rmd</code></a></small>
       <div class="d-none name"><code>PLNPCA.Rmd</code></div>
@@ -669,14 +669,14 @@ bindings allow you to use widely popular tools to make your own plots:
 package to extract relevant informations</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Eigenvalues</span></span>
-<span><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/eigenvalue.html" class="external-link">get_eig</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rpkgs.datanovia.com/factoextra/reference/eigenvalue.html" class="external-link">get_eig</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##       eigenvalue variance.percent cumulative.variance.percent</span></span>
 <span><span class="co">## Dim.1   493.9615         39.82669                    39.82669</span></span>
 <span><span class="co">## Dim.2   287.6743         23.19435                    63.02104</span></span>
 <span><span class="co">## Dim.3   214.6742         17.30857                    80.32961</span></span></code></pre>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Variables</span></span>
-<span><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/get_pca.html" class="external-link">get_pca_var</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rpkgs.datanovia.com/factoextra/reference/get_pca.html" class="external-link">get_pca_var</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Principal Component Analysis Results for variables</span></span>
 <span><span class="co">##  ===================================================</span></span>
 <span><span class="co">##   Name       Description                                    </span></span>
@@ -686,7 +686,7 @@ package to extract relevant informations</p>
 <span><span class="co">## 4 "$contrib" "contributions of the variables"</span></span></code></pre>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Individuals</span></span>
-<span><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/get_pca.html" class="external-link">get_pca_ind</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rpkgs.datanovia.com/factoextra/reference/get_pca.html" class="external-link">get_pca_ind</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Principal Component Analysis Results for individuals</span></span>
 <span><span class="co">##  ===================================================</span></span>
 <span><span class="co">##   Name       Description                       </span></span>
@@ -696,13 +696,13 @@ package to extract relevant informations</p>
 <p>And some of the very nice plotting methods such as biplots,
 correlation circles and scatter plots of the scores.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html" class="external-link">fviz_pca_biplot</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rpkgs.datanovia.com/factoextra/reference/fviz_pca.html" class="external-link">fviz_pca_biplot</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></span></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/fviz_biplot-1.png" class="r-plt" alt="" width="700"></p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html" class="external-link">fviz_pca_var</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rpkgs.datanovia.com/factoextra/reference/fviz_pca.html" class="external-link">fviz_pca_var</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></span></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/fviz_cor_circle-1.png" class="r-plt" alt="" width="700"></p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html" class="external-link">fviz_pca_ind</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rpkgs.datanovia.com/factoextra/reference/fviz_pca.html" class="external-link">fviz_pca_ind</a></span><span class="op">(</span><span class="va">myPCA_ICL</span><span class="op">)</span></span></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/fviz_principal_plane-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 <div class="section level3">
@@ -717,8 +717,8 @@ original data points (large black points).</p>
 <code class="sourceCode R"><span><span class="co">## Project newdata into PCA space</span></span>
 <span><span class="va">new_scores</span> <span class="op">&lt;-</span> <span class="va">myPCA_ICL</span><span class="op">$</span><span class="fu">project</span><span class="op">(</span>newdata <span class="op">=</span> <span class="va">trichoptera</span><span class="op">)</span></span>
 <span><span class="co">## Overprint</span></span>
-<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_pca.html" class="external-link">fviz_pca_ind</a></span><span class="op">(</span><span class="va">myPCA_ICL</span>, geom <span class="op">=</span> <span class="st">"point"</span>, col.ind <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span></span>
-<span><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_add.html" class="external-link">fviz_add</a></span><span class="op">(</span><span class="va">p</span>, <span class="va">new_scores</span>, geom <span class="op">=</span> <span class="st">"point"</span>, color <span class="op">=</span> <span class="st">"red"</span>, </span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rpkgs.datanovia.com/factoextra/reference/fviz_pca.html" class="external-link">fviz_pca_ind</a></span><span class="op">(</span><span class="va">myPCA_ICL</span>, geom <span class="op">=</span> <span class="st">"point"</span>, col.ind <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span></span>
+<span><span class="fu">factoextra</span><span class="fu">::</span><span class="fu"><a href="https://rpkgs.datanovia.com/factoextra/reference/fviz_add.html" class="external-link">fviz_add</a></span><span class="op">(</span><span class="va">p</span>, <span class="va">new_scores</span>, geom <span class="op">=</span> <span class="st">"point"</span>, color <span class="op">=</span> <span class="st">"red"</span>, </span>
 <span>                     addlabel <span class="op">=</span> <span class="cn">FALSE</span>, pointsize <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></code></pre></div>
 <p><img src="PLNPCA_files/figure-html/unnamed-chunk-1-1.png" class="r-plt" alt="" width="700"></p>
 </div>

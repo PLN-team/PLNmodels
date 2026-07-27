@@ -93,6 +93,14 @@
   ([\#151](https://github.com/pln-team/PLNmodels/issues/151)); other
   fixes ([\#155](https://github.com/pln-team/PLNmodels/issues/155)).
 
+- **CRAN check fixes** (no user-visible effect): removed an unused
+  `-fopenmp` compilation flag in `src/Makevars` that was inadvertently
+  turning on Armadillo’s internal OpenMP parallelisation and inflating
+  the CPU/elapsed time ratio of several examples; fixed a GCC
+  `-Wmismatched-new-delete` false positive in `src/packing.cpp`’s
+  internal test helper by restructuring the code (no
+  diagnostic-suppressing pragma involved).
+
 ## PLNmodels 1.2.2 (2025-03-21)
 
 CRAN release: 2025-03-21
