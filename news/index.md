@@ -2,6 +2,8 @@
 
 ## PLNmodels 1.3.0
 
+CRAN release: 2026-07-27
+
 ### New backends and optimizers
 
 - **New built-in Newton optimizer** (`backend = "builtin"`) for PLN,
