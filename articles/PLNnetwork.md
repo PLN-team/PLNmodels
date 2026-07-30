@@ -378,10 +378,10 @@ my_graph <- plot(model_StARS, plot = FALSE)
 my_graph
 ```
 
-    ## IGRAPH f454e1f UNW- 17 1 -- 
+    ## IGRAPH 10a1c34 UNW- 17 1 -- 
     ## + attr: name (v/c), label (v/c), label.cex (v/n), size (v/n),
     ## | label.color (v/c), weight (e/n), color (e/c), width (e/n)
-    ## + edge from f454e1f (vertex names):
+    ## + edge from 10a1c34 (vertex names):
     ## [1] Hfo--Hsp
 
 ``` r

@@ -111,10 +111,10 @@ myPLN <- PLN(Abundance ~ 1 + offset(log(Offset)), data = trichoptera,
 #>  Post-treatments...
 #>  DONE!
 standard_error(myPLN)
-#>                   Che       Hyc       Hym       Hys        Psy      Aga
-#> (Intercept) 0.6714392 0.5698456 0.1891005 0.4850316 0.04811683 0.207243
+#>                   Che       Hyc       Hym       Hys       Psy       Aga
+#> (Intercept) 0.6747981 0.5667258 0.1891566 0.4849124 0.0480875 0.2073636
 #>                   Glo       Ath       Cea       Ced       Set       All
-#> (Intercept) 0.3425401 0.3428727 0.2484439 0.1884851 0.2584335 0.2801445
+#> (Intercept) 0.3432676 0.3427704 0.2504953 0.1885027 0.2585972 0.2802204
 #>                   Han       Hfo       Hsp       Hve       Sta
-#> (Intercept) 0.3722008 0.3899489 0.3039708 0.4027737 0.1777602
+#> (Intercept) 0.3723373 0.3901035 0.3038571 0.4027642 0.1777478
 ```
