@@ -1,0 +1,32 @@
+# Creates a GitHub Release whenever a version tag (vX.Y.Z) is pushed, using the matching
+# section of NEWS.md (e.g. "# PLNmodels 1.3.0") as the release notes.
+on:
+  push:
+    tags: ['v*']
+
+name: release
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract NEWS.md section for this tag
+        id: notes
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          awk -v ver="$VERSION" '
+            $0 ~ "^# PLNmodels " ver "([ (]|$)" { found=1; next }
+            found && /^# PLNmodels / { exit }
+            found { print }
+          ' NEWS.md > release-notes.md
+          echo "path=release-notes.md" >> "$GITHUB_OUTPUT"
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: PLNmodels ${{ github.ref_name }}
+          body_path: ${{ steps.notes.outputs.path }}
