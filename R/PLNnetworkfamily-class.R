@@ -501,15 +501,38 @@ ZIPLNnetworkfamily <- R6Class(
 
       ## A basic model for inception, useless one is defined by the user
       if (is.null(control$inception)) {
+        ## Build a standalone optimizer config for the inception ZIPLN.
+        ##
+        ## ZIPLNnetwork_param() deliberately truncates the optimizer for the
+        ## regularization path: maxit_ve = 1 caps the VE step at a single Newton
+        ## iteration and maxit_out is lowered to 50. Those settings are appropriate
+        ## for the models along the path, which are warm-started from one another,
+        ## but not for the inception, which starts from scratch. Under zero-inflation
+        ## the VE step also has to fit the responsibilities R of the Bernoulli
+        ## component, and one Newton iteration is not enough: the inception stalls at
+        ## a markedly worse optimum and the warm starts carry that solution all the
+        ## way down the path, including its unpenalized end.
+        ##
+        ## We therefore fit the inception with the same budget a standalone ZIPLN()
+        ## would use. The cost is negligible (a single extra fit) and the path itself
+        ## keeps its truncated settings. This mirrors the cfg_inception mechanism of
+        ## PLNnetworkfamily above.
+        cfg_inception <- modifyList(
+          control$config_optim,
+          list(trace = 0, maxit_ve = NULL, maxit_out = 200L)
+        )
+        ctrl_inc <- control
+        ctrl_inc$config_optim <- cfg_inception
+
         ## Allow inception with spherical / diagonal / full PLNfit before switching back to PLNfit_fixedcov
         ## for the inner-outer loop of PLNnetwork.
         myPLN <- switch(
           control$inception_cov,
-          "spherical" = ZIPLNfit_spherical$new(data, control),
-          "diagonal" = ZIPLNfit_diagonal$new(data, control),
-          ZIPLNfit$new(data, control) # defaults to full
+          "spherical" = ZIPLNfit_spherical$new(data, ctrl_inc),
+          "diagonal" = ZIPLNfit_diagonal$new(data, ctrl_inc),
+          ZIPLNfit$new(data, ctrl_inc) # defaults to full
         )
-        myPLN$optimize(data, control$config_optim)
+        myPLN$optimize(data, cfg_inception)
         control$inception <- myPLN
       }
 
