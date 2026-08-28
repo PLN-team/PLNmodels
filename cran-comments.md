@@ -1,56 +1,50 @@
+Submitting PLNmodels version 1.3.1 to CRAN
 
-Submitting PLNmodels version 1.3.0 to CRAN
+This is a patch release containing a single bug fix. There is no change to the
+package's API, to its dependencies, or to its compiled code.
 
-Resubmission fixing the issues found at
-https://cran.r-project.org/web/checks/check_results_PLNmodels.html and in the
-win-builder pretest of a previous 1.3.0 submission attempt:
+## Bug fixed
 
-* the `-Wmismatched-new-delete` WARN (g++ 15/16 on Linux) was a GCC false
-  positive in `src/packing.cpp`'s internal test helper: an arma::mat/vec view
-  borrowing memory from a `std::vector` was flagged as freeing it, because GCC
-  could inline both the allocation and the (unrelated) destructor into the
-  same function. A first attempt silenced this with
-  `#pragma GCC diagnostic ignored`, but that pragma itself triggered the
-  "checking pragmas in C/C++ headers and code" NOTE. The current fix instead
-  isolates the allocation in a separate `noinline` function so GCC can no
-  longer correlate the two; no pragma is used anymore.
-* an unused `-fopenmp` flag in `src/Makevars` was removed: the package uses no
-  OpenMP directive of its own, but the flag was inadvertently turning on
-  Armadillo's internal OpenMP parallelisation, which was the likely cause of
-  the "CPU time > 2x elapsed time" NOTEs on several examples on Linux.
+`ZIPLNnetwork()` fitted its inception (warm-start) model with the optimizer
+configuration meant for the regularization path. That configuration is
+deliberately truncated — the VE step is capped at a single Newton iteration
+(`maxit_ve = 1`) and the outer loop at 50 iterations — which is appropriate for
+the models along the path, since each is warm-started from the previous one, but
+not for the inception, which starts from scratch.
 
-## Summary of changes since 1.2.2
+Under zero-inflation the VE step must also fit the responsibilities of the
+Bernoulli component, and a single Newton iteration is not sufficient. The
+inception stalled at a markedly worse optimum, and the warm starts propagated
+that solution down the whole path, including its unpenalized end: the collection
+never reached the solution a standalone `ZIPLN()` finds on the same data. On our
+simulations the estimated latent variances were inflated by roughly a factor of
+two, with a correspondingly degraded inferred network.
 
-This is a feature/optimizer release, not just a bugfix release:
+The inception is now fitted with an untruncated optimizer, mirroring the
+`cfg_inception` mechanism `PLNnetworkfamily` already uses for the same reason.
+The path itself keeps its truncated settings, so the added cost is a fraction of
+a second per collection.
 
-* New built-in (dependency-free) Newton-type optimizers for PLN, PLNPCA, PLNnetwork,
-  ZIPLN and ZIPLNnetwork, generally faster and/or more accurate than the existing
-  NLOPT-based backends, especially on large datasets. PLNPCA's built-in backend is a
-  profiled trust-region Newton with an analytic Schur-complement Hessian-vector
-  product; nlopt remains its default for robustness.
-* Backend defaults revisited package-wide based on extensive benchmarking (see
-  NEWS.md for the full per-model rationale).
-* A shared C++ traits abstraction (`CovTraitsBase`) removes a substantial amount of
-  duplicated optimization code across PLN's covariance structures and is now reused
-  by PLNPCA and ZIPLN.
-* `future`/`future.apply` replaced by `parallel::mclapply` (avoids BLAS
-  oversubscription issues); `pscl` dropped as a dependency (ZIPLN now uses a faster
-  internal starting point).
-* A handful of bug fixes (nlopt XTOL false-early-convergence on ill-conditioned
-  covariates, PLNnetwork/ZIPLNnetwork inception config inheritance, ZIPLN
-  prediction/initialisation fixes) — see NEWS.md for the full list.
+The change is confined to `ZIPLNnetworkfamily$initialize()` in
+`R/PLNnetworkfamily-class.R`. Results for `PLN`, `PLNPCA`, `PLNnetwork` and
+`ZIPLN` are unchanged. Users who worked around the problem by passing a fitted
+`ZIPLN` object as `inception` obtain the same results as before, now
+automatically.
 
-Full details in NEWS.md.
+## Test environments
 
-## Tested environments
+* local Linux (Ubuntu, R 4.5.x): `R CMD check --as-cran`, no ERROR, no WARNING.
+* GitHub Actions against R-devel, R-release and R-oldrel on Linux (Ubuntu 22.04)
+  and macOS.
+* win-builder (R-devel, R-release, R-oldrel).
 
-* the `-Wmismatched-new-delete` fix and the `src/Makevars` change were each
-  verified by compiling `src/packing.cpp` in isolation with the flags used by
-  CRAN's checks (`-Wall -pedantic -O2`): no warning, no pragma.
-* win-builder (R-devel, R-release, R-oldrel) now confirms the
-  previously reported WARN and NOTEs are gone
-* Also check via github action against R-devel, R-release and R-oldrel on Linux 
-  (Ubuntu 22.04) and macOS (R 4.3.1, clang 16.0.0) with the same results.
+The package's own test suite passes with no failure, error or warning; the files
+covering the modified code — `test-zipln.R` (29 tests), `test-ziplnfit.R` (63),
+`test-ziplnnetworkfamily.R` (55) and `test-plnnetworkfamily.R` (55) — were run
+individually as well.
 
-* possibly a NOTE about installed size (34.3Mb, libs: RcppArmadillo, nlopt,
-  torch), consistent with previous submissions.
+## R CMD check results
+
+There is one NOTE, unchanged from previous submissions:
+
+* installed size (~34Mb, `libs`: RcppArmadillo, nlopt, torch).
