@@ -2,22 +2,10 @@
 
 ## Bug fix
 
-* **`ZIPLNnetwork()` fitted its inception with the regularization path's truncated
-  optimizer.** `ZIPLNnetwork_param()` deliberately restricts the optimizer used along
-  the path — `maxit_ve = 1` caps the VE step at a single Newton iteration and
-  `maxit_out` is lowered to 50 — which is appropriate for models that are warm-started
+* `ZIPLNnetwork()` fitted its inception with the regularization path's truncated
+  optimizer which is appropriate for models that are warm-started
   from one another, but the inception starts from scratch and was given the same
-  budget. Under zero-inflation the VE step must also fit the responsibilities of the
-  Bernoulli component, and one Newton iteration is not enough: the inception stalled at
-  a markedly worse optimum, and the warm starts carried that solution down the entire
-  path, including its unpenalized end. The collection therefore never reached the
-  solution a standalone `ZIPLN()` finds on the same data, and the estimated latent
-  variances were inflated (by a factor of about two in our simulations), with a
-  correspondingly degraded network. The inception is now fitted with an untruncated
-  optimizer, as `PLNnetworkfamily` already did through its own `cfg_inception`; the
-  path keeps its truncated settings, and the extra cost is a fraction of a second per
-  collection. Users who worked around this by passing a fitted `ZIPLN` object as
-  `inception` will get the same results as before, obtained automatically.
+  budget. The inception is now fitted with an untruncated optimizer, as `PLNnetworkfamily`.
 
 # PLNmodels 1.3.0
 

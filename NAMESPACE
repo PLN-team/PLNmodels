@@ -94,56 +94,66 @@ importFrom(Rcpp,sourceCpp)
 importFrom(corrplot,corrplot)
 importFrom(glassoFast,glassoFast)
 importFrom(grDevices,rgb)
-importFrom(grid,nullGrob)
-importFrom(grid,textGrob)
-importFrom(gridExtra,arrangeGrob)
-importFrom(gridExtra,grid.arrange)
-importFrom(igraph,E)
-importFrom(igraph,V)
-importFrom(igraph,degree)
-importFrom(igraph,delete.vertices)
-importFrom(igraph,graph_from_adjacency_matrix)
-importFrom(igraph,layout_in_circle)
-importFrom(igraph,plot.igraph)
+importFrom(grid,
+  nullGrob,
+  textGrob
+)
+importFrom(gridExtra,
+  arrangeGrob,
+  grid.arrange
+)
+importFrom(igraph,
+  E,
+  V,
+  degree,
+  delete.vertices,
+  graph_from_adjacency_matrix,
+  layout_in_circle,
+  plot.igraph
+)
 importFrom(magrittr,"%>%")
-importFrom(purrr,map)
-importFrom(purrr,map2)
-importFrom(purrr,map2_dbl)
-importFrom(purrr,map_dbl)
-importFrom(purrr,map_int)
-importFrom(purrr,reduce)
+importFrom(purrr,
+  map,
+  map2,
+  map2_dbl,
+  map_dbl,
+  map_int,
+  reduce
+)
 importFrom(rlang,.data)
-importFrom(stats,.getXlevels)
-importFrom(stats,.lm.fit)
-importFrom(stats,AIC)
-importFrom(stats,BIC)
-importFrom(stats,as.formula)
-importFrom(stats,binomial)
-importFrom(stats,coef)
-importFrom(stats,coefficients)
-importFrom(stats,fitted)
-importFrom(stats,glm.control)
-importFrom(stats,glm.fit)
-importFrom(stats,lm.fit)
-importFrom(stats,lm.wfit)
-importFrom(stats,logLik)
-importFrom(stats,mad)
-importFrom(stats,median)
-importFrom(stats,model.frame)
-importFrom(stats,model.matrix)
-importFrom(stats,model.offset)
-importFrom(stats,model.response)
-importFrom(stats,model.weights)
-importFrom(stats,poisson)
-importFrom(stats,quantile)
-importFrom(stats,residuals)
-importFrom(stats,rnorm)
-importFrom(stats,rpois)
-importFrom(stats,runif)
-importFrom(stats,setNames)
-importFrom(stats,sigma)
-importFrom(stats,terms)
-importFrom(stats,update.formula)
-importFrom(stats,var)
+importFrom(stats,
+  .getXlevels,
+  .lm.fit,
+  AIC,
+  BIC,
+  as.formula,
+  binomial,
+  coef,
+  coefficients,
+  fitted,
+  glm.control,
+  glm.fit,
+  lm.fit,
+  lm.wfit,
+  logLik,
+  mad,
+  median,
+  model.frame,
+  model.matrix,
+  model.offset,
+  model.response,
+  model.weights,
+  poisson,
+  quantile,
+  residuals,
+  rnorm,
+  rpois,
+  runif,
+  setNames,
+  sigma,
+  terms,
+  update.formula,
+  var
+)
 importFrom(tidyr,gather)
 useDynLib(PLNmodels)

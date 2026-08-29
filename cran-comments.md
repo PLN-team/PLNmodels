@@ -7,18 +7,8 @@ package's API, to its dependencies, or to its compiled code.
 
 `ZIPLNnetwork()` fitted its inception (warm-start) model with the optimizer
 configuration meant for the regularization path. That configuration is
-deliberately truncated — the VE step is capped at a single Newton iteration
-(`maxit_ve = 1`) and the outer loop at 50 iterations — which is appropriate for
-the models along the path, since each is warm-started from the previous one, but
-not for the inception, which starts from scratch.
-
-Under zero-inflation the VE step must also fit the responsibilities of the
-Bernoulli component, and a single Newton iteration is not sufficient. The
-inception stalled at a markedly worse optimum, and the warm starts propagated
-that solution down the whole path, including its unpenalized end: the collection
-never reached the solution a standalone `ZIPLN()` finds on the same data. On our
-simulations the estimated latent variances were inflated by roughly a factor of
-two, with a correspondingly degraded inferred network.
+deliberately truncated, which is appropriate for the models along the path, 
+since each is warm-started from the previous one, but not for the inception, which starts from scratch.
 
 The inception is now fitted with an untruncated optimizer, mirroring the
 `cfg_inception` mechanism `PLNnetworkfamily` already uses for the same reason.
@@ -33,7 +23,7 @@ automatically.
 
 ## Test environments
 
-* local Linux (Ubuntu, R 4.5.x): `R CMD check --as-cran`, no ERROR, no WARNING.
+* local Linux (Ubuntu, R 4.6.1): `R CMD check --as-cran`, no ERROR, no WARNING.
 * GitHub Actions against R-devel, R-release and R-oldrel on Linux (Ubuntu 22.04)
   and macOS.
 * win-builder (R-devel, R-release, R-oldrel).
