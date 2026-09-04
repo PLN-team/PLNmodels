@@ -72,27 +72,24 @@ PLNfamily <-
         } else {
           nullModel <- NULL
         }
-        for (i in seq_along(self$models)) {
-          model <- self$models[[i]]
-          tryCatch(
-            {
-              model$postTreatment(
-                self$responses,
-                self$covariates,
-                self$offsets,
-                self$weights,
-                config_post = config_post,
-                config_optim = config_optim,
-                nullModel = nullModel
-              )
-            },
-            error = function(e) {
-              warning(paste("Post-treatment failed for model", i, ":", e$message, "\nTruncating model family to models 1 to", i - 1))
-              self$models <- self$models[1:(i - 1)]
-              break
-            }
-          )
-        }
+        tryCatch({
+          for (i in seq_along(self$models)) {
+            model <- self$models[[i]]
+            model$postTreatment(
+              self$responses,
+              self$covariates,
+              self$offsets,
+              self$weights,
+              config_post = config_post,
+              config_optim = config_optim,
+              nullModel = nullModel
+            )
+          }
+        },
+        error = function(e) {
+          warning(paste("Post-treatment failed for model", i, ":", e$message, "\nTruncating model family to models 1 to", i - 1))
+          self$models <- self$models[1:(i - 1)]
+        })
       },
 
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
