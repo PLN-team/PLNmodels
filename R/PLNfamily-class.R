@@ -89,6 +89,7 @@ PLNfamily <-
             error = function(e) {
               warning(paste("Post-treatment failed for model", i, ":", e$message, "\nTruncating model family to models 1 to", i - 1))
               self$models <- self$models[1:(i - 1)]
+              break
             }
           )
         }
