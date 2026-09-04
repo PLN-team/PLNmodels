@@ -120,6 +120,16 @@ Networkfamily <- R6Class(
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ## Post treatment --------------------
+    #' @description Update fields after optimization
+    #' @param config_post a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.).
+    #' @param config_optim a list for controlling the optimization parameters used during post_treatments
+    postTreatment = function(config_post, config_optim) {
+      super$postTreatment(config_post, config_optim)
+      private$params <- self$penalties[seq_along(self$models)]
+    },
+
+    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Extractors ------------------------
     #' @description Extract the regularization path of a [`Networkfamily`]
     #' @param precision Logical. Should the regularization path be extracted from the precision matrix Omega (`TRUE`, default) or from the variance matrix Sigma (`FALSE`)
@@ -432,7 +442,13 @@ PLNnetworkfamily <- R6Class(
         myPLN <- PLNnetworkfamily$new(self$penalties, data, control)
         myPLN$optimize(data, control$config_optim)
         nets <- do.call(cbind, lapply(myPLN$models, function(model) {
-          as.matrix(model$latent_network("support"))[upper.tri(diag(private$p))]
+          # If Omega is null, glasso diverged on the first iteration, so the network is completely unstable
+          if (is.null(model$model_par$Omega)) {
+            support <- matrix(0, nrow = private$p, ncol = private$p)
+          } else {
+            support <- as.matrix(model$latent_network("support"))
+          }
+          support[upper.tri(diag(private$p))]
         }))
         nets
       }, mc.cores = getOption("mc.cores", 1L))
@@ -595,7 +611,12 @@ ZIPLNnetworkfamily <- R6Class(
         myPLN$optimize(data, control$config_optim)
 
         nets <- do.call(cbind, lapply(myPLN$models, function(model) {
-          as.matrix(model$latent_network("support"))[upper.tri(diag(private$p))]
+          if (is.null(model$model_par$Omega)) {
+            support <- matrix(0, nrow = private$p, ncol = private$p)
+          } else {
+            support <- as.matrix(model$latent_network("support"))
+          }
+          support[upper.tri(diag(private$p))]
         }))
         nets
       }, mc.cores = getOption("mc.cores", 1L))
