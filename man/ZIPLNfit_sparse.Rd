@@ -47,14 +47,14 @@ plot(myPLN)
 \subsection{Public methods}{
   \itemize{
     \item \href{#method-ZIPLNfit_sparse-initialize}{\code{ZIPLNfit_sparse$new()}}
+    \item \href{#method-ZIPLNfit_sparse-optimize}{\code{ZIPLNfit_sparse$optimize()}}
     \item \href{#method-ZIPLNfit_sparse-latent_network}{\code{ZIPLNfit_sparse$latent_network()}}
     \item \href{#method-ZIPLNfit_sparse-plot_network}{\code{ZIPLNfit_sparse$plot_network()}}
     \item \href{#method-ZIPLNfit_sparse-clone}{\code{ZIPLNfit_sparse$clone()}}
   }
 }
-\if{html}{\out{<details><summary>Inherited methods</summary>
+\if{html}{\out{<details open><summary>Inherited methods</summary>
 <ul>
-  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="ZIPLNfit" data-id="optimize"><a href='../../PLNmodels/html/ZIPLNfit.html#method-ZIPLNfit-optimize'><code>ZIPLNfit$optimize()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="ZIPLNfit" data-id="optimize_vestep"><a href='../../PLNmodels/html/ZIPLNfit.html#method-ZIPLNfit-optimize_vestep'><code>ZIPLNfit$optimize_vestep()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="ZIPLNfit" data-id="predict"><a href='../../PLNmodels/html/ZIPLNfit.html#method-ZIPLNfit-predict'><code>ZIPLNfit$predict()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="ZIPLNfit" data-id="print"><a href='../../PLNmodels/html/ZIPLNfit.html#method-ZIPLNfit-print'><code>ZIPLNfit$print()</code></a></span></li>
@@ -70,6 +70,27 @@ plot(myPLN)
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{ZIPLNfit_sparse$new(data, control)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{data}}{a named list used internally to carry the data matrices}
+      \item{\code{control}}{a list for controlling the optimization. See details.}
+    }
+    \if{html}{\out{</div>}}
+  }
+}
+
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-ZIPLNfit_sparse-optimize"></a>}}
+\if{latex}{\out{\hypertarget{method-ZIPLNfit_sparse-optimize}{}}}
+\subsection{\code{ZIPLNfit_sparse$optimize()}}{
+  Call to the optimizer and update of the relevant fields.
+Reports non-convergence of the graphical Lasso on top of \code{\link{ZIPLNfit}}'s method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{ZIPLNfit_sparse$optimize(data, control)}
     \if{html}{\out{</div>}}
   }
   \subsection{Arguments}{

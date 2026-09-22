@@ -19,7 +19,6 @@
 #'
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
-#' @importFrom glassoFast glassoFast
 #' @seealso The functions [PLNnetwork()], [ZIPLNnetwork()] and the classes [`PLNnetworkfit`], [`ZIPLNfit_sparse`]
 Networkfamily <- R6Class(
   classname = "Networkfamily",
@@ -310,7 +309,6 @@ Networkfamily <- R6Class(
 #'
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
-#' @importFrom glassoFast glassoFast
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
@@ -477,7 +475,6 @@ PLNnetworkfamily <- R6Class(
 #'
 #' @include PLNfamily-class.R
 #' @importFrom R6 R6Class
-#' @importFrom glassoFast glassoFast
 #' @examples
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)

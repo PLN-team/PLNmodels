@@ -732,7 +732,9 @@ ZIPLNfit_sparse <- R6Class(
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   private = list(
     lambda = NA, # the sparsity tuning parameter
-    rho    = NA  # the p x p penalty weight
+    rho    = NA, # the p x p penalty weight
+    glasso_converged = TRUE, # did the last graphical Lasso call converge?
+    glasso_nonconv   = 0L    # number of non-converged graphical Lasso calls
   ),
 
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -740,7 +742,6 @@ ZIPLNfit_sparse <- R6Class(
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   public  = list(
     #' @description Initialize a [`ZIPLNfit_fixed`] model
-    #' @importFrom glassoFast glassoFast
     initialize = function(data, control) {
       super$initialize(data, control)
       ## Default for penalty weights (if not already set)
@@ -751,9 +752,25 @@ ZIPLNfit_sparse <- R6Class(
       private$rho    <- control$penalty_weights
       private$optimizer$Omega <-
         function(M, X, B, S2) {
-          glassoFast( crossprod(M - X %*% B)/self$n + diag(colMeans(S2), self$p, self$p),
-                      rho = private$lambda * private$rho )$wi
+          out <- graphical_lasso(crossprod(M - X %*% B)/self$n + diag(colMeans(S2), self$p, self$p),
+                                 rho = private$lambda * private$rho)
+          private$glasso_converged <- out$converged
+          if (!out$converged) private$glasso_nonconv <- private$glasso_nonconv + 1L
+          out$wi
         }
+    },
+
+    #' @description Call to the optimizer and update of the relevant fields.
+    #' Reports non-convergence of the graphical Lasso on top of [`ZIPLNfit`]'s method.
+    #' @param data a named list used internally to carry the data matrices
+    #' @param control a list for controlling the optimization. See details.
+    optimize = function(data, control) {
+      private$glasso_nonconv <- 0L
+      super$optimize(data, control)
+      private$monitoring$glasso_nonconverged <- private$glasso_nonconv
+      if (!private$glasso_converged)
+        warning("The graphical Lasso did not converge for penalty ", format(private$lambda),
+                ": the estimated network may be unreliable.", call. = FALSE)
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

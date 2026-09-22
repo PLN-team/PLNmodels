@@ -86,3 +86,10 @@ test_that("PLNnetwork fit accepts torch backend", {
   expect_equal(dim(myPLNfit$var_par$S), dim(Y))
   expect_equal(sum(myPLNfit$loglik_vec), myPLNfit$loglik, tolerance = 1e-4)
 })
+
+test_that("PLNnetwork fit: graphical Lasso convergence is monitored", {
+  models <- PLNnetwork(Abundance ~ 1, data = trichoptera,
+                       control = PLNnetwork_param(trace = 0, n_penalties = 5))
+  nonconv <- vapply(models$models, function(m) m$optim_par$glasso_nonconverged, integer(1))
+  expect_equal(nonconv, rep(0L, length(models$models)))
+})

@@ -75,7 +75,7 @@ where $\mathbf{B}$ is a $d\times p$ matrix of regression parameters.
 Regularization via sparsification of $\boldsymbol\Omega$ and visualization of the consecutive network is the main objective in PLN-network. To reach this goal, we need to first estimate the model parameters. Inference in PLN-network focuses on the regression parameters $\mathbf{B}$ and the inverse covariance $\boldsymbol\Omega$. Technically speaking, we adopt a variational strategy to approximate the $\ell_1$-penalized log-likelihood function and optimize the consecutive sparse variational surrogate with an optimization scheme that alternates between two step
 
 1. a gradient-ascent-step, performed with the CCSA algorithm of @Svan02 implemented in the C++ library [@nlopt], which we link to the package.
-2. a penalized log-likelihood step, performed with the graphical-Lasso of @FHT08, implemented in the package **fastglasso** [@glassofast].
+2. a penalized log-likelihood step, performed with the graphical-Lasso of @FHT08, with an internal C++ port of the GLASSOFAST implementation [@glassofast], also available to users as `graphical_lasso()`.
 
 More technical details can be found in @PLNnetwork
 

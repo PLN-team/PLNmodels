@@ -75,11 +75,13 @@ PLNnetworkfit <- R6Class(
                    config = inner_config)
       M_res_init <- private$M - nrm$X_sc %*% B_sc
       private$Sigma <- crossprod(M_res_init)/self$n + diag(colMeans(private$S2), self$p, self$p)
+      glasso_nonconv <- 0L
       while (!cond) {
         iter <- iter + 1
         if (config$trace > 1) cat("", iter)
         ## CALL TO GLASSO TO UPDATE Omega
-        glasso_out <- glassoFast::glassoFast(private$Sigma, rho = self$penalty * self$penalty_weights)
+        glasso_out <- graphical_lasso(private$Sigma, rho = self$penalty * self$penalty_weights)
+        if (!glasso_out$converged) glasso_nonconv <- glasso_nonconv + 1L
         if (anyNA(glasso_out$wi)) break
         private$Omega <- args$params$Omega <- Matrix::symmpart(glasso_out$wi)
 
@@ -106,6 +108,10 @@ PLNnetworkfit <- R6Class(
       private$monitoring$objective   <- objective[1:iter]
       private$monitoring$convergence <- convergence[1:iter]
       private$monitoring$iterations  <- iter
+      private$monitoring$glasso_nonconverged <- glasso_nonconv
+      if (!glasso_out$converged)
+        warning("The graphical Lasso did not converge for penalty ", format(self$penalty),
+                ": the estimated network may be unreliable.", call. = FALSE)
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -11,6 +11,22 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// cpp_graphical_lasso
+Rcpp::List cpp_graphical_lasso(const arma::mat& S, const arma::mat& rho, double thr, int maxit, Rcpp::Nullable<Rcpp::NumericMatrix> w_init, Rcpp::Nullable<Rcpp::NumericMatrix> wi_init);
+RcppExport SEXP _PLNmodels_cpp_graphical_lasso(SEXP SSEXP, SEXP rhoSEXP, SEXP thrSEXP, SEXP maxitSEXP, SEXP w_initSEXP, SEXP wi_initSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type rho(rhoSEXP);
+    Rcpp::traits::input_parameter< double >::type thr(thrSEXP);
+    Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::NumericMatrix> >::type w_init(w_initSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::NumericMatrix> >::type wi_init(wi_initSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_graphical_lasso(S, rho, thr, maxit, w_init, wi_init));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cpp_test_nlopt
 bool cpp_test_nlopt();
 RcppExport SEXP _PLNmodels_cpp_test_nlopt() {
@@ -543,6 +559,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_PLNmodels_cpp_graphical_lasso", (DL_FUNC) &_PLNmodels_cpp_graphical_lasso, 6},
     {"_PLNmodels_cpp_test_nlopt", (DL_FUNC) &_PLNmodels_cpp_test_nlopt, 0},
     {"_PLNmodels_nlopt_optimize_genetic_modeling", (DL_FUNC) &_PLNmodels_nlopt_optimize_genetic_modeling, 7},
     {"_PLNmodels_zipln_vloglik", (DL_FUNC) &_PLNmodels_zipln_vloglik, 9},
