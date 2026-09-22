@@ -11,7 +11,7 @@
   residual covariance produces), in compiled code that no R-level timeout could stop.
   The new solver always terminates (non-finite input and zero-variance coordinates
   are rejected, the inner coordinate descent is bounded), reports non-convergence
-  instead of hanging, and can be interrupted from R -- by the user or by
+  instead of hanging, and can be interrupted from R, by the user or by
   `setTimeLimit()`/`R.utils::withTimeout()`, which then raise their usual error.
 * On ordinary input, results are those of glassoFast up to machine precision:
   identical supports along penalty paths and relative differences below 1e-15 on
