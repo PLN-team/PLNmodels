@@ -26,16 +26,17 @@ Authors:
   \item Julien Chiquet \email{julien.chiquet@inrae.fr} (\href{https://orcid.org/0000-0002-3629-3429}{ORCID})
   \item Mahendra Mariadassou \email{mahendra.mariadassou@inrae.fr} (\href{https://orcid.org/0000-0003-2986-354X}{ORCID})
   \item Stéphane Robin \email{stephane.robin@inrae.fr}
-  \item François Gindraud \email{francois.gindraud@gmail.com}
 }
 
 Other contributors:
 \itemize{
+  \item François Gindraud \email{francois.gindraud@gmail.com} [contributor]
   \item Julie Aubert \email{julie.aubert@inrae.fr} [contributor]
   \item Bastien Batardière \email{bastien.batardiere@inrae.fr} [contributor]
   \item Giovanni Poggiato \email{giov.poggiato@gmail.com} [contributor]
   \item Cole Trapnell \email{coletrap@uw.edu} [contributor]
   \item Maddy Duran \email{duran@uw.edu} [contributor]
+  \item Ryan Friedman \email{ryanfriedman22@gmail.com} [contributor]
 }
 
 }
