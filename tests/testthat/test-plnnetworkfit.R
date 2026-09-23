@@ -160,4 +160,11 @@ test_that("igraph edges carry the strength of the partial correlation in their o
   expect_equal(unique(substr(igraph::E(G)$color, 8, 9)), "FF")
   G <- fit$plot_network(type = "support", output = "igraph", plot = FALSE)
   expect_equal(unique(nchar(igraph::E(G)$color)), 7L)
+
+  ## the S3 method forwards every argument by name, edge.alpha included
+  G <- plot(fit, output = "igraph", edge.alpha = 1, plot = FALSE)
+  expect_equal(unique(substr(igraph::E(G)$color, 8, 9)), "FF")
+  G <- plot(fit, output = "igraph", plot = FALSE)
+  expect_gt(length(unique(igraph::E(G)$color)), 1L)
+  expect_true(inherits(plot(fit, output = "corrplot", plot = FALSE), "Matrix"))
 })
