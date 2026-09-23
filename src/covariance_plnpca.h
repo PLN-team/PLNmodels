@@ -64,11 +64,18 @@ inline double rank_vestep_obj_grad(
 }
 
 // Per-observation log-likelihood, shared by the joint and VE-step variants.
+//
+// Note the use of -logfact(Y) where the full-covariance models use ki(Y), that
+// is, -logfact(Y) + p/2. Here the variational distribution is over the
+// q-dimensional scores W_i, not over Z_i, so its entropy constant is q/2 -- and
+// that constant is already carried by the "- 1." inside the KL sum below, which
+// is -KL(N(m_i, diag(s_i^2)) || N(0, I_q)) written out. Adding ki(Y)'s p/2 on
+// top of it inflated every rank model's ELBO by n * p / 2.
 inline arma::vec rank_final_loglik(
     const arma::mat & Y, const arma::mat & Z, const arma::mat & A,
     const arma::mat & M, const arma::mat & S2, const arma::mat & psi)
 {
-    return arma::sum(Y % Z - A, 1) - 0.5 * arma::sum(M % M + S2 - psi - 1., 1) + ki(Y);
+    return arma::sum(Y % Z - A, 1) - 0.5 * arma::sum(M % M + S2 - psi - 1., 1) - logfact(Y);
 }
 
 // Sigma/Omega derived from the converged (M, C, S2) — joint variant only

@@ -101,7 +101,9 @@ test_that("PLNPCA torch backend works for fit and project", {
   )
 
   Y <- as.matrix(trichoptera$Abundance)
-  expected_loglik_vec <- .5 * ncol(Y) - rowSums(PLNmodels:::.logfactorial(Y)) +
+  ## no p/2 term: the variational distribution is over the q-dimensional
+  ## scores, and the "- 1" in the KL sum already carries its q/2 constant
+  expected_loglik_vec <- - rowSums(PLNmodels:::.logfactorial(Y)) +
     rowSums(Y * torch_fit$latent - fitted(torch_fit)) -
     .5 * rowSums(torch_fit$var_par$M^2 + torch_fit$var_par$S2 - log(torch_fit$var_par$S2) - 1)
 
@@ -201,4 +203,40 @@ test_that("PLNPCA builtin (trust-region Newton) backend fits and reaches a bound
                          control = PLNPCA_param(backend = "builtin", trace = 0,
                                                 config_optim = list(cg_maxit = 5L, maxit_out = 50L)))
   expect_is(models_tuned, "PLNPCAfamily")
+})
+
+test_that("PLNPCA fit: the ELBO carries no spurious constant and is comparable to PLN's", {
+  ## Reported by Nguyen Quang Huy (Actuarial Science Laboratory, National
+  ## Economics University): PLN() and a full-rank PLNPCA() gave essentially the
+  ## same parameter estimates but log-likelihoods differing by n * p / 2, which
+  ## was a spurious p/2 constant per observation in the rank model's ELBO.
+  Y <- as.matrix(trichoptera$Abundance)
+  O <- matrix(0, nrow(Y), ncol(Y))
+  n <- nrow(Y); p <- ncol(Y)
+
+  ## the textbook ELBO of the rank-q model, written out independently here
+  manual_elbo <- function(fit) {
+    M <- fit$var_par$M; S2 <- fit$var_par$S2
+    C <- fit$model_par$C; B <- fit$model_par$B
+    Z <- O + X %*% B + M %*% t(C)
+    A <- exp(Z + 0.5 * S2 %*% t(C^2))
+    rowSums(Y * Z - A) - rowSums(PLNmodels:::.logfactorial(Y)) -
+      0.5 * rowSums(M^2 + S2 - log(S2) - 1)
+  }
+
+  ## must hold at every rank: a p/2 offset would be invisible in a single one
+  for (q in c(1, 3, 5)) {
+    fit <- getModel(models, q)
+    expect_equal(fit$loglik_vec, manual_elbo(fit), tolerance = 1e-6,
+                 check.attributes = FALSE)
+  }
+
+  ## at full rank the variational family over Z contains PLN's diagonal one
+  ## (C diag(S^2) C' is a full covariance), so the bound is at least as good --
+  ## but no longer higher by the n * p / 2 that used to be added
+  full <- getModel(PLNPCA(Abundance ~ 1, data = trichoptera, ranks = p,
+                          control = PLNPCA_param(trace = 0)), p)
+  myPLN <- PLN(Abundance ~ 1, data = trichoptera, control = PLN_param(trace = 0))
+  expect_gt(full$loglik, myPLN$loglik)
+  expect_lt(full$loglik, myPLN$loglik + n * p / 2)
 })
