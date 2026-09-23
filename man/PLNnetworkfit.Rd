@@ -39,7 +39,15 @@ The function \code{\link[=PLNnetwork]{PLNnetwork()}}, the class \code{\link{PLNn
 
     \item{\code{pen_loglik}}{variational lower bound of the l1-penalized loglikelihood}
 
-    \item{\code{EBIC}}{variational lower bound of the EBIC}
+    \item{\code{ebic_gamma}}{the tuning parameter gamma of the EBIC, between 0 and 1. Zero
+gives back the BIC; the default 0.5 is the value recommended by Foygel and
+Drton (2010). Assign to it to change the EBIC of this fit.}
+
+    \item{\code{EBIC}}{variational lower bound of the extended BIC of Foygel and Drton
+(2010), that is the BIC with the additional penalty 2 gamma |E| log(p) on the
+edge set. Their criterion was designed for the graphical Lasso; up to and
+including version 1.3.2, PLNmodels used instead the approximation
+gamma |E| log(p (p - 1) / (2 |E|)) of the original EBIC of Chen and Chen (2008).}
 
     \item{\code{density}}{proportion of non-null edges in the network}
 
@@ -144,6 +152,7 @@ The function \code{\link[=PLNnetwork]{PLNnetwork()}}, the class \code{\link{PLNn
   remove.isolated = FALSE,
   node.labels = NULL,
   layout = layout_in_circle,
+  edge.alpha = 0.2,
   plot = TRUE
 )}
     \if{html}{\out{</div>}}
@@ -157,6 +166,10 @@ The function \code{\link[=PLNnetwork]{PLNnetwork()}}, the class \code{\link{PLNn
       \item{\code{remove.isolated}}{if \code{TRUE}, isolated node are remove before plotting. Only relevant for igraph output.}
       \item{\code{node.labels}}{vector of character. The labels of the nodes. The default will use the column names ot the response matrix.}
       \item{\code{layout}}{an optional igraph layout. Only relevant for igraph output.}
+      \item{\code{edge.alpha}}{opacity of the weakest edge, the strongest one being fully
+opaque, so that the strength of an edge can be read off a dense network.
+Default is \code{0.2}. Set it to \code{1} for uniformly opaque edges. Only relevant
+for igraph output with \code{type = "partial_cor"}.}
       \item{\code{plot}}{logical. Should the final network be displayed or only sent back to the user. Default is \code{TRUE}.}
     }
     \if{html}{\out{</div>}}

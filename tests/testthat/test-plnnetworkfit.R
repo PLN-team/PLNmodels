@@ -93,3 +93,71 @@ test_that("PLNnetwork fit: graphical Lasso convergence is monitored", {
   nonconv <- vapply(models$models, function(m) m$optim_par$glasso_nonconverged, integer(1))
   expect_equal(nonconv, rep(0L, length(models$models)))
 })
+
+test_that("the EBIC is the one of Foygel and Drton, with a tunable gamma", {
+
+  models <- PLNnetwork(Abundance ~ 1, data = trichoptera)
+  fit    <- getBestModel(models, "BIC")
+  p <- fit$p; E <- fit$n_edges
+  expect_gt(E, 0)
+
+  ## BIC minus 2 gamma |E| log(p), the additional penalty on the edge set
+  expect_equal(fit$EBIC, fit$BIC - 2 * 0.5 * E * log(p))
+  expect_equal(fit$ebic_gamma, 0.5)
+
+  ## gamma = 0 gives back the BIC, gamma = 1 penalizes twice as much as the default
+  fit$ebic_gamma <- 0
+  expect_equal(fit$EBIC, fit$BIC)
+  fit$ebic_gamma <- 1
+  expect_equal(fit$EBIC, fit$BIC - 2 * E * log(p))
+  fit$ebic_gamma <- 0.5
+
+  expect_error(fit$ebic_gamma <- 2)
+  expect_error(fit$ebic_gamma <- -1)
+  expect_error(fit$ebic_gamma <- NA)
+
+  ## the collection shares a single gamma, and it drives the selection
+  expect_equal(models$ebic_gamma, 0.5)
+  models$ebic_gamma <- 0
+  expect_equal(models$criteria$EBIC, models$criteria$BIC)
+  expect_equal(getBestModel(models, "EBIC")$penalty, getBestModel(models, "BIC")$penalty)
+  models$ebic_gamma <- 0.5
+  ## a stronger gamma never selects a denser network than a weaker one
+  sparse_at <- function(g) {models$ebic_gamma <- g; getBestModel(models, "EBIC")$n_edges}
+  expect_true(all(diff(sapply(c(1, 0.5, 0), sparse_at)) >= 0))
+})
+
+test_that("the density is the proportion of edges among the possible ones", {
+
+  models <- PLNnetwork(Abundance ~ 1, data = trichoptera)
+
+  for (fit in models$models[c(1, 15, 30)]) {
+    expect_equal(fit$density, fit$n_edges / (fit$p * (fit$p - 1) / 2))
+    ## the diagonal is not a possible edge, and does not count in either term
+    expect_equal(fit$density, mean(fit$latent_network("support")[upper.tri(diag(fit$p))] != 0))
+  }
+  expect_lte(max(models$criteria$density), 1)
+})
+
+test_that("igraph edges carry the strength of the partial correlation in their opacity", {
+
+  fit <- getBestModel(PLNnetwork(Abundance ~ 1, data = trichoptera))
+  expect_gt(fit$n_edges, 2)
+
+  G <- fit$plot_network(output = "igraph", plot = FALSE)
+  alpha <- strtoi(substr(igraph::E(G)$color, 8, 9), base = 16L) / 255
+  weight <- abs(igraph::E(G)$weight)
+
+  ## opacity increases with the strength of the edge, the strongest being opaque
+  ## (only up to ties: the alpha channel is quantized to 8 bits)
+  expect_false(is.unsorted(alpha[order(weight)]))
+  expect_equal(max(alpha), 1, tolerance = 1e-2)
+  expect_gte(min(alpha), 0.2 - 1e-8)
+
+  ## it can be switched off, and the support has no strength to display
+  G <- fit$plot_network(output = "igraph", edge.alpha = 1, plot = FALSE)
+  expect_equal(unique(nchar(igraph::E(G)$color)), 9L)
+  expect_equal(unique(substr(igraph::E(G)$color, 8, 9)), "FF")
+  G <- fit$plot_network(type = "support", output = "igraph", plot = FALSE)
+  expect_equal(unique(nchar(igraph::E(G)$color)), 7L)
+})

@@ -93,7 +93,10 @@ importFrom(Matrix,Matrix)
 importFrom(R6,R6Class)
 importFrom(Rcpp,sourceCpp)
 importFrom(corrplot,corrplot)
-importFrom(grDevices,rgb)
+importFrom(grDevices,
+  adjustcolor,
+  rgb
+)
 importFrom(grid,
   nullGrob,
   textGrob

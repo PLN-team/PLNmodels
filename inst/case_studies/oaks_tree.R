@@ -92,28 +92,28 @@ factoextra::fviz_pca_biplot(
 
 ## Network inference with sparse covariance estimation - difficult because close to singular n ~ p
 system.time(myPLNnets <- PLNnetwork(Abundance ~ 1 + offset(log(Offset)), data = oaks, control = PLNnetwork_param(min_ratio = 0.05)))
+plot(myPLNnets)
+plot(getBestModel(myPLNnets, "EBIC"), output = "corrplot")
+plot(getBestModel(myPLNnets, "EBIC"), output = "igraph")
 
 RhpcBLASctl::blas_set_num_threads(1)
 options(mc.cores = 20)
 stability_selection(myPLNnets)
-plot(myPLNnets, "stability")
-plot(getBestModel(myPLNnets, "StARS", stability = .95))
+plot(myPLNnets, "stability", stability = 0.99)
+plot(getBestModel(myPLNnets, "StARS", stability = .99))
 
 
 RhpcBLASctl::blas_set_num_threads(20)
 system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLNnetwork_param(min_ratio = 0.1)))
+plot(myPLNnets)
 RhpcBLASctl::blas_set_num_threads(1)
 options(mc.cores = 20)
 stability_selection(myPLNnets)
-plot(getBestModel(myPLNnets, "StARS", stability = .95))
+plot(myPLNnets, "stability", stability = 0.99)
+plot(getBestModel(myPLNnets, "StARS", stability = .99))
 
-plot(myPLNnets)
-plot(getBestModel(myPLNnets, "EBIC"))
-
-options(mc.cores = 20)
-plot(getBestModel(myPLNnets, "StARS", stability = .975))
-
-system.time(myZIPLNnets <- ZIPLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), zi = "single", data = oaks, control = ZIPLNnetwork_param(min_ratio = 0.1)))
+RhpcBLASctl::blas_set_num_threads(20)
+system.time(myZIPLNnets <- ZIPLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), zi = "single", data = oaks, control = ZIPLNnetwork_param(penalize_diagonal = FALSE, penalty = "SCAD", min_ratio = 0.025)))
 plot(myZIPLNnets)
 plot(getBestModel(myZIPLNnets, "EBIC"))
 

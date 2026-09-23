@@ -27,6 +27,11 @@ The functions \code{\link[=PLNnetwork]{PLNnetwork()}}, \code{\link[=ZIPLNnetwork
 
     \item{\code{stability}}{mean edge stability along the penalty path}
 
+    \item{\code{ebic_gamma}}{the tuning parameter gamma of the EBIC, between 0 and 1, shared
+by every fit of the collection. Zero gives back the BIC; the default 0.5 is
+the value recommended by Foygel and Drton (2010). Assign to it to change the
+EBIC of the whole collection, and hence the model selected by \code{getBestModel("EBIC")}.}
+
     \item{\code{criteria}}{a data frame with the values of some criteria (variational log-likelihood, (E)BIC, ICL and R2, stability) for the collection of models / fits
 BIC, ICL and EBIC are defined so that they are on the same scale as the model log-likelihood, i.e. with the form, loglik - 0.5 penalty}
   }

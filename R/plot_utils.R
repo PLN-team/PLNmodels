@@ -142,7 +142,7 @@ plot_matrix = function(Mat, rowFG = "sample", colFG = "variable", clustering = N
   g
 }
 
-#' @importFrom grDevices rgb
+#' @importFrom grDevices rgb adjustcolor
 .plot_network = function(net            ,
                         type            ,
                         output          ,
@@ -150,6 +150,7 @@ plot_matrix = function(Mat, rowFG = "sample", colFG = "variable", clustering = N
                         remove.isolated = FALSE,
                         node.labels     = NULL,
                         layout          = layout_in_circle,
+                        edge.alpha      = 0.2,
                         plot = TRUE) {
 
   if (output == "igraph") {
@@ -166,12 +167,22 @@ plot_matrix = function(Mat, rowFG = "sample", colFG = "variable", clustering = N
     igraph::V(G)$label.cex <- V.deg / max(V.deg) + .5
     igraph::V(G)$size <- V.deg * 100
     igraph::V(G)$label.color <- rgb(0, 0, .2, .8)
-    ## Nice edges
-    igraph::E(G)$color <- ifelse(igraph::E(G)$weight > 0, edge.color[1], edge.color[2])
-    if (type == "support")
+    ## Nice edges: both the width and the opacity carry the strength of the edge,
+    ## so that a dense network does not collapse into an unreadable solid blob.
+    ## Weights are scaled by the largest one, so the scale is relative to the
+    ## network at hand rather than to the (model-dependent) range of the values.
+    E.col <- ifelse(igraph::E(G)$weight > 0, edge.color[1], edge.color[2])
+    if (type == "support") {
       igraph::E(G)$width <- abs(igraph::E(G)$weight)
-    else
-      igraph::E(G)$width <- 15*abs(igraph::E(G)$weight)
+      igraph::E(G)$color <- E.col
+    } else {
+      E.str <- abs(igraph::E(G)$weight)
+      E.str <- if (max(E.str) > 0) E.str / max(E.str) else rep(1, length(E.str))
+      igraph::E(G)$width <- 15 * abs(igraph::E(G)$weight)
+      igraph::E(G)$color <- mapply(adjustcolor, E.col,
+                                   alpha.f = edge.alpha + (1 - edge.alpha) * E.str,
+                                   USE.NAMES = FALSE)
+    }
 
     if (remove.isolated) {
       G <- delete.vertices(G, which(degree(G) == 0))

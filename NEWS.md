@@ -14,6 +14,23 @@
   numerical failures (`"degenerate"`, `"inner_failure"`, `"max_iter"`), not for a stalled solve, which says something about the problem (too weak a penalty for a nearly rank-deficient covariance) rather than about the solution.
 * Behaviour change in a degenerate case: when the covariance matrix has no off-diagonal mass, the (diagonal) precision matrix is now the correct `1 / (S_ii + rho_ii)`, where glassoFast returned `1 / max(rho_ii, 1.1e-16)`.
 
+## Model selection and display of networks
+
+* **The EBIC of `PLNnetworkfit` and `ZIPLNfit_sparse` is now the one of Foygel and
+  Drton (2010)**, `BIC - 2 gamma |E| log(p)`, which was designed for the graphical
+  Lasso, instead of the Stirling approximation of Chen and Chen (2008)'s original
+  criterion that was used so far. The tuning parameter is exposed as `$ebic_gamma`
+  (default `0.5`, `0` gives back the BIC), on a single fit or on a whole collection.
+  EBIC values change, and so may the model selected by `getBestModel("EBIC")`.
+* The `$density` of a network is now `|E| / (p (p - 1) / 2)`: it divided the edge
+  count by `p^2` rather than by the number of possible edges, and was thus
+  understated by a factor `(p - 1) / p`.
+* In the `igraph` output of `plot()` on a network fit, the opacity of an edge is now
+  proportional to the strength of its partial correlation, as its width already was.
+  Dense networks are no longer a solid blob of colour. The opacity of the weakest
+  edge is the new `edge.alpha` argument (default `0.2`, set it to `1` to restore
+  uniformly opaque edges).
+
 ## Bug fixes
 
 * **`PLNPCA()`'s variational bound carried a spurious `p / 2` per observation**, the

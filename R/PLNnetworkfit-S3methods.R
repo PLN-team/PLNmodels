@@ -18,6 +18,10 @@ isPLNnetworkfit <- function(Robject) {inherits(Robject, "PLNnetworkfit")}
 #' @param node.labels vector of character. The labels of the nodes. The default will use the column names ot the response matrix.
 #' @param remove.isolated if `TRUE`, isolated node are remove before plotting. Only relevant for igraph output.
 #' @param layout an optional igraph layout. Only relevant for igraph output.
+#' @param edge.alpha opacity of the weakest edge, the strongest one being fully
+#' opaque, so that the strength of an edge can be read off a dense network.
+#' Default is `0.2`. Set it to `1` for uniformly opaque edges. Only relevant for
+#' igraph output with `type = "partial_cor"`.
 #' @param plot logical. Should the final network be displayed or only sent back to the user. Default is `TRUE`.
 #' @param ... Not used (S3 compatibility).
 #'
@@ -39,8 +43,11 @@ plot.PLNnetworkfit <-
            remove.isolated = FALSE,
            node.labels     = NULL,
            layout          = layout_in_circle,
+           edge.alpha      = 0.2,
            plot            = TRUE, ...) {
-    invisible(x$plot_network(type, output, edge.color, remove.isolated, node.labels, layout, plot))
+    invisible(x$plot_network(type = type, output = output, edge.color = edge.color,
+                             remove.isolated = remove.isolated, node.labels = node.labels,
+                             layout = layout, edge.alpha = edge.alpha, plot = plot))
   }
 
 #' @describeIn standard_error Component-wise standard errors of B in [`PLNnetworkfit`] (not implemented yet)
