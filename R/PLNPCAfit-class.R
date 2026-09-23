@@ -75,10 +75,13 @@ PLNPCAfit <- R6Class(
         C2 <- torch_square(params$C)
         Z  <- data$O + torch_mm(params$M, torch_t(params$C)) + torch_mm(data$X, params$B)
         A  <- torch_exp(Z + 0.5 * torch_mm(S2, torch_t(C2)))
+        ## no p/2 constant here, unlike the full-covariance models: the
+        ## variational distribution is over the q-dimensional scores, and its
+        ## q/2 entropy constant is already carried by the "- 1" in the KL sum
         Ji <- - torch_sum(.logfactorial_torch(data$Y), dim = 2) +
               torch_sum(data$Y * Z - A, dim = 2) -
               0.5 * torch_sum(torch_square(params$M) + S2 - params$psi - 1, dim = 2)
-        Ji <- .5 * self$p + as.numeric(Ji$cpu())
+        Ji <- as.numeric(Ji$cpu())
         Ji
       },
 
@@ -211,7 +214,7 @@ PLNPCAfit <- R6Class(
         Sigma_r <- params_r$C %*% inner_q %*% t(params_r$C)
         Omega_r <- params_r$C %*% solve(inner_q) %*% t(params_r$C)
 
-        Ji_r <- .5 * self$p - rowSums(.logfactorial(as.matrix(data_r$Y))) +
+        Ji_r <- - rowSums(.logfactorial(as.matrix(data_r$Y))) +
                 rowSums(data_r$Y * Z_r - A_r) -
                 0.5 * rowSums(params_r$M^2 + S2_r - params_r$psi - 1)
 
