@@ -60,6 +60,7 @@
 <span>  remove.isolated <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  node.labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  layout <span class="op">=</span> <span class="va">layout_in_circle</span>,</span>
+<span>  edge.alpha <span class="op">=</span> <span class="fl">0.2</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -95,6 +96,13 @@
 
 <dt id="arg-layout">layout<a class="anchor" aria-label="anchor" href="#arg-layout"></a></dt>
 <dd><p>an optional igraph layout. Only relevant for igraph output.</p></dd>
+
+
+<dt id="arg-edge-alpha">edge.alpha<a class="anchor" aria-label="anchor" href="#arg-edge-alpha"></a></dt>
+<dd><p>opacity of the weakest edge, the strongest one being fully
+opaque, so that the strength of an edge can be read off a dense network.
+Default is <code>0.2</code>. Set it to <code>1</code> for uniformly opaque edges. Only relevant for
+igraph output with <code>type = "partial_cor"</code>.</p></dd>
 
 
 <dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>

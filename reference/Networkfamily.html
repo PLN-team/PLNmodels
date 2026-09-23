@@ -87,6 +87,13 @@ See the documentation for <code><a href="getBestModel.html">getBestModel()</a></
 <dd><p>mean edge stability along the penalty path</p></dd>
 
 
+    <dt><code>ebic_gamma</code></dt>
+<dd><p>the tuning parameter gamma of the EBIC, between 0 and 1, shared
+by every fit of the collection. Zero gives back the BIC; the default 0.5 is
+the value recommended by Foygel and Drton (2010). Assign to it to change the
+EBIC of the whole collection, and hence the model selected by <code>getBestModel("EBIC")</code>.</p></dd>
+
+
     <dt><code>criteria</code></dt>
 <dd><p>a data frame with the values of some criteria (variational log-likelihood, (E)BIC, ICL and R2, stability) for the collection of models / fits
 BIC, ICL and EBIC are defined so that they are on the same scale as the model log-likelihood, i.e. with the form, loglik - 0.5 penalty</p></dd>

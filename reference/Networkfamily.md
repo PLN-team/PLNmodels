@@ -47,6 +47,14 @@ and the classes
 
   mean edge stability along the penalty path
 
+- `ebic_gamma`:
+
+  the tuning parameter gamma of the EBIC, between 0 and 1, shared by
+  every fit of the collection. Zero gives back the BIC; the default 0.5
+  is the value recommended by Foygel and Drton (2010). Assign to it to
+  change the EBIC of the whole collection, and hence the model selected
+  by `getBestModel("EBIC")`.
+
 - `criteria`:
 
   a data frame with the values of some criteria (variational

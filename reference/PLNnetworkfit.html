@@ -90,8 +90,18 @@ See the documentation for <code><a href="plot.PLNnetworkfit.html">plot()</a></co
 <dd><p>variational lower bound of the l1-penalized loglikelihood</p></dd>
 
 
+    <dt><code>ebic_gamma</code></dt>
+<dd><p>the tuning parameter gamma of the EBIC, between 0 and 1. Zero
+gives back the BIC; the default 0.5 is the value recommended by Foygel and
+Drton (2010). Assign to it to change the EBIC of this fit.</p></dd>
+
+
     <dt><code>EBIC</code></dt>
-<dd><p>variational lower bound of the EBIC</p></dd>
+<dd><p>variational lower bound of the extended BIC of Foygel and Drton
+(2010), that is the BIC with the additional penalty 2 gamma |E| log(p) on the
+edge set. Their criterion was designed for the graphical Lasso; up to and
+including version 1.3.2, PLNmodels used instead the approximation
+gamma |E| log(p (p - 1) / (2 |E|)) of the original EBIC of Chen and Chen (2008).</p></dd>
 
 
     <dt><code>density</code></dt>
@@ -189,6 +199,7 @@ See the documentation for <code><a href="plot.PLNnetworkfit.html">plot()</a></co
 <span>  remove.isolated <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  node.labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  layout <span class="op">=</span> <span class="va">layout_in_circle</span>,</span>
+<span>  edge.alpha <span class="op">=</span> <span class="fl">0.2</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
@@ -210,6 +221,12 @@ See the documentation for <code><a href="plot.PLNnetworkfit.html">plot()</a></co
 
       <dt><code>layout</code></dt>
 <dd><p>an optional igraph layout. Only relevant for igraph output.</p></dd>
+
+      <dt><code>edge.alpha</code></dt>
+<dd><p>opacity of the weakest edge, the strongest one being fully
+opaque, so that the strength of an edge can be read off a dense network.
+Default is <code>0.2</code>. Set it to <code>1</code> for uniformly opaque edges. Only relevant
+for igraph output with <code>type = "partial_cor"</code>.</p></dd>
 
       <dt><code>plot</code></dt>
 <dd><p>logical. Should the final network be displayed or only sent back to the user. Default is <code>TRUE</code>.</p></dd>

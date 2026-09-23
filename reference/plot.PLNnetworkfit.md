@@ -17,6 +17,7 @@ plot(
   remove.isolated = FALSE,
   node.labels = NULL,
   layout = layout_in_circle,
+  edge.alpha = 0.2,
   plot = TRUE,
   ...
 )
@@ -58,6 +59,13 @@ plot(
 - layout:
 
   an optional igraph layout. Only relevant for igraph output.
+
+- edge.alpha:
+
+  opacity of the weakest edge, the strongest one being fully opaque, so
+  that the strength of an edge can be read off a dense network. Default
+  is `0.2`. Set it to `1` for uniformly opaque edges. Only relevant for
+  igraph output with `type = "partial_cor"`.
 
 - plot:
 

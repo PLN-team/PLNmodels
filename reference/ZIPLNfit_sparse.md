@@ -35,9 +35,17 @@ with sparse inverse residual covariance
 
   variational lower bound of the l1-penalized loglikelihood
 
+- `ebic_gamma`:
+
+  the tuning parameter gamma of the EBIC, between 0 and 1. Zero gives
+  back the BIC; the default 0.5 is the value recommended by Foygel and
+  Drton (2010). Assign to it to change the EBIC of this fit.
+
 - `EBIC`:
 
-  variational lower bound of the EBIC
+  variational lower bound of the EBIC of Foygel and Drton (2010), that
+  is the BIC with the additional penalty 2 gamma \|E\| log(p) on the
+  edge set
 
 - `density`:
 
@@ -152,6 +160,7 @@ plot the latent network.
       remove.isolated = FALSE,
       node.labels = NULL,
       layout = layout_in_circle,
+      edge.alpha = 0.2,
       plot = TRUE
     )
 
@@ -186,6 +195,13 @@ plot the latent network.
 - `layout`:
 
   an optional igraph layout. Only relevant for igraph output.
+
+- `edge.alpha`:
+
+  opacity of the weakest edge, the strongest one being fully opaque, so
+  that the strength of an edge can be read off a dense network. Default
+  is `0.2`. Set it to `1` for uniformly opaque edges. Only relevant for
+  igraph output with `type = "partial_cor"`.
 
 - `plot`:
 
