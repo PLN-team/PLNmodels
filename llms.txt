@@ -250,8 +250,8 @@ table(cluster = myMixture$memberships, zone = barents$zone)
 ``` R
        zone
 cluster North South
-      1    11     0
-      2     1    17
+      1     1    17
+      2    11     0
       3    21     6
       4    11    22
 ```
