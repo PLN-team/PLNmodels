@@ -62,7 +62,7 @@ library(PLNmodels)
 ```
 
 ``` R
-This is package 'PLNmodels' version 1.3.0-9010
+This is package 'PLNmodels' version 1.3.2
 ```
 
 ``` r
@@ -94,8 +94,8 @@ myPLN
 ``` R
 A multivariate Poisson Lognormal fit with full covariance model.
 ==================================================================
- nb_param    loglik       BIC       AIC       ICL
-      555 -4412.385 -5657.981 -4967.385 -8194.015
+ nb_param    loglik       BIC       AIC      ICL
+      555 -4412.201 -5657.797 -4967.201 -8203.81
 ==================================================================
 * Useful fields
     $model_par, $latent, $latent_pos, $var_par, $optim_par
@@ -251,9 +251,9 @@ table(cluster = myMixture$memberships, zone = barents$zone)
        zone
 cluster North South
       1    11     0
-      2    11    22
-      3     1    17
-      4    21     6
+      2     1    17
+      3    21     6
+      4    11    22
 ```
 
 ## References

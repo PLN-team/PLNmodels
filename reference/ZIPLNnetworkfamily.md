@@ -44,7 +44,6 @@ the class
 Inherited methods
 
 - [`PLNfamily$getModel()`](https://pln-team.github.io/PLNmodels/reference/PLNfamily.html#method-getModel)
-- [`PLNfamily$postTreatment()`](https://pln-team.github.io/PLNmodels/reference/PLNfamily.html#method-postTreatment)
 - [`PLNfamily$print()`](https://pln-team.github.io/PLNmodels/reference/PLNfamily.html#method-print)
 - [`Networkfamily$coefficient_path()`](https://pln-team.github.io/PLNmodels/reference/Networkfamily.html#method-coefficient_path)
 - [`Networkfamily$getBestModel()`](https://pln-team.github.io/PLNmodels/reference/Networkfamily.html#method-getBestModel)
@@ -52,6 +51,7 @@ Inherited methods
 - [`Networkfamily$plot()`](https://pln-team.github.io/PLNmodels/reference/Networkfamily.html#method-plot)
 - [`Networkfamily$plot_objective()`](https://pln-team.github.io/PLNmodels/reference/Networkfamily.html#method-plot_objective)
 - [`Networkfamily$plot_stars()`](https://pln-team.github.io/PLNmodels/reference/Networkfamily.html#method-plot_stars)
+- [`Networkfamily$postTreatment()`](https://pln-team.github.io/PLNmodels/reference/Networkfamily.html#method-postTreatment)
 - [`Networkfamily$show()`](https://pln-team.github.io/PLNmodels/reference/Networkfamily.html#method-show)
 
 ------------------------------------------------------------------------

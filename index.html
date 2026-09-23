@@ -108,7 +108,7 @@
 <p>We illustrate the main models on the <code>barents</code> data set (<a href="#ref-fossheim2006">Fossheim et al. 2006</a>): the abundance of 30 fish species observed in 89 sites in the Barents sea, along with depth, temperature and geographic coordinates for each site.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pln-team.github.io/PLNmodels/">PLNmodels</a></span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>This is package <span class="st">'PLNmodels'</span> version <span class="dv">1</span>.<span class="fl">3.0</span><span class="dv">-9010</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>This is package <span class="st">'PLNmodels'</span> version <span class="dv">1</span>.<span class="fl">3.2</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">barents</span><span class="op">)</span></span>
 <span><span class="co">## a simple North/South split of the sites, used below to illustrate PLNLDA</span></span>
@@ -126,8 +126,8 @@
 <code class="sourceCode R"><span><span class="va">myPLN</span></span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>A multivariate Poisson Lognormal fit with full covariance model.</span>
 <span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="sc">==</span><span class="er">================================================================</span></span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a> nb_param    loglik       BIC       AIC       ICL</span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>      <span class="dv">555</span> <span class="sc">-</span><span class="fl">4412.385</span> <span class="sc">-</span><span class="fl">5657.981</span> <span class="sc">-</span><span class="fl">4967.385</span> <span class="sc">-</span><span class="fl">8194.015</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a> nb_param    loglik       BIC       AIC      ICL</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>      <span class="dv">555</span> <span class="sc">-</span><span class="fl">4412.201</span> <span class="sc">-</span><span class="fl">5657.797</span> <span class="sc">-</span><span class="fl">4967.201</span> <span class="sc">-</span><span class="fl">8203.81</span></span>
 <span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="sc">==</span><span class="er">================================================================</span></span>
 <span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="er">*</span> Useful fields</span>
 <span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>    <span class="sc">$</span>model_par, <span class="sc">$</span>latent, <span class="sc">$</span>latent_pos, <span class="sc">$</span>var_par, <span class="sc">$</span>optim_par</span>
@@ -241,9 +241,9 @@
 <div class="sourceCode" id="cb23"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a>       zone</span>
 <span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>cluster North South</span>
 <span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>      <span class="dv">1</span>    <span class="dv">11</span>     <span class="dv">0</span></span>
-<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a>      <span class="dv">2</span>    <span class="dv">11</span>    <span class="dv">22</span></span>
-<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a>      <span class="dv">3</span>     <span class="dv">1</span>    <span class="dv">17</span></span>
-<span id="cb23-6"><a href="#cb23-6" tabindex="-1"></a>      <span class="dv">4</span>    <span class="dv">21</span>     <span class="dv">6</span></span></code></pre></div>
+<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a>      <span class="dv">2</span>     <span class="dv">1</span>    <span class="dv">17</span></span>
+<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a>      <span class="dv">3</span>    <span class="dv">21</span>     <span class="dv">6</span></span>
+<span id="cb23-6"><a href="#cb23-6" tabindex="-1"></a>      <span class="dv">4</span>    <span class="dv">11</span>    <span class="dv">22</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -313,7 +313,6 @@ Tous, Jeanne, Julien Chiquet, Amy E. Deacon, Ada Fontrodona-Eslava, Douglas F. F
 <li>Julien Chiquet <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-3629-3429" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
 <li>Mahendra Mariadassou <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-2986-354X" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
 <li>Stéphane Robin <br><small class="roles"> Author </small>   </li>
-<li>François Gindraud <br><small class="roles"> Author </small>   </li>
 <li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
@@ -334,7 +333,7 @@ Tous, Jeanne, Julien Chiquet, Amy E. Deacon, Ada Fontrodona-Eslava, Douglas F. F
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Julien Chiquet, Mahendra Mariadassou, Stéphane Robin, François Gindraud.</p>
+  <p>Developed by Julien Chiquet, Mahendra Mariadassou, Stéphane Robin.</p>
 </div>
 
 <div class="pkgdown-footer-right">

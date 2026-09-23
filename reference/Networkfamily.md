@@ -63,6 +63,8 @@ and the classes
 
 - [`Networkfamily$optimize()`](#method-Networkfamily-optimize)
 
+- [`Networkfamily$postTreatment()`](#method-Networkfamily-postTreatment)
+
 - [`Networkfamily$coefficient_path()`](#method-Networkfamily-coefficient_path)
 
 - [`Networkfamily$getBestModel()`](#method-Networkfamily-getBestModel)
@@ -80,7 +82,6 @@ and the classes
 Inherited methods
 
 - [`PLNfamily$getModel()`](https://pln-team.github.io/PLNmodels/reference/PLNfamily.html#method-getModel)
-- [`PLNfamily$postTreatment()`](https://pln-team.github.io/PLNmodels/reference/PLNfamily.html#method-postTreatment)
 - [`PLNfamily$print()`](https://pln-team.github.io/PLNmodels/reference/PLNfamily.html#method-print)
 
 ------------------------------------------------------------------------
@@ -131,6 +132,28 @@ Call to the C++ optimizer on all models of the collection
 - `config`:
 
   a list for controlling the optimization.
+
+------------------------------------------------------------------------
+
+### `Networkfamily$postTreatment()`
+
+Update fields after optimization
+
+#### Usage
+
+    Networkfamily$postTreatment(config_post, config_optim)
+
+#### Arguments
+
+- `config_post`:
+
+  a list for controlling the post-treatments (optional bootstrap,
+  jackknife, R2, etc.).
+
+- `config_optim`:
+
+  a list for controlling the optimization parameters used during
+  post_treatments
 
 ------------------------------------------------------------------------
 

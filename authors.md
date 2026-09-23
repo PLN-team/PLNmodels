@@ -10,7 +10,7 @@
 
 - **Stéphane Robin**. Author.
 
-- **François Gindraud**. Author.
+- **François Gindraud**. Contributor.
 
 - **Julie Aubert**. Contributor.
 
@@ -21,6 +21,8 @@
 - **Cole Trapnell**. Contributor.
 
 - **Maddy Duran**. Contributor.
+
+- **Ryan Friedman**. Contributor.
 
 ## Citation
 

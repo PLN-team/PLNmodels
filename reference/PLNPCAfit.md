@@ -684,7 +684,7 @@ print(myPCA)
 #> Poisson Lognormal with rank constrained for PCA (rank = 3)
 #> ==================================================================
 #>  nb_param   loglik      BIC      AIC      ICL
-#>        65 -640.319 -766.803 -705.319 -825.455
+#>        65 -640.365 -766.849 -705.365 -825.034
 #> ==================================================================
 #> * Useful fields
 #>     $model_par, $latent, $latent_pos, $var_par, $optim_par
