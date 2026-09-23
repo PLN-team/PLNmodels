@@ -733,7 +733,7 @@ ZIPLNfit_sparse <- R6Class(
   private = list(
     lambda = NA, # the sparsity tuning parameter
     rho    = NA, # the p x p penalty weight
-    glasso_converged = TRUE, # did the last graphical Lasso call converge?
+    glasso_status    = "converged", # how the last graphical Lasso call ended
     glasso_nonconv   = 0L    # number of non-converged graphical Lasso calls
   ),
 
@@ -754,7 +754,7 @@ ZIPLNfit_sparse <- R6Class(
         function(M, X, B, S2) {
           out <- graphical_lasso(crossprod(M - X %*% B)/self$n + diag(colMeans(S2), self$p, self$p),
                                  rho = private$lambda * private$rho)
-          private$glasso_converged <- out$converged
+          private$glasso_status <- out$status
           if (!out$converged) private$glasso_nonconv <- private$glasso_nonconv + 1L
           out$wi
         }
@@ -768,8 +768,10 @@ ZIPLNfit_sparse <- R6Class(
       private$glasso_nonconv <- 0L
       super$optimize(data, control)
       private$monitoring$glasso_nonconverged <- private$glasso_nonconv
-      if (!private$glasso_converged)
-        warning("The graphical Lasso did not converge for penalty ", format(private$lambda),
+      ## see PLNnetworkfit$optimize(): a stalled solve is benign, the others are not
+      if (private$glasso_status %in% c("degenerate", "inner_failure", "max_iter"))
+        warning("The graphical Lasso failed to converge (", private$glasso_status,
+                ") for penalty ", format(private$lambda),
                 ": the estimated network may be unreliable.", call. = FALSE)
     },
 

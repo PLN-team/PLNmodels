@@ -10,7 +10,9 @@ graphical_lasso(
   thr = 1e-04,
   maxit = 10000L,
   w_init = NULL,
-  wi_init = NULL
+  wi_init = NULL,
+  trace = FALSE,
+  stall_patience = 1000L
 )
 }
 \arguments{
@@ -31,6 +33,13 @@ solve, typically at a nearby penalty along a regularization path. Both must
 be given, with the dimensions of \code{S}, to be used. Note that a warm start
 stops closer to the starting point than a cold one at the same \code{thr}, so it
 does not reproduce a cold solve exactly.}
+
+\item{trace}{if \code{TRUE}, also return the per-sweep convergence criterion, to
+diagnose a solve that does not converge. Default is \code{FALSE}.}
+
+\item{stall_patience}{number of consecutive sweeps without progress after
+which the algorithm concludes that it is cycling and stops (see Details).
+\code{Inf} disables the detection. Default is \code{1000}.}
 }
 \value{
 a list with components
@@ -38,7 +47,13 @@ a list with components
 \item \code{w}: the estimated covariance matrix,
 \item \code{wi}: the estimated precision matrix (symmetric),
 \item \code{niter}: the number of outer sweeps performed,
-\item \code{converged}: \code{TRUE} if the algorithm converged.
+\item \code{converged}: \code{TRUE} if the convergence criterion was met,
+\item \code{status}: how the solve ended, one of \code{"converged"}, \code{"stalled"},
+\code{"max_iter"}, \code{"inner_failure"} or \code{"degenerate"} (see Details),
+\item \code{delta}: the best value reached by the convergence criterion, relative to
+the threshold it had to cross. \code{delta <= 1} means convergence; a stalled
+solve typically sits between 1 and 3, that is, just short of it,
+\item \code{dw_trace}: the per-sweep criterion when \code{trace = TRUE}.
 }
 }
 \description{
@@ -63,8 +78,32 @@ covariance matrix;
 \item it can be interrupted from R;
 \item when \code{S} has no off-diagonal mass, the (diagonal) solution
 \eqn{1 / (S_{ii} + \rho_{ii})} is returned, where \pkg{glassoFast}
-returns \eqn{1 / \max(\rho_{ii}, \epsilon)}.
+returns \eqn{1 / \max(\rho_{ii}, \epsilon)};
+\item it detects when it is cycling rather than converging, and stops.
 }
+
+That last point matters on an ill-conditioned \code{S} -- typically a
+rank-deficient covariance, as arises when the number of variables approaches
+the number of samples. The sweeps then settle into a small limit cycle: the
+convergence criterion stops decreasing and oscillates just above its
+threshold forever, while the solution itself no longer moves. \pkg{glassoFast}
+spends its whole sweep budget on these and reports success regardless; here
+the cycle is detected after \code{stall_patience} sweeps without progress, the
+solve stops, and \code{status} reports \code{"stalled"}.
+
+Stopping early costs nothing, because sweeping on does not buy accuracy: the
+iterates wander inside the cycle rather than settle. On a \code{oaks}-derived
+covariance the solve stops after ~1100 sweeps instead of 10000, and both that
+answer and the 10000-sweep one sit within 1e-3 of a 50000-sweep grind, with
+the same number of edges and a couple of borderline ones differing --
+the amplitude of the cycle, which no budget removes. The useful consequence
+of \code{"stalled"} is thus not a warning about the solution, but the information
+that the problem is in that regime: usually too weak a penalty for a
+covariance that is (nearly) rank-deficient.
+
+The remaining statuses are \code{"max_iter"} (\code{maxit} reached while still
+progressing), \code{"inner_failure"} and \code{"degenerate"} (numerical trouble, the
+result may contain \code{NA}).
 }
 \examples{
 data(trichoptera)

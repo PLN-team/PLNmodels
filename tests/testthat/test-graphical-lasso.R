@@ -99,11 +99,75 @@ test_that("degenerate input is reported rather than hung on or silently accepted
   res <- graphical_lasso(matrix(c(1, NA, NA, 1), 2), 0.1)
   expect_true(all(is.na(res$wi)))
   expect_false(res$converged)
+  expect_equal(res$status, "degenerate")
 
   ## a zero-variance coordinate is what would divide by zero inside the sweep
   res0 <- graphical_lasso(matrix(c(0, 0, 0, 1), 2), matrix(0, 2, 2))
   expect_true(all(is.na(res0$wi)))
   expect_false(res0$converged)
+  expect_equal(res0$status, "degenerate")
+})
+
+###############################################################################
+## Stagnation: on an ill-conditioned covariance the sweeps settle into a small
+## limit cycle, so the stopping criterion is never met while the solution no
+## longer moves. The solver detects this instead of spending its whole budget.
+###############################################################################
+
+test_that("converging problems are left alone by the stagnation detection", {
+  ## the detector must never fire where the criterion is reachable: the result
+  ## has to be exactly what it is with the detection switched off
+  set.seed(311)
+  for (n in c(10, 25)) {
+    S <- rand_S(n)
+    for (pen in c(0.3, 0.05, 0.005)) {
+      rho <- pen * off_diag_weights(n)
+      g <- graphical_lasso(S, rho)
+      h <- graphical_lasso(S, rho, stall_patience = Inf)
+      expect_equal(g$status, "converged")
+      expect_true(g$converged)
+      expect_lte(g$delta, 1)          # delta <= 1 is exactly the criterion
+      expect_identical(g$wi, h$wi)
+      expect_identical(g$niter, h$niter)
+    }
+  }
+})
+
+test_that("a cycling solve is detected, reported, and lands where grinding on would", {
+  skip_on_cran()
+  ## 80 most abundant oak species: dense enough, at a low penalty, for the
+  ## sweeps to start cycling -- glassoFast burns all 10000 of them here
+  data(oaks)
+  Y <- as.matrix(oaks$Abundance)
+  S <- cov(log1p(Y[, order(-colMeans(Y))[1:80]])) + diag(1e-3, 80)
+  rho <- max(abs(S[upper.tri(S)])) * 1e-3
+
+  stalled <- graphical_lasso(S, rho)
+  expect_equal(stalled$status, "stalled")
+  expect_false(stalled$converged)
+  expect_lt(stalled$niter, 5000)  # stopped well short of maxit
+  expect_gt(stalled$delta, 1)     # the criterion was not met, by definition
+  expect_lt(stalled$delta, 10)    # but it came close: this is a cycle, not a failure
+  expect_false(anyNA(stalled$wi))
+
+  ## Grinding on does not buy accuracy: the iterates wander inside the cycle,
+  ## so a much longer run is another point of it, not a better answer. What is
+  ## pinned here is the amplitude -- same number of edges, values within the
+  ## cycle -- not entry-by-entry agreement, which the cycle does not provide
+  ## (a couple of borderline edges flip whichever sweep one stops at).
+  ground <- graphical_lasso(S, rho, maxit = 10000, stall_patience = Inf)
+  expect_equal(length(support(stalled$wi)), length(support(ground$wi)))
+  expect_equal(stalled$wi, ground$wi, tolerance = 1e-2)
+  expect_lt(max(abs(stalled$wi - ground$wi)) / max(abs(ground$wi)), 1e-2)
+})
+
+test_that("the per-sweep criterion can be traced", {
+  set.seed(312)
+  S <- rand_S(12)
+  g <- graphical_lasso(S, 0.05 * off_diag_weights(12), trace = TRUE)
+  expect_length(g$dw_trace, g$niter)
+  expect_true(all(is.finite(g$dw_trace)))
+  expect_length(graphical_lasso(S, 0.05 * off_diag_weights(12))$dw_trace, 0)
 })
 
 test_that("a nearly collapsed covariance terminates without hanging or corrupting output", {

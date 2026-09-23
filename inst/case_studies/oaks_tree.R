@@ -90,11 +90,27 @@ factoextra::fviz_pca_biplot(
   title = "Biplot after correction (10 most contributing species, samples colored by distance to ground)") +
   labs(col = "distance (cm)") + scale_color_viridis_c()
 
-## Network inference with sparce covariance estimation
-system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLNnetwork_param(min_ratio = 0.02)))
+## Network inference with sparse covariance estimation - difficult because close to singular n ~ p
+system.time(myPLNnets <- PLNnetwork(Abundance ~ 1 + offset(log(Offset)), data = oaks, control = PLNnetwork_param(min_ratio = 0.05)))
+
+RhpcBLASctl::blas_set_num_threads(1)
+options(mc.cores = 20)
+stability_selection(myPLNnets)
+plot(myPLNnets, "stability")
+plot(getBestModel(myPLNnets, "StARS", stability = .95))
+
+
+RhpcBLASctl::blas_set_num_threads(20)
+system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLNnetwork_param(min_ratio = 0.1)))
+RhpcBLASctl::blas_set_num_threads(1)
+options(mc.cores = 20)
+stability_selection(myPLNnets)
+plot(getBestModel(myPLNnets, "StARS", stability = .95))
+
 plot(myPLNnets)
 plot(getBestModel(myPLNnets, "EBIC"))
-stability_selection(myPLNnets)
+
+options(mc.cores = 20)
 plot(getBestModel(myPLNnets, "StARS", stability = .975))
 
 system.time(myZIPLNnets <- ZIPLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), zi = "single", data = oaks, control = ZIPLNnetwork_param(min_ratio = 0.1)))

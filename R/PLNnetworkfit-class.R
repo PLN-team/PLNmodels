@@ -75,7 +75,7 @@ PLNnetworkfit <- R6Class(
                    config = inner_config)
       M_res_init <- private$M - nrm$X_sc %*% B_sc
       private$Sigma <- crossprod(M_res_init)/self$n + diag(colMeans(private$S2), self$p, self$p)
-      glasso_nonconv <- 0L
+      glasso_nonconv <- 0L; glasso_stalled <- 0L
       while (!cond) {
         iter <- iter + 1
         if (config$trace > 1) cat("", iter)
@@ -83,6 +83,7 @@ PLNnetworkfit <- R6Class(
         glasso_out <- graphical_lasso(private$Sigma, rho = self$penalty * self$penalty_weights)
         if (!glasso_out$converged) glasso_nonconv <- glasso_nonconv + 1L
         if (anyNA(glasso_out$wi)) break
+        if (glasso_out$status == "stalled") glasso_stalled <- glasso_stalled + 1L
         private$Omega <- args$params$Omega <- Matrix::symmpart(glasso_out$wi)
 
         ## CALL TO NLOPT OPTIMIZATION TO UPDATE OTHER PARAMETERS
@@ -109,8 +110,14 @@ PLNnetworkfit <- R6Class(
       private$monitoring$convergence <- convergence[1:iter]
       private$monitoring$iterations  <- iter
       private$monitoring$glasso_nonconverged <- glasso_nonconv
-      if (!glasso_out$converged)
-        warning("The graphical Lasso did not converge for penalty ", format(self$penalty),
+      private$monitoring$glasso_stalled      <- glasso_stalled
+      ## A stalled solve is not worth a warning: the stopping rule could not be
+      ## met (the sweeps settle into a small limit cycle on an ill-conditioned
+      ## covariance) but the solution itself has stopped moving. The other two
+      ## failures are numerical, and do deserve one.
+      if (glasso_out$status %in% c("degenerate", "inner_failure", "max_iter"))
+        warning("The graphical Lasso failed to converge (", glasso_out$status,
+                ") for penalty ", format(self$penalty),
                 ": the estimated network may be unreliable.", call. = FALSE)
     },
 

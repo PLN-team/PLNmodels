@@ -48,7 +48,7 @@ authors as a contributor).
   R-release, R-oldrel).
 * R-hub containers, given the amount of new C++ code in this release:
   `gcc-asan` (ASAN + UBSAN), `clang-asan`, `clang-ubsan` and `atlas`, all OK.
-* win-builder (R-devel, R-release, R-oldrel): pending.
+* win-builder (R-devel, R-release, R-oldrel): all OK with no NOTE.
 
 ## R CMD check results
 

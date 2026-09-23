@@ -63,6 +63,29 @@ constexpr double kEps = 1.1e-16;
 // weak penalties genuinely take thousands of passes.
 constexpr int kMaxInner = 500000;
 
+// Stagnation detection on the outer loop.
+//
+// On an ill-conditioned problem -- typically a rank-deficient residual
+// covariance, as PLNnetwork produces when the number of species approaches the
+// number of samples -- the sweeps settle into a small limit cycle: `dw` stops
+// decreasing and oscillates just above `shr` forever, so `dw <= shr` is never
+// met. Sweeping on does not help: the iterates wander inside the cycle instead
+// of settling, so stopping at ~1100 sweeps and stopping at 50000 give answers
+// the same distance apart (~1e-3 relative on oaks, a couple of borderline
+// edges out of ~2900) as either is from the other. glassoFast burns its whole
+// budget on these and reports success regardless; we detect the cycle, stop,
+// and say so -- the useful output being the diagnosis, not a better solution.
+//
+// A sweep counts as progress when it improves the best dw seen so far by
+// kStallRel; kStallPatience sweeps without progress mean the cycle. The
+// patience is set from a census of 246 problems (Gaussian and count data,
+// p from 10 to 120, along full penalty paths): problems that do converge never
+// went more than 373 sweeps without improving their best dw, while stalled
+// ones went 4000+. Anything in between separates them; the value below keeps a
+// wide margin on the side that matters -- cutting a converging problem short.
+constexpr double kStallRel = 1e-3;
+constexpr int    kStallPatience = 1000;
+
 // Interrupt checks are throttled on the work done (in flops, roughly) rather
 // than on loop counts, so that how fast a solve can be stopped does not depend
 // on the dimension: a single sweep takes seconds at p = 400, microseconds at
@@ -84,11 +107,30 @@ inline void check_interrupt() {
   Rcpp::unwindProtect(check_interrupt_callback, nullptr);
 }
 
+// How a solve ended. The two ways of not converging are worth telling apart,
+// because they mean different things (see the stagnation note above kStall*):
+// `inner_failure` and `degenerate` are numerical trouble, `stalled` is a
+// well-behaved solution the stopping rule simply cannot certify.
+enum class Status { converged, stalled, max_iter, inner_failure, degenerate };
+
+inline const char * status_name(Status s) {
+  switch (s) {
+    case Status::converged:     return "converged";
+    case Status::stalled:       return "stalled";
+    case Status::max_iter:      return "max_iter";
+    case Status::inner_failure: return "inner_failure";
+    default:                    return "degenerate";
+  }
+}
+
 struct Result {
   arma::mat W;            // covariance estimate (glassoFast's `w`)
   arma::mat X;            // precision estimate  (glassoFast's `wi`)
   int niter = 0;          // outer sweeps performed
-  bool converged = true;  // false if a sweep cap was hit or the descent diverged
+  bool converged = true;  // strictly: the dw <= shr criterion was met
+  Status status = Status::converged;
+  double delta = 0.0;     // best dw reached, relative to the threshold shr
+  std::vector<double> dw_trace; // per-sweep dw, recorded only when asked for
 };
 
 // Previous (W, X) used to warm-start a solve. It is only used when it has the
@@ -112,7 +154,8 @@ struct State {
 // cold start. Mirrors glassoFast's defaults (thr = 1e-4, max_iter = 10000).
 inline Result solve(const arma::mat& S, const arma::mat& L,
                     double thr = 1e-4, int max_iter = 10000,
-                    const State* warm = nullptr) {
+                    const State* warm = nullptr, bool trace = false,
+                    int stall_patience = kStallPatience) {
   const arma::uword n = S.n_rows;
 
   Result out;
@@ -124,6 +167,7 @@ inline Result solve(const arma::mat& S, const arma::mat& L,
     out.W.fill(arma::datum::nan);
     out.X.fill(arma::datum::nan);
     out.converged = false;
+    out.status = Status::degenerate;
     return out;
   }
 
@@ -136,6 +180,7 @@ inline Result solve(const arma::mat& S, const arma::mat& L,
     out.W.fill(arma::datum::nan);
     out.X.fill(arma::datum::nan);
     out.converged = false;
+    out.status = Status::degenerate;
     return out;
   }
 
@@ -185,6 +230,9 @@ inline Result solve(const arma::mat& S, const arma::mat& L,
   arma::vec WXj(n);
   int iter = 0;
   bool outer_converged = false;
+  bool stalled = false;
+  double dw_best = arma::datum::inf; // best sweep-to-sweep change so far
+  int since_improve = 0;             // sweeps since dw_best last improved
   const double pass_work = static_cast<double>(n) * static_cast<double>(n);
   double work = 0.0; // since the last interrupt check
 
@@ -194,8 +242,9 @@ inline Result solve(const arma::mat& S, const arma::mat& L,
   const double* const PLN_RESTRICT Wd_p = Wd.memptr();
   double* const PLN_RESTRICT WXj_p = WXj.memptr();
 
+  double dw = 0.0; // kept past the loop so the final value can be reported
   for (iter = 1; iter <= max_iter; ++iter) {
-    double dw = 0.0;
+    dw = 0.0;
 
     for (arma::uword j = 0; j < n; ++j) {
       double* const PLN_RESTRICT Xj = X.colptr(j);
@@ -234,7 +283,11 @@ inline Result solve(const arma::mat& S, const arma::mat& L,
         work += pass_work; // an upper bound: n coordinates, O(n) per update
         if (work >= kInterruptWork) { check_interrupt(); work = 0.0; }
         if (dlx < thr_lasso) break;
-        if (!std::isfinite(dlx) || ++inner >= kMaxInner) { out.converged = false; break; }
+        if (!std::isfinite(dlx) || ++inner >= kMaxInner) {
+          out.converged = false;
+          out.status = Status::inner_failure;
+          break;
+        }
       }
 
       WXj_p[j] = Wd_p[j];
@@ -246,11 +299,20 @@ inline Result solve(const arma::mat& S, const arma::mat& L,
       for (arma::uword k = 0; k < n; ++k) W.colptr(k)[j] = WXj_p[k]; // W(j, :)
     }
 
+    if (trace) out.dw_trace.push_back(dw);
     if (dw <= shr) { outer_converged = true; break; }
+
+    if (dw < dw_best * (1.0 - kStallRel)) { dw_best = dw; since_improve = 0; }
+    else if (++since_improve >= stall_patience) { stalled = true; break; }
   }
 
   out.niter = std::min(iter, max_iter);
   if (!outer_converged) out.converged = false;
+  out.delta = std::min(dw_best, dw) / shr;
+  // an inner-loop failure is the more serious diagnosis and keeps precedence
+  if (out.status != Status::inner_failure)
+    out.status = outer_converged ? Status::converged
+               : (stalled ? Status::stalled : Status::max_iter);
 
   // Back out the precision matrix from the regression coefficients. X(i,i) is
   // still 0 here, so it drops out of the dot product on its own.
