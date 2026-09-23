@@ -72,7 +72,7 @@ geographic coordinates for each site.
 library(PLNmodels)
 ```
 
-    This is package 'PLNmodels' version 1.3.0-9010
+    This is package 'PLNmodels' version 1.3.2
 
 ``` r
 data(barents)
@@ -86,7 +86,6 @@ barents$zone <- factor(ifelse(barents$Latitude > median(barents$Latitude), "Nort
 myPLN <- PLN(Abundance ~ Depth + Temperature + offset(log(Offset)), data = barents)
 ```
 
-
      Initialization...
      Adjusting a full covariance PLN model with nlopt optimizer
      Post-treatments...
@@ -98,8 +97,8 @@ myPLN
 
     A multivariate Poisson Lognormal fit with full covariance model.
     ==================================================================
-     nb_param    loglik       BIC       AIC       ICL
-          555 -4412.385 -5657.981 -4967.385 -8194.015
+     nb_param    loglik       BIC       AIC      ICL
+          555 -4412.201 -5657.797 -4967.201 -8203.81
     ==================================================================
     * Useful fields
         $model_par, $latent, $latent_pos, $var_par, $optim_par
@@ -120,7 +119,6 @@ corrplot::corrplot(cov2cor(sigma(myPLN)), order = "AOE", type = "upper", tl.cex 
 myLDA <- PLNLDA(Abundance ~ offset(log(Offset)), grouping = zone, data = barents)
 ```
 
-
      Performing discriminant Analysis...
      DONE!
 
@@ -135,7 +133,6 @@ plot(myLDA)
 ``` r
 myPCAs <- PLNPCA(Abundance ~ Depth + Temperature + offset(log(Offset)), data = barents, ranks = 1:5)
 ```
-
 
      Initialization...
 
@@ -163,7 +160,6 @@ factoextra::fviz_pca_biplot(
 ``` r
 myNets <- PLNnetwork(Abundance ~ Depth + Temperature + offset(log(Offset)), data = barents)
 ```
-
 
      Initialization...
      Adjusting 30 PLN with sparse inverse covariance estimation
@@ -214,7 +210,6 @@ my_mixtures <- PLNmixture(Abundance ~ offset(log(Offset)), data = barents, clust
                            control = PLNmixture_param(smoothing = "none"))
 ```
 
-
      Initialization...
 
      Adjusting 4 PLN mixture models.
@@ -239,9 +234,9 @@ table(cluster = myMixture$memberships, zone = barents$zone)
            zone
     cluster North South
           1    11     0
-          2    11    22
-          3     1    17
-          4    21     6
+          2     1    17
+          3    21     6
+          4    11    22
 
 ## References
 

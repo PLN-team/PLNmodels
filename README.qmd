@@ -3,7 +3,7 @@ title: "PLNmodels: Poisson lognormal models for multivariate count data"
 format:
   gfm:
     default-image-extension: ""
-bibliography: vignettes/article/PLNreferences.bib
+bibliography: vignettes/bib/PLNreferences.bib
 link-citations: true
 ---
 

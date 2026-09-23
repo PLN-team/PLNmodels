@@ -37,6 +37,7 @@ BIC, ICL and EBIC are defined so that they are on the same scale as the model lo
   \itemize{
     \item \href{#method-Networkfamily-initialize}{\code{Networkfamily$new()}}
     \item \href{#method-Networkfamily-optimize}{\code{Networkfamily$optimize()}}
+    \item \href{#method-Networkfamily-postTreatment}{\code{Networkfamily$postTreatment()}}
     \item \href{#method-Networkfamily-coefficient_path}{\code{Networkfamily$coefficient_path()}}
     \item \href{#method-Networkfamily-getBestModel}{\code{Networkfamily$getBestModel()}}
     \item \href{#method-Networkfamily-plot}{\code{Networkfamily$plot()}}
@@ -49,7 +50,6 @@ BIC, ICL and EBIC are defined so that they are on the same scale as the model lo
 \if{html}{\out{<details open><summary>Inherited methods</summary>
 <ul>
   <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="getModel"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-getModel'><code>PLNfamily$getModel()</code></a></span></li>
-  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-postTreatment'><code>PLNfamily$postTreatment()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="print"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-print'><code>PLNfamily$print()</code></a></span></li>
 </ul>
 </details>}}
@@ -92,6 +92,26 @@ BIC, ICL and EBIC are defined so that they are on the same scale as the model lo
     \describe{
       \item{\code{data}}{a named list used internally to carry the data matrices}
       \item{\code{config}}{a list for controlling the optimization.}
+    }
+    \if{html}{\out{</div>}}
+  }
+}
+
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Networkfamily-postTreatment"></a>}}
+\if{latex}{\out{\hypertarget{method-Networkfamily-postTreatment}{}}}
+\subsection{\code{Networkfamily$postTreatment()}}{
+  Update fields after optimization
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Networkfamily$postTreatment(config_post, config_optim)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{config_post}}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.).}
+      \item{\code{config_optim}}{a list for controlling the optimization parameters used during post_treatments}
     }
     \if{html}{\out{</div>}}
   }

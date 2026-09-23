@@ -40,7 +40,6 @@ The function \code{\link[=ZIPLNnetwork]{ZIPLNnetwork()}}, the class \code{\link{
 \if{html}{\out{<details><summary>Inherited methods</summary>
 <ul>
   <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="getModel"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-getModel'><code>PLNfamily$getModel()</code></a></span></li>
-  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="postTreatment"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-postTreatment'><code>PLNfamily$postTreatment()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="PLNfamily" data-id="print"><a href='../../PLNmodels/html/PLNfamily.html#method-PLNfamily-print'><code>PLNfamily$print()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="coefficient_path"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-coefficient_path'><code>Networkfamily$coefficient_path()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="getBestModel"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-getBestModel'><code>Networkfamily$getBestModel()</code></a></span></li>
@@ -48,6 +47,7 @@ The function \code{\link[=ZIPLNnetwork]{ZIPLNnetwork()}}, the class \code{\link{
   <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="plot"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-plot'><code>Networkfamily$plot()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="plot_objective"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-plot_objective'><code>Networkfamily$plot_objective()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="plot_stars"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-plot_stars'><code>Networkfamily$plot_stars()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="postTreatment"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-postTreatment'><code>Networkfamily$postTreatment()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="PLNmodels" data-topic="Networkfamily" data-id="show"><a href='../../PLNmodels/html/Networkfamily.html#method-Networkfamily-show'><code>Networkfamily$show()</code></a></span></li>
 </ul>
 </details>}}
