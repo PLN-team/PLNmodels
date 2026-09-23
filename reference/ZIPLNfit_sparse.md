@@ -54,6 +54,8 @@ with sparse inverse residual covariance
 
 - [`ZIPLNfit_sparse$new()`](#method-ZIPLNfit_sparse-initialize)
 
+- [`ZIPLNfit_sparse$optimize()`](#method-ZIPLNfit_sparse-optimize)
+
 - [`ZIPLNfit_sparse$latent_network()`](#method-ZIPLNfit_sparse-latent_network)
 
 - [`ZIPLNfit_sparse$plot_network()`](#method-ZIPLNfit_sparse-plot_network)
@@ -62,7 +64,6 @@ with sparse inverse residual covariance
 
 Inherited methods
 
-- [`ZIPLNfit$optimize()`](https://pln-team.github.io/PLNmodels/reference/ZIPLNfit.html#method-optimize)
 - [`ZIPLNfit$optimize_vestep()`](https://pln-team.github.io/PLNmodels/reference/ZIPLNfit.html#method-optimize_vestep)
 - [`ZIPLNfit$predict()`](https://pln-team.github.io/PLNmodels/reference/ZIPLNfit.html#method-predict)
 - [`ZIPLNfit$print()`](https://pln-team.github.io/PLNmodels/reference/ZIPLNfit.html#method-print)
@@ -80,6 +81,29 @@ model
 #### Usage
 
     ZIPLNfit_sparse$new(data, control)
+
+#### Arguments
+
+- `data`:
+
+  a named list used internally to carry the data matrices
+
+- `control`:
+
+  a list for controlling the optimization. See details.
+
+------------------------------------------------------------------------
+
+### `ZIPLNfit_sparse$optimize()`
+
+Call to the optimizer and update of the relevant fields. Reports
+non-convergence of the graphical Lasso on top of
+[`ZIPLNfit`](https://pln-team.github.io/PLNmodels/reference/ZIPLNfit.md)'s
+method.
+
+#### Usage
+
+    ZIPLNfit_sparse$optimize(data, control)
 
 #### Arguments
 

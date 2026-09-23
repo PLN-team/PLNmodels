@@ -131,11 +131,13 @@ becomes a **graphical lasso**:
 \tfrac{n}{2}\log\det\boldsymbol\Omega-\tfrac{n}{2}\mathrm{tr}(\widehat{\boldsymbol\Sigma}\boldsymbol\Omega)-\lambda\lVert\boldsymbol\Omega\rVert_{1},
 ```
 
-solved efficiently with `glassoFast` along the penalty path $`\lambda`$.
-Successive penalties are warm-started, and the inception model is only
-*partially* converged (`maxit_ve = 1`, `inception_niter = 5`) so that
-the latent means do not over-fit the unpenalised optimum before the
-sparse grid begins.
+solved along the penalty path $`\lambda`$ with the package’s own
+graphical Lasso
+([`graphical_lasso()`](https://pln-team.github.io/PLNmodels/reference/graphical_lasso.md),
+a C++ port of GLASSOFAST that always terminates). Successive penalties
+are warm-started, and the inception model is only *partially* converged
+(`maxit_ve = 1`, `inception_niter = 5`) so that the latent means do not
+over-fit the unpenalised optimum before the sparse grid begins.
 
 ### 3.3 ZIPLN — joint Newton on $`(\mathbf M,\boldsymbol\psi,\mathbf R)`$
 

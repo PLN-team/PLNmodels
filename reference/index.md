@@ -320,6 +320,9 @@ and methods for their manipulation.
 - [`extract_probs()`](https://pln-team.github.io/PLNmodels/reference/extract_probs.md)
   : Extract edge selection frequency in bootstrap subsamples
 
+- [`graphical_lasso()`](https://pln-team.github.io/PLNmodels/reference/graphical_lasso.md)
+  : Graphical Lasso
+
 ## Other functions and objects
 
 - [`prepare_data()`](https://pln-team.github.io/PLNmodels/reference/prepare_data.md)

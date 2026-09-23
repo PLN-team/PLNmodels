@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">PLNmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -203,7 +203,7 @@ H=\begin{pmatrix} A_{ij}+\omega_{jj} &amp; \tfrac12 A_{ij}S^2_{ij}\\[2pt]
 \widehat{\boldsymbol\Omega}=\arg\max_{\boldsymbol\Omega\succ0}\
 \tfrac{n}{2}\log\det\boldsymbol\Omega-\tfrac{n}{2}\mathrm{tr}(\widehat{\boldsymbol\Sigma}\boldsymbol\Omega)-\lambda\lVert\boldsymbol\Omega\rVert_{1},
 </annotation></semantics></math></p>
-<p>solved efficiently with <code>glassoFast</code> along the penalty path <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>. Successive penalties are warm-started, and the inception model is only <em>partially</em> converged (<code>maxit_ve = 1</code>, <code>inception_niter = 5</code>) so that the latent means do not over-fit the unpenalised optimum before the sparse grid begins.</p>
+<p>solved along the penalty path <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math> with the package’s own graphical Lasso (<code><a href="../reference/graphical_lasso.html">graphical_lasso()</a></code>, a C++ port of GLASSOFAST that always terminates). Successive penalties are warm-started, and the inception model is only <em>partially</em> converged (<code>maxit_ve = 1</code>, <code>inception_niter = 5</code>) so that the latent means do not over-fit the unpenalised optimum before the sparse grid begins.</p>
 </section><section class="level2" data-number="3.3"><h3 data-number="3.3" id="sec-zi">
 <span class="header-section-number">3.3</span> ZIPLN — joint Newton on <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi mathvariant="bold-italic">𝑴</mi><mo>,</mo><mi mathvariant="bold-italic">𝝍</mi><mo>,</mo><mi mathvariant="bold-italic">𝑹</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(\mathbf M,\boldsymbol\psi,\mathbf R)</annotation></semantics></math><a class="anchor" aria-label="anchor" href="#sec-zi"></a>
 </h3>
