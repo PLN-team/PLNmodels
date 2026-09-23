@@ -1,24 +1,5 @@
 # PLNmodels 1.3.2
 
-## Fixed: a spurious constant in PLNPCA's variational bound
-
-* **`PLNPCA()`'s log-likelihood was overestimated by `n * p / 2`** (`n` observations,
-  `p` responses). The variational distribution of a rank-`q` model is over the
-  `q`-dimensional scores, so its entropy constant is `q / 2` -- which the bound
-  already carried through its Kullback-Leibler term. The extra `p / 2` per
-  observation, shared with the full-covariance models where it *is* the right
-  constant, was added on top.
-* Consequently `loglik`, `BIC` and `ICL` of every `PLNPCAfit` decrease by
-  `n * p / 2`. **Rank selection is unchanged**: the spurious term does not depend on
-  the rank, so it shifted every model of a collection by the same amount. What was
-  wrong is the comparison of a `PLNPCA()` fit with anything else -- a `PLN()` fit, a
-  model from another package, or a published figure. A full-rank `PLNPCA()` and a
-  `PLN()` fit of the same data are now directly comparable (the former is expected to
-  remain slightly above, its variational family over the latent being the richer one).
-* Reported by Nguyen Quang Huy (Actuarial Science Laboratory, College of Technology,
-  National Economics University, Vietnam), with a reproducible example, now part of
-  the test suite.
-
 ## Internal graphical Lasso, replacing glassoFast
 
 * `PLNnetwork()` and `ZIPLNnetwork()` now use an internal graphical Lasso, a C++ port of the GLASSOFAST algorithm (Sustik and Calderhead, 2012) shared with the
@@ -37,10 +18,22 @@
   off-diagonal mass, the (diagonal) precision matrix is now the correct
   `1 / (S_ii + rho_ii)`, where glassoFast returned `1 / max(rho_ii, 1.1e-16)`.
 
-## Other fix
+## Bug fixes
 
-* `PLNnetwork()`, `ZIPLNnetwork()` and their `stability_selection()` no longer crash outright when the graphical Lasso fails to converge for a model along the
-  penalty path (e.g. too small a penalty): `PLNfamily$postTreatment()` now catches the error, truncates the family to the models fitted so far and warns, instead of  the whole call failing with no result; `stability_selection()` treats a model with no estimated network as fully unstable (an all-zero support) rather than erroring. This is a second line of defense on top of the internal graphical Lasso above, which already makes this failure much less likely to occur in the first place (thanks @rfriedman22, #176).
+* **`PLNPCA()`'s variational bound carried a spurious `p / 2` per observation**, the
+  entropy constant of the full-covariance models: a rank-`q` model's variational
+  distribution is over the `q`-dimensional scores, and its `q / 2` constant was
+  already in the Kullback-Leibler term. `loglik`, `BIC` and `ICL` of every
+  `PLNPCAfit` therefore decrease by `n * p / 2`. Rank selection is unchanged (the
+  term does not depend on the rank), but a `PLNPCA()` fit is now comparable with a
+  `PLN()` one, or with any other model. Reported by Nguyen Quang Huy (Actuarial
+  Science Laboratory, National Economics University, Vietnam).
+
+* **`PLNnetwork()` and `ZIPLNnetwork()` no longer fail outright when one model along
+  the penalty path cannot be fitted**: the collection is truncated with a warning
+  instead, and `stability_selection()` treats a model with no estimated network as
+  fully unstable. A second line of defense on top of the solver above (thanks
+  @rfriedman22, #176).
 
 # PLNmodels 1.3.1
 
