@@ -49,6 +49,25 @@
   correct `1 / (S_ii + rho_ii)`, where glassoFast returned
   `1 / max(rho_ii, 1.1e-16)`.
 
+### Other fix
+
+- [`PLNnetwork()`](https://pln-team.github.io/PLNmodels/reference/PLNnetwork.md),
+  [`ZIPLNnetwork()`](https://pln-team.github.io/PLNmodels/reference/ZIPLNnetwork.md)
+  and their
+  [`stability_selection()`](https://pln-team.github.io/PLNmodels/reference/stability_selection.md)
+  no longer crash outright when the graphical Lasso fails to converge
+  for a model along the penalty path (e.g. too small a penalty):
+  `PLNfamily$postTreatment()` now catches the error, truncates the
+  family to the models fitted so far and warns, instead of the whole
+  call failing with no result;
+  [`stability_selection()`](https://pln-team.github.io/PLNmodels/reference/stability_selection.md)
+  treats a model with no estimated network as fully unstable (an
+  all-zero support) rather than erroring. This is a second line of
+  defense on top of the internal graphical Lasso above, which already
+  makes this failure much less likely to occur in the first place
+  (thanks [@rfriedman22](https://github.com/rfriedman22),
+  [\#176](https://github.com/pln-team/PLNmodels/issues/176)).
+
 ## PLNmodels 1.3.1
 
 CRAN release: 2026-08-29
