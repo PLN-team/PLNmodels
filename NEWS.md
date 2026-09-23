@@ -33,6 +33,18 @@
   off-diagonal mass, the (diagonal) precision matrix is now the correct
   `1 / (S_ii + rho_ii)`, where glassoFast returned `1 / max(rho_ii, 1.1e-16)`.
 
+## Other fix
+
+* `PLNnetwork()`, `ZIPLNnetwork()` and their `stability_selection()` no longer crash
+  outright when the graphical Lasso fails to converge for a model along the
+  penalty path (e.g. too small a penalty): `PLNfamily$postTreatment()` now catches
+  the error, truncates the family to the models fitted so far and warns, instead of
+  the whole call failing with no result; `stability_selection()` treats a model with
+  no estimated network as fully unstable (an all-zero support) rather than erroring.
+  This is a second line of defense on top of the internal graphical Lasso above,
+  which already makes this failure much less likely to occur in the first place
+  (thanks @rfriedman22, #176).
+
 # PLNmodels 1.3.1
 
 ## Bug fix
