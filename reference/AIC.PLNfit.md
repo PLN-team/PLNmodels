@@ -41,5 +41,5 @@ model <- PLN(Abundance ~ 1, data = trichoptera)
 #>  Post-treatments...
 #>  DONE!
 AIC(model)
-#> [1] -1299.637
+#> [1] -1299.624
 ```
