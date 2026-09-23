@@ -17,7 +17,9 @@ graphical_lasso(
   thr = 1e-04,
   maxit = 10000L,
   w_init = NULL,
-  wi_init = NULL
+  wi_init = NULL,
+  trace = FALSE,
+  stall_patience = 1000L
 )
 ```
 
@@ -51,6 +53,17 @@ graphical_lasso(
   closer to the starting point than a cold one at the same `thr`, so it
   does not reproduce a cold solve exactly.
 
+- trace:
+
+  if `TRUE`, also return the per-sweep convergence criterion, to
+  diagnose a solve that does not converge. Default is `FALSE`.
+
+- stall_patience:
+
+  number of consecutive sweeps without progress after which the
+  algorithm concludes that it is cycling and stops (see Details). `Inf`
+  disables the detection. Default is `1000`.
+
 ## Value
 
 a list with components
@@ -61,7 +74,17 @@ a list with components
 
 - `niter`: the number of outer sweeps performed,
 
-- `converged`: `TRUE` if the algorithm converged.
+- `converged`: `TRUE` if the convergence criterion was met,
+
+- `status`: how the solve ended, one of `"converged"`, `"stalled"`,
+  `"max_iter"`, `"inner_failure"` or `"degenerate"` (see Details),
+
+- `delta`: the best value reached by the convergence criterion, relative
+  to the threshold it had to cross. `delta <= 1` means convergence; a
+  stalled solve typically sits between 1 and 3, that is, just short of
+  it,
+
+- `dw_trace`: the per-sweep criterion when `trace = TRUE`.
 
 ## Details
 
@@ -84,7 +107,34 @@ it on degenerate input only:
 
 - when `S` has no off-diagonal mass, the (diagonal) solution \\1 /
   (S\_{ii} + \rho\_{ii})\\ is returned, where glassoFast returns \\1 /
-  \max(\rho\_{ii}, \epsilon)\\.
+  \max(\rho\_{ii}, \epsilon)\\;
+
+- it detects when it is cycling rather than converging, and stops.
+
+That last point matters on an ill-conditioned `S` – typically a
+rank-deficient covariance, as arises when the number of variables
+approaches the number of samples. The sweeps then settle into a small
+limit cycle: the convergence criterion stops decreasing and oscillates
+just above its threshold forever, while the solution itself no longer
+moves. glassoFast spends its whole sweep budget on these and reports
+success regardless; here the cycle is detected after `stall_patience`
+sweeps without progress, the solve stops, and `status` reports
+`"stalled"`.
+
+Stopping early costs nothing, because sweeping on does not buy accuracy:
+the iterates wander inside the cycle rather than settle. On a
+`oaks`-derived covariance the solve stops after ~1100 sweeps instead of
+10000, and both that answer and the 10000-sweep one sit within 1e-3 of a
+50000-sweep grind, with the same number of edges and a couple of
+borderline ones differing – the amplitude of the cycle, which no budget
+removes. The useful consequence of `"stalled"` is thus not a warning
+about the solution, but the information that the problem is in that
+regime: usually too weak a penalty for a covariance that is (nearly)
+rank-deficient.
+
+The remaining statuses are `"max_iter"` (`maxit` reached while still
+progressing), `"inner_failure"` and `"degenerate"` (numerical trouble,
+the result may contain `NA`).
 
 ## References
 

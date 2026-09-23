@@ -379,15 +379,16 @@ the collection</p>
 <code class="sourceCode R"><span><span class="va">network_models</span><span class="op">$</span><span class="va">convergence</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="6%">
-<col width="9%">
-<col width="9%">
-<col width="7%">
+<col width="5%">
 <col width="8%">
+<col width="8%">
+<col width="6%">
+<col width="7%">
+<col width="9%">
 <col width="10%">
-<col width="11%">
+<col width="12%">
+<col width="18%">
 <col width="13%">
-<col width="21%">
 </colgroup>
 <thead><tr class="header">
 <th align="left"></th>
@@ -399,6 +400,7 @@ the collection</p>
 <th align="left">iterations</th>
 <th align="left">convergence</th>
 <th align="left">glasso_nonconverged</th>
+<th align="left">glasso_stalled</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -411,6 +413,7 @@ the collection</p>
 <td align="left">20</td>
 <td align="left">2.382757e-05</td>
 <td align="left">0</td>
+<td align="left">0</td>
 </tr>
 <tr class="even">
 <td align="left">elt</td>
@@ -421,6 +424,7 @@ the collection</p>
 <td align="left">1233.931</td>
 <td align="left">15</td>
 <td align="left">8.428628e-06</td>
+<td align="left">0</td>
 <td align="left">0</td>
 </tr>
 <tr class="odd">
@@ -433,6 +437,7 @@ the collection</p>
 <td align="left">16</td>
 <td align="left">9.377476e-06</td>
 <td align="left">0</td>
+<td align="left">0</td>
 </tr>
 <tr class="even">
 <td align="left">elt.2</td>
@@ -443,6 +448,7 @@ the collection</p>
 <td align="left">1220.836</td>
 <td align="left">16</td>
 <td align="left">9.633539e-06</td>
+<td align="left">0</td>
 <td align="left">0</td>
 </tr>
 <tr class="odd">
@@ -455,6 +461,7 @@ the collection</p>
 <td align="left">16</td>
 <td align="left">9.636082e-06</td>
 <td align="left">0</td>
+<td align="left">0</td>
 </tr>
 <tr class="even">
 <td align="left">elt.4</td>
@@ -465,6 +472,7 @@ the collection</p>
 <td align="left">1208.743</td>
 <td align="left">16</td>
 <td align="left">9.5936e-06</td>
+<td align="left">0</td>
 <td align="left">0</td>
 </tr>
 </tbody>
@@ -601,10 +609,10 @@ additional analyses).</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my_graph</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_StARS</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">my_graph</span></span></code></pre></div>
-<pre><code><span><span class="co">## IGRAPH 104328e UNW- 17 1 -- </span></span>
+<pre><code><span><span class="co">## IGRAPH 2a70c1a UNW- 17 1 -- </span></span>
 <span><span class="co">## + attr: name (v/c), label (v/c), label.cex (v/n), size (v/n),</span></span>
 <span><span class="co">## | label.color (v/c), weight (e/n), color (e/c), width (e/n)</span></span>
-<span><span class="co">## + edge from 104328e (vertex names):</span></span>
+<span><span class="co">## + edge from 2a70c1a (vertex names):</span></span>
 <span><span class="co">## [1] Hfo--Hsp</span></span></code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_StARS</span><span class="op">)</span></span></code></pre></div>

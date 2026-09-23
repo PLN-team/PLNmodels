@@ -32,9 +32,9 @@ Authors:
 
 - Stéphane Robin <stephane.robin@inrae.fr>
 
-- François Gindraud <francois.gindraud@gmail.com>
-
 Other contributors:
+
+- François Gindraud <francois.gindraud@gmail.com> \[contributor\]
 
 - Julie Aubert <julie.aubert@inrae.fr> \[contributor\]
 
@@ -45,3 +45,5 @@ Other contributors:
 - Cole Trapnell <coletrap@uw.edu> \[contributor\]
 
 - Maddy Duran <duran@uw.edu> \[contributor\]
+
+- Ryan Friedman <ryanfriedman22@gmail.com> \[contributor\]

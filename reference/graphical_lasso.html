@@ -66,7 +66,9 @@ This is the solver used internally by <code><a href="PLNnetwork.html">PLNnetwork
 <span>  thr <span class="op">=</span> <span class="fl">1e-04</span>,</span>
 <span>  maxit <span class="op">=</span> <span class="fl">10000L</span>,</span>
 <span>  w_init <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  wi_init <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  wi_init <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  trace <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  stall_patience <span class="op">=</span> <span class="fl">1000L</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -101,13 +103,30 @@ be given, with the dimensions of <code>S</code>, to be used. Note that a warm st
 stops closer to the starting point than a cold one at the same <code>thr</code>, so it
 does not reproduce a cold solve exactly.</p></dd>
 
+
+<dt id="arg-trace">trace<a class="anchor" aria-label="anchor" href="#arg-trace"></a></dt>
+<dd><p>if <code>TRUE</code>, also return the per-sweep convergence criterion, to
+diagnose a solve that does not converge. Default is <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-stall-patience">stall_patience<a class="anchor" aria-label="anchor" href="#arg-stall-patience"></a></dt>
+<dd><p>number of consecutive sweeps without progress after
+which the algorithm concludes that it is cycling and stops (see Details).
+<code>Inf</code> disables the detection. Default is <code>1000</code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>a list with components</p><ul><li><p><code>w</code>: the estimated covariance matrix,</p></li>
 <li><p><code>wi</code>: the estimated precision matrix (symmetric),</p></li>
 <li><p><code>niter</code>: the number of outer sweeps performed,</p></li>
-<li><p><code>converged</code>: <code>TRUE</code> if the algorithm converged.</p></li>
+<li><p><code>converged</code>: <code>TRUE</code> if the convergence criterion was met,</p></li>
+<li><p><code>status</code>: how the solve ended, one of <code>"converged"</code>, <code>"stalled"</code>,
+<code>"max_iter"</code>, <code>"inner_failure"</code> or <code>"degenerate"</code> (see Details),</p></li>
+<li><p><code>delta</code>: the best value reached by the convergence criterion, relative to
+the threshold it had to cross. <code>delta &lt;= 1</code> means convergence; a stalled
+solve typically sits between 1 and 3, that is, just short of it,</p></li>
+<li><p><code>dw_trace</code>: the per-sweep criterion when <code>trace = TRUE</code>.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -124,8 +143,29 @@ covariance matrix;</p></li>
 <li><p>it can be interrupted from R;</p></li>
 <li><p>when <code>S</code> has no off-diagonal mass, the (diagonal) solution
 \(1 / (S_{ii} + \rho_{ii})\) is returned, where <span class="pkg">glassoFast</span>
-returns \(1 / \max(\rho_{ii}, \epsilon)\).</p></li>
-</ul></div>
+returns \(1 / \max(\rho_{ii}, \epsilon)\);</p></li>
+<li><p>it detects when it is cycling rather than converging, and stops.</p></li>
+</ul><p>That last point matters on an ill-conditioned <code>S</code> – typically a
+rank-deficient covariance, as arises when the number of variables approaches
+the number of samples. The sweeps then settle into a small limit cycle: the
+convergence criterion stops decreasing and oscillates just above its
+threshold forever, while the solution itself no longer moves. <span class="pkg">glassoFast</span>
+spends its whole sweep budget on these and reports success regardless; here
+the cycle is detected after <code>stall_patience</code> sweeps without progress, the
+solve stops, and <code>status</code> reports <code>"stalled"</code>.</p>
+<p>Stopping early costs nothing, because sweeping on does not buy accuracy: the
+iterates wander inside the cycle rather than settle. On a <code>oaks</code>-derived
+covariance the solve stops after ~1100 sweeps instead of 10000, and both that
+answer and the 10000-sweep one sit within 1e-3 of a 50000-sweep grind, with
+the same number of edges and a couple of borderline ones differing –
+the amplitude of the cycle, which no budget removes. The useful consequence
+of <code>"stalled"</code> is thus not a warning about the solution, but the information
+that the problem is in that regime: usually too weak a penalty for a
+covariance that is (nearly) rank-deficient.</p>
+<p>The remaining statuses are <code>"max_iter"</code> (<code>maxit</code> reached while still
+progressing), <code>"inner_failure"</code> and <code>"degenerate"</code> (numerical trouble, the
+result may contain <code>NA</code>).</p>
+    </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>J. Friedman, T. Hastie and R. Tibshirani (2008). Sparse inverse covariance

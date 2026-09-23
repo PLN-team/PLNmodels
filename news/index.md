@@ -33,17 +33,28 @@
   fits with the default `"builtin"` backend are unchanged
   (log-likelihoods within 1e-11). Fits with `backend = "nlopt"` can
   differ slightly along the path: that backend is sensitive to
-  perturbations at the level of the last floating-point digit, and moves
-  as much when glassoFast’s own output is perturbed by 2e-16. Speed is
+  perturbations at the level of the last floating-point digit. Speed is
   the same or slightly better.
 - The solver is exported as
   `graphical_lasso(S, rho, thr, maxit, w_init, wi_init)`, returning `w`,
-  `wi`, `niter` and `converged`, with the same defaults as glassoFast
-  and an optional warm start.
+  `wi`, `niter`, `converged`, `status` and `delta`, with the same
+  defaults as glassoFast and an optional warm start.
+- **It stops when it is cycling rather than converging.** On an
+  ill-conditioned covariance (ie rank-deficient, as
+  [`PLNnetwork()`](https://pln-team.github.io/PLNmodels/reference/PLNnetwork.md)
+  produces when p ~ n) the sweeps settle into a small limit cycle: the
+  convergence criterion stops decreasing and oscillates just above its
+  threshold forever. glassoFast spends its whole 10000-sweep budget on
+  these and reports success regardless. The cycle is now detected after
+  1000 sweeps without progress (tunable through `stall_patience`), and
+  reported as `status = "stalled"`.
 - Non-convergence of the graphical Lasso is recorded in the fits’
-  monitoring (`$optim_par$glasso_nonconverged`: number of non-converged
-  calls along the alternating optimization), with a warning when the
-  final network comes from a non-converged solve.
+  monitoring (`$optim_par$glasso_nonconverged` and
+  `$optim_par$glasso_stalled`, counted along the alternating
+  optimization). A warning is now raised only for the numerical failures
+  (`"degenerate"`, `"inner_failure"`, `"max_iter"`), not for a stalled
+  solve, which says something about the problem (too weak a penalty for
+  a nearly rank-deficient covariance) rather than about the solution.
 - Behaviour change in a degenerate case: when the covariance matrix has
   no off-diagonal mass, the (diagonal) precision matrix is now the
   correct `1 / (S_ii + rho_ii)`, where glassoFast returned

@@ -191,14 +191,14 @@ A diagnostic of the optimization process is available via the
 network_models$convergence %>% head() %>% knitr::kable()
 ```
 
-|  | param | nb_param | status | backend | objective | iterations | convergence | glasso_nonconverged |
-|:---|---:|:---|:---|:---|:---|:---|:---|:---|
-| out | 2.123258 | 35 | 3 | newton | 1240.599 | 20 | 2.382757e-05 | 0 |
-| elt | 1.961192 | 35 | 3 | newton | 1233.931 | 15 | 8.428628e-06 | 0 |
-| elt.1 | 1.811495 | 35 | 3 | newton | 1227.261 | 16 | 9.377476e-06 | 0 |
-| elt.2 | 1.673226 | 35 | 3 | newton | 1220.836 | 16 | 9.633539e-06 | 0 |
-| elt.3 | 1.545510 | 35 | 3 | newton | 1214.663 | 16 | 9.636082e-06 | 0 |
-| elt.4 | 1.427542 | 35 | 3 | newton | 1208.743 | 16 | 9.5936e-06 | 0 |
+|  | param | nb_param | status | backend | objective | iterations | convergence | glasso_nonconverged | glasso_stalled |
+|:---|---:|:---|:---|:---|:---|:---|:---|:---|:---|
+| out | 2.123258 | 35 | 3 | newton | 1240.599 | 20 | 2.382757e-05 | 0 | 0 |
+| elt | 1.961192 | 35 | 3 | newton | 1233.931 | 15 | 8.428628e-06 | 0 | 0 |
+| elt.1 | 1.811495 | 35 | 3 | newton | 1227.261 | 16 | 9.377476e-06 | 0 | 0 |
+| elt.2 | 1.673226 | 35 | 3 | newton | 1220.836 | 16 | 9.633539e-06 | 0 | 0 |
+| elt.3 | 1.545510 | 35 | 3 | newton | 1214.663 | 16 | 9.636082e-06 | 0 | 0 |
+| elt.4 | 1.427542 | 35 | 3 | newton | 1208.743 | 16 | 9.5936e-06 | 0 | 0 |
 
 An nicer view of this output comes with the option “diagnostic” in the
 `plot` method:
@@ -380,10 +380,10 @@ my_graph <- plot(model_StARS, plot = FALSE)
 my_graph
 ```
 
-    ## IGRAPH 104328e UNW- 17 1 -- 
+    ## IGRAPH 2a70c1a UNW- 17 1 -- 
     ## + attr: name (v/c), label (v/c), label.cex (v/n), size (v/n),
     ## | label.color (v/c), weight (e/n), color (e/c), width (e/n)
-    ## + edge from 104328e (vertex names):
+    ## + edge from 2a70c1a (vertex names):
     ## [1] Hfo--Hsp
 
 ``` r
