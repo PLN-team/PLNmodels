@@ -1,7 +1,7 @@
 library(PLNmodels)
 library(factoextra)
 
-options(mc.cores = 4)
+ncores <- 20
 
 ## get oaks data set
 data(oaks)
@@ -97,23 +97,25 @@ plot(getBestModel(myPLNnets, "EBIC"), output = "corrplot")
 plot(getBestModel(myPLNnets, "EBIC"), output = "igraph")
 
 RhpcBLASctl::blas_set_num_threads(1)
-options(mc.cores = 20)
+options(mc.cores = ncores)
 stability_selection(myPLNnets)
-plot(myPLNnets, "stability", stability = 0.99)
+RhpcBLASctl::blas_set_num_threads(ncores)
+plot(myPLNnets, "stability")
 plot(getBestModel(myPLNnets, "StARS", stability = .99))
 
-
-RhpcBLASctl::blas_set_num_threads(20)
+RhpcBLASctl::blas_set_num_threads(ncores)
 system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLNnetwork_param(min_ratio = 0.1)))
 plot(myPLNnets)
+plot(getBestModel(myPLNnets, "EBIC"), output = "corrplot")
 plot(getBestModel(myPLNnets, "EBIC"), output = "igraph")
+
 RhpcBLASctl::blas_set_num_threads(1)
-options(mc.cores = 20)
+options(mc.cores = ncores)
 stability_selection(myPLNnets)
-plot(myPLNnets, "stability", stability = 0.99)
+RhpcBLASctl::blas_set_num_threads(ncores)
+
 plot(getBestModel(myPLNnets, "StARS", stability = .99))
 
-RhpcBLASctl::blas_set_num_threads(20)
 system.time(myZIPLNnets <- ZIPLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), zi = "single", data = oaks, control = ZIPLNnetwork_param(min_ratio = 0.1)))
 plot(myZIPLNnets)
 plot(getBestModel(myZIPLNnets, "BIC"))
