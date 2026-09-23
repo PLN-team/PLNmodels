@@ -173,3 +173,22 @@ test_that("ZIPLNnetwork: graphical Lasso convergence is monitored", {
   nonconv <- vapply(models$models, function(m) m$optim_par$glasso_nonconverged, integer(1))
   expect_equal(nonconv, rep(0L, length(models$models)))
 })
+
+test_that("ZIPLNfit_sparse shares the EBIC and density conventions of PLNnetworkfit", {
+
+  fit <- getBestModel(models, "BIC")
+  p <- fit$p; E <- fit$n_edges
+
+  expect_equal(fit$nb_param, fit$nb_param_zi + fit$nb_param_pln)
+  expect_equal(fit$nb_param_pln, as.integer(p * fit$d + p + E))
+  expect_equal(fit$EBIC, fit$BIC - 2 * 0.5 * E * log(p))
+  expect_equal(fit$density, E / (p * (p - 1) / 2))
+
+  fit$ebic_gamma <- 0
+  expect_equal(fit$EBIC, fit$BIC)
+  fit$ebic_gamma <- 0.5
+
+  models$ebic_gamma <- 0
+  expect_equal(models$criteria$EBIC, models$criteria$BIC)
+  models$ebic_gamma <- 0.5
+})

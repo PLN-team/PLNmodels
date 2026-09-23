@@ -211,7 +211,10 @@ plot.ZIPLNfit_sparse <-
            remove.isolated = FALSE,
            node.labels     = NULL,
            layout          = layout_in_circle,
+           edge.alpha      = 0.2,
            plot            = TRUE, ...) {
     stopifnot(isZIPLNfit_sparse(x))
-    invisible(x$plot_network(type, output, edge.color, remove.isolated, node.labels, layout, plot))
+    invisible(x$plot_network(type = type, output = output, edge.color = edge.color,
+                             remove.isolated = remove.isolated, node.labels = node.labels,
+                             layout = layout, edge.alpha = edge.alpha, plot = plot))
   }

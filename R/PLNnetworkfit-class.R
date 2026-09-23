@@ -151,6 +151,10 @@ PLNnetworkfit <- R6Class(
     #' @param node.labels vector of character. The labels of the nodes. The default will use the column names ot the response matrix.
     #' @param remove.isolated if `TRUE`, isolated node are remove before plotting. Only relevant for igraph output.
     #' @param layout an optional igraph layout. Only relevant for igraph output.
+    #' @param edge.alpha opacity of the weakest edge, the strongest one being fully
+    #' opaque, so that the strength of an edge can be read off a dense network.
+    #' Default is `0.2`. Set it to `1` for uniformly opaque edges. Only relevant
+    #' for igraph output with `type = "partial_cor"`.
     #' @param plot logical. Should the final network be displayed or only sent back to the user. Default is `TRUE`.
     plot_network = function(type            = c("partial_cor", "support"),
                             output          = c("igraph", "corrplot"),
@@ -158,6 +162,7 @@ PLNnetworkfit <- R6Class(
                             remove.isolated = FALSE,
                             node.labels     = NULL,
                             layout          = layout_in_circle,
+                            edge.alpha      = 0.2,
                             plot = TRUE) {
       .plot_network(self$latent_network(match.arg(type)),
                    type            = match.arg(type),
@@ -166,6 +171,7 @@ PLNnetworkfit <- R6Class(
                    remove.isolated = remove.isolated,
                    node.labels     = node.labels,
                    layout          = layout,
+                   edge.alpha      = edge.alpha,
                    plot            = plot)
     },
 
@@ -186,8 +192,9 @@ PLNnetworkfit <- R6Class(
   ## PRIVATE MEMBERS ----
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   private = list(
-    lambda = NA, # the sparsity tuning parameter
-    rho    = NA  # the p x p penalty weight
+    lambda = NA,  # the sparsity tuning parameter
+    rho    = NA,  # the p x p penalty weight
+    gamma_ebic = 0.5 # the tuning parameter of the EBIC
   ),
 
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -206,10 +213,23 @@ PLNnetworkfit <- R6Class(
     nb_param        = function() {self$p * self$d + self$p + self$n_edges},
     #' @field pen_loglik variational lower bound of the l1-penalized loglikelihood
     pen_loglik      = function() {self$loglik - private$lambda * sum(abs(private$Omega))},
-    #' @field EBIC variational lower bound of the EBIC
-    EBIC      = function() {self$BIC - .5 * ifelse(self$n_edges > 0, self$n_edges * log(.5 * self$p*(self$p - 1)/self$n_edges), 0)},
+    #' @field ebic_gamma the tuning parameter gamma of the EBIC, between 0 and 1. Zero
+    #' gives back the BIC; the default 0.5 is the value recommended by Foygel and
+    #' Drton (2010). Assign to it to change the EBIC of this fit.
+    ebic_gamma = function(value) {
+      if (missing(value)) return(private$gamma_ebic)
+      stopifnot(is.numeric(value), length(value) == 1L, !is.na(value), value >= 0, value <= 1)
+      private$gamma_ebic <- value
+      invisible(self)
+    },
+    #' @field EBIC variational lower bound of the extended BIC of Foygel and Drton
+    #' (2010), that is the BIC with the additional penalty 2 gamma |E| log(p) on the
+    #' edge set. Their criterion was designed for the graphical Lasso; up to and
+    #' including version 1.3.2, PLNmodels used instead the approximation
+    #' gamma |E| log(p (p - 1) / (2 |E|)) of the original EBIC of Chen and Chen (2008).
+    EBIC      = function() {self$BIC - 2 * private$gamma_ebic * self$n_edges * log(self$p)},
     #' @field density proportion of non-null edges in the network
-    density   = function() {mean(self$latent_network("support"))},
+    density   = function() {self$n_edges / (.5 * self$p * (self$p - 1))},
     #' @field criteria a vector with loglik, penalized loglik, BIC, EBIC, ICL, R_squared, number of parameters, number of edges and graph density
     criteria  = function() {data.frame(super$criteria, n_edges = self$n_edges, EBIC = self$EBIC, pen_loglik = self$pen_loglik, density = self$density)}
   )

@@ -286,6 +286,15 @@ Networkfamily <- R6Class(
       }
       stability
     },
+    #' @field ebic_gamma the tuning parameter gamma of the EBIC, between 0 and 1, shared
+    #' by every fit of the collection. Zero gives back the BIC; the default 0.5 is
+    #' the value recommended by Foygel and Drton (2010). Assign to it to change the
+    #' EBIC of the whole collection, and hence the model selected by `getBestModel("EBIC")`.
+    ebic_gamma = function(value) {
+      if (missing(value)) return(self$models[[1]]$ebic_gamma)
+      for (model in self$models) model$ebic_gamma <- value
+      invisible(self)
+    },
     #' @field criteria a data frame with the values of some criteria (variational log-likelihood, (E)BIC, ICL and R2, stability) for the collection of models / fits
     #' BIC, ICL and EBIC are defined so that they are on the same scale as the model log-likelihood, i.e. with the form, loglik - 0.5 penalty
     criteria = function() {mutate(super$criteria, stability = self$stability)}
