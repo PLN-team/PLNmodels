@@ -133,6 +133,7 @@ reference:
   - '`coefficient_path`'
   - '`stability_selection`'
   - '`extract_probs`'
+  - '`graphical_lasso`'
 - title: 'Other functions and objects'
   desc: ~
   contents:

@@ -1,3 +1,38 @@
+# PLNmodels 1.3.2
+
+## Internal graphical Lasso, replacing glassoFast
+
+* `PLNnetwork()` and `ZIPLNnetwork()` now use an internal graphical Lasso, a C++ port
+  of the GLASSOFAST algorithm (Sustik and Calderhead, 2012) shared with the
+  **normalblockr** package, instead of calling `glassoFast::glassoFast()`.
+  **glassoFast** is no longer a dependency (it moves to `Suggests`, for tests only).
+* The motivation is robustness: glassoFast's Fortran routine could loop forever on
+  a nearly collapsed covariance matrix (entries of order 1e-8, as a rank-deficient
+  residual covariance produces), in compiled code that no R-level timeout could stop.
+  The new solver always terminates (non-finite input and zero-variance coordinates
+  are rejected, the inner coordinate descent is bounded), reports non-convergence
+  instead of hanging, and can be interrupted from R, by the user or by
+  `setTimeLimit()`/`R.utils::withTimeout()`, which then raise their usual error.
+* On ordinary input, results are those of glassoFast up to machine precision:
+  identical supports along penalty paths and relative differences below 1e-15 on
+  the precision matrix, for scalar as well as weighted penalties with an unpenalized
+  diagonal; `PLNnetwork()` and `ZIPLNnetwork()` fits with the default `"builtin"`
+  backend are unchanged (log-likelihoods within 1e-11). Fits with
+  `backend = "nlopt"` can differ slightly along the path: that backend is sensitive
+  to perturbations at the level of the last floating-point digit, and moves as much
+  when glassoFast's own output is perturbed by 2e-16. Speed is the same or slightly
+  better.
+* The solver is exported as `graphical_lasso(S, rho, thr, maxit, w_init, wi_init)`,
+  returning `w`, `wi`, `niter` and `converged`, with the same defaults as glassoFast
+  and an optional warm start.
+* Non-convergence of the graphical Lasso is recorded in the fits' monitoring
+  (`$optim_par$glasso_nonconverged`: number of non-converged calls along the
+  alternating optimization), with a warning when the final network comes from a
+  non-converged solve.
+* Behaviour change in a degenerate case: when the covariance matrix has no
+  off-diagonal mass, the (diagonal) precision matrix is now the correct
+  `1 / (S_ii + rho_ii)`, where glassoFast returned `1 / max(rho_ii, 1.1e-16)`.
+
 # PLNmodels 1.3.1
 
 ## Bug fix

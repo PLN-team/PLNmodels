@@ -41,3 +41,4 @@
 ^dev$
 ^\.claude$
 snowflake.log
+^inst/HANDOFF.*\.md$

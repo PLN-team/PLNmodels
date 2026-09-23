@@ -168,3 +168,8 @@ test_that("PLNnetwork: list of matrices of penalties work", {
   expect_true(inherits(myPLN$plot_stars(), "ggplot"))
 
 })
+
+test_that("ZIPLNnetwork: graphical Lasso convergence is monitored", {
+  nonconv <- vapply(models$models, function(m) m$optim_par$glasso_nonconverged, integer(1))
+  expect_equal(nonconv, rep(0L, length(models$models)))
+})

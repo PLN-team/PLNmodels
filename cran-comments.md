@@ -1,40 +1,40 @@
-Submitting PLNmodels version 1.3.1 to CRAN
+Submitting PLNmodels version 1.3.2 to CRAN
 
-This is a patch release containing a single bug fix. There is no change to the
-package's API, to its dependencies, or to its compiled code.
+This release replaces the dependency on glassoFast by an internal graphical
+Lasso solver. There is no change to the package's existing API; one function
+is added.
 
-## Bug fixed
+## Main change
 
-`ZIPLNnetwork()` fitted its inception (warm-start) model with the optimizer
-configuration meant for the regularization path. That configuration is
-deliberately truncated, which is appropriate for the models along the path, 
-since each is warm-started from the previous one, but not for the inception, which starts from scratch.
+`PLNnetwork()` and `ZIPLNnetwork()` called `glassoFast::glassoFast()` at every
+step of their alternating optimization. glassoFast's Fortran routine can loop
+forever on a nearly collapsed covariance matrix: its inner coordinate descent
+has no bound, and since it never returns to R, no R-level timeout can stop it.
+This was observed in practice in large simulation campaigns.
 
-The inception is now fitted with an untruncated optimizer, mirroring the
-`cfg_inception` mechanism `PLNnetworkfamily` already uses for the same reason.
-The path itself keeps its truncated settings, so the added cost is a fraction of
-a second per collection.
+The package now ships its own C++ port of the same algorithm
+(`src/graphical_lasso.h`, shared with the normalblockr package), which:
 
-The change is confined to `ZIPLNnetworkfamily$initialize()` in
-`R/PLNnetworkfamily-class.R`. Results for `PLN`, `PLNPCA`, `PLNnetwork` and
-`ZIPLN` are unchanged. Users who worked around the problem by passing a fitted
-`ZIPLN` object as `inception` obtain the same results as before, now
-automatically.
+* always terminates (non-finite input and zero-variance coordinates are
+  rejected up front, the inner loop is bounded) and reports non-convergence;
+* checks for user interrupts and R time limits regularly;
+* gives the same results as glassoFast on ordinary input, up to machine
+  precision.
+
+It is exported as `graphical_lasso()`. glassoFast moves from `Imports` to
+`Suggests`, where it is only used by tests checking the equivalence of the two
+solvers (skipped when it is not installed). `Rcpp (>= 1.0.10)` is now required,
+for its unwind-protect mechanism.
 
 ## Test environments
 
-* local Linux (Ubuntu, R 4.6.1): `R CMD check --as-cran`, no ERROR, no WARNING.
-* GitHub Actions against R-devel, R-release and R-oldrel on Linux (Ubuntu 22.04)
-  and macOS.
-* win-builder (R-devel, R-release, R-oldrel).
-
-The package's own test suite passes with no failure, error or warning; the files
-covering the modified code — `test-zipln.R` (29 tests), `test-ziplnfit.R` (63),
-`test-ziplnnetworkfamily.R` (55) and `test-plnnetworkfamily.R` (55) — were run
-individually as well.
+* local Linux (Ubuntu 24.04, R 4.6.1): `R CMD check --as-cran`, no ERROR, no
+  WARNING. Its two NOTEs are specific to the local machine (a non-portable
+  compilation flag from Ubuntu's R toolchain defaults; HTML Tidy not installed).
+* win-builder (R-devel, R-release, R-oldrel): pending.
 
 ## R CMD check results
 
-There is one NOTE, unchanged from previous submissions:
+Possibly one NOTE, unchanged from previous submissions:
 
 * installed size (~34Mb, `libs`: RcppArmadillo, nlopt, torch).
