@@ -2,6 +2,32 @@
 
 ## PLNmodels 1.3.2
 
+### Fixed: a spurious constant in PLNPCA’s variational bound
+
+- **[`PLNPCA()`](https://pln-team.github.io/PLNmodels/reference/PLNPCA.md)’s
+  log-likelihood was overestimated by `n * p / 2`** (`n` observations,
+  `p` responses). The variational distribution of a rank-`q` model is
+  over the `q`-dimensional scores, so its entropy constant is `q / 2` –
+  which the bound already carried through its Kullback-Leibler term. The
+  extra `p / 2` per observation, shared with the full-covariance models
+  where it *is* the right constant, was added on top.
+- Consequently `loglik`, `BIC` and `ICL` of every `PLNPCAfit` decrease
+  by `n * p / 2`. **Rank selection is unchanged**: the spurious term
+  does not depend on the rank, so it shifted every model of a collection
+  by the same amount. What was wrong is the comparison of a
+  [`PLNPCA()`](https://pln-team.github.io/PLNmodels/reference/PLNPCA.md)
+  fit with anything else – a
+  [`PLN()`](https://pln-team.github.io/PLNmodels/reference/PLN.md) fit,
+  a model from another package, or a published figure. A full-rank
+  [`PLNPCA()`](https://pln-team.github.io/PLNmodels/reference/PLNPCA.md)
+  and a [`PLN()`](https://pln-team.github.io/PLNmodels/reference/PLN.md)
+  fit of the same data are now directly comparable (the former is
+  expected to remain slightly above, its variational family over the
+  latent being the richer one).
+- Reported by Nguyen Quang Huy (Actuarial Science Laboratory, College of
+  Technology, National Economics University, Vietnam), with a
+  reproducible example, now part of the test suite.
+
 ### Internal graphical Lasso, replacing glassoFast
 
 - [`PLNnetwork()`](https://pln-team.github.io/PLNmodels/reference/PLNnetwork.md)
