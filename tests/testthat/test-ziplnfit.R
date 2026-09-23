@@ -169,4 +169,10 @@ test_that("ZIPLN fit: check sparse output and plot",  {
   expect_true(igraph::is_igraph(myPLNfit$plot_network(output = "igraph", plot = FALSE)))
   expect_true(inherits(myPLNfit$plot_network(output = "corrplot", plot = FALSE), "Matrix"))
 
+  ## the S3 method forwards every argument by name, edge.alpha included
+  G <- plot(myPLNfit, output = "igraph", edge.alpha = 1, plot = FALSE)
+  expect_true(igraph::is_igraph(G))
+  expect_equal(unique(substr(igraph::E(G)$color, 8, 9)), "FF")
+  expect_true(inherits(plot(myPLNfit, output = "corrplot", plot = FALSE), "Matrix"))
+
 })
