@@ -283,16 +283,28 @@ test_that("offset_css throws a warning when a sample has less than two positive 
   )
 })
 
-test_that("offset_rle throws a warning when data is too sparse but samples share a common species", {
-  ## One common species, 4 specific species
+test_that("offset_rle returns finite offsets on sparse counts sharing a common species", {
+  ## One common species, 4 species with a zero (geometric mean 0)
   # [,1] [,2] [,3] [,4] [,5]
   # [1,]    1    1    0    1    0
   # [2,]    1    0    1    0    1
   counts <- matrix(c(1, 1, 0, 1, 0, 1, 0, 1, 0, 1), nrow = 2, byrow = TRUE)
-  expect_warning(
-    compute_offset(counts, "RLE"),
-    "Because of high sparsity, some samples have null or infinite offset."
+  ## only the zero-free species is used for the ratio, so offsets are finite
+  expect_equal(compute_offset(counts, "RLE"), c(1, 1))
+  ## zero-free species with non-zero geometric means are still used when several exist
+  # [,1] [,2] [,3] [,4]
+  # [1,]    1    2    4    1
+  # [2,]    2    4    8    0
+  # [3,]    3    6   12    0
+  counts2 <- matrix(
+    c(1, 2, 4, 1, 2, 4, 8, 0, 3, 6, 12, 0),
+    nrow = 3,
+    byrow = TRUE
   )
+  ## expected: median ratio over the zero-free species (species 4 has gm = 0 and is excluded)
+  gm <- apply(counts2[, 1:3], 2, function(x) exp(mean(log(x))))
+  expected <- apply(counts2[, 1:3], 1, function(row) median(row / gm))
+  expect_equal(compute_offset(counts2, "RLE"), unname(expected))
 })
 
 test_that("offset_rle fails when no species is shared across samples", {
