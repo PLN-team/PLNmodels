@@ -309,48 +309,68 @@ offset_css <- function(counts, reference = median) {
   }
   ## remove 0s and check that all samples have at least two positive counts
   counts[counts == 0] <- NA
-  if (any(rowSums(!is.na(counts)) < 2)) {
-    warning(
-      "Some samples only have 1 positive values. Can't compute quantiles and fall back to TSS normalization"
-    )
-    return(rowSums(counts, na.rm = TRUE))
+  counts_all <- counts
+  ## offsets are made comparable on the count scale by dividing by a single
+  ## global median, so samples can share a common scale across normalization schemes
+  tss <- rowSums(counts, na.rm = TRUE)
+  sparse <- rowSums(!is.na(counts)) < 2
+  ## warn about, and fall back to TSS for, samples with fewer than two positive counts
+  if (any(sparse)) {
+    sparse_names <- rownames(counts)[sparse]
+    msg <- "Some samples only have 1 positive value. Can't compute quantiles and fall back to TSS normalization for those samples."
+    if (!is.null(sparse_names)) {
+      msg <- paste(msg, "Samples:", paste(sparse_names, collapse = ", "))
+    }
+    warning(msg)
   }
-  ## compute sample-specific quantiles and cumulative sums up to quantiles
-  cumsum_up_to <- function(counts, quantiles) {
-    (counts * outer(counts, quantiles, `<=`)) %>% colSums(na.rm = TRUE)
-  }
-  mat_sample_quant <- apply(
-    counts,
-    1,
-    quantile,
-    probs = seq(0, 1, length.out = ncol(counts)),
-    na.rm = TRUE
-  ) %>%
-    t()
-  mat_sample_cumsum <- sapply(1:nrow(counts), function(i) {
-    cumsum_up_to(counts[i, ], mat_sample_quant[i, ])
-  }) %>%
-    t()
-  ## reference quantiles, computed as median (nature article) or mean (metagenomeSeq::cumNormStat[Fast]) of sample_specific quantiles
-  ## and MAD around the reference quantiles
-  ref_quant <- apply(mat_sample_quant, 2, reference)
-  ref_quant_mad <- sweep(mat_sample_quant, 2, ref_quant) %>%
-    abs %>%
-    apply(2, median)
-  ## find smallest quantile for which high instability is detected
-  ## instability for quantile l is defined as ref_quant_mad[l+1] - ref_quant_mad[l] >= 0.1 * ref_quant_mad[l]
-  instable <- (diff(ref_quant_mad) >= 0.1 * head(ref_quant_mad, -1))
-  if (any(instable)) {
-    ## Hack to mimick package implementation: never choose quantile below 50%
-    lhat <- max(min(which(instable)), ceiling(ncol(counts) / 2))
+  ## compute quantiles only on the samples with at least two positive counts
+  counts <- counts[!sparse, , drop = FALSE]
+  if (any(!sparse)) {
+    ## compute sample-specific quantiles and cumulative sums up to quantiles
+    cumsum_up_to <- function(counts, quantiles) {
+      (counts * outer(counts, quantiles, `<=`)) %>% colSums(na.rm = TRUE)
+    }
+    mat_sample_quant <- apply(
+      counts,
+      1,
+      quantile,
+      probs = seq(0, 1, length.out = ncol(counts)),
+      na.rm = TRUE
+    ) %>%
+      t()
+    mat_sample_cumsum <- sapply(1:nrow(counts), function(i) {
+      cumsum_up_to(counts[i, ], mat_sample_quant[i, ])
+    }) %>%
+      t()
+    ## reference quantiles, computed as median (nature article) or mean (metagenomeSeq::cumNormStat[Fast]) of sample_specific quantiles
+    ## and MAD around the reference quantiles
+    ref_quant <- apply(mat_sample_quant, 2, reference)
+    ref_quant_mad <- sweep(mat_sample_quant, 2, ref_quant) %>%
+      abs %>%
+      apply(2, median)
+    ## find smallest quantile for which high instability is detected
+    ## instability for quantile l is defined as ref_quant_mad[l+1] - ref_quant_mad[l] >= 0.1 * ref_quant_mad[l]
+    instable <- (diff(ref_quant_mad) >= 0.1 * head(ref_quant_mad, -1))
+    if (any(instable)) {
+      ## Hack to mimick package implementation: never choose quantile below 50%
+      lhat <- max(min(which(instable)), ceiling(ncol(counts) / 2))
+    } else {
+      warning(
+        "No instability detected in quantile distribution across samples, falling back to scaled TSS normalization."
+      )
+      lhat <- ncol(counts)
+    }
+    ## scaling factors are cumulative sums up to quantile lhat for the non-sparse samples
+    non_sparse_factors <- mat_sample_cumsum[, lhat]
   } else {
-    warning(
-      "No instability detected in quantile distribution across samples, falling back to scaled TSS normalization."
-    )
-    lhat <- ncol(counts)
+    non_sparse_factors <- numeric(0)
   }
-  ## scaling factors are cumulative sums up to quantile lhat, divided by their median
-  size_factors <- mat_sample_cumsum[, lhat] / median(mat_sample_cumsum[, lhat])
+  ## recombine in the original sample order and scale by the global median
+  full <- numeric(nrow(counts_all))
+  names(full) <- rownames(counts_all)
+  full[!sparse] <- non_sparse_factors
+  full[sparse] <- tss[sparse]
+  size_factors <- full / median(full)
   unname(size_factors)
 }
 

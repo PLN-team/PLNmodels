@@ -279,8 +279,37 @@ test_that("offset_css throws a warning when a sample has less than two positive 
   counts <- matrix(c(1, 1, 0, 0, 0, 1), nrow = 2, byrow = TRUE)
   expect_warning(
     compute_offset(counts, "CSS"),
-    "Some samples only have 1 positive values. Can't compute quantiles and fall back to TSS normalization"
+    "Some samples only have 1 positive value. Can't compute quantiles and fall back to TSS normalization for those samples."
   )
+})
+
+test_that("offset_css reports the samples that fell back to TSS", {
+  counts <- matrix(
+    c(1, 1, 0, 0, 0, 1),
+    nrow = 2,
+    dimnames = list(c("a", "b"), NULL),
+    byrow = TRUE
+  )
+  expect_warning(compute_offset(counts, "CSS"), "Samples: b")
+})
+
+test_that("offset_css scales the fallback samples by the global median", {
+  ## one regular sample (>=2 positive counts) and one sparse sample
+  counts <- matrix(c(1, 1, 0, 0, 0, 1), nrow = 2, byrow = TRUE)
+  css <- suppressWarnings(compute_offset(counts, "CSS"))
+  ## offsets are scaled so the global median is 1
+  expect_equal(median(css), 1)
+  ## sample 2 (sparse, single positive count) falls back to its TSS on the same scale
+  tss <- rowSums(counts)
+  expect_equal(css / sum(css), tss / sum(tss))
+})
+
+test_that("offset_css returns scaled TSS when every sample is sparse", {
+  counts <- matrix(c(1, 0, 0, 0, 0, 1, 0, 2, 0), nrow = 3, byrow = TRUE)
+  css <- suppressWarnings(compute_offset(counts, "CSS"))
+  expect_equal(median(css), 1)
+  tss <- rowSums(counts)
+  expect_equal(css / sum(css), tss / sum(tss))
 })
 
 test_that("offset_rle returns finite offsets on sparse counts sharing a common species", {
