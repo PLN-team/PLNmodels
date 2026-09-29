@@ -246,6 +246,38 @@ test_that("compute_offset fails with an informative error when given a data.fram
   )
 })
 
+test_that("compute_offset returns NA for empty samples and warns with their names", {
+  counts <- matrix(
+    c(1, 2, 3, 0, 0, 0, 4, 5, 6),
+    nrow = 3,
+    byrow = TRUE,
+    dimnames = list(c("a", "b", "c"), NULL)
+  )
+  #     [,1] [,2] [,3]
+  # a    1    2    3
+  # b    0    0    0
+  # c    4    5    6
+  ## sample "b" is empty (all counts 0)
+  for (method in c("TSS", "CSS", "RLE", "GMPR", "Wrench", "TMM")) {
+    expect_warning(
+      compute_offset(counts, method),
+      "sample \\(<b>\\)"
+    )
+    offset <- suppressWarnings(compute_offset(counts, method))
+    expect_length(offset, 3)
+    expect_true(is.na(offset["b"]))
+    expect_true(all(is.finite(offset[c("a", "c")])))
+  }
+})
+
+test_that("compute_offset returns NA for empty samples without rownames", {
+  counts <- matrix(c(1, 2, 3, 0, 0, 0, 4, 5, 6), nrow = 3, byrow = TRUE)
+  offset <- suppressWarnings(compute_offset(counts, "TSS"))
+  expect_length(offset, 3)
+  expect_true(is.na(offset[2]))
+  expect_true(all(is.finite(offset[c(1, 3)])))
+})
+
 test_that("offset_rle provides correct answers when adding pseudocounts", {
   sizes <- c(1, 2)
   counts <- sizes %o% rep(1, 10)

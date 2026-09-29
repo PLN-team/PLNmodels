@@ -735,12 +735,35 @@ compute_offset <- function(
   counts <- counts %>% data.matrix()
   ## Compute offset (with optional parameters)
   scale <- match.arg(scale)
-  if (scale == "none") {
+  ## Empty samples have no positive counts and break most normalization schemes:
+  ## compute the offset on the non-empty samples and return NA for the empty ones
+  all_names <- rownames(counts)
+  n_samples <- nrow(counts)
+  empty_samples <- which(rowSums(counts) == 0)
+  if (length(empty_samples) > 0) {
+    cli::cli_warn(c(
+      "!" = "There is at least one empty sample in {.var counts}.",
+      "i" = "{.cls {length(empty_samples)}} sample{?s} ({.cls {all_names[empty_samples]}}) in {.var counts} {?has/have} no positive counts and {?is/are} given a missing ({.val NA}) offset."
+    ))
+    counts <- counts[-empty_samples, , drop = FALSE]
+  }
+  ## offsets computed on the non-empty samples
+  result <- if (scale == "none") {
     offset_function(counts, ...)
   } else {
     lib_size <- offset_tss(counts)
     sf2nf(offset_function(counts, ...), lib_size = lib_size)
   }
+  ## give the empty samples a missing offset, in the original sample order
+  if (length(empty_samples) > 0) {
+    offset <- rep(NA_real_, n_samples)
+    offset[-empty_samples] <- result
+    if (!is.null(all_names)) {
+      names(offset) <- all_names
+    }
+    result <- offset
+  }
+  result
 }
 
 # Prepare data for use in PLN models from a biom object
