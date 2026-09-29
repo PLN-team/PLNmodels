@@ -48,6 +48,21 @@
   fully unstable. A second line of defense on top of the solver above (thanks
   @rfriedman22, #176).
 
+* **Offsets are now robust on sparse and empty counts** #188 (`compute_offset()` and its
+  methods):
+  * `offset_rle()` keeps only species with a *positive* geometric mean in its
+    median-ratio estimator (as DESeq2 does), so a zero-inflated species no longer
+    drives the per-sample offset to `Inf` via a `counts / 0` ratio even when several
+    zero-free species are available.
+  * `offset_css()` falls back to TSS **only for the samples** with fewer than two
+    positive counts (instead of silently switching every sample to `rowSums`), and
+    scales the whole result by a single global median — so all offsets are on the
+    same scale (median 1). The warning names the affected samples.
+  * `compute_offset()` detects empty (all-zero) samples before dispatching, warns
+    naming them, computes the offset on the non-empty samples and returns `NA` for
+    the empty ones, instead of a `0` offset (hence `log(0) = -Inf`) or uninformative
+    `NA/NaN/Inf` errors when several methods are called directly.
+
 # PLNmodels 1.3.1
 
 ## Bug fix
