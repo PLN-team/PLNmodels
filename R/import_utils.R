@@ -201,8 +201,11 @@ offset_rle <- function(
     stop("Samples do not share any common species, RLE normalization failed.")
   }
   ## compute size factor as the median of all otus log-ratios in that sample
+  ## only keeps species whose geometric mean is positive (otherwise a
+  ## zero-inflated species contributes cnts / 0 = Inf once zeros dominate)
   robust_med <- function(cnts) {
-    median((cnts / geom_means)[is.finite(geom_means) & cnts > 0], na.rm = TRUE)
+    keep <- is.finite(geom_means) & geom_means > 0 & cnts > 0
+    median((cnts / geom_means)[keep], na.rm = TRUE)
   }
   size_factor <- apply(counts, 1, robust_med)
   if (any(is.infinite(size_factor) | size_factor == 0)) {
