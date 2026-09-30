@@ -170,3 +170,46 @@ test_that("PLNnetwork: list of matrices of penalties work", {
   expect_true(inherits(myPLN$plot_stars(), "ggplot"))
 
 })
+
+## A graphical Lasso that fails (non-finite precision matrix) on the k-th call
+## at penalty `failing[[k]]`, and works as usual otherwise
+failing_graphical_lasso <- function(failing) {
+  calls <- list()
+  solver <- graphical_lasso # the genuine one, before it is mocked
+  function(S, rho, ...) {
+    pen <- format(max(rho))
+    calls[[pen]] <<- if (is.null(calls[[pen]])) 1L else calls[[pen]] + 1L
+    out <- solver(S, rho, ...)
+    if (any(vapply(names(failing), function(k) calls[[pen]] == as.integer(k) &&
+                     isTRUE(all.equal(max(rho), failing[[k]])), logical(1)))) {
+      out$wi[] <- NaN; out$converged <- FALSE; out$status <- "inner_failure"
+    }
+    out
+  }
+}
+
+test_that("PLNnetwork: a failing graphical Lasso does not stop the path (#184)", {
+  pens <- c(1, 0.5, 0.2, 0.1)
+  ## fail at the second iteration of the first penalty, and at the first
+  ## iteration of the third one
+  local_mocked_bindings(graphical_lasso = failing_graphical_lasso(list("2" = pens[1], "1" = pens[3])))
+  warns <- capture_warnings(
+    models <- PLNnetwork(Abundance ~ 1, data = trichoptera, penalties = pens,
+                         control = PLNnetwork_param(trace = 0))
+  )
+  expect_true(any(grepl("stopped at iteration 2", warns)))
+  expect_true(any(grepl("failed at its first iteration", warns)))
+
+  ## the first model is the one of its first iteration, with finite criteria
+  first <- models$models[[1]]
+  expect_equal(first$optim_par$iterations, 1)
+  expect_match(first$optim_par$failure, "graphical Lasso failed")
+  expect_true(is.finite(first$loglik))
+  expect_true(all(is.finite(as.matrix(first$model_par$Sigma))))
+
+  ## the third one is marked as failed, the others are fitted
+  expect_true(is.na(models$models[[3]]$loglik))
+  expect_true(all(is.finite(models$criteria$loglik[-3])))
+  expect_warning(best <- getBestModel(models, "BIC"), "left out of the selection")
+  expect_equal(best$penalty, pens[-3][which.max(models$criteria$BIC[-3])])
+})

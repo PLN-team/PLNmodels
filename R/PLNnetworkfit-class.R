@@ -75,23 +75,42 @@ PLNnetworkfit <- R6Class(
                    config = inner_config)
       M_res_init <- private$M - nrm$X_sc %*% B_sc
       private$Sigma <- crossprod(M_res_init)/self$n + diag(colMeans(private$S2), self$p, self$p)
-      glasso_nonconv <- 0L; glasso_stalled <- 0L
+      glasso_nonconv <- 0L; glasso_stalled <- 0L; glasso_indefinite <- 0L
+      last_glasso <- NULL # graphical Lasso output of the last iterate kept
+      failure <- NULL
+      w_pos <- data$w > .Machine$double.eps
       while (!cond) {
         iter <- iter + 1
         if (config$trace > 1) cat("", iter)
         ## CALL TO GLASSO TO UPDATE Omega
         glasso_out <- graphical_lasso(private$Sigma, rho = self$penalty * self$penalty_weights)
         if (!glasso_out$converged) glasso_nonconv <- glasso_nonconv + 1L
-        if (anyNA(glasso_out$wi)) break
+        if (!all(is.finite(glasso_out$wi))) {
+          failure <- paste("the graphical Lasso failed (", glasso_out$status, ")", sep = "")
+          break
+        }
         if (glasso_out$status == "stalled") glasso_stalled <- glasso_stalled + 1L
+        if (glasso_out$shift > 0) glasso_indefinite <- glasso_indefinite + 1L
+        ## (the torch backend reads Omega from the object)
+        previous_Omega <- private$Omega
         private$Omega <- args$params$Omega <- Matrix::symmpart(glasso_out$wi)
 
         ## CALL TO NLOPT OPTIMIZATION TO UPDATE OTHER PARAMETERS
         optim_out <- do.call(private$optimizer$main, args)
+
+        ## An iterate with a non-finite objective is not kept: the fit stays at
+        ## the previous one
+        new_objective <- -sum(data$w[w_pos] * optim_out$Ji[w_pos])
+        if (!is.finite(new_objective)) {
+          private$Omega <- previous_Omega
+          failure <- "the objective is not finite"
+          break
+        }
         do.call(self$update, optim_out)  # private$B now holds B_sc
+        last_glasso <- glasso_out
 
         ## Check convergence
-        objective[iter]   <- -self$loglik
+        objective[iter]   <- new_objective
         convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
         if ((convergence[iter] < config$ftol_em) | (iter >= config$maxit_em)) cond <- TRUE
 
@@ -99,23 +118,40 @@ PLNnetworkfit <- R6Class(
         args$params <- list(B = private$B, M = private$M, S2 = private$S2)
         objective.old <- objective[iter]
       }
+      ## the iterations actually kept
+      if (!is.null(failure)) iter <- iter - 1
 
       ## Restore B to original scale before leaving
       private$B <- sweep(private$B, 1, nrm$scales, "/")
 
       ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ## OUTPUT
-      private$Sigma <- Matrix::symmpart(glasso_out$w)
-      private$monitoring$objective   <- objective[1:iter]
-      private$monitoring$convergence <- convergence[1:iter]
+      if (!is.null(last_glasso)) private$Sigma <- Matrix::symmpart(last_glasso$w)
+      private$monitoring$objective   <- objective[seq_len(iter)]
+      private$monitoring$convergence <- convergence[seq_len(iter)]
       private$monitoring$iterations  <- iter
       private$monitoring$glasso_nonconverged <- glasso_nonconv
       private$monitoring$glasso_stalled      <- glasso_stalled
+      private$monitoring$glasso_indefinite   <- glasso_indefinite
+      private$monitoring$failure             <- failure
+      if (is.null(last_glasso)) {
+        ## Not a single iterate kept: the fit is marked as failed (its criteria
+        ## are NA), with the precision matrix of the empty network
+        private$Omega <- diag(1 / (diag(as.matrix(private$Sigma)) + self$penalty * diag(self$penalty_weights)),
+                              self$p, self$p)
+        private$Ji    <- rep(NA_real_, self$n)
+        warning("The alternating optimization failed at its first iteration for penalty ",
+                format(self$penalty), ": ", failure, ". This fit is marked as failed.", call. = FALSE)
+      } else if (!is.null(failure)) {
+        warning("The alternating optimization stopped at iteration ", iter + 1,
+                " for penalty ", format(self$penalty), ": ", failure,
+                ". The fit is the one of the previous iteration.", call. = FALSE)
+      }
       ## A stalled solve is not worth a warning: the stopping rule could not be
       ## met (the sweeps settle into a small limit cycle on an ill-conditioned
       ## covariance) but the solution itself has stopped moving. The other two
       ## failures are numerical, and do deserve one.
-      if (glasso_out$status %in% c("degenerate", "inner_failure", "max_iter"))
+      if (is.null(failure) && last_glasso$status %in% c("degenerate", "inner_failure", "max_iter"))
         warning("The graphical Lasso failed to converge (", glasso_out$status,
                 ") for penalty ", format(self$penalty),
                 ": the estimated network may be unreliable.", call. = FALSE)

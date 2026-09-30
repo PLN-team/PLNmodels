@@ -172,11 +172,13 @@ Networkfamily <- R6Class(
           pull(param) %>% min() %>% match(self$penalties)
         model <- self$models[[id_stars]]$clone()
       } else {
-        stopifnot(!anyNA(self$criteria[[crit]]))
-        id <- 1
-        if (length(self$criteria[[crit]]) > 1) {
-          id <- which.max(self$criteria[[crit]])
-        }
+        ## a failed fit has NA criteria, and is left out of the selection
+        failed <- is.na(self$criteria[[crit]])
+        if (all(failed)) stop("The ", crit, " is NA for all the models of the collection.")
+        if (any(failed))
+          warning(sum(failed), " model(s) of the collection failed, and are left out of the selection.",
+                  call. = FALSE)
+        id <- which.max(self$criteria[[crit]])
         model <- self$models[[id]]$clone()
       }
       model

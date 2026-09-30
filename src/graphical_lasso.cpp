@@ -29,6 +29,7 @@ Rcpp::List cpp_graphical_lasso(const arma::mat & S, const arma::mat & rho,
     Rcpp::Named("converged") = res.converged,
     Rcpp::Named("status")    = pln_glasso::status_name(res.status),
     Rcpp::Named("delta")     = res.delta,
+    Rcpp::Named("shift")     = res.shift,
     Rcpp::Named("dw_trace")  = res.dw_trace
   );
 }

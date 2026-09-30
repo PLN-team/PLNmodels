@@ -22,7 +22,9 @@
 // residual covariance produces), in compiled code that never returns to R, so
 // that no R-level timeout can stop it either.
 //
-// The port is faithful except on three points, all deliberate:
+// The port is faithful except on the points below, all deliberate, and on the
+// scaling of the problem to a unit diagonal before the descent (see solve()),
+// which gives the same solution, reached far more reliably:
 //
 //  1. When S carries no off-diagonal mass the problem separates exactly and
 //     Theta is diagonal. glassoFast returns 1 / max(L_ii, eps) there, dropping
@@ -130,6 +132,7 @@ struct Result {
   bool converged = true;  // strictly: the dw <= shr criterion was met
   Status status = Status::converged;
   double delta = 0.0;     // best dw reached, relative to the threshold shr
+  double shift = 0.0;     // added to the diagonal of X to make it positive definite
   std::vector<double> dw_trace; // per-sweep dw, recorded only when asked for
 };
 
@@ -150,12 +153,12 @@ struct State {
   }
 };
 
-// `warm` is used only when it is `usable_for(S.n_rows)`; pass nullptr for a
-// cold start. Mirrors glassoFast's defaults (thr = 1e-4, max_iter = 10000).
-inline Result solve(const arma::mat& S, const arma::mat& L,
-                    double thr = 1e-4, int max_iter = 10000,
-                    const State* warm = nullptr, bool trace = false,
-                    int stall_patience = kStallPatience) {
+// The block coordinate descent itself, on the problem as given. Callers go
+// through solve() below, which first puts the problem on a unit diagonal.
+inline Result solve_core(const arma::mat& S, const arma::mat& L,
+                         double thr, int max_iter,
+                         const State* warm, bool trace,
+                         int stall_patience) {
   const arma::uword n = S.n_rows;
 
   Result out;
@@ -324,6 +327,60 @@ inline Result solve(const arma::mat& S, const arma::mat& L,
 
   const arma::mat Xt = X.t(); // averaging the two triangles leaves the diagonal as is
   X = 0.5 * (X + Xt);
+
+  return out;
+}
+
+// `warm` is used only when it is `usable_for(S.n_rows)`; pass nullptr for a
+// cold start. Mirrors glassoFast's defaults (thr = 1e-4, max_iter = 10000).
+//
+// The problem is solved on a unit diagonal. For any positive diagonal D, Theta
+// solves the problem for (S, L) if and only if D^-1 Theta D^-1 solves it for
+// (DSD, DLD): the change of variables is exact, and only the stopping rule,
+// relative to the off-diagonal mass of S, sees it. We take D = diag(S + L)^-1/2,
+// which puts the diagonal of W at 1. On a covariance whose variances span
+// orders of magnitude, as the residual covariance of PLNnetwork does, the
+// unscaled descent is badly conditioned: it stalls in a limit cycle, fails in
+// its inner loop, or returns an indefinite precision matrix, where the scaled
+// one converges in a few sweeps. On 91 such problems met along PLNnetwork
+// paths, all converged once scaled, to a lower objective; on ordinary ones,
+// the median number of sweeps went from 646 to 4.
+inline Result solve(const arma::mat& S, const arma::mat& L,
+                    double thr = 1e-4, int max_iter = 10000,
+                    const State* warm = nullptr, bool trace = false,
+                    int stall_patience = kStallPatience) {
+  const arma::uword n = S.n_rows;
+  // degenerate input is left to solve_core(), which reports it
+  if (n == 0 || !S.is_finite() || !L.is_finite() || !arma::all(S.diag() + L.diag() > 0.0))
+    return solve_core(S, L, thr, max_iter, warm, trace, stall_patience);
+
+  const arma::vec d  = 1.0 / arma::sqrt(S.diag() + L.diag());
+  const arma::mat DD = d * d.t();
+
+  State warm_scaled;
+  if (warm != nullptr && warm->usable_for(n)) {
+    warm_scaled.W = warm->W % DD;
+    warm_scaled.X = warm->X / DD;
+    warm_scaled.filled = true;
+  }
+  Result out = solve_core(S % DD, L % DD, thr, max_iter,
+                          warm_scaled.filled ? &warm_scaled : nullptr, trace, stall_patience);
+  out.W /= DD;
+  out.X %= DD;
+
+  // X is backed out of the regression coefficients, so it is the inverse of W
+  // only at the exact solution. Short of it, it can come out indefinite even
+  // though W stays positive definite, and a caller using it as a precision
+  // matrix then diverges. Should that happen, its diagonal is shifted, which
+  // keeps the support, so that its smallest eigenvalue is 1 / lambda_max(W),
+  // the one of the inverse of W, and the shift is reported.
+  arma::mat R_chol;
+  if (out.X.is_finite() && !arma::chol(R_chol, out.X)) {
+    const double ev_min   = arma::eig_sym(out.X).min();
+    const double ev_max_W = arma::eig_sym(0.5 * (out.W + out.W.t())).max();
+    out.shift = 1.0 / ev_max_W - ev_min;
+    out.X.diag() += out.shift;
+  }
 
   return out;
 }

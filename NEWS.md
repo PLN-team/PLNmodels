@@ -1,5 +1,40 @@
 # PLNmodels (development version)
 
+## Graphical Lasso and network fits (#184)
+
+* **`graphical_lasso()` now solves the problem scaled to a unit diagonal.** For any
+  positive diagonal `D`, `Theta` solves the problem for `(S, rho)` if and only if
+  `D^-1 Theta D^-1` solves it for `(DSD, D rho D)`: the change of variables is exact,
+  and only the stopping rule sees it. On ordinary input the result is the one of
+  glassoFast up to the tolerance (same supports along penalty paths, relative
+  differences below 1e-4). On a covariance whose variances span orders of magnitude,
+  as the residual covariance of `PLNnetwork()` does, the unscaled descent stalled in
+  a limit cycle, failed in its inner loop, or returned an indefinite precision
+  matrix; scaled, it converges in a few sweeps. On 91 such problems met along
+  `PLNnetwork()` paths, all converged once scaled, to a lower objective; on ordinary
+  ones, the median number of sweeps went from 646 to 4. The detection of limit
+  cycles (`"stalled"`) is kept as a safeguard.
+* **`graphical_lasso()` always returns a positive definite `wi`.** It is backed out of
+  the regression coefficients of the algorithm, so that it is the inverse of `w` only
+  at the exact solution, and could come out indefinite short of it, whatever the
+  `status`. Its diagonal is then shifted, which keeps the network, so that its
+  smallest eigenvalue is the one of the inverse of `w`; the shift is reported in the
+  new `shift` component.
+* **A failure along the alternating optimization of `PLNnetwork()` no longer stops the
+  whole path.** A non-finite precision matrix from the graphical Lasso, or a
+  non-finite objective, ends the optimization for that penalty on the previous
+  iterate, with a warning; if there is none, the fit is marked as failed (`NA`
+  criteria), and `getBestModel()` leaves it out of the selection, with a warning,
+  instead of stopping. The reason is in `$optim_par$failure`, and the number of
+  shifted precision matrices in `$optim_par$glasso_indefinite` (also for
+  `ZIPLNnetwork()`). `ZIPLN()` likewise stops on a non-finite objective, on the best
+  iterate so far, instead of failing with "missing value where TRUE/FALSE needed".
+* On the simulations of #184 (30 multispecies Gompertz communities, `PLNnetwork(Abundance ~ 1)`),
+  version 1.3.2 failed with an error on 3 of them, returned `NA` criteria on 3 more,
+  and non-finite or absurd log-likelihoods (up to 1e109) on 4 others. All 30 paths now
+  fit, the BIC of the selected model is higher (median +7 on the 20 datasets where
+  1.3.2 did fit), and the whole study runs twice as fast.
+
 ## Bug fixes
 
 * **The builtin backend now decreases the objective at every iteration** (#186). Its VE step optimizes `M` with `B` profiled (`B = P_X M`), but the objective was then evaluated at the `B` of the preceding M step, which does not match the new `M`: the reported objective could jump by orders of magnitude, and the optimization settle far   from the optimum. `B` is now updated to match `M` after the VE step, and the M step  computes `Omega` with the new `B` (the joint optimum) rather than the previous one. On data with many zeros that are not excess zeros, fits were far worse than `PLN()`'s, although ZIPLN nests PLN; they are now at least as good. On benign data (`trichoptera`, `oaks`) the log-likelihood is unchanged up to a few units.
