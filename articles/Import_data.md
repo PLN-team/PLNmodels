@@ -93,6 +93,8 @@ If you look carefully, you can notice a few difference between
 
 ## Computing offsets
 
+### Offset methods
+
 It is common practice when modeling count data to introduce an offset
 term to control for different sampling efforts, exposures, baselines,
 etc. The *proper way* to compute sample-specific offsets in still
@@ -113,6 +115,11 @@ few popular methods:
   2018](#ref-GMPR)) where each sample is compared to each other to
   compute a median log-ratio and the offset of a sample is the geometric
   means of those pairwise ratios.
+- Trimmed Mean of M-values (TMM), introduced in ([Robinson and Oshlack
+  2010](#ref-TMM)), where a single sample is selected as a reference and
+  other samples are compared to it using log-ratios (M-values). The
+  offset is computed as the weighted mean of these log-ratios after
+  trimming the most extreme values.
 - Wrench, introduced in ([Kumar et al. 2018](#ref-Kumar2018)) and fully
   implemented in the [Wrench
   package](https://bioconductor.org/packages/release/bioc/html/Wrench.html),
@@ -140,8 +147,69 @@ compute_offset(trichoptera$Abundance)
     ##   49 
     ##   86
 
-In this particular example, the counts are too sparse and sophisticated
-offset methods all fail (numeric output hidden)
+``` r
+
+compute_offset(trichoptera$Abundance, offset = "RLE")
+```
+
+    ##            1            2            3            4            5            6 
+    ##   0.71429732   0.33613991   1.34455966   7.39507811   2.89920676   0.58824485 
+    ##            7            8            9           10           11           12 
+    ##   0.16806996   1.21850719   0.33613991   0.08403498   0.12605247   0.12605247 
+    ##           13           14           15           16           17           18 
+    ##   1.68069957   0.84034978  21.00874462   5.96648347   1.84876953   1.30254217 
+    ##           19           20           21           22           23           24 
+    ##   1.26052468   2.98324174   0.84034978   0.21008745   0.33613991   0.08403498 
+    ##           25           26           27           28           29           30 
+    ##   0.42017489   0.37815740   0.58824485   0.08403498   0.16806996  49.28651487 
+    ##           31           32           33           34           35           36 
+    ## 112.22871375   1.38657714   2.60508433   9.24384763   1.21850719   2.52104935 
+    ##           37           38           39           40           41           42 
+    ##   0.88236727   0.12605247   0.21008745   0.75631481   2.05885697   1.38657714 
+    ##           43           44           45           46           47           48 
+    ##   2.98324174   1.17648970   1.55464710   4.32780139   0.46219238   0.71429732 
+    ##           49 
+    ##   1.13447221
+
+``` r
+
+compute_offset(trichoptera$Abundance, offset = "GMPR")
+```
+
+    ##  [1]  0.7981233  0.7816485  0.9947327  1.5255738  1.3235046  0.7829728
+    ##  [7]  0.5292430  0.8453323  0.8509305  0.3378176  0.2415451  0.1207293
+    ## [13]  1.1119746  0.9712159  6.6202307  2.6650516  1.2309960  1.2732613
+    ## [19]  1.8363327  2.8330860  1.2872244  0.5193856  0.5013525  0.2066765
+    ## [25]  0.6193332  0.6695823  0.9206485  0.2389263  0.2683901 14.3884296
+    ## [31]  6.4649457  2.1886711  2.8838087  6.4053103  2.0500185  2.5463727
+    ## [37]  1.6452733  0.7728725  0.5871931  0.6882350  2.0094930  1.3741607
+    ## [43]  1.7944326  1.3953269  1.5150224  2.2205494  0.6018143  1.1423371
+    ## [49]  1.0978833
+
+``` r
+
+compute_offset(trichoptera$Abundance, offset = "Wrench")
+```
+
+    ##  [1]  0.41269451  0.17385897  0.31925785  0.70682391  0.44749382  0.20676142
+    ##  [7]  0.10226641  0.21204241  0.09228293  0.03919178  0.03946910  0.02295077
+    ## [13] 24.18096281  1.54038084  3.95187144  0.80172207 10.52136472  4.55854738
+    ## [19]  0.46968859 51.88528943  0.32803605  0.14764973  4.13635353  0.03152826
+    ## [25]  1.63626578  0.53769290  0.38482355  0.62689594  0.08030685 83.87692476
+    ## [31] 33.40810265  0.75508731  1.05809625  1.18385013  0.58657751  0.43005272
+    ## [37]  4.79925224  0.18381986  0.16078594  0.18490773  4.25999137  5.46689591
+    ## [43]  0.60139850  7.56594658  9.89766712 33.73727074  0.74264459 29.13747796
+    ## [49] 47.12017975
+
+### Dealing with sparse data
+
+Offset computation can fail if the data is too sparse (see final section
+for details). Common failure contexts include:
+
+- **CSS**: Samples with **only 1 positive count** (as quantiles are
+  undefined in that setting). In that case,
+  [`compute_offset()`](https://pln-team.github.io/PLNmodels/reference/compute_offset.md)
+  falls back to TSS method for **those samples only** and reports them.
 
 ``` r
 
@@ -149,23 +217,25 @@ compute_offset(trichoptera$Abundance, "CSS")
 ```
 
     ## Warning in offset_function(counts, ...): Some samples only have 1 positive
-    ## values. Can't compute quantiles and fall back to TSS normalization
+    ## value. Can't compute quantiles and fall back to TSS normalization for those
+    ## samples. Samples: 12
 
-``` r
+    ##  [1] 1.0000000 0.7142857 0.2857143 1.7142857 0.8571429 0.2857143 0.5714286
+    ##  [8] 0.2857143 0.5714286 0.5714286 0.1428571 0.4285714 0.7142857 0.7142857
+    ## [15] 1.4285714 1.4285714 1.4285714 1.8571429 2.7142857 2.7142857 2.1428571
+    ## [22] 0.7142857 0.4285714 0.1428571 1.0000000 1.5714286 1.8571429 0.4285714
+    ## [29] 0.2857143 2.7142857 1.8571429 3.1428571 3.2857143 3.8571429 2.8571429
+    ## [36] 1.2857143 1.1428571 1.0000000 0.5714286 0.2857143 0.8571429 0.8571429
+    ## [43] 1.1428571 0.5714286 1.0000000 1.5714286 0.4285714 0.7142857 1.7142857
 
-compute_offset(trichoptera$Abundance, "RLE")
-```
-
-    ## Warning in offset_function(counts, ...): Because of high sparsity, some samples
-    ## have null or infinite offset.
-
-``` r
-
-compute_offset(trichoptera$Abundance, "GMPR")
-```
-
-We can mitigate this problem for the RLE offset by adding pseudocounts
-to the counts although doing so has its own drawbacks.
+- **RLE**: Datasets with no shared feature and/or samples sharing less
+  than 50% of the features with the reference. Indeed, features with at
+  least one 0 across samples have a geometric mean of 0. Once they
+  dominate the feature set, the median log-ratio becomes $`+\infty`$ for
+  all samples. To alleviate this and starting from version 1.3.2.9000,
+  the median is computed using **only features with non-null and finite
+  geometric mean**. Other mitigation paths consist in adding
+  pseudocounts to the counts (although doing so has its own drawbacks).
 
 ``` r
 
@@ -187,8 +257,9 @@ compute_offset(trichoptera$Abundance, "RLE", pseudocounts = 1)
     ##        49 
     ## 0.9186270
 
-A better solution consists in using only positive counts to compute the
-offsets:
+or using only **positive counts** to compute the offsets (similar to but
+not equivalent to the new default behavior, as null counts don’t
+contribute to geometric mean computations in this version)
 
 ``` r
 
@@ -210,28 +281,16 @@ compute_offset(trichoptera$Abundance, "RLE", type = "poscounts")
     ##        49 
     ## 1.0672361
 
-Finally, we can use wrench to compute the offsets:
+- **GMPR**: Datasets with one sample and/or samples sharing no species
+  with other samples in the dataset. There is no workaround yet.
 
-``` r
+### Offsets scales
 
-compute_offset(trichoptera$Abundance, "Wrench")
-```
-
-    ##  [1]  0.41269451  0.17385897  0.31925785  0.70682391  0.44749382  0.20676142
-    ##  [7]  0.10226641  0.21204241  0.09228293  0.03919178  0.03946910  0.02295077
-    ## [13] 24.18096281  1.54038084  3.95187144  0.80172207 10.52136472  4.55854738
-    ## [19]  0.46968859 51.88528943  0.32803605  0.14764973  4.13635353  0.03152826
-    ## [25]  1.63626578  0.53769290  0.38482355  0.62689594  0.08030685 83.87692476
-    ## [31] 33.40810265  0.75508731  1.05809625  1.18385013  0.58657751  0.43005272
-    ## [37]  4.79925224  0.18381986  0.16078594  0.18490773  4.25999137  5.46689591
-    ## [43]  0.60139850  7.56594658  9.89766712 33.73727074  0.74264459 29.13747796
-    ## [49] 47.12017975
-
-**Note** TSS is the only methods that produces offset on the same scale
-as the counts, all others produces offsets that are (hopefully)
-*proportional* to library sizes but on a different scale. To force the
-offsets to be on the same scale as the counts for all methods, you can
-use the option `scale = "count"`.
+TSS is the only methods that produces offset on the same scale as the
+counts, all others produces offsets that are (hopefully) *proportional*
+to library sizes but on a different scale (their median value is 1). To
+force the offsets to be on the same scale as the counts for all methods,
+you can use the option `scale = "count"`.
 
 ``` r
 
@@ -603,5 +662,9 @@ Paulson, Joseph N, O. Colin Stine, Héctor Corrada Bravo, and Mihai Pop.
 2013. “Differential Abundance Analysis for Microbial Marker-Gene
 Surveys.” *Nat Methods* 10 (September): 1200–1202.
 <https://doi.org/10.1038/nmeth.2658>.
+
+Robinson, Mark D, and Alicia Oshlack. 2010. “A Scaling Normalization
+Method for Differential Expression Analysis of RNA-Seq Data.” *Genome
+Biology* 11 (3). <https://doi.org/10.1186/gb-2010-11-3-r25>.
 
 [^1]: although a `data.frame` is technically a `list`
