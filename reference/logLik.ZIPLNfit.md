@@ -40,5 +40,5 @@ model <- ZIPLN(Abundance ~ 1, data = trichoptera)
 #>  Adjusting a ZI-PLN model with full covariance model and single specific parameter(s) in Zero inflation component.
 #>  DONE!
 logLik(model)
-#> 'log Lik.' -1139.296 (df=171)
+#> 'log Lik.' -1139.302 (df=171)
 ```

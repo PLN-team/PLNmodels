@@ -37,5 +37,5 @@ model <- ZIPLN(Abundance ~ 1, data = trichoptera)
 #>  Adjusting a ZI-PLN model with full covariance model and single specific parameter(s) in Zero inflation component.
 #>  DONE!
 BIC(model)
-#> [1] -1472.047
+#> [1] -1472.052
 ```

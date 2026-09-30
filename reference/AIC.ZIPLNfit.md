@@ -40,5 +40,5 @@ model <- ZIPLN(Abundance ~ 1, data = trichoptera)
 #>  Adjusting a ZI-PLN model with full covariance model and single specific parameter(s) in Zero inflation component.
 #>  DONE!
 AIC(model)
-#> [1] -1310.296
+#> [1] -1310.302
 ```
