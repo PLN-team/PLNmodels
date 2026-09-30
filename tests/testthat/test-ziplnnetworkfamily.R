@@ -192,3 +192,13 @@ test_that("ZIPLNfit_sparse shares the EBIC and density conventions of PLNnetwork
   expect_equal(models$criteria$EBIC, models$criteria$BIC)
   models$ebic_gamma <- 0.5
 })
+
+test_that("ZIPLNnetwork: the formula can be passed as a variable (#187)", {
+  f <- Abundance ~ 1 + Wind
+  ctrl <- ZIPLNnetwork_param(trace = 0)
+  expect_is(nets <- ZIPLNnetwork(f, data = trichoptera, penalties = c(0.5, 0.1), control = ctrl),
+            "ZIPLNnetworkfamily")
+  expect_equal(nets$criteria$loglik,
+               ZIPLNnetwork(Abundance ~ 1 + Wind, data = trichoptera, penalties = c(0.5, 0.1),
+                            control = ctrl)$criteria$loglik)
+})

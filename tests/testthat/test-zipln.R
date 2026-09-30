@@ -137,3 +137,59 @@ test_that("ZIPLN: Check that all univariate ZIPLN models are equivalent with the
   ))
 
 })
+
+test_that("ZIPLN: the formula can be passed as a variable (#187)",  {
+  ## full data set, so that no level of Group is empty
+  utils::data("trichoptera", package = "PLNmodels", envir = environment())
+  tri  <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+  ctrl <- ZIPLN_param(trace = 0)
+  for (f in list(Abundance ~ 1, Abundance ~ 1 + Wind, Abundance ~ 1 + Group,
+                 Abundance ~ 1 + Wind | 1 + Group)) {
+    expect_is(fit <- ZIPLN(f, tri, control = ctrl), "ZIPLNfit")
+    expect_equal(fit$loglik, do.call(ZIPLN, list(f, tri, control = ctrl))$loglik)
+    expect_equal(dim(predict(fit, newdata = tri[1:3, ])), c(3L, ncol(tri$Abundance)))
+  }
+})
+
+## Many zeros that are not excess zeros: the weaker species of each pair of
+## competitors is set to 0 where the stronger one dominates (#185, #186)
+simulate_competing_community <- function(seed, n = 50, p = 20, width = 10) {
+  set.seed(seed)
+  x     <- seq(0, 100, length.out = n)
+  theta <- runif(p, 0, 100)
+  mu    <- log(100) - outer(x, theta, "-")^2 / (2 * width^2)
+  Y     <- matrix(rpois(n * p, exp(mu + matrix(rnorm(n * p, 0, 0.5), n, p))), n, p)
+  pairs <- matrix(sample(p), ncol = 2)
+  for (k in seq_len(nrow(pairs))) {
+    a <- pairs[k, 1]; b <- pairs[k, 2]
+    Y[Y[, a] > Y[, b], b] <- 0
+  }
+  keep <- colSums(Y) > 0; rows <- rowSums(Y[, keep]) > 0
+  colnames(Y) <- paste0("sp", 1:p)
+  suppressWarnings(prepare_data(Y[rows, keep], data.frame(x = x[rows])))
+}
+
+test_that("ZIPLN: the objective decreases and the fit is at least as good as PLN's (#185, #186)",  {
+  dat <- simulate_competing_community(1)
+  pln <- PLN(Abundance ~ 1 + x + I(x^2), dat, control = PLN_param(trace = 0))
+  for (backend in c("builtin", "nlopt")) {
+    zi <- ZIPLN(Abundance ~ 1 + x + I(x^2), dat, zi = "col",
+                control = ZIPLN_param(backend = backend, trace = 0))
+    obj <- zi$optim_par$objective
+    expect_true(all(diff(obj) <= 1e-6 * abs(obj[-1])))
+    expect_equal(zi$optim_par$objective_increases, 0L)
+    expect_equal(-zi$loglik, min(obj), tolerance = 1e-6)
+  }
+  ## ZIPLN nests PLN (pi -> 0)
+  zi <- ZIPLN(Abundance ~ 1 + x + I(x^2), dat, zi = "col", control = ZIPLN_param(trace = 0))
+  expect_gte(zi$loglik, pln$loglik)
+})
+
+test_that("ZIPLN: the objective of a sparse fit includes the penalty and decreases",  {
+  dat <- simulate_competing_community(1)
+  zi <- ZIPLN(Abundance ~ 1 + x + I(x^2), dat, control = ZIPLN_param(penalty = 0.2, trace = 0))
+  obj <- zi$optim_par$objective
+  expect_true(all(diff(obj) <= 1e-6 * abs(obj[-1])))
+  expect_equal(tail(obj, 1),
+               -zi$loglik + .5 * zi$n * zi$penalty * sum(abs(zi$penalty_weights * zi$model_par$Omega)))
+})
