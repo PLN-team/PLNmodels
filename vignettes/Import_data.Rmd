@@ -72,48 +72,56 @@ If you look carefully, you can notice a few difference between `trichoptera` and
 
 ## Computing offsets
 
+### Offset methods 
+
 It is common practice when modeling count data to introduce an offset term to control for different sampling efforts, exposures, baselines, etc. The *proper way* to compute sample-specific offsets in still debated and may vary depending on the field. There are nevertheless a few popular methods:
 
 - Total Sum Scaling (TSS), where the offset of a sample is the total count in that sample
 - Cumulative Sum Scaling (CSS), introduced in [@CSS], where the offset of a sample if the cumulative sum of counts in that sample, up to a quantile determined in a data driven way. 
 - Relative Log-Expression (RLE), implemented in [@DESeq2], where all samples are used to compute a reference sample, each sample is compared to the reference sample using log-ratios and the offset is the median log-ratio. 
 - Geometric Mean of Pairwise Ratio (GMPR), introduced in [@GMPR] where each sample is compared to each other to compute a median log-ratio and the offset of a sample is the geometric means of those pairwise ratios. 
+- Trimmed Mean of M-values (TMM), introduced in [@TMM], where a single sample is selected as a reference and other samples are compared to it using log-ratios (M-values). The offset is computed as the weighted mean of these log-ratios after trimming the most extreme values.
 - Wrench, introduced in [@Kumar2018] and fully implemented in the [Wrench package](https://bioconductor.org/packages/release/bioc/html/Wrench.html), where all samples are used to compute reference proportions and each sample is compared to the reference using ratios (and **not log-ratios**) of proportions to compute compositional correction factors. In that case, the offset is the product of (geometrically centered) compositional factors and (geometrically centered) depths. 
 
 Each of these offset be computed from a counts matrix using the `compute_offset` function and changing its `offset` argument:
 ```{r compute_offset}
 ## same as compute_offset(trichoptera$Abundance, offset = "TSS")
 compute_offset(trichoptera$Abundance) 
+compute_offset(trichoptera$Abundance, offset = "RLE")
+compute_offset(trichoptera$Abundance, offset = "GMPR")
+compute_offset(trichoptera$Abundance, offset = "Wrench")
 ```
 
-In this particular example, the counts are too sparse and sophisticated offset methods all fail (numeric output hidden)
-```{r other_offsets, warning=TRUE, error = TRUE, results='hide'} 
+### Dealing with sparse data
+
+Offset computation can fail if the data is too sparse (see final section for details). Common failure contexts include: 
+
+- **CSS**: Samples with **only 1 positive count** (as quantiles are undefined in that setting). In that case, `compute_offset()` falls back to TSS method for **those samples only** and reports them.
+
+```{r other_offsets, warning=TRUE, error = TRUE} 
 compute_offset(trichoptera$Abundance, "CSS")
-compute_offset(trichoptera$Abundance, "RLE")
-compute_offset(trichoptera$Abundance, "GMPR")
 ```
 
-We can mitigate this problem for the RLE offset by adding pseudocounts to the counts although doing so has its own drawbacks.  
+- **RLE**: Datasets with no shared feature and/or samples sharing less than 50% of the features with the reference. Indeed, features with at least one 0 across samples have a geometric mean of 0. Once they dominate the feature set, the median log-ratio becomes $+\infty$ for all samples. To alleviate this and starting from version 1.3.2.9000, the median is computed using **only features with non-null and finite geometric mean**. Other mitigation paths consist in adding pseudocounts to the counts (although doing so has its own drawbacks).  
 ```{r pseudocounts}
 compute_offset(trichoptera$Abundance, "RLE", pseudocounts = 1)
 ```
 
-A better solution consists in using only positive counts to compute the offsets:
+or using only **positive counts** to compute the offsets (similar to but not equivalent to the new default behavior, as null counts don't contribute to geometric mean computations in this version)
+
 ```{r poscounts}
 compute_offset(trichoptera$Abundance, "RLE", type = "poscounts")
 ```
 
-Finally, we can use wrench to compute the offsets:
-```{r wrench}
-compute_offset(trichoptera$Abundance, "Wrench")
-```
+- **GMPR**: Datasets with one sample and/or samples sharing no species with other samples in the dataset. There is no workaround yet. 
 
-**Note** TSS is the only methods that produces offset on the same scale as the counts, all others produces offsets that are (hopefully) *proportional* to library sizes but on a different scale. To force the offsets to be on the same scale as the counts for all methods, you can use the option `scale = "count"`.
+### Offsets scales
+
+TSS is the only methods that produces offset on the same scale as the counts, all others produces offsets that are (hopefully) *proportional* to library sizes but on a different scale (their median value is 1). To force the offsets to be on the same scale as the counts for all methods, you can use the option `scale = "count"`.
 
 ```{r wrench_counts}
 compute_offset(trichoptera$Abundance, "Wrench", scale = "count")
 ```
-
 
 ## Building data frame using `prepare_data`
 
