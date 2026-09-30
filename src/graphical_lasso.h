@@ -1,5 +1,5 @@
-#ifndef PLNMODELS_GRAPHICAL_LASSO_H
-#define PLNMODELS_GRAPHICAL_LASSO_H
+#ifndef SHARED_GRAPHICAL_LASSO_H
+#define SHARED_GRAPHICAL_LASSO_H
 
 #include <RcppArmadillo.h>
 #include <algorithm>
@@ -14,13 +14,17 @@
 // in the bookkeeping of Sustik & Calderhead (2012), "GLASSOFAST: An efficient
 // GLASSO implementation" (TR-12-29, UT Austin).
 //
-// This is a direct port of the `glassofast` Fortran subroutine the glassoFast
-// package ships, which PLNnetwork and ZIPLNnetwork used to call at every
-// M-step. It is shared with the normalblockr package (src/graphical_lasso.h
-// there). The reason for bringing it in-house: the Fortran can hang forever
-// on a nearly collapsed covariance (entries ~1e-8, as a rank-deficient
-// residual covariance produces), in compiled code that never returns to R, so
-// that no R-level timeout can stop it either.
+// This file is shared VERBATIM by the PLNmodels and normalblockr packages
+// (src/graphical_lasso.h in both): change it in one, copy it to the other.
+//
+// It is a direct port of the `glassofast` Fortran subroutine the glassoFast
+// package ships, which both packages used to call at every M-step, from R.
+// The reasons for bringing it in-house: the Fortran can hang forever on a
+// nearly collapsed covariance (entries ~1e-8, as a rank-deficient residual
+// covariance produces), in compiled code that never returns to R, so that no
+// R-level timeout can stop it either; calling back into R from the C++ (V)EM
+// of normalblockr was a memory-safety hazard; and an in-house solver can be
+// warm-started (State below).
 //
 // The port is faithful except on the points below, all deliberate, and on the
 // scaling of the problem to a unit diagonal before the descent (see solve()),
@@ -46,14 +50,14 @@
 // The pointers it is applied to are always distinct allocations (a standalone
 // arma::vec and the columns of a matrix).
 #if defined(__GNUC__) || defined(__clang__)
-  #define PLN_RESTRICT __restrict__
+  #define GLASSO_RESTRICT __restrict__
 #elif defined(_MSC_VER)
-  #define PLN_RESTRICT __restrict
+  #define GLASSO_RESTRICT __restrict
 #else
-  #define PLN_RESTRICT
+  #define GLASSO_RESTRICT
 #endif
 
-namespace pln_glasso {
+namespace graphical_lasso {
 
 // The Fortran's EPS parameter, kept to the digit for comparability.
 constexpr double kEps = 1.1e-16;
@@ -62,7 +66,8 @@ constexpr double kEps = 1.1e-16;
 // termination is guaranteed structurally instead (non-finite input and a
 // non-positive S_ii + L_ii are both rejected up front, and a non-finite dlx
 // breaks the loop). It is set far above what a well-posed problem needs:
-// weak penalties genuinely take thousands of passes.
+// weak penalties genuinely take thousands of passes, up to ~15k measured over
+// a 432-case sweep, and an earlier 10k cap silently degraded two of them.
 constexpr int kMaxInner = 500000;
 
 // Stagnation detection on the outer loop.
@@ -136,12 +141,16 @@ struct Result {
   std::vector<double> dw_trace; // per-sweep dw, recorded only when asked for
 };
 
-// Previous (W, X) used to warm-start a solve. It is only used when it has the
+// Previous (W, X) used to warm-start a solve, typically carried between the
+// M-steps of a (V)EM or along a penalty path. It is only used when it has the
 // right size and is finite; anything else silently falls back to a cold start.
 //
 // Beware that a warm start does not reproduce a cold solve exactly: the outer
 // loop stops on `dw <= shr`, how much a whole sweep moved W rather than how far
-// W still is from the optimum, so starting closer exits sooner.
+// W still is from the optimum, so starting closer exits sooner. Nor is a warm
+// start ever load-bearing: a bad one can send the descent off where a cold
+// start on the same problem converges, so callers should retry cold on a
+// non-finite result.
 struct State {
   arma::mat W;
   arma::mat X;
@@ -151,6 +160,8 @@ struct State {
     return filled && W.n_rows == n && W.n_cols == n && X.n_rows == n && X.n_cols == n
            && W.is_finite() && X.is_finite();
   }
+  void store(const Result& r) { W = r.W; X = r.X; filled = true; }
+  void reset() { filled = false; }
 };
 
 // The block coordinate descent itself, on the problem as given. Callers go
@@ -242,24 +253,24 @@ inline Result solve_core(const arma::mat& S, const arma::mat& L,
   // The rest of this function goes through raw column pointers rather than
   // Armadillo element access: this is the hot loop, and every `X(i, j)` would
   // otherwise carry a bounds check.
-  const double* const PLN_RESTRICT Wd_p = Wd.memptr();
-  double* const PLN_RESTRICT WXj_p = WXj.memptr();
+  const double* const GLASSO_RESTRICT Wd_p = Wd.memptr();
+  double* const GLASSO_RESTRICT WXj_p = WXj.memptr();
 
   double dw = 0.0; // kept past the loop so the final value can be reported
   for (iter = 1; iter <= max_iter; ++iter) {
     dw = 0.0;
 
     for (arma::uword j = 0; j < n; ++j) {
-      double* const PLN_RESTRICT Xj = X.colptr(j);
-      const double* const PLN_RESTRICT Sj = S.colptr(j);
-      const double* const PLN_RESTRICT Lj = L.colptr(j);
+      double* const GLASSO_RESTRICT Xj = X.colptr(j);
+      const double* const GLASSO_RESTRICT Sj = S.colptr(j);
+      const double* const GLASSO_RESTRICT Lj = L.colptr(j);
 
       // WXj = W * X.col(j), skipping the zeros X is expected to be full of
       std::fill(WXj_p, WXj_p + n, 0.0);
       for (arma::uword i = 0; i < n; ++i) {
         const double xij = Xj[i];
         if (xij != 0.0) {
-          const double* const PLN_RESTRICT Wi = W.colptr(i);
+          const double* const GLASSO_RESTRICT Wi = W.colptr(i);
           for (arma::uword k = 0; k < n; ++k) WXj_p[k] += Wi[k] * xij;
         }
       }
@@ -277,7 +288,7 @@ inline Result solve_core(const arma::mat& S, const arma::mat& L,
           const double delta = c - Xj[i];
           if (delta != 0.0) {
             Xj[i] = c;
-            const double* const PLN_RESTRICT Wi = W.colptr(i);
+            const double* const GLASSO_RESTRICT Wi = W.colptr(i);
             for (arma::uword k = 0; k < n; ++k) WXj_p[k] += Wi[k] * delta;
             const double ad = std::fabs(delta);
             if (ad > dlx) dlx = ad;
@@ -294,7 +305,7 @@ inline Result solve_core(const arma::mat& S, const arma::mat& L,
       }
 
       WXj_p[j] = Wd_p[j];
-      double* const PLN_RESTRICT Wj = W.colptr(j);
+      double* const GLASSO_RESTRICT Wj = W.colptr(j);
       double acc = 0.0;
       for (arma::uword k = 0; k < n; ++k) acc += std::fabs(WXj_p[k] - Wj[k]);
       if (acc > dw) dw = acc;
@@ -385,8 +396,8 @@ inline Result solve(const arma::mat& S, const arma::mat& L,
   return out;
 }
 
-} // namespace pln_glasso
+} // namespace graphical_lasso
 
-#undef PLN_RESTRICT
+#undef GLASSO_RESTRICT
 
-#endif // PLNMODELS_GRAPHICAL_LASSO_H
+#endif // SHARED_GRAPHICAL_LASSO_H

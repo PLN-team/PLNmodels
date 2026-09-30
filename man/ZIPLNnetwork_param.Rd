@@ -10,7 +10,7 @@ ZIPLNnetwork_param(
   trace = 1,
   n_penalties = 30,
   min_ratio = 0.1,
-  penalize_diagonal = TRUE,
+  penalize_diagonal = FALSE,
   penalty_weights = NULL,
   config_post = list(),
   config_optim = list(),
@@ -20,11 +20,11 @@ ZIPLNnetwork_param(
 \arguments{
 \item{backend}{optimization backend, either \code{"builtin"} (default, joint Newton on (M,\eqn{\psi},R), combined with the partial E-step \code{maxit_ve = 1}) or \code{"nlopt"} (CCSAQ). \code{"builtin"} consistently finds a better ELBO across the penalty path at the cost of being slower.}
 
-\item{inception_cov}{Covariance structure used for the inception PLN:
-\code{"full"} (default), \code{"diagonal"} or \code{"spherical"}. Non-full structures are now
-fully supported: when \code{inception_cov != "full"}, the penalty grid is built from the
-empirical covariance of latent residuals \eqn{M - XB} (a full-rank proxy for \eqn{\Sigma}),
-avoiding the broken \code{max_pen = 0} that previously occurred with diagonal/spherical.}
+\item{inception_cov}{Covariance structure used for the inception ZIPLN, which starts the
+penalty path and sets its top: \code{"full"} (default), \code{"diagonal"} or \code{"spherical"}. The top of
+the grid of penalties is computed as in \code{\link[=PLNnetwork_param]{PLNnetwork_param()}}. Unlike for \code{\link[=PLNnetwork]{PLNnetwork()}}, a
+full inception is the default: a diagonal one makes the top of the path exactly the empty
+network, but was found to lead to a lower BIC along the path, at a higher cost.}
 
 \item{trace}{a integer for verbosity.}
 
@@ -32,7 +32,10 @@ avoiding the broken \code{max_pen = 0} that previously occurred with diagonal/sp
 
 \item{min_ratio}{the penalty grid ranges from the minimal value that produces a sparse to this value multiplied by \code{min_ratio}. Default is 0.1.}
 
-\item{penalize_diagonal}{boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is \code{TRUE}}
+\item{penalize_diagonal}{boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is \code{FALSE}.
+Penalizing the diagonal inflates the latent variances by the penalty (\eqn{\Sigma_{ii} = S_{ii} + \rho}),
+which the VE step then feeds back into the residual covariance \eqn{S}: along the path, the
+network may then never become empty, whatever the penalty (#180).}
 
 \item{penalty_weights}{either a single or a list of p x p matrix of weights (default: all weights equal to 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.}
 

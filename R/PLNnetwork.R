@@ -55,22 +55,23 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #'   better ELBO than plain `"nlopt"`, at essentially the same speed. Without a good inception,
 #'   `"builtin"` alone (`maxit_ve = NULL`) can converge to a poor basin on large datasets — use
 #'   `"nlopt"` if you want to opt out of the whole combination.
-#' @param inception_cov Covariance structure used for the inception PLN:
-#'   `"full"` (default), `"diagonal"` or `"spherical"`. Non-full structures are now
-#'   fully supported: when `inception_cov != "full"`, the penalty grid is built from the
-#'   empirical covariance of latent residuals \eqn{M - XB} (a full-rank proxy for \eqn{\Sigma}),
-#'   avoiding the broken `max_pen = 0` that previously occurred with diagonal/spherical.
+#' @param inception_cov Covariance structure used for the inception PLN, which starts the
+#'   penalty path and sets its top: `"diagonal"` (default), `"full"` or `"spherical"`. The top
+#'   of the grid of penalties is the largest off-diagonal entry of the residual covariance of the
+#'   inception, \eqn{crossprod(M - XB) / n}, the penalty above which the graphical Lasso returns
+#'   the empty network (weighted by `penalty_weights`, and on the diagonal too when
+#'   `penalize_diagonal = TRUE`). With a diagonal inception and an unpenalized diagonal (the
+#'   defaults), the inception is itself the empty network, and the path starts from it.
 #' @param inception_backend character or `NULL` (default, i.e. same as `backend`). Backend for
 #'   the inception PLN only; the penalty grid models always use `backend`.
 #'   Ignored when `inception` is supplied by the user.
 #' @param inception_niter integer or `NULL`. Limits the inception PLN to at most
 #'   this many iterations (EM iterations for `"builtin"`, function evaluations × 10 for
-#'   `"nlopt"`). Default is `5L` when `backend = "builtin"` (`NULL`, i.e. full convergence,
-#'   otherwise): fewer iterations keep the latent mean M from over-converging toward the
-#'   unconstrained optimum, which would make it harder to warm-start the sparse penalty models.
-#'   Values above ~20 typically hurt. When `inception_cov != "full"` or `inception_niter` is set,
-#'   the penalty grid uses the empirical residual covariance \eqn{crossprod(M - XB) / n}
-#'   for `max_pen`.
+#'   `"nlopt"`). Default is `5L` when `backend = "builtin"` and `inception_cov = "full"`, `NULL`
+#'   (full convergence) otherwise: for a full inception, fewer iterations keep the latent mean M
+#'   from over-converging toward the unconstrained optimum, which would make it harder to
+#'   warm-start the sparse penalty models (values above ~20 typically hurt); a diagonal inception
+#'   is the empty network, which is better converged.
 #' @param maxit_ve integer or `NULL`. Maximum number of inner VE-step iterations
 #'   per outer GLASSO alternation turn. Default is `1L` when `backend = "builtin"` (`NULL`, i.e.
 #'   full convergence — `maxit_em` for `"builtin"`, `maxeval` for `"nlopt"` — otherwise).
@@ -79,7 +80,10 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #'   `backend` for the full default combination and its benchmark.
 #' @param n_penalties an integer that specifies the number of values for the penalty grid when internally generated. Ignored when penalties is non `NULL`
 #' @param min_ratio the penalty grid ranges from the minimal value that produces a sparse to this value multiplied by `min_ratio`. Default is 0.1.
-#' @param penalize_diagonal boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is \code{TRUE}
+#' @param penalize_diagonal boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is \code{FALSE}.
+#'   Penalizing the diagonal inflates the latent variances by the penalty (\eqn{\Sigma_{ii} = S_{ii} + \rho}),
+#'   which the VE step then feeds back into the residual covariance \eqn{S}: along the path, the
+#'   network may then never become empty, whatever the penalty (#180).
 #' @param penalty_weights either a single or a list of p x p matrix of weights (default: all weights equal to 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.
 #' @inheritParams PLN_param trace config_optim config_post inception
 #'
@@ -94,14 +98,14 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #' @export
 PLNnetwork_param <- function(
     backend           = c("builtin", "nlopt", "torch"),
-    inception_cov     = c("full", "spherical", "diagonal"),
+    inception_cov     = c("diagonal", "full", "spherical"),
     inception_backend = NULL   ,
     inception_niter   = NULL   ,
     maxit_ve          = NULL   ,
     trace             = 1      ,
     n_penalties       = 30     ,
     min_ratio         = 0.1    ,
-    penalize_diagonal = TRUE   ,
+    penalize_diagonal = FALSE  ,
     penalty_weights   = NULL   ,
     config_post       = list(),
     config_optim      = list(),
@@ -122,7 +126,7 @@ PLNnetwork_param <- function(
   ## only fills in values the user did not set explicitly.
   if (backend == "builtin") {
     if (is.null(maxit_ve))        maxit_ve        <- 1L
-    if (is.null(inception_niter)) inception_niter <- 5L
+    if (is.null(inception_niter) && inception_cov == "full") inception_niter <- 5L
   }
   if (!is.null(maxit_ve)) config_optim$maxit_ve <- as.integer(maxit_ve)
   config_opt <- make_config_optim(backend, config_optim, trace,

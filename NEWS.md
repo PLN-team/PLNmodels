@@ -35,6 +35,33 @@
   fit, the BIC of the selected model is higher (median +7 on the 20 datasets where
   1.3.2 did fit), and the whole study runs twice as fast.
 
+## Penalty path of network fits (#180)
+
+* **The diagonal of the precision matrix is no longer penalized by default**
+  (`penalize_diagonal = FALSE` in `PLNnetwork_param()`, `ZIPLNnetwork_param()` and
+  `ZIPLN_param()`). Penalizing it inflates the latent variances by the penalty
+  (`Sigma_ii = S_ii + rho`), which the VE step feeds back into the residual
+  covariance `S`: along the path, the network could then never become empty,
+  whatever the penalty. On `oaks`, the top of the path had 149 edges, for a residual
+  covariance 73 times the largest penalty of the grid. Set `penalize_diagonal = TRUE`
+  to get the former behavior back.
+* **The top of the penalty grid is now computed from the residual covariance of the
+  inception**, `crossprod(M - XB) / n`, whatever its covariance model, rather than
+  from its fitted `Sigma`, and `PLNnetwork()` now starts from a diagonal inception
+  (`inception_cov = "diagonal"`, fully converged). With an unpenalized diagonal, the
+  inception is then the empty network, and the top of the grid the penalty above
+  which it is a fixed point of the alternating optimization: the path starts from
+  the empty network (up to a pair on the boundary). `ZIPLNnetwork()` keeps a full
+  inception, which led to a better BIC along the path.
+* Penalty paths, and hence selected models, change. Against version 1.3.2, the BIC of
+  the model selected by `PLNnetwork()` goes from -1390 to -1300 on `trichoptera`, from
+  -5331 to -5149 on `barents`, from -38664 to -37566 on `oaks` and from -37399 to
+  -36630 on `oaks` with the `tree` covariate, as fast or faster. For `ZIPLNnetwork()`,
+  from -1418 to -1306, -5448 to -5206, -39786 to -37585 and -38348 to -36716, in up to
+  2.5 times as long on `oaks`, where the paths are denser.
+* A matrix of penalty weights that leaves no entry to penalize now stops with an
+  explicit message.
+
 ## Bug fixes
 
 * **The builtin backend now decreases the objective at every iteration** (#186). Its VE step optimizes `M` with `B` profiled (`B = P_X M`), but the objective was then evaluated at the `B` of the preceding M step, which does not match the new `M`: the reported objective could jump by orders of magnitude, and the optimization settle far   from the optimum. `B` is now updated to match `M` after the VE step, and the M step  computes `Omega` with the new `B` (the joint optimum) rather than the previous one. On data with many zeros that are not excess zeros, fits were far worse than `PLN()`'s, although ZIPLN nests PLN; they are now at least as good. On benign data (`trichoptera`, `oaks`) the log-likelihood is unchanged up to a few units.

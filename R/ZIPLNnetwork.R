@@ -52,6 +52,11 @@ ZIPLNnetwork <- function(formula, data, subset, weights, zi = c("single", "row",
 #' Helper to define list of parameters to control the ZIPLNnetwork fit. All arguments have defaults.
 #'
 #' @inheritParams PLNnetwork_param
+#' @param inception_cov Covariance structure used for the inception ZIPLN, which starts the
+#'   penalty path and sets its top: `"full"` (default), `"diagonal"` or `"spherical"`. The top of
+#'   the grid of penalties is computed as in [PLNnetwork_param()]. Unlike for [PLNnetwork()], a
+#'   full inception is the default: a diagonal one makes the top of the path exactly the empty
+#'   network, but was found to lead to a lower BIC along the path, at a higher cost.
 #'
 #' @inherit PLN_param details return
 #' @param backend optimization backend, either `"builtin"` (default, joint Newton on (M,\eqn{\psi},R), combined with the partial E-step `maxit_ve = 1`) or `"nlopt"` (CCSAQ). `"builtin"` consistently finds a better ELBO across the penalty path at the cost of being slower.
@@ -67,7 +72,7 @@ ZIPLNnetwork_param <- function(
     trace             = 1      ,
     n_penalties       = 30     ,
     min_ratio         = 0.1    ,
-    penalize_diagonal = TRUE   ,
+    penalize_diagonal = FALSE  ,
     penalty_weights   = NULL   ,
     config_post       = list(),
     config_optim      = list(),

@@ -6,14 +6,14 @@
 \usage{
 PLNnetwork_param(
   backend = c("builtin", "nlopt", "torch"),
-  inception_cov = c("full", "spherical", "diagonal"),
+  inception_cov = c("diagonal", "full", "spherical"),
   inception_backend = NULL,
   inception_niter = NULL,
   maxit_ve = NULL,
   trace = 1,
   n_penalties = 30,
   min_ratio = 0.1,
-  penalize_diagonal = TRUE,
+  penalize_diagonal = FALSE,
   penalty_weights = NULL,
   config_post = list(),
   config_optim = list(),
@@ -28,11 +28,13 @@ better ELBO than plain \code{"nlopt"}, at essentially the same speed. Without a 
 \code{"builtin"} alone (\code{maxit_ve = NULL}) can converge to a poor basin on large datasets — use
 \code{"nlopt"} if you want to opt out of the whole combination.}
 
-\item{inception_cov}{Covariance structure used for the inception PLN:
-\code{"full"} (default), \code{"diagonal"} or \code{"spherical"}. Non-full structures are now
-fully supported: when \code{inception_cov != "full"}, the penalty grid is built from the
-empirical covariance of latent residuals \eqn{M - XB} (a full-rank proxy for \eqn{\Sigma}),
-avoiding the broken \code{max_pen = 0} that previously occurred with diagonal/spherical.}
+\item{inception_cov}{Covariance structure used for the inception PLN, which starts the
+penalty path and sets its top: \code{"diagonal"} (default), \code{"full"} or \code{"spherical"}. The top
+of the grid of penalties is the largest off-diagonal entry of the residual covariance of the
+inception, \eqn{crossprod(M - XB) / n}, the penalty above which the graphical Lasso returns
+the empty network (weighted by \code{penalty_weights}, and on the diagonal too when
+\code{penalize_diagonal = TRUE}). With a diagonal inception and an unpenalized diagonal (the
+defaults), the inception is itself the empty network, and the path starts from it.}
 
 \item{inception_backend}{character or \code{NULL} (default, i.e. same as \code{backend}). Backend for
 the inception PLN only; the penalty grid models always use \code{backend}.
@@ -40,12 +42,11 @@ Ignored when \code{inception} is supplied by the user.}
 
 \item{inception_niter}{integer or \code{NULL}. Limits the inception PLN to at most
 this many iterations (EM iterations for \code{"builtin"}, function evaluations × 10 for
-\code{"nlopt"}). Default is \code{5L} when \code{backend = "builtin"} (\code{NULL}, i.e. full convergence,
-otherwise): fewer iterations keep the latent mean M from over-converging toward the
-unconstrained optimum, which would make it harder to warm-start the sparse penalty models.
-Values above ~20 typically hurt. When \code{inception_cov != "full"} or \code{inception_niter} is set,
-the penalty grid uses the empirical residual covariance \eqn{crossprod(M - XB) / n}
-for \code{max_pen}.}
+\code{"nlopt"}). Default is \code{5L} when \code{backend = "builtin"} and \code{inception_cov = "full"}, \code{NULL}
+(full convergence) otherwise: for a full inception, fewer iterations keep the latent mean M
+from over-converging toward the unconstrained optimum, which would make it harder to
+warm-start the sparse penalty models (values above ~20 typically hurt); a diagonal inception
+is the empty network, which is better converged.}
 
 \item{maxit_ve}{integer or \code{NULL}. Maximum number of inner VE-step iterations
 per outer GLASSO alternation turn. Default is \code{1L} when \code{backend = "builtin"} (\code{NULL}, i.e.
@@ -60,7 +61,10 @@ turn prevents over-convergence that causes oscillations with the GLASSO M-step �
 
 \item{min_ratio}{the penalty grid ranges from the minimal value that produces a sparse to this value multiplied by \code{min_ratio}. Default is 0.1.}
 
-\item{penalize_diagonal}{boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is \code{TRUE}}
+\item{penalize_diagonal}{boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is \code{FALSE}.
+Penalizing the diagonal inflates the latent variances by the penalty (\eqn{\Sigma_{ii} = S_{ii} + \rho}),
+which the VE step then feeds back into the residual covariance \eqn{S}: along the path, the
+network may then never become empty, whatever the penalty (#180).}
 
 \item{penalty_weights}{either a single or a list of p x p matrix of weights (default: all weights equal to 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.}
 

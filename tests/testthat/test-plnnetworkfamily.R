@@ -213,3 +213,20 @@ test_that("PLNnetwork: a failing graphical Lasso does not stop the path (#184)",
   expect_warning(best <- getBestModel(models, "BIC"), "left out of the selection")
   expect_equal(best$penalty, pens[-3][which.max(models$criteria$BIC[-3])])
 })
+
+test_that("PLNnetwork: the top of the default path is the empty network (#180)", {
+  ## with an unpenalized diagonal and a diagonal inception, the top of the grid
+  ## is the penalty above which the inception, the empty network, is a fixed
+  ## point of the alternating optimization: only a pair on the boundary can enter
+  data("trichoptera", package = "PLNmodels", envir = environment())
+  tri <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
+  nets <- PLNnetwork(Abundance ~ 1, data = tri, control = PLNnetwork_param(trace = 0))
+  edges <- nets$criteria$n_edges[order(nets$criteria$param, decreasing = TRUE)]
+  expect_lte(edges[1], 1)
+  expect_gt(max(edges), 10)
+
+  ## the penalized diagonal is still available
+  nets_pen <- PLNnetwork(Abundance ~ 1, data = tri, control = PLNnetwork_param(trace = 0, penalize_diagonal = TRUE))
+  expect_true(all(diag(nets_pen$models[[1]]$penalty_weights) > 0))
+  expect_true(all(diag(nets$models[[1]]$penalty_weights) == 0))
+})
