@@ -11,7 +11,8 @@ common_samples <- function(counts, covariates, call = rlang::caller_env()) {
     "!" = "There are no matching names in {.var counts} and {.var covariates}.",
     "i" = "Function will proceed assuming:",
     "i" = "- samples are in the same order;",
-    "i" = "- samples are rows of {.var counts}.", sep = "\n"
+    "i" = "- samples are rows of {.var counts}.",
+    sep = "\n"
   )
   row_count_abort <- c(
     "x" = "{.var counts} and {.var covariates} have different number of row(s):",
@@ -25,7 +26,9 @@ common_samples <- function(counts, covariates, call = rlang::caller_env()) {
     if (nrow(counts) != nrow(covariates)) {
       cli::cli_abort(row_count_abort, call = call)
     }
-    if (is.null(rownames(counts))) rownames(counts) <- paste0("Sample_", 1:nrow(counts))
+    if (is.null(rownames(counts))) {
+      rownames(counts) <- paste0("Sample_", 1:nrow(counts))
+    }
     rownames(covariates) <- rownames(counts)
     default_names <- TRUE
   }
@@ -40,10 +43,13 @@ common_samples <- function(counts, covariates, call = rlang::caller_env()) {
       cli::cli_abort(row_count_abort, call = call)
     }
     if (!is.null(rownames(counts))) {
-      cli::cli_abort(c(
-        "x" = "Conflicting sample names in {.var counts} matrix and {.var covariates} data frames",
-        "i" = "Sample names in {.var counts} matrix is {.cls {rownames(counts)}} and in {.var covariates} is {.cls {rownames(covariates)}}."
-      ), call = call)
+      cli::cli_abort(
+        c(
+          "x" = "Conflicting sample names in {.var counts} matrix and {.var covariates} data frames",
+          "i" = "Sample names in {.var counts} matrix is {.cls {rownames(counts)}} and in {.var covariates} is {.cls {rownames(covariates)}}."
+        ),
+        call = call
+      )
     }
     rownames(counts) <- rownames(covariates)
     default_names <- TRUE
@@ -52,27 +58,37 @@ common_samples <- function(counts, covariates, call = rlang::caller_env()) {
   ## and transpose if that's the case
   ## Based on a heuristic of matching names
   sample_are_cols <- any(colnames(counts) %in% rownames(covariates))
-  if (sample_are_cols) counts <- t(counts)
+  if (sample_are_cols) {
+    counts <- t(counts)
+  }
   ## Ensure consistency by using only common samples
   common_samples <- intersect(rownames(counts), rownames(covariates))
   # Add condition when less counts than covariates information
   if (length(common_samples) < nrow(counts)) {
-    cli::cli_warn(c(
-      "!" = "There are less samples in {.var counts} than in {.var covariates}.",
-      "i" = "{.cls {nrow(counts) - length(common_samples)}} samples were dropped from the {.var counts} matrix for lack of associated {.var covariates}.",
-      "i" = "{.cls There {?is/are} {length(common_samples)}} sample{?s} in the final data.frame."
-    ), call = call)
+    cli::cli_warn(
+      c(
+        "!" = "There are less samples in {.var counts} than in {.var covariates}.",
+        "i" = "{.cls {nrow(counts) - length(common_samples)}} samples were dropped from the {.var counts} matrix for lack of associated {.var covariates}.",
+        "i" = "{.cls There {?is/are} {length(common_samples)}} sample{?s} in the final data.frame."
+      ),
+      call = call
+    )
   }
   if (length(common_samples) < nrow(covariates)) {
-    cli::cli_warn(c(
-      "!" = "There are less samples in {.var covariates} than in {.var counts}.",
-      "i" = "{.cls {nrow(covariates) - length(common_samples)}} samples were dropped from {.var covariates} for lack of associated {.var counts}.",
-      "i" = "{.cls There {?is/are} {length(common_samples)}} sample{?s} in the final data.frame."
-    ), call = call)
+    cli::cli_warn(
+      c(
+        "!" = "There are less samples in {.var covariates} than in {.var counts}.",
+        "i" = "{.cls {nrow(covariates) - length(common_samples)}} samples were dropped from {.var covariates} for lack of associated {.var counts}.",
+        "i" = "{.cls There {?is/are} {length(common_samples)}} sample{?s} in the final data.frame."
+      ),
+      call = call
+    )
   }
-  return(list(transpose_counts = sample_are_cols,
-              common_samples   = common_samples,
-              default_names    = default_names))
+  return(list(
+    transpose_counts = sample_are_cols,
+    common_samples = common_samples,
+    default_names = default_names
+  ))
 }
 
 ## scaling functions --------
@@ -87,32 +103,39 @@ sanitize_offset <- function(counts, offset, ...) {
     } else {
       rownames(offset)
     }
-    offset <- matrix(rep(offset, p),
-                     ncol = p,
-                     dimnames = list(offset_samples, colnames(counts)))
+    offset <- matrix(
+      rep(offset, p),
+      ncol = p,
+      dimnames = list(offset_samples, colnames(counts))
+    )
   }
   ## Sanity check: rownames
   if (is.null(rownames(offset))) {
-    stop("Rownames are used for sample matching.\nPlease specify them in the offset vector/matrix.")
+    stop(
+      "Rownames are used for sample matching.\nPlease specify them in the offset vector/matrix."
+    )
   }
   ## Sanity checks: offsets are available for all samples
   if (anyNA(ii <- match(rownames(counts), rownames(offset)))) {
-    stop(paste("Sample(s) "),
-         paste(rownames(counts)[is.na(ii)], collapse = " and "),
-         " from the count table lack an offset.\nConsider checking your offset (orientation, rownames).")
+    stop(
+      paste("Sample(s) "),
+      paste(rownames(counts)[is.na(ii)], collapse = " and "),
+      " from the count table lack an offset.\nConsider checking your offset (orientation, rownames)."
+    )
   }
   offset <- offset[rownames(counts), , drop = FALSE]
   ## Sanity checks: offset are available for all species
   if (ncol(offset) != p) {
-    stop(paste("There should be one offset per feature in the count table.\nYou have",
-               p,
-               "features but",
-               ncol(offset),
-               "offsets."))
+    stop(paste(
+      "There should be one offset per feature in the count table.\nYou have",
+      p,
+      "features but",
+      ncol(offset),
+      "offsets."
+    ))
   }
   offset
 }
-
 
 
 ## Numeric offset
@@ -132,10 +155,13 @@ offset_tss <- function(counts) {
 
 ## Geometric Mean Pairwise Ratio (GMPR) normalization (as presented in \doi{10.7717/peerj.4600})
 offset_gmpr <- function(counts) {
-  if (nrow(counts) == 1) stop("GMPR is not defined when there is only one sample.")
+  if (nrow(counts) == 1) {
+    stop("GMPR is not defined when there is only one sample.")
+  }
   ## median of pairwise ratios between counts of samples i and j, limited to positive counts
   pairwise_ratio <- function(i, j) {
-    c_i <- counts[i, ]; c_j <- counts[j, ]
+    c_i <- counts[i, ]
+    c_j <- counts[j, ]
     ratio <- c_i / c_j
     median(ratio[c_i > 0 & c_j > 0])
   }
@@ -149,36 +175,64 @@ offset_gmpr <- function(counts) {
   }
   ## Geometric mean of pairwise ratio
   size_factor <- apply(mat_pr, 1, geom_mean)
-  if (any(size_factor == 0 | !is.finite(size_factor))) stop("Some sample(s) do not share any species with other samples, GMPR normalization failed.")
+  if (any(size_factor == 0 | !is.finite(size_factor))) {
+    stop(
+      "Some sample(s) do not share any species with other samples, GMPR normalization failed."
+    )
+  }
   size_factor
 }
 
 ## Relative Log Expression (RLE) normalization (as used in DESeq2)
-offset_rle <- function(counts, pseudocounts = 0L, type = c("ratio", "poscounts")) {
+offset_rle <- function(
+  counts,
+  pseudocounts = 0L,
+  type = c("ratio", "poscounts")
+) {
   type <- match.arg(type)
   ## Count manipulation: pseudo and replace 0s with NA (ignored in geometric mean computations)
   counts <- counts + pseudocounts
-  if (type == "poscounts") counts[counts == 0] <- NA
+  if (type == "poscounts") {
+    counts[counts == 0] <- NA
+  }
   ## compute simple geometric mean for all otus
   geom_means <- counts %>% log() %>% colMeans(na.rm = TRUE) %>% exp
-  if (all(geom_means == 0 | is.nan(geom_means))) stop("Samples do not share any common species, RLE normalization failed.")
+  if (all(geom_means == 0 | is.nan(geom_means))) {
+    stop("Samples do not share any common species, RLE normalization failed.")
+  }
   ## compute size factor as the median of all otus log-ratios in that sample
-  robust_med <- function(cnts) { median((cnts/geom_means)[is.finite(geom_means) & cnts > 0], na.rm = TRUE) }
+  ## only keeps species whose geometric mean is positive (otherwise a
+  ## zero-inflated species contributes cnts / 0 = Inf once zeros dominate)
+  robust_med <- function(cnts) {
+    keep <- is.finite(geom_means) & geom_means > 0 & cnts > 0
+    median((cnts / geom_means)[keep], na.rm = TRUE)
+  }
   size_factor <- apply(counts, 1, robust_med)
-  if (any(is.infinite(size_factor) | size_factor == 0)) warning("Because of high sparsity, some samples have null or infinite offset.")
+  if (any(is.infinite(size_factor) | size_factor == 0)) {
+    warning(
+      "Because of high sparsity, some samples have null or infinite offset."
+    )
+  }
   size_factor
 }
 
 ## Trimmed Mean of M-values (TMM) normalization (as used in edgeR and presented in \doi{10.1186/gb-2010-11-3-r25})
 # We choose by default refColumn = NULL, logratioTrim=logratioTrim, sumTrim=sumTrim, doWeighting=doWeighting, Acutoff=Acutoff
-calcFactorTMM <- function(obs, ref, nO, nR, logratioTrim=.3, sumTrim=0.05, Acutoff=-1e10)
+calcFactorTMM <- function(
+  obs,
+  ref,
+  nO,
+  nR,
+  logratioTrim = .3,
+  sumTrim = 0.05,
+  Acutoff = -1e10
+) {
   #	TMM between two libraries simplified and adapted from M. Robinson (edgeR:::.calcFactorTMM)
   # The final output is different from original TMM as we directly multiply normalization factors
   # by library sizes to use them as such in the model, unlike the philosophy behind TMM
-{
-  logR <- log2((obs/nO)/(ref/nR))          # log ratio of expression, accounting for library size
-  absE <- (log2(obs/nO) + log2(ref/nR))/2  # absolute expression
-  v <- (nO-obs)/nO/obs + (nR-ref)/nR/ref   # estimated asymptotic variance
+  logR <- log2((obs / nO) / (ref / nR)) # log ratio of expression, accounting for library size
+  absE <- (log2(obs / nO) + log2(ref / nR)) / 2 # absolute expression
+  v <- (nO - obs) / nO / obs + (nR - ref) / nR / ref # estimated asymptotic variance
 
   #	remove infinite values, cutoff based on A
   fin <- is.finite(logR) & is.finite(absE) & (absE > Acutoff)
@@ -187,7 +241,9 @@ calcFactorTMM <- function(obs, ref, nO, nR, logratioTrim=.3, sumTrim=0.05, Acuto
   absE <- absE[fin]
   v <- v[fin]
 
-  if(max(abs(logR)) < 1e-6) return(1)
+  if (max(abs(logR)) < 1e-6) {
+    return(1)
+  }
 
   n <- length(logR)
   loL <- floor(n * logratioTrim) + 1
@@ -195,32 +251,50 @@ calcFactorTMM <- function(obs, ref, nO, nR, logratioTrim=.3, sumTrim=0.05, Acuto
   loS <- floor(n * sumTrim) + 1
   hiS <- n + 1 - loS
 
-    keep <- (rank(logR)>=loL & rank(logR)<=hiL) & (rank(absE)>=loS & rank(absE)<=hiS)
+  keep <- (rank(logR) >= loL & rank(logR) <= hiL) &
+    (rank(absE) >= loS & rank(absE) <= hiS)
 
- # doWeighting = TRUE
-    f <- sum(logR[keep]/v[keep], na.rm=TRUE) / sum(1/v[keep], na.rm=TRUE)
+  # doWeighting = TRUE
+  f <- sum(logR[keep] / v[keep], na.rm = TRUE) / sum(1 / v[keep], na.rm = TRUE)
   #	Results will be missing if the two libraries share no features with positive counts
   #	In this case, return unity
-  if(is.na(f)) f <- 0
+  if (is.na(f)) {
+    f <- 0
+  }
   2^f
 }
 
-offset_tmm <- function(counts, logratioTrim=.3, sumTrim=0.05, Acutoff=-1e10) {
+offset_tmm <- function(
+  counts,
+  logratioTrim = .3,
+  sumTrim = 0.05,
+  Acutoff = -1e10
+) {
   nsamples <- nrow(counts)
   ## Compute lib.size
   lib_size <- rowSums(counts)
   ## Reference sample calculated from the .75 quantile
-  f75 <- apply(counts, 1, FUN = function(g) quantile(g, p=0.75)/sum(g))
-  if(median(f75) < 1e-20) {
+  f75 <- apply(counts, 1, FUN = function(g) quantile(g, p = 0.75) / sum(g))
+  if (median(f75) < 1e-20) {
     refColumn <- which.max(rowSums(sqrt(counts)))
   } else {
-    refColumn <- which.min(abs(f75-mean(f75)))
+    refColumn <- which.min(abs(f75 - mean(f75)))
   }
   ## Compute TMM normalization factor
-  ref <- as.numeric(counts[refColumn,])
+  ref <- as.numeric(counts[refColumn, ])
   nR <- lib_size[refColumn]
   # rel_counts <- counts/lib_size
-  f <- vapply(seq(nsamples), FUN.VALUE = numeric(1),FUN = function(i) calcFactorTMM(obs=counts[i,],ref=ref, nO=lib_size[i], nR=nR, logratioTrim=logratioTrim, sumTrim=sumTrim, Acutoff=Acutoff))
+  f <- vapply(seq(nsamples), FUN.VALUE = numeric(1), FUN = function(i) {
+    calcFactorTMM(
+      obs = counts[i, ],
+      ref = ref,
+      nO = lib_size[i],
+      nR = nR,
+      logratioTrim = logratioTrim,
+      sumTrim = sumTrim,
+      Acutoff = Acutoff
+    )
+  })
   #	Factors should multiple to one
   f <- f * lib_size
   f / geom_mean(f)
@@ -230,47 +304,94 @@ offset_tmm <- function(counts, logratioTrim=.3, sumTrim=0.05, Acutoff=-1e10) {
 ## Cumulative Sum Scaling (CSS) normalization (as used in metagenomeSeq and presented in \doi{10.1038/nmeth.2658})
 offset_css <- function(counts, reference = median) {
   ## special treatment for edge case of one-column matrix (1 OTU, many samples)
-  if (ncol(counts) == 1) return( counts[, 1] / median(counts) )
+  if (ncol(counts) == 1) {
+    return(counts[, 1] / median(counts))
+  }
   ## remove 0s and check that all samples have at least two positive counts
   counts[counts == 0] <- NA
-  if (any(rowSums(!is.na(counts)) < 2)) {
-    warning("Some samples only have 1 positive values. Can't compute quantiles and fall back to TSS normalization")
-    return(rowSums(counts, na.rm = TRUE))
+  counts_all <- counts
+  ## offsets are made comparable on the count scale by dividing by a single
+  ## global median, so samples can share a common scale across normalization schemes
+  tss <- rowSums(counts, na.rm = TRUE)
+  sparse <- rowSums(!is.na(counts)) < 2
+  ## warn about, and fall back to TSS for, samples with fewer than two positive counts
+  if (any(sparse)) {
+    sparse_names <- rownames(counts)[sparse]
+    msg <- "Some samples only have 1 positive value. Can't compute quantiles and fall back to TSS normalization for those samples."
+    if (!is.null(sparse_names)) {
+      msg <- paste(msg, "Samples:", paste(sparse_names, collapse = ", "))
+    }
+    warning(msg)
   }
-  ## compute sample-specific quantiles and cumulative sums up to quantiles
-  cumsum_up_to <- function(counts, quantiles) {
-    (counts * outer(counts, quantiles, `<=`)) %>% colSums(na.rm = TRUE)
-  }
-  mat_sample_quant <- apply(counts, 1, quantile, probs = seq(0, 1, length.out = ncol(counts)), na.rm = TRUE) %>% t()
-  mat_sample_cumsum <- sapply(1:nrow(counts), function(i) { cumsum_up_to(counts[i, ], mat_sample_quant[i, ]) }) %>% t()
-  ## reference quantiles, computed as median (nature article) or mean (metagenomeSeq::cumNormStat[Fast]) of sample_specific quantiles
-  ## and MAD around the reference quantiles
-  ref_quant <- apply(mat_sample_quant, 2, reference)
-  ref_quant_mad <- sweep(mat_sample_quant, 2, ref_quant) %>% abs %>% apply(2, median)
-  ## find smallest quantile for which high instability is detected
-  ## instability for quantile l is defined as ref_quant_mad[l+1] - ref_quant_mad[l] >= 0.1 * ref_quant_mad[l]
-  instable <- (diff(ref_quant_mad) >= 0.1 * head(ref_quant_mad, -1))
-  if (any(instable)) {
-    ## Hack to mimick package implementation: never choose quantile below 50%
-    lhat <- max(min(which(instable)), ceiling(ncol(counts)/2))
+  ## compute quantiles only on the samples with at least two positive counts
+  counts <- counts[!sparse, , drop = FALSE]
+  if (any(!sparse)) {
+    ## compute sample-specific quantiles and cumulative sums up to quantiles
+    cumsum_up_to <- function(counts, quantiles) {
+      (counts * outer(counts, quantiles, `<=`)) %>% colSums(na.rm = TRUE)
+    }
+    mat_sample_quant <- apply(
+      counts,
+      1,
+      quantile,
+      probs = seq(0, 1, length.out = ncol(counts)),
+      na.rm = TRUE
+    ) %>%
+      t()
+    mat_sample_cumsum <- sapply(1:nrow(counts), function(i) {
+      cumsum_up_to(counts[i, ], mat_sample_quant[i, ])
+    }) %>%
+      t()
+    ## reference quantiles, computed as median (nature article) or mean (metagenomeSeq::cumNormStat[Fast]) of sample_specific quantiles
+    ## and MAD around the reference quantiles
+    ref_quant <- apply(mat_sample_quant, 2, reference)
+    ref_quant_mad <- sweep(mat_sample_quant, 2, ref_quant) %>%
+      abs %>%
+      apply(2, median)
+    ## find smallest quantile for which high instability is detected
+    ## instability for quantile l is defined as ref_quant_mad[l+1] - ref_quant_mad[l] >= 0.1 * ref_quant_mad[l]
+    instable <- (diff(ref_quant_mad) >= 0.1 * head(ref_quant_mad, -1))
+    if (any(instable)) {
+      ## Hack to mimick package implementation: never choose quantile below 50%
+      lhat <- max(min(which(instable)), ceiling(ncol(counts) / 2))
+    } else {
+      warning(
+        "No instability detected in quantile distribution across samples, falling back to scaled TSS normalization."
+      )
+      lhat <- ncol(counts)
+    }
+    ## scaling factors are cumulative sums up to quantile lhat for the non-sparse samples
+    non_sparse_factors <- mat_sample_cumsum[, lhat]
   } else {
-    warning("No instability detected in quantile distribution across samples, falling back to scaled TSS normalization.")
-    lhat <- ncol(counts)
+    non_sparse_factors <- numeric(0)
   }
-  ## scaling factors are cumulative sums up to quantile lhat, divided by their median
-  size_factors <- mat_sample_cumsum[ , lhat] / median(mat_sample_cumsum[ , lhat])
+  ## recombine in the original sample order and scale by the global median
+  full <- numeric(nrow(counts_all))
+  names(full) <- rownames(counts_all)
+  full[!sparse] <- non_sparse_factors
+  full[sparse] <- tss[sparse]
+  size_factors <- full / median(full)
   unname(size_factors)
 }
 
 ## Wrench normalization (from \doi{10.1186/s12864-018-5160-5}) in its simplest form
 ## @importFrom matrixStats rowWeightedMeans rowVars
 #' @importFrom stats binomial var
-offset_wrench <- function(counts, groups = rep(1, nrow(counts)), type = c("wrench", "simple")) {
+offset_wrench <- function(
+  counts,
+  groups = rep(1, nrow(counts)),
+  type = c("wrench", "simple")
+) {
   ## Helpers and preprocessing
-  log_var <- function(x) { var(log(x[is.finite(x) & x > 0])) }
+  log_var <- function(x) {
+    var(log(x[is.finite(x) & x > 0]))
+  }
   ## n = number of samples, p = number of species
-  n <- nrow(counts); p <- ncol(counts)
-  if (n == 1) stop("Wrench is not defined when there is only one sample.")
+  n <- nrow(counts)
+  p <- ncol(counts)
+  if (n == 1) {
+    stop("Wrench is not defined when there is only one sample.")
+  }
   if (p == 1) {
     depths <- rowSums(counts)
     return(depths / geom_mean(depths))
@@ -279,37 +400,41 @@ offset_wrench <- function(counts, groups = rep(1, nrow(counts)), type = c("wrenc
 
   ## Proportions
   depths <- rowSums(counts)
-  props  <- counts / depths
+  props <- counts / depths
   ## Proportions in reference
   props_ref <- colMeans(props)
   ## Samplewise ratios of proportions
   sample_ratios <- props / matrix(props_ref, n, p, byrow = TRUE)
 
   ## Species variance
-  species_vars <- species_variance(counts, groups, depths_as_offset = (type == 'simple'))
+  species_vars <- species_variance(
+    counts,
+    groups,
+    depths_as_offset = (type == 'simple')
+  )
 
   ## Sample specific variances and scales, computed at the group level.
 
   ## Sample variance and scales (shared within groups)
-  K = length(unique(groups)) ## number of groups
+  K <- length(unique(groups)) ## number of groups
   if (K == 1) {
     global_ratio <- (colSums(counts) / sum(counts)) / props_ref
     sample_scales <- rep(mean(global_ratio), n)
-    sample_vars   <- rep(log_var(global_ratio), n)
+    sample_vars <- rep(log_var(global_ratio), n)
   } else {
     groups <- as.character(groups)
     ## Groupwise counts, proportions and ratios
     group_counts <- rowsum(counts, groups, reorder = TRUE)
-    group_props  <- group_counts / rowSums(group_counts)
+    group_props <- group_counts / rowSums(group_counts)
     group_ratios <- group_props / matrix(props_ref, K, p, byrow = TRUE)
 
     ## groupwise scale and (log)dispersion factors
     group_scales <- rowMeans(group_ratios)
-    group_vars   <- apply(group_ratios, 1, log_var)
+    group_vars <- apply(group_ratios, 1, log_var)
 
     ## sample scales and (log)dispersion factors
     sample_scales <- group_scales[groups]
-    sample_vars   <- group_vars[groups]
+    sample_vars <- group_vars[groups]
   }
 
   ## Regularized estimation of positive means
@@ -336,12 +461,21 @@ offset_wrench <- function(counts, groups = rep(1, nrow(counts)), type = c("wrenc
   if (type == "wrench") {
     ## Use wrench defaults:
     ## - adjustment of ratio by variance terms
-    sample_ratios[] <- sample_ratios / matrix(exp(species_vars / 2), n, p, byrow = TRUE)
+    sample_ratios[] <- sample_ratios /
+      matrix(exp(species_vars / 2), n, p, byrow = TRUE)
     ## - computation of probability of absence by fitting a simple binomial model absence ~ log(depths) to each species
-    pi0 <- apply(counts, 2, function(y) { suppressWarnings(glm.fit(cbind(log(depths)), 0L + (y == 0), family = binomial())$fitted.values) } )
+    pi0 <- apply(counts, 2, function(y) {
+      suppressWarnings(
+        glm.fit(
+          cbind(log(depths)),
+          0L + (y == 0),
+          family = binomial()
+        )$fitted.values
+      )
+    })
     ## - weights proportional to hurdle and variance
     weights <- exp(outer(sample_vars, species_vars, "+")) - 1
-    weights[] <- 1 / ( (1 - pi0) * (pi0 + weights) )
+    weights[] <- 1 / ((1 - pi0) * (pi0 + weights))
     weights[!is.finite(weights)] <- NA
   } else {
     ## Simple implementation: uniform weights
@@ -364,20 +498,29 @@ offset_wrench <- function(counts, groups = rep(1, nrow(counts)), type = c("wrenc
 ## Geometric mean (computed only on positive values)
 geom_mean <- function(x, poscounts = TRUE, na.rm = TRUE) {
   x_log <- log(x)
-  if (poscounts) x_log <- x_log[x > 0]
+  if (poscounts) {
+    x_log <- x_log[x > 0]
+  }
   exp(mean(x_log, na.rm = na.rm))
 }
 
 ## Transform scaling factor to normalized offsets (on the count scale)
-sf2nf <- function(scaling_factors, lib_size){
-  if (is.null(scaling_factors)) return(NULL)
+sf2nf <- function(scaling_factors, lib_size) {
+  if (is.null(scaling_factors)) {
+    return(NULL)
+  }
   tmp <- scaling_factors / lib_size
   (tmp / geom_mean(tmp)) * lib_size
 }
 
-species_variance <- function(counts, groups = rep(1, nrow(counts)), depths_as_offset = TRUE) {
+species_variance <- function(
+  counts,
+  groups = rep(1, nrow(counts)),
+  depths_as_offset = TRUE
+) {
   ## n = number of samples, p = number of species
-  n <- nrow(counts); p <- ncol(counts)
+  n <- nrow(counts)
+  p <- ncol(counts)
 
   ## Centered log depths and counts corrected by offset
   log_depths <- log(rowSums(counts))
@@ -396,21 +539,24 @@ species_variance <- function(counts, groups = rep(1, nrow(counts)), depths_as_of
   if (depths_as_offset) {
     log_counts <- log_counts - log_depths ## log depths as an offset
   } else {
-    design <- cbind(design, log_depths)   ## log depths as a covariate
+    design <- cbind(design, log_depths) ## log depths as a covariate
   }
-
 
   ## Manually regress log_counts against log_depths (for each species) to compute species-specific sigma.
   #' @importFrom stats .lm.fit
   compute_sigma <- function(j) {
     valid_obs <- !is.na(log_counts[, j])
-    model <- .lm.fit(design[valid_obs, , drop = FALSE], log_counts[valid_obs, j])
-    if (model$rank == sum(valid_obs)) return(0)
+    model <- .lm.fit(
+      design[valid_obs, , drop = FALSE],
+      log_counts[valid_obs, j]
+    )
+    if (model$rank == sum(valid_obs)) {
+      return(0)
+    }
     sum(model$residuals^2) / (sum(valid_obs) - model$rank)
   }
   ## For numerical stability, set minimum variance to .Machine$double.eps
-  pmax(vapply(seq(p), compute_sigma, numeric(1)),
-       .Machine$double.eps)
+  pmax(vapply(seq(p), compute_sigma, numeric(1)), .Machine$double.eps)
 }
 
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -453,9 +599,15 @@ species_variance <- function(counts, groups = rep(1, nrow(counts)), depths_as_of
 #' )
 #' proper_data$Abundance
 #' proper_data$Offset
-prepare_data <- function(counts, covariates, offset = "TSS", call = rlang::caller_env(), ...) {
+prepare_data <- function(
+  counts,
+  covariates,
+  offset = "TSS",
+  call = rlang::caller_env(),
+  ...
+) {
   ## Convert counts and covariates to expected format
-  counts     <- data.matrix(counts, rownames.force = TRUE)
+  counts <- data.matrix(counts, rownames.force = TRUE)
   covariates <- as.data.frame(covariates)
   ## sanitize abundance matrix and covariates data.frame
   common <- common_samples(counts, covariates)
@@ -464,7 +616,9 @@ prepare_data <- function(counts, covariates, offset = "TSS", call = rlang::calle
   if (is.numeric(offset) && is.vector(offset)) {
     offset <- matrix(offset, ncol = 1, dimnames = list(names(offset), NULL))
   }
-  if (common$transpose_counts) counts <- t(counts)
+  if (common$transpose_counts) {
+    counts <- t(counts)
+  }
   if (common$default_names) {
     rownames(counts) <- rownames(covariates) <- samples
     if (is.numeric(offset)) rownames(offset) <- samples
@@ -472,31 +626,41 @@ prepare_data <- function(counts, covariates, offset = "TSS", call = rlang::calle
   counts <- counts[samples, , drop = FALSE]
   ## Replace NA with 0s
   if (any(is.na(counts))) {
-    cli::cli_warn(c(
-      "!" = "There is at least one NA value in {.var counts}.",
-      "i" = "{.cls {sum(is.na(counts))}} NA value{?s} in {.var counts} {?has/have} been replaced with 0."
-    ), call = call)
+    cli::cli_warn(
+      c(
+        "!" = "There is at least one NA value in {.var counts}.",
+        "i" = "{.cls {sum(is.na(counts))}} NA value{?s} in {.var counts} {?has/have} been replaced with 0."
+      ),
+      call = call
+    )
     counts[is.na(counts)] <- 0
   }
   ## filter out empty samples
   empty_samples <- which(rowSums(counts) == 0)
-  if (length(empty_samples) > 0) { # Add > 0
-    cli::cli_warn(c(
-      "!" = "There  is at least one empty sample in {.var counts}.",
-      "i" = "{.cls {length(empty_samples)}} sample{?s} ({.cls {samples[empty_samples]}}) in {.var counts} {?has/have} been dropped for lack of positive counts."
-    ), call = call)
+  if (length(empty_samples) > 0) {
+    # Add > 0
+    cli::cli_warn(
+      c(
+        "!" = "There  is at least one empty sample in {.var counts}.",
+        "i" = "{.cls {length(empty_samples)}} sample{?s} ({.cls {samples[empty_samples]}}) in {.var counts} {?has/have} been dropped for lack of positive counts."
+      ),
+      call = call
+    )
     samples <- samples[-empty_samples]
-    counts <- counts[samples, ,drop = FALSE]
+    counts <- counts[samples, , drop = FALSE]
   }
   covariates <- covariates[samples, , drop = FALSE]
-  if (is.null(names(covariates))) names(covariates) <- paste0("Variable", seq_along(covariates))
+  if (is.null(names(covariates))) {
+    names(covariates) <- paste0("Variable", seq_along(covariates))
+  }
   ## compute offset
-  offset     <- compute_offset(counts, offset, ...)
+  offset <- compute_offset(counts, offset, ...)
   ## prepare data for PLN
-  result <- data.frame(Abundance = NA, ## placeholder for Abundance, to avoid using I() and inheriting "AsIs" class
-                       covariates,
-                       Offset    = NA ## placeholder for Offset, to avoid using I() and inheriting "AsIs" class
-                       )
+  result <- data.frame(
+    Abundance = NA, ## placeholder for Abundance, to avoid using I() and inheriting "AsIs" class
+    covariates,
+    Offset = NA ## placeholder for Offset, to avoid using I() and inheriting "AsIs" class
+  )
   result$Abundance <- counts
   result$Offset <- offset
   result
@@ -536,7 +700,12 @@ prepare_data <- function(counts, covariates, offset = "TSS", call = rlang::calle
 #' ## User supplied offsets
 #' my_offset <- setNames(rep(1, nrow(counts)), rownames(counts))
 #' compute_offset(counts, offset = my_offset)
-compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "Wrench", "TMM", "none"), scale = c("none", "count"), ...) {
+compute_offset <- function(
+  counts,
+  offset = c("TSS", "GMPR", "RLE", "CSS", "Wrench", "TMM", "none"),
+  scale = c("none", "count"),
+  ...
+) {
   ## special behavior for data.frame
   if (inherits(offset, "data.frame")) {
     cli::cli_abort(c(
@@ -552,27 +721,49 @@ compute_offset <- function(counts, offset = c("TSS", "GMPR", "RLE", "CSS", "Wren
   }
   ## Choose offset function
   offset <- match.arg(offset)
-  offset_function <- switch(offset,
-                            "TSS"    = offset_tss,
-                            "GMPR"   = offset_gmpr,
-                            "RLE"    = offset_rle,
-                            "CSS"    = offset_css,
-                            "Wrench" = offset_wrench,
-                            "TMM" = offset_tmm,
-                            "none"   = offset_none
+  offset_function <- switch(
+    offset,
+    "TSS" = offset_tss,
+    "GMPR" = offset_gmpr,
+    "RLE" = offset_rle,
+    "CSS" = offset_css,
+    "Wrench" = offset_wrench,
+    "TMM" = offset_tmm,
+    "none" = offset_none
   )
   ## Ensure that counts is a matrix
   counts <- counts %>% data.matrix()
   ## Compute offset (with optional parameters)
   scale <- match.arg(scale)
-  if (scale == "none") {
+  ## Empty samples have no positive counts and break most normalization schemes:
+  ## compute the offset on the non-empty samples and return NA for the empty ones
+  all_names <- rownames(counts)
+  n_samples <- nrow(counts)
+  empty_samples <- which(rowSums(counts) == 0)
+  if (length(empty_samples) > 0) {
+    cli::cli_warn(c(
+      "!" = "There is at least one empty sample in {.var counts}.",
+      "i" = "{.cls {length(empty_samples)}} sample{?s} ({.cls {all_names[empty_samples]}}) in {.var counts} {?has/have} no positive counts and {?is/are} given a missing ({.val NA}) offset."
+    ))
+    counts <- counts[-empty_samples, , drop = FALSE]
+  }
+  ## offsets computed on the non-empty samples
+  result <- if (scale == "none") {
     offset_function(counts, ...)
   } else {
     lib_size <- offset_tss(counts)
     sf2nf(offset_function(counts, ...), lib_size = lib_size)
   }
-
-
+  ## give the empty samples a missing offset, in the original sample order
+  if (length(empty_samples) > 0) {
+    offset <- rep(NA_real_, n_samples)
+    offset[-empty_samples] <- result
+    if (!is.null(all_names)) {
+      names(offset) <- all_names
+    }
+    result <- offset
+  }
+  result
 }
 
 # Prepare data for use in PLN models from a biom object
