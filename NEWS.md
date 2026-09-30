@@ -1,21 +1,24 @@
-# PLNmdodels (development version)
+# PLNmodels (development version)
 
-## Bug fix
+## Bug fixes
 
-* **Offsets are now robust on sparse and empty counts** #188 (`compute_offset()` and its
-  methods):
+* **The builtin backend now decreases the objective at every iteration** (#186). Its VE step optimizes `M` with `B` profiled (`B = P_X M`), but the objective was then evaluated at the `B` of the preceding M step, which does not match the new `M`: the reported objective could jump by orders of magnitude, and the optimization settle far   from the optimum. `B` is now updated to match `M` after the VE step, and the M step  computes `Omega` with the new `B` (the joint optimum) rather than the previous one. On data with many zeros that are not excess zeros, fits were far worse than `PLN()`'s, although ZIPLN nests PLN; they are now at least as good. On benign data (`trichoptera`, `oaks`) the log-likelihood is unchanged up to a few units.
+* **The outer loop no longer stops on an increase of the objective** (#185). The
+ stopping test was signed, so that any increase passed for convergence and the worse iterate was returned with the message `"converged"`. The test is now on the absolute change, the best iterate is the one returned, and the number of increases is reported in `$optim_par$objective_increases` (it should be 0). The same signed test is fixed in the VE step used by `predict()`.
+* The objective monitored by a sparse fit (`ZIPLNnetwork()`, or `ZIPLN()` with a
+  penalty) now includes the l1 penalty of the graphical Lasso, since the M step
+  minimizes the penalized objective: the unpenalized one can legitimately increase.
+* The starting value of the posterior probabilities `R` of a structural zero is now 0 where the count is positive, where the posterior is exactly 0, instead of the zero rate of the species on every cell (#186).
+* `ZIPLN()` and `ZIPLNnetwork()` accept a formula stored in a variable (#187), as
+  `PLN()` does: `f <- Abundance ~ 1 + Wind; ZIPLN(f, data)` failed with "cannot set an attribute on a 'symbol'", and `predict()` failed on such fits with an intercept-only formula.
+* **Offsets are now robust on sparse and empty counts** #188 (`compute_offset()` and its methods):
   * `offset_rle()` keeps only species with a *positive* geometric mean in its
     median-ratio estimator (as DESeq2 does), so a zero-inflated species no longer
-    drives the per-sample offset to `Inf` via a `counts / 0` ratio even when several
-    zero-free species are available.
+    drives the per-sample offset to `Inf` via a `counts / 0` ratio even when several zero-free species are available.
   * `offset_css()` falls back to TSS **only for the samples** with fewer than two
-    positive counts (instead of silently switching every sample to `rowSums`), and
-    scales the whole result by a single global median — so all offsets are on the
-    same scale (median 1). The warning names the affected samples.
+    positive counts (instead of silently switching every sample to `rowSums`), and scales the whole result by a single global median — so all offsets are on the same scale (median 1). The warning names the affected samples.
   * `compute_offset()` detects empty (all-zero) samples before dispatching, warns
-    naming them, computes the offset on the non-empty samples and returns `NA` for
-    the empty ones, instead of a `0` offset (hence `log(0) = -Inf`) or uninformative
-    `NA/NaN/Inf` errors when several methods are called directly.
+    naming them, computes the offset on the non-empty samples and returns `NA` for the empty ones, instead of a `0` offset (hence `log(0) = -Inf`) or uninformative `NA/NaN/Inf` errors when several methods are called directly.
 
 # PLNmodels 1.3.2
 

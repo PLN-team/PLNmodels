@@ -26,8 +26,11 @@ extract_model_zi <- function(call, envir) {
   call_args  <- call[match(c("formula", "data", "subset", "weights"), names(call), 0L)]
   call_args <- c(as.list(call_args), list(xlev = attr(call$formula, "xlevels"), na.action = NULL))
 
+  ## The formula may be passed as a variable, in which case call$formula is a symbol
+  formula_obj <- as.formula(eval(call$formula, envir = envir))
+
   ## Extract terms for ZI and PLN components
-  terms <- .extract_terms_zi(as.formula(eval(call$formula, envir = envir)))
+  terms <- .extract_terms_zi(formula_obj)
   ## eval the call in the parent environment with adjustement due to ZI terms
   call_args$formula <- terms$formula
   frame <- do.call(stats::model.frame, call_args, envir = envir)
@@ -35,7 +38,7 @@ extract_model_zi <- function(call, envir) {
   ## Save level for predict function
   xlevels <- list(PLN = .getXlevels(terms$PLN, frame))
   if (!is.null(terms$ZI)) xlevels$ZI = .getXlevels(terms$ZI, frame)
-  if (!is.null(xlevels$PLN)) attr(call$formula, "xlevels") <- xlevels
+  if (!is.null(xlevels$PLN)) attr(formula_obj, "xlevels") <- xlevels
 
   ## Create the set of matrices to fit the PLN model
   X  <- model.matrix(terms$PLN, frame, xlev = xlevels$PLN)
@@ -59,7 +62,7 @@ extract_model_zi <- function(call, envir) {
     stopifnot(all(w > 0) && length(w) == nrow(Y))
   }
 
-  list(Y = Y, X = X, X0 = X0, O = O, w = w, formula = call$formula, zicovar = terms$zicovar)
+  list(Y = Y, X = X, X0 = X0, O = O, w = w, formula = formula_obj, zicovar = terms$zicovar)
 }
 
 # Test convergence for a named list of parameters

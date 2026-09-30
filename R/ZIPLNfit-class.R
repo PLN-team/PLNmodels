@@ -143,6 +143,8 @@ ZIPLNfit <- R6Class(
       convergence <- numeric(control$maxit_out)
 
       vloglik <- -Inf; objective <- Inf
+      nb_increase <- 0L
+      best <- list(parameters = parameters, objective = Inf, vloglik = vloglik)
       repeat {
         # Check maxeval
         if (control$maxit_out >= 0 && nb_iter >= control$maxit_out) {
@@ -153,12 +155,13 @@ ZIPLNfit <- R6Class(
         }
 
         ### M Step
-        # PLN part
-        new_Omega <- private$optimizer$Omega(
-          M = parameters$M, X = data$X, B = parameters$B, S2 = parameters$S2
-        )
+        # PLN part: B = P_X M is optimal whatever Omega, so the pair (B, Omega) is
+        # the joint optimum when Omega is computed with the new B
         new_B <- private$optimizer$B(
           M = parameters$M, X = data$X
+        )
+        new_Omega <- private$optimizer$Omega(
+          M = parameters$M, X = data$X, B = new_B, S2 = parameters$S2
         )
 
         # ZI part
@@ -177,6 +180,11 @@ ZIPLNfit <- R6Class(
         new_M  <- MS_out$M
         new_S2 <- MS_out$S2
         new_R  <- MS_out$R
+        ## The builtin VE step optimizes M with B profiled (B = P_X M), so that
+        ## the objective must be evaluated at the matching B, not at the one of
+        ## the M step
+        if (control$backend == "builtin")
+          new_B <- private$optimizer$B(M = new_M, X = data$X)
 
         # Check convergence
         new_parameters <- list(
@@ -189,29 +197,38 @@ ZIPLNfit <- R6Class(
           data$Y, data$X, data$O, new_Pi, new_Omega, new_B, new_R, new_M, new_S2
         )
 
-        criterion[nb_iter] <- new_objective <- -sum(vloglik)
+        criterion[nb_iter] <- new_objective <-
+          -sum(vloglik) + private$objective_penalty(new_Omega, nrow(data$Y))
         convergence[nb_iter]  <- abs(new_objective - objective)/abs(new_objective)
 
+        ## The variational EM should decrease the objective at every step: an
+        ## increase is not a sign of convergence. It is counted, and the best
+        ## iterate is the one returned.
+        delta <- objective - new_objective
         objective_converged <-
-          (objective - new_objective) <= control$ftol_out |
-          (objective - new_objective)/abs(new_objective) <= control$ftol_out
+          abs(delta) <= control$ftol_out |
+          abs(delta)/abs(new_objective) <= control$ftol_out
+        if (delta < 0 && !objective_converged) nb_increase <- nb_increase + 1L
+        if (new_objective < best$objective)
+          best <- list(parameters = new_parameters, objective = new_objective, vloglik = vloglik)
 
         parameters_converged <- parameter_list_converged(
           parameters, new_parameters,
           xtol_abs = control$xtol_abs, xtol_rel = control$xtol_rel
         )
 
+        parameters <- new_parameters
+        objective  <- new_objective
+
         if (parameters_converged | objective_converged) {
-          parameters <- new_parameters
           stop_reason <- "converged"
           criterion   <- criterion[1:nb_iter]
           convergence <- convergence[1:nb_iter]
           break
         }
-
-        parameters <- new_parameters
-        objective  <- new_objective
       }
+      parameters <- best$parameters
+      vloglik    <- best$vloglik
 
       self$update(
         B      = sweep(parameters$B, 1, nrm$scales, "/"),
@@ -229,7 +246,8 @@ ZIPLNfit <- R6Class(
           iterations  = nb_iter,
           message     = stop_reason,
           objective   = criterion,
-          convergence = convergence)
+          convergence = convergence,
+          objective_increases = nb_increase)
       )
 
       ### TODO: Should be in post-treatment
@@ -310,8 +328,8 @@ ZIPLNfit <- R6Class(
         convergence[nb_iter]  <- abs(new_objective - objective)/abs(new_objective)
 
         objective_converged <-
-          (objective - new_objective) <= control$ftol_out |
-          (objective - new_objective)/abs(new_objective) <= control$ftol_out
+          abs(objective - new_objective) <= control$ftol_out |
+          abs(objective - new_objective)/abs(new_objective) <= control$ftol_out
 
         parameters_converged <- parameter_list_converged(
           parameters, new_parameters,
@@ -487,7 +505,11 @@ ZIPLNfit <- R6Class(
     ## every subclass initialize() so the dispatch logic lives once.
     setup_MS_optimizer = function(backend, suffix) {
       private$optimizer$MS <- zipln_MS_fn(backend, suffix)
-    }
+    },
+
+    ## Penalty added to the negative ELBO in the objective minimized by optimize():
+    ## none here, the l1 penalty of the graphical Lasso for ZIPLNfit_sparse
+    objective_penalty = function(Omega, n) {0}
   ),
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ##  ACTIVE BINDINGS ----
@@ -735,7 +757,12 @@ ZIPLNfit_sparse <- R6Class(
     rho    = NA, # the p x p penalty weight
     glasso_status    = "converged", # how the last graphical Lasso call ended
     glasso_nonconv   = 0L,   # number of non-converged graphical Lasso calls
-    gamma_ebic       = 0.5   # the tuning parameter of the EBIC
+    gamma_ebic       = 0.5,  # the tuning parameter of the EBIC
+    ## The M step for Omega maximizes the ELBO minus this penalty, on the scale of
+    ## the ELBO (graphical Lasso on the covariance S = crossprod/n, hence n/2)
+    objective_penalty = function(Omega, n) {
+      .5 * n * private$lambda * sum(abs(private$rho * Omega))
+    }
   ),
 
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

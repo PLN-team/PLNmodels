@@ -361,7 +361,8 @@ compute_PLN_starting_point <- function(Y, X, O, w, method = c("LM", "GLM")) {
 #' @description
 #' Fast LM-based starting point for ZIPLN: one multivariate `lm.fit` for the PLN
 #' component and empirical zero rates / binomial GLMs for the ZI component.
-#' Replaces the previous per-species `pscl::zeroinfl` loop.
+#' Replaces the previous per-species `pscl::zeroinfl` loop. `R` is set to the
+#' empirical zero rate of each species on its zero counts, and to 0 elsewhere.
 #'
 #' @param Y Response count matrix (n × p)
 #' @param X Design matrix for the PLN component (n × d)
@@ -380,9 +381,10 @@ compute_ZIPLN_starting_point <- function(Y, X, X0, O, w = NULL) {
   ## PLN component: fast multivariate LM (identical to compute_PLN_starting_point "LM")
   sp <- compute_PLN_starting_point(Y, X, O, w, method = "LM")
 
-  ## ZI component: empirical per-species zero rates
+  ## ZI component: empirical per-species zero rates, on the zeros only since the
+  ## posterior probability of a structural zero is exactly 0 where Y > 0
   zero_ind <- (Y == 0) * 1.0
-  R <- matrix(colMeans(zero_ind), n, p, byrow = TRUE)
+  R <- zero_ind * matrix(colMeans(zero_ind), n, p, byrow = TRUE)
 
   ## B0: p binomial GLMs on zero indicator vs X0 (only for "covar" ziparam where d0 > 0)
   B0 <- if (!is.null(d0) && d0 > 0) {
