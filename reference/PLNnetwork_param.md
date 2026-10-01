@@ -17,6 +17,8 @@ PLNnetwork_param(
   min_ratio = 0.1,
   penalize_diagonal = FALSE,
   penalty_weights = NULL,
+  penalty_scale = c("covariance", "correlation"),
+  latent_floor = NULL,
   config_post = list(),
   config_optim = list(),
   inception = NULL
@@ -105,6 +107,37 @@ PLNnetwork_param(
   either a single or a list of p x p matrix of weights (default: all
   weights equal to 1) to adapt the amount of shrinkage to each pairs of
   node. Must be symmetric with positive values.
+
+- penalty_scale:
+
+  character, the scale on which the l1 penalty applies: `"covariance"`
+  (default) penalizes the entries of the precision matrix as they are,
+  `"correlation"` penalizes them on the scale of the variables, with a
+  penalty \\\lambda \sqrt{S\_{ii} S\_{jj}}\\ on the pair \\(i, j)\\,
+  where \\S\\ is the current residual covariance. This amounts to
+  applying the graphical-Lasso to the residual *correlation* matrix, as
+  is customary for Gaussian graphical models, and makes the penalties
+  dimensionless, between 0 and 1. The entries of a precision matrix are
+  not scale invariant: with `"covariance"`, a species with a large
+  latent variance has nearly free edges, and one that is often absent
+  but abundant when present, whose zeros are fitted by very negative
+  latent means, ends up connected to most of the others (see the field
+  `degenerate_species` of a
+  [`PLNfit`](https://pln-team.github.io/PLNmodels/reference/PLNfit.md)).
+  `"correlation"` removes this artefact; see the section on the scale of
+  the penalty.
+
+- latent_floor:
+
+  `NULL` (default, no bound) or a positive number \\\epsilon\\: the
+  variational means are kept above \\\log \epsilon - O\\, that is
+  \\\exp(O + M) \geq \epsilon\\, so that no cell is fitted by an
+  expected count vanishing to zero. This restricts the variational
+  family, not the model, and is a safeguard against latent variances
+  diverging along the path, which `penalty_scale = "correlation"` alone
+  does not always prevent. It acts as a regularization, the stronger the
+  larger \\\epsilon\\: `1e-3` was found to be enough to prevent the
+  divergence while leaving ordinary fits unchanged.
 
 - config_post:
 
@@ -253,6 +286,26 @@ GLASSO/VEM loop:
 
 - "maxit_em" outer alternating solver stops when the number of
   iterations exceeds maxit_em. Default is 20
+
+## Scale of the penalty
+
+With `penalty_scale = "correlation"`, the penalty on the pair \\(i, j)\\
+is \\\lambda w\_{ij} \sqrt{S\_{ii} S\_{jj}}\\, recomputed at each M step
+from the current residual covariance \\S\\. The grid of penalties is
+then built on the residual correlation of the inception, and lies
+between 0 and 1. Since the weights depend on \\S\\, the alternating
+optimization no longer maximizes a fixed penalized criterion: it looks
+for a fixed point.
+
+In simulations with a known network where three species out of forty
+were made absent from a group of samples, the species concerned carried
+34 to 93 % of the edges with `"covariance"` (15 % expected) and 0 to 2 %
+with `"correlation"`, and the edges between the other species were
+recovered as well as on uncontaminated data, on which `"correlation"`
+did as well or better. On real data, the latent variance of some species
+could still diverge along the path with `"correlation"` alone, which
+`latent_floor = 1e-3` prevented. `"covariance"` remains the default
+until this has been assessed more widely.
 
 ## See also
 

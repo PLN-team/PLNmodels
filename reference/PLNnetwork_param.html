@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">PLNmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9100</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9200</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,6 +62,8 @@
 <span>  min_ratio <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  penalize_diagonal <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  penalty_weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  penalty_scale <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"covariance"</span>, <span class="st">"correlation"</span><span class="op">)</span>,</span>
+<span>  latent_floor <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  config_post <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  config_optim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  inception <span class="op">=</span> <span class="cn">NULL</span></span>
@@ -139,6 +141,28 @@ network may then never become empty, whatever the penalty (#180).</p></dd>
 <dd><p>either a single or a list of p x p matrix of weights (default: all weights equal to 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.</p></dd>
 
 
+<dt id="arg-penalty-scale">penalty_scale<a class="anchor" aria-label="anchor" href="#arg-penalty-scale"></a></dt>
+<dd><p>character, the scale on which the l1 penalty applies: <code>"covariance"</code> (default) penalizes
+the entries of the precision matrix as they are, <code>"correlation"</code> penalizes them on the scale of the
+variables, with a penalty \(\lambda \sqrt{S_{ii} S_{jj}}\) on the pair \((i, j)\), where \(S\) is the
+current residual covariance. This amounts to applying the graphical-Lasso to the residual <em>correlation</em>
+matrix, as is customary for Gaussian graphical models, and makes the penalties dimensionless, between 0 and 1.
+The entries of a precision matrix are not scale invariant: with <code>"covariance"</code>, a species with a large latent
+variance has nearly free edges, and one that is often absent but abundant when present, whose zeros are
+fitted by very negative latent means, ends up connected to most of the others (see the field
+<code>degenerate_species</code> of a <code><a href="PLNfit.html">PLNfit</a></code>). <code>"correlation"</code> removes this artefact; see the section on the scale
+of the penalty.</p></dd>
+
+
+<dt id="arg-latent-floor">latent_floor<a class="anchor" aria-label="anchor" href="#arg-latent-floor"></a></dt>
+<dd><p><code>NULL</code> (default, no bound) or a positive number \(\epsilon\): the variational means are
+kept above \(\log \epsilon - O\), that is \(\exp(O + M) \geq \epsilon\), so that no cell is fitted by an
+expected count vanishing to zero. This restricts the variational family, not the model, and is a safeguard
+against latent variances diverging along the path, which <code>penalty_scale = "correlation"</code> alone does not
+always prevent. It acts as a regularization, the stronger the larger \(\epsilon\): <code>1e-3</code> was found
+to be enough to prevent the divergence while leaving ordinary fits unchanged.</p></dd>
+
+
 <dt id="arg-config-post">config_post<a class="anchor" aria-label="anchor" href="#arg-config-post"></a></dt>
 <dd><p>a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details</p></dd>
 
@@ -200,6 +224,21 @@ set to FALSE to recover the EM loop.</p></li>
 <p><code>PLNnetwork_param()</code> adds two parameters controlling the alternating GLASSO/VEM loop:</p><ul><li><p>"ftol_em" outer alternating solver stops when the objective changes by less than ftol_em (relative). Default is 1e-5</p></li>
 <li><p>"maxit_em" outer alternating solver stops when the number of iterations exceeds maxit_em. Default is 20</p></li>
 </ul></div>
+    <div class="section level2">
+    <h2 id="scale-of-the-penalty">Scale of the penalty<a class="anchor" aria-label="anchor" href="#scale-of-the-penalty"></a></h2>
+
+
+<p>With <code>penalty_scale = "correlation"</code>, the penalty on the pair \((i, j)\) is \(\lambda w_{ij} \sqrt{S_{ii} S_{jj}}\),
+recomputed at each M step from the current residual covariance \(S\). The grid of penalties is then built on
+the residual correlation of the inception, and lies between 0 and 1. Since the weights depend on \(S\), the
+alternating optimization no longer maximizes a fixed penalized criterion: it looks for a fixed point.</p>
+<p>In simulations with a known network where three species out of forty were made absent from a group of samples,
+the species concerned carried 34 to 93 % of the edges with <code>"covariance"</code> (15 % expected) and 0 to 2 % with
+<code>"correlation"</code>, and the edges between the other species were recovered as well as on uncontaminated data, on
+which <code>"correlation"</code> did as well or better. On real data, the latent variance of some species could still
+diverge along the path with <code>"correlation"</code> alone, which <code>latent_floor = 1e-3</code> prevented. <code>"covariance"</code>
+remains the default until this has been assessed more widely.</p>
+    </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="PLN_param.html">PLN_param()</a></code></p></div>

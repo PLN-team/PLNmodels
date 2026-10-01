@@ -14,6 +14,7 @@ ZIPLNnetwork_param(
   min_ratio = 0.1,
   penalize_diagonal = FALSE,
   penalty_weights = NULL,
+  penalty_scale = c("covariance", "correlation"),
   config_post = list(),
   config_optim = list(),
   inception = NULL
@@ -69,6 +70,25 @@ ZIPLNnetwork_param(
   either a single or a list of p x p matrix of weights (default: all
   weights equal to 1) to adapt the amount of shrinkage to each pairs of
   node. Must be symmetric with positive values.
+
+- penalty_scale:
+
+  character, the scale on which the l1 penalty applies: `"covariance"`
+  (default) penalizes the entries of the precision matrix as they are,
+  `"correlation"` penalizes them on the scale of the variables, with a
+  penalty \\\lambda \sqrt{S\_{ii} S\_{jj}}\\ on the pair \\(i, j)\\,
+  where \\S\\ is the current residual covariance. This amounts to
+  applying the graphical-Lasso to the residual *correlation* matrix, as
+  is customary for Gaussian graphical models, and makes the penalties
+  dimensionless, between 0 and 1. The entries of a precision matrix are
+  not scale invariant: with `"covariance"`, a species with a large
+  latent variance has nearly free edges, and one that is often absent
+  but abundant when present, whose zeros are fitted by very negative
+  latent means, ends up connected to most of the others (see the field
+  `degenerate_species` of a
+  [`PLNfit`](https://pln-team.github.io/PLNmodels/reference/PLNfit.md)).
+  `"correlation"` removes this artefact; see the section on the scale of
+  the penalty.
 
 - config_post:
 

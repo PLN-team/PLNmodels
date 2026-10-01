@@ -36,6 +36,17 @@ the class
 
   a matrix of weights controlling the amount of penalty element-wise.
 
+- `penalty_scale`:
+
+  the scale on which the penalty applies, `"covariance"` or
+  `"correlation"` (see
+  [`PLNnetwork_param()`](https://pln-team.github.io/PLNmodels/reference/PLNnetwork_param.md))
+
+- `latent_floor`:
+
+  the lower bound on `exp(O + M)`, `NULL` if none (see
+  [`PLNnetwork_param()`](https://pln-team.github.io/PLNmodels/reference/PLNnetwork_param.md))
+
 - `n_edges`:
 
   number of edges if the network (non null coefficient of the sparse

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">PLNmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9100</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9200</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,6 +59,7 @@
 <span>  penalty <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  penalize_diagonal <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  penalty_weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  penalty_scale <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"covariance"</span>, <span class="st">"correlation"</span><span class="op">)</span>,</span>
 <span>  config_post <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  config_optim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  inception <span class="op">=</span> <span class="cn">NULL</span></span>
@@ -98,6 +99,19 @@ network may then never become empty, whatever the penalty (#180).</p></dd>
 
 <dt id="arg-penalty-weights">penalty_weights<a class="anchor" aria-label="anchor" href="#arg-penalty-weights"></a></dt>
 <dd><p>either a single or a list of p x p matrix of weights (default: all weights equal to 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.</p></dd>
+
+
+<dt id="arg-penalty-scale">penalty_scale<a class="anchor" aria-label="anchor" href="#arg-penalty-scale"></a></dt>
+<dd><p>character, the scale on which the l1 penalty applies: <code>"covariance"</code> (default) penalizes
+the entries of the precision matrix as they are, <code>"correlation"</code> penalizes them on the scale of the
+variables, with a penalty \(\lambda \sqrt{S_{ii} S_{jj}}\) on the pair \((i, j)\), where \(S\) is the
+current residual covariance. This amounts to applying the graphical-Lasso to the residual <em>correlation</em>
+matrix, as is customary for Gaussian graphical models, and makes the penalties dimensionless, between 0 and 1.
+The entries of a precision matrix are not scale invariant: with <code>"covariance"</code>, a species with a large latent
+variance has nearly free edges, and one that is often absent but abundant when present, whose zeros are
+fitted by very negative latent means, ends up connected to most of the others (see the field
+<code>degenerate_species</code> of a <code><a href="PLNfit.html">PLNfit</a></code>). <code>"correlation"</code> removes this artefact; see the section on the scale
+of the penalty.</p></dd>
 
 
 <dt id="arg-config-post">config_post<a class="anchor" aria-label="anchor" href="#arg-config-post"></a></dt>

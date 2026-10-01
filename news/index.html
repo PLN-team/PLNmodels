@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">PLNmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9100</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9200</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,6 +46,17 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="plnmodels-development-version">PLNmodels (development version)<a class="anchor" aria-label="anchor" href="#plnmodels-development-version"></a></h2>
+<div class="section level3">
+<h3 id="scale-of-the-penalty-in-network-fits-development-version">Scale of the penalty in network fits<a class="anchor" aria-label="anchor" href="#scale-of-the-penalty-in-network-fits-development-version"></a></h3>
+<ul><li>
+<strong>New <code>penalty_scale = "correlation"</code></strong> in <code><a href="../reference/PLNnetwork_param.html">PLNnetwork_param()</a></code>, <code><a href="../reference/ZIPLNnetwork_param.html">ZIPLNnetwork_param()</a></code> and <code><a href="../reference/ZIPLN_param.html">ZIPLN_param()</a></code>. The l1 penalty of the graphical Lasso bears on the entries of the precision matrix, which are not scale invariant: a species with a large latent variance has nearly free edges. A species that is often absent but abundant when present, whose zeros are fitted by very negative latent means, therefore ends up connected to most of the others (see <code>$degenerate_species</code> below), and this happens well before its latent variance blows up. On the correlation scale, the penalty on the pair <code>(i, j)</code> is <code>lambda * sqrt(S_ii * S_jj)</code>, recomputed at each M step from the residual covariance <code>S</code>: this is the graphical Lasso on the residual correlation matrix, as is customary for Gaussian graphical models, and the penalties become dimensionless, between 0 and 1.</li>
+<li>
+<strong>New <code>latent_floor</code></strong> in <code><a href="../reference/PLNnetwork_param.html">PLNnetwork_param()</a></code>: a lower bound on <code>exp(O + M)</code>, which keeps the variational means from going to minus infinity. It restricts the variational family, not the model. It is a safeguard against latent variances diverging along the path, which the correlation scale alone does not always prevent, and acts as a regularization, the stronger the larger the bound. <code>NULL</code> (no bound) by default; <code>1e-3</code> was enough on the datasets of the package.</li>
+<li>In simulations with a known network of 40 species, 3 of which were made absent from 65 % of the samples, these species carried 34 % (n = 200) to 93 % (n = 50) of the edges on the covariance scale, where 15 % was expected, and 0 to 2 % on the correlation scale; the F1 score of the edges between the other species, at the true network size, went from 0.76 to 0.85 (n = 200) and from 0.13 to 0.70 (n = 50), the level of uncontaminated data. Without contamination, the correlation scale did as well (n = 200) or better (0.71 against 0.63, n = 50). A floor alone contains the latent variances but not the hubs; excluding the flagged species from the network moves the problem to others.</li>
+<li>
+<strong>The defaults are unchanged</strong> (<code>penalty_scale = "covariance"</code>, no floor), until these settings have been assessed more widely: fits are identical to those of the previous development version. The scripts and a summary of the exploration are in <code>inst/simus_PLNnetwork/degenerate_species/</code>, the account in <code>inst/devlog/DEVLOG_2026-09-30_10-01.md</code>.</li>
+<li>The fits have new fields <code>$penalty_scale</code> and <code>$latent_floor</code>, the number of cells at the floor is in <code>$optim_par$n_floor</code>, and <code><a href="../reference/stability_selection.html">stability_selection()</a></code> refits the subsamples with the settings of the collection.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="graphical-lasso-and-network-fits-development-version">Graphical Lasso and network fits (<a href="https://github.com/pln-team/PLNmodels/issues/184" class="external-link">#184</a>)<a class="anchor" aria-label="anchor" href="#graphical-lasso-and-network-fits-development-version"></a></h3>
 <ul><li>
