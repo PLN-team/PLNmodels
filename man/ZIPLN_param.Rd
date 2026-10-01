@@ -10,7 +10,7 @@ ZIPLN_param(
   covariance = c("full", "diagonal", "spherical", "fixed", "sparse"),
   Omega = NULL,
   penalty = 0,
-  penalize_diagonal = TRUE,
+  penalize_diagonal = FALSE,
   penalty_weights = NULL,
   config_post = list(),
   config_optim = list(),
