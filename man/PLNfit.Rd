@@ -40,6 +40,8 @@ print(myPLN)
 
     \item{\code{optim_par}}{a list with parameters useful for monitoring the optimization}
 
+    \item{\code{degenerate_species}}{names of the species whose latent variance is above 100 (a standard deviation of 10 on the log scale, see \code{options(PLNmodels.latent_variance_threshold = )}). The zeros of such a species are fitted by latent means going to minus infinity. This happens to species that are often absent but abundant when present, notably those absent from a whole group of samples (see \code{\link[=structural_zeros]{structural_zeros()}}), for which the model lacks the covariate that explains the absences. In a network fit, such a species ends up connected to most of the others: these edges are artefacts.}
+
     \item{\code{latent}}{a matrix: values of the latent vector (Z in the model)}
 
     \item{\code{latent_pos}}{a matrix: values of the latent position vector (Z) without covariates effects or offset}

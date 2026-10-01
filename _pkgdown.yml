@@ -139,6 +139,7 @@ reference:
   contents:
     - '`prepare_data`'
     - '`compute_offset`'
+    - '`structural_zeros`'
     - '`PLNfamily`'
     - '`plot.PLNfamily`'
     - '`rPLN`'

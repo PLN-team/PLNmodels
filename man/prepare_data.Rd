@@ -30,6 +30,9 @@ A data.frame suited for use in \code{\link[=PLN]{PLN()}} and its variants with t
 Prepare data in proper format for use in PLN model and its variants. The function (i) merges a count table and
 a covariate data frame in the most comprehensive way and (ii) computes offsets from the count table using one of several normalization schemes (TSS, CSS, RLE, GMPR, Wrench, etc). The function fails with informative messages when the heuristics used for sample matching fail.
 }
+\details{
+The function also reports, in a message, the species that are absent from all the samples of a level of a factor covariate while present elsewhere, beyond what chance would explain: see \code{\link[=structural_zeros]{structural_zeros()}}, which is run on all the factor, character and logical columns of \code{covariates}. Nothing is removed from the data.
+}
 \note{
 User supplied offsets should be either vectors/column-matrices or have the same number of column as the original count matrix and either (i) dimension names or (ii) the same dimensions as the count matrix. Samples are trimmed in exactly the same way to remove empty samples.
 }
@@ -56,5 +59,5 @@ Kumar, M., Slud, E., Okrah, K. et al. (2018) Analysis and correction of composit
 Robinson, M.D., Oshlack, A. (2010) A scaling normalization method for differential expression analysis of RNA-seq data. Genome Biol 11, R25 \doi{10.1186/gb-2010-11-3-r25}
 }
 \seealso{
-\code{\link[=compute_offset]{compute_offset()}} for details on the different normalization schemes
+\code{\link[=compute_offset]{compute_offset()}} for details on the different normalization schemes, \code{\link[=structural_zeros]{structural_zeros()}}
 }

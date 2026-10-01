@@ -44,6 +44,7 @@ ZIPLNnetwork <- function(formula, data, subset, weights, zi = c("single", "row",
   myPLN$optimize(data_, control$config_optim)
 
   if (control$trace > 0) cat("\n DONE!\n")
+  warn_degenerate_species(myPLN$models)
   myPLN
 }
 

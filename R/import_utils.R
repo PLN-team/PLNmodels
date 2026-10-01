@@ -584,8 +584,9 @@ species_variance <- function(
 #' @return A data.frame suited for use in [PLN()] and its variants with two specials components: an abundance count matrix (in component "Abundance") and an offset vector/matrix (in component "Offset", only if offset is not set to "none")
 #' @note User supplied offsets should be either vectors/column-matrices or have the same number of column as the original count matrix and either (i) dimension names or (ii) the same dimensions as the count matrix. Samples are trimmed in exactly the same way to remove empty samples.
 #'
+#' @details The function also reports, in a message, the species that are absent from all the samples of a level of a factor covariate while present elsewhere, beyond what chance would explain: see [structural_zeros()], which is run on all the factor, character and logical columns of `covariates`. Nothing is removed from the data.
 #'
-#' @seealso [compute_offset()] for details on the different normalization schemes
+#' @seealso [compute_offset()] for details on the different normalization schemes, [structural_zeros()]
 #'
 #' @export
 #'
@@ -663,9 +664,100 @@ prepare_data <- function(
   )
   result$Abundance <- counts
   result$Offset <- offset
+  ## report the species absent from a whole level of a factor covariate
+  structural <- structural_zeros(counts, covariates)
+  if (nrow(structural) > 0) {
+    by_covariate <- tapply(structural$species, structural$covariate, function(x) length(unique(x)))
+    cli::cli_inform(
+      c(
+        "!" = "{length(unique(structural$species))} species {?is/are} absent from all the samples of a level of a factor covariate, while present elsewhere beyond what chance would explain ({paste0(names(by_covariate), ': ', by_covariate, collapse = ', ')}).",
+        "i" = "{cli::qty(length(by_covariate))}A model without {?this covariate/these covariates} fits these structural zeros by sending latent means to minus infinity, which distorts the variances and, in a network, the edges of these species.",
+        "i" = "See {.fn structural_zeros} for the list."
+      )
+    )
+  }
   result
 }
 
+
+#' @title Species absent from a whole level of a factor
+#' @name structural_zeros
+#'
+#' @description Finds the species that are absent from all the samples of a level of a
+#' factor covariate while present in the other samples, beyond what chance alone would
+#' explain. Such structural zeros are what a PLN model without the corresponding
+#' covariate cannot represent: it fits them by sending the latent means to minus
+#' infinity, the latent variance of the species blows up, and in a network the species
+#' ends up connected to most of the others (see the field `degenerate_species` of a
+#' [`PLNfit`]). [prepare_data()] runs this check and reports its result in a message.
+#'
+#' @param counts An abundance count table, with species as columns.
+#' @param covariates A covariates data frame, with the samples of `counts` as rows. Only
+#'   its factor, character and logical columns are used.
+#' @param alpha Level of the test, after a Bonferroni correction over all the pairs of a
+#'   species and a level that are tested. Default is `0.05`.
+#'
+#' @details For a species present in `K` of the `N` samples, the probability that none of
+#' the `n` samples of a level is among them, were the presences spread at random, is
+#' hypergeometric: `phyper(0, K, N - K, n)`. A rare species is easily absent from a level by
+#' chance, and is not reported; a species present in most of the other samples is.
+#'
+#' @return A data frame with one row per reported pair, sorted by p-value, with columns
+#'   `species`, `covariate`, `level`, `n_samples` (the number of samples of the level),
+#'   `prevalence_elsewhere` (the proportion of the other samples where the species is
+#'   present) and `p_value` (Bonferroni-adjusted). It has no row when nothing is reported.
+#'
+#' @seealso [prepare_data()]
+#' @importFrom stats phyper
+#' @export
+#'
+#' @examples
+#' data(oaks)
+#' ## species that are absent from a whole tree, or from a whole type of branch
+#' structural_zeros(oaks$Abundance, oaks[c("tree", "branch")])
+structural_zeros <- function(counts, covariates, alpha = 0.05) {
+  counts <- data.matrix(counts)
+  covariates <- as.data.frame(covariates)
+  stopifnot(nrow(counts) == nrow(covariates), alpha > 0, alpha <= 1)
+  present <- !is.na(counts) & counts > 0
+  species <- if (is.null(colnames(counts))) as.character(seq_len(ncol(counts))) else colnames(counts)
+  is_group <- vapply(covariates, function(x) is.factor(x) || is.character(x) || is.logical(x), logical(1))
+
+  tested <- lapply(names(covariates)[is_group], function(variable) {
+    group <- as.factor(covariates[[variable]])
+    keep  <- !is.na(group)
+    group <- droplevels(group[keep])
+    if (nlevels(group) < 2) return(NULL)
+    N <- sum(keep)
+    K <- colSums(present[keep, , drop = FALSE])           # samples where each species is present
+    n <- as.vector(table(group))                           # samples of each level
+    occurrences <- rowsum(present[keep, , drop = FALSE] * 1, group, reorder = TRUE)
+    absent <- which(occurrences == 0 & matrix(K > 0, nlevels(group), ncol(counts), byrow = TRUE), arr.ind = TRUE)
+    if (nrow(absent) == 0) return(NULL)
+    l <- absent[, 1]; j <- absent[, 2]
+    data.frame(
+      species   = species[j],
+      covariate = variable,
+      level     = levels(group)[l],
+      n_samples = n[l],
+      prevalence_elsewhere = K[j] / (N - n[l]),
+      p_value   = phyper(0, K[j], N - K[j], n[l]),
+      n_tests   = nlevels(group) * sum(K > 0),
+      stringsAsFactors = FALSE, row.names = NULL
+    )
+  })
+  n_tests <- sum(vapply(tested, function(x) if (is.null(x)) 0 else x$n_tests[1], numeric(1)))
+  res <- do.call(rbind, tested)
+  if (is.null(res))
+    return(data.frame(species = character(0), covariate = character(0), level = character(0),
+                      n_samples = integer(0), prevalence_elsewhere = numeric(0), p_value = numeric(0)))
+  res$p_value <- pmin(1, res$p_value * n_tests)
+  res$n_tests <- NULL
+  res <- res[res$p_value <= alpha, , drop = FALSE]
+  res <- res[order(res$p_value, res$covariate, res$species), , drop = FALSE]
+  rownames(res) <- NULL
+  res
+}
 
 #' @title Compute offsets from a count data using one of several normalization schemes
 #' @name compute_offset
