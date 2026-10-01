@@ -24,7 +24,8 @@
   latent variances from diverging, which the correlation scale alone does not prevent
   when species are absent from whole groups of samples: in simulations with such
   groups the variances diverged in 20 replicates out of 20 without the floor, on both
-  scales, and in none with it. `NULL` (no floor) by default; `1e-3` is a sensible value.
+  scales, and in none with it. **It is on by default (`1e-3`)**; `latent_floor = NULL`
+  removes it.
   A floor on every cell was tried first and dropped: on `mollusk`, where nothing
   diverges, it constrained 39 % of the cells.
 * On the covariance scale, the floor stabilizes the fit but does not repair the
@@ -39,9 +40,16 @@
   well (n = 200) or better (0.71 against 0.63, n = 50). A floor alone contains the
   latent variances but not the hubs; excluding the degenerate species from the
   network moves the problem to others.
-* **The defaults are unchanged** (`penalty_scale = "covariance"`, no floor), until these
-  settings have been assessed more widely: fits are identical to those of the previous
-  development version. The scripts and a summary of the exploration are in
+* **Defaults.** `penalty_scale = "covariance"` remains the default until the correlation
+  scale has been assessed more widely. The floor being on, the fits of `PLNnetwork()`
+  change where species degenerate, and only there: among the datasets of the package,
+  `oaks`, `barents` and `mollusk` (17, 10 and 8 species bounded along the default
+  paths), while a fit without degenerate species, as on `trichoptera`, is exactly the
+  one obtained without the floor.
+* The warning on degenerate species of `PLNnetwork()` now also names the species
+  bounded by the floor, since the floor is what keeps their variance under the
+  threshold, and says, on the covariance scale, that their edges are artefacts.
+* The scripts and a summary of the exploration are in
   `inst/simus_PLNnetwork/degenerate_species/`, the account in
   `inst/devlog/DEVLOG_2026-09-30_10-01.md`.
 * The fits have new fields `$penalty_scale`, `$latent_floor` and `$floored_species`,

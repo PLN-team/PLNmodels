@@ -12,13 +12,14 @@
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 
-test_that("the defaults are the covariance scale and no floor, and are unchanged", {
+test_that("the defaults are the covariance scale and a floor of 1e-3", {
   ctrl <- PLNnetwork_param(trace = 0, n_penalties = 5)
   expect_equal(ctrl$penalty_scale, "covariance")
-  expect_null(ctrl$latent_floor)
+  expect_equal(ctrl$latent_floor, 1e-3)
+  expect_null(PLNnetwork_param(latent_floor = NULL)$latent_floor)
   nets <- PLNnetwork(Abundance ~ 1, trichoptera, control = ctrl)
   expect_equal(nets$models[[1]]$penalty_scale, "covariance")
-  expect_null(nets$models[[1]]$latent_floor)
+  expect_equal(nets$models[[1]]$latent_floor, 1e-3)
   explicit <- PLNnetwork(Abundance ~ 1, trichoptera,
                          control = PLNnetwork_param(trace = 0, n_penalties = 5, penalty_scale = "covariance"))
   expect_identical(nets$criteria$loglik, explicit$criteria$loglik)
@@ -60,13 +61,14 @@ test_that("PLNnetwork: the floor bounds the degenerate species, and only them", 
   f <- Abundance ~ 1 + offset(log(Offset))
   floor <- 1e-1 # high enough to bind on these data
 
-  ## no degenerate species on these data: the floor does nothing
-  free  <- PLNnetwork(f, trichoptera, control = PLNnetwork_param(trace = 0, n_penalties = 5))
+  ## no degenerate species on these data: the floor leaves the fit exactly as it is
+  free  <- PLNnetwork(f, trichoptera, control = PLNnetwork_param(trace = 0, n_penalties = 5, latent_floor = NULL))
   quiet <- PLNnetwork(f, trichoptera, control = PLNnetwork_param(trace = 0, n_penalties = 5, latent_floor = floor))
   expect_equal(vapply(quiet$models, function(m) m$optim_par$n_floor, numeric(1)), rep(0, 5))
   expect_true(all(lengths(lapply(quiet$models, function(m) m$floored_species)) == 0))
-  expect_equal(quiet$criteria$n_edges, free$criteria$n_edges)
-  expect_equal(quiet$criteria$loglik, free$criteria$loglik, tolerance = 1e-3)
+  expect_identical(quiet$criteria$n_edges, free$criteria$n_edges)
+  expect_identical(quiet$criteria$loglik, free$criteria$loglik)
+  expect_null(free$models[[1]]$latent_floor)
   expect_length(free$models[[1]]$floored_species, 0)
 
   ## a low threshold stands for degenerate species

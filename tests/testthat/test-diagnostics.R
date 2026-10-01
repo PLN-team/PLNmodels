@@ -71,15 +71,15 @@ test_that("species with a degenerate latent variance are reported, once per call
   variances <- diag(sigma(fit))
   expect_setequal(fit$degenerate_species, names(variances)[variances > 5])
   expect_gt(length(fit$degenerate_species), 0)
-  expect_warning(PLN(Abundance ~ 1, tri, control = PLN_param(trace = 0)), "latent variance")
-  expect_warning(ZIPLN(Abundance ~ 1, tri, control = ZIPLN_param(trace = 0)), "latent variance")
+  expect_warning(PLN(Abundance ~ 1, tri, control = PLN_param(trace = 0)), "degenerate")
+  expect_warning(ZIPLN(Abundance ~ 1, tri, control = ZIPLN_param(trace = 0)), "degenerate")
 
   ## a single warning for a whole collection
   warns <- capture_warnings(
     nets <- PLNnetwork(Abundance ~ 1, tri, control = PLNnetwork_param(trace = 0, n_penalties = 5))
   )
-  expect_length(grep("latent variance", warns), 1)
-  expect_match(warns[grep("latent variance", warns)], "of the 5 models")
+  expect_length(grep("degenerate", warns), 1)
+  expect_match(warns[grep("degenerate", warns)], "of the 5 models")
   expect_warning(ZIPLNnetwork(Abundance ~ 1, tri, control = ZIPLNnetwork_param(trace = 0, n_penalties = 3)),
                  "of the 3 models")
 })
