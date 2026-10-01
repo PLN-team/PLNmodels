@@ -11,6 +11,16 @@ normalize_covariates <- function(X) {
   list(X_sc = sweep(X, 2, scales, "/"), scales = scales)
 }
 
+## Residual covariance of the variational means of a PLN or ZIPLN fit,
+## (M - XB)'W(M - XB) / sum(w) + diag of the mean variational variances: the
+## matrix S the graphical Lasso is applied to in PLNnetwork and ZIPLNnetwork.
+residual_covariance <- function(fit, X, w = rep(1, nrow(X))) {
+  R <- fit$var_par$M - X %*% fit$model_par$B
+  S <- crossprod(sqrt(w) * R) / sum(w)
+  diag(S) <- diag(S) + colSums(w * fit$var_par$S2) / sum(w)
+  S
+}
+
 config_default_nlopt <-
   list(
     algorithm     = "CCSAQ",

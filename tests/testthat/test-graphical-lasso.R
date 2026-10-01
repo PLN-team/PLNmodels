@@ -1,7 +1,9 @@
 ###############################################################################
 ## The in-package graphical Lasso (src/graphical_lasso.h), which replaced
 ## glassoFast in PLNnetwork and ZIPLNnetwork. It is a port of glassoFast's
-## Fortran: the equivalence is checked directly when glassoFast is installed,
+## Fortran, run on the problem scaled to a unit diagonal: the equivalence (same
+## support, entries within the tolerance) is checked directly when glassoFast
+## is installed,
 ## and otherwise pinned by the properties that matter -- the returned matrix
 ## solves the penalized problem, and the closed-form cases come out exact.
 ###############################################################################
@@ -109,9 +111,10 @@ test_that("degenerate input is reported rather than hung on or silently accepted
 })
 
 ###############################################################################
-## Stagnation: on an ill-conditioned covariance the sweeps settle into a small
-## limit cycle, so the stopping criterion is never met while the solution no
-## longer moves. The solver detects this instead of spending its whole budget.
+## Stagnation: on an ill-conditioned covariance, the unscaled sweeps settle into
+## a small limit cycle, so the stopping criterion is never met while the
+## solution no longer moves. The scaling to a unit diagonal removes the cases
+## observed so far; the detection stays as a safeguard.
 ###############################################################################
 
 test_that("converging problems are left alone by the stagnation detection", {
@@ -133,32 +136,86 @@ test_that("converging problems are left alone by the stagnation detection", {
   }
 })
 
-test_that("a cycling solve is detected, reported, and lands where grinding on would", {
+test_that("a covariance on which the unscaled descent cycles converges once scaled", {
   skip_on_cran()
-  ## 80 most abundant oak species: dense enough, at a low penalty, for the
-  ## sweeps to start cycling -- glassoFast burns all 10000 of them here
+  ## 80 most abundant oak species, at a low penalty: without the scaling to a
+  ## unit diagonal, the sweeps settle into a limit cycle here (glassoFast burns
+  ## all 10000 of them, the unscaled port stalled after ~1100)
   data(oaks)
   Y <- as.matrix(oaks$Abundance)
   S <- cov(log1p(Y[, order(-colMeans(Y))[1:80]])) + diag(1e-3, 80)
   rho <- max(abs(S[upper.tri(S)])) * 1e-3
 
-  stalled <- graphical_lasso(S, rho)
-  expect_equal(stalled$status, "stalled")
-  expect_false(stalled$converged)
-  expect_lt(stalled$niter, 5000)  # stopped well short of maxit
-  expect_gt(stalled$delta, 1)     # the criterion was not met, by definition
-  expect_lt(stalled$delta, 10)    # but it came close: this is a cycle, not a failure
-  expect_false(anyNA(stalled$wi))
+  fit <- graphical_lasso(S, rho)
+  expect_equal(fit$status, "converged")
+  expect_lt(fit$niter, 50)
+  expect_equal(fit$shift, 0)
 
-  ## Grinding on does not buy accuracy: the iterates wander inside the cycle,
-  ## so a much longer run is another point of it, not a better answer. What is
-  ## pinned here is the amplitude -- same number of edges, values within the
-  ## cycle -- not entry-by-entry agreement, which the cycle does not provide
-  ## (a couple of borderline edges flip whichever sweep one stops at).
-  ground <- graphical_lasso(S, rho, maxit = 10000, stall_patience = Inf)
-  expect_equal(length(support(stalled$wi)), length(support(ground$wi)))
-  expect_equal(stalled$wi, ground$wi, tolerance = 1e-2)
-  expect_lt(max(abs(stalled$wi - ground$wi)) / max(abs(ground$wi)), 1e-2)
+  ## and it lands where a much tighter solve does
+  tight <- graphical_lasso(S, rho, thr = 1e-8)
+  expect_lt(max(abs(fit$wi - tight$wi)) / max(abs(tight$wi)), 1e-3)
+  expect_lt(abs(length(support(fit$wi)) - length(support(tight$wi))), 0.001 * length(support(tight$wi)))
+})
+
+###############################################################################
+## Scaling: the problem is solved on a unit diagonal, which is an exact change
+## of variables. It matters on covariances whose variances span orders of
+## magnitude, as PLNnetwork's residual covariance does (#184).
+###############################################################################
+
+test_that("the solution is equivariant to a rescaling of the variables", {
+  set.seed(313)
+  n <- 15
+  S <- rand_S(n)
+  rho <- 0.05 * off_diag_weights(n)
+  d <- 10^runif(n, -2, 2)
+  DD <- tcrossprod(d)
+  ## Theta solves (S, rho) iff Theta / DD solves (DSD, D rho D)
+  ref    <- graphical_lasso(S, rho)
+  scaled <- graphical_lasso(S * DD, rho * DD)
+  expect_equal(scaled$wi * DD, ref$wi, tolerance = 1e-10)
+  expect_equal(scaled$w / DD, ref$w, tolerance = 1e-10)
+  expect_identical(support(scaled$wi), support(ref$wi))
+})
+
+test_that("variances spanning orders of magnitude do not hinder convergence", {
+  set.seed(314)
+  n <- 20
+  d <- 10^seq(-2, 2, length.out = n)
+  S <- rand_S(n) * tcrossprod(d)
+  for (pen in c(0.3, 0.05, 0.005)) {
+    ## a penalty on the scale of each pair of variables
+    fit <- graphical_lasso(S, pen * tcrossprod(d) * off_diag_weights(n))
+    expect_equal(fit$status, "converged")
+    expect_lt(fit$niter, 50)
+    ## w and wi are inverses, in the units of the variables
+    expect_equal((fit$w %*% fit$wi) * outer(1 / d, d), diag(n), tolerance = 1e-3)
+  }
+})
+
+## A residual covariance met along a PLNnetwork path (#184), with variances from
+## 95 to 7300: unscaled, the descent failed in its inner loop on it
+pln_residual_cov <- readRDS(test_path("fixtures", "plnnetwork_residual_cov.rds"))
+
+test_that("a PLNnetwork residual covariance that broke the unscaled descent converges", {
+  fit <- graphical_lasso(pln_residual_cov$S, pln_residual_cov$rho)
+  expect_equal(fit$status, "converged")
+  expect_lt(fit$niter, 50)
+  expect_equal(fit$shift, 0)
+  expect_gt(min(eigen(fit$wi, symmetric = TRUE, only.values = TRUE)$values), 0)
+})
+
+test_that("an indefinite precision matrix is shifted to positive definite", {
+  ## Short of convergence, the precision matrix backed out of the regression
+  ## coefficients is not the inverse of w, and can be indefinite: a single
+  ## sweep on this covariance is enough for that
+  fit <- graphical_lasso(pln_residual_cov$S, pln_residual_cov$rho, maxit = 1)
+  expect_gt(fit$shift, 0)
+  ev <- eigen(fit$wi, symmetric = TRUE, only.values = TRUE)$values
+  ## its smallest eigenvalue is set to the one of the inverse of w
+  expect_equal(min(ev), 1 / max(eigen(fit$w, symmetric = TRUE, only.values = TRUE)$values), tolerance = 1e-8)
+  expect_gt(min(ev), 0)
+  expect_length(fit$shift, 1) # a shift of the diagonal, which leaves the support as is
 })
 
 test_that("the per-sweep criterion can be traced", {
@@ -272,7 +329,8 @@ test_that("the result matches glassoFast on ordinary matrices, all along the pat
       ref <- glassoFast::glassoFast(S, rho = rho)$wi
       new <- graphical_lasso(S, rho)$wi
       expect_identical(support(new), support(ref))
-      expect_equal(new, ref, tolerance = 1e-12)
+      ## up to the stopping rule, which sees the scaling to a unit diagonal
+      expect_equal(new, ref, tolerance = 1e-4)
     }
   }
 })
@@ -286,7 +344,7 @@ test_that("the result matches glassoFast with weights and an unpenalized diagona
     ref <- glassoFast::glassoFast(S, rho = lambda * W)
     new <- graphical_lasso(S, lambda * W)
     expect_identical(support(new$wi), support(ref$wi))
-    expect_equal(new$wi, ref$wi, tolerance = 1e-12)
-    expect_equal(new$w,  ref$w,  tolerance = 1e-12)
+    expect_equal(new$wi, ref$wi, tolerance = 1e-4)
+    expect_equal(new$w,  ref$w,  tolerance = 1e-4)
   }
 })

@@ -62,17 +62,18 @@ Networkfamily <- R6Class(
       ## Get an appropriate grid of penalties
       if (is.null(penalties)) {
         if (control$trace > 1) cat("\nComputing an appropriate grid of penalties.")
-        ## sigma_inception overrides the fitted Sigma when the inception uses a restricted
-        ## covariance (diagonal/spherical) or truncated EM: the empirical residual covariance
-        ## is a valid full-rank proxy for max_pen even when model_par$Sigma is diagonal.
-        Sigma_maxpen <- if (!is.null(control$sigma_inception)) {
-          control$sigma_inception
-        } else {
-          as.matrix(control$inception$model_par$Sigma)
-        }
+        ## The graphical Lasso on S returns the empty network iff |S_ij| <= rho w_ij
+        ## off the diagonal, where S is the residual covariance of the variational
+        ## means, whatever the covariance model of the inception (its fitted Sigma
+        ## has no off-diagonal part when it is diagonal). With an unpenalized
+        ## diagonal and a diagonal inception, which is then the empty network
+        ## itself, this bound is exact: the top of the path is the empty network.
+        S_inception <- residual_covariance(control$inception, data$X, data$w)
+        in_grid <- upper.tri(S_inception, diag = control$penalize_diagonal)
+        if (!any(vapply(list_penalty_weights, function(w) any(in_grid & w > 0), logical(1))))
+          stop("The penalty weights leave no entry to penalize: no grid of penalties can be built.")
         max_pen <- list_penalty_weights %>%
-          map(~ Sigma_maxpen / .x) %>%
-          map_dbl(~ max(abs(.x[upper.tri(.x, diag = control$penalize_diagonal)]))) %>%
+          map_dbl(~ if (any(in_grid & .x > 0)) max(abs(S_inception[in_grid & .x > 0] / .x[in_grid & .x > 0])) else 0) %>%
           max()
         penalties <- 10^seq(log10(max_pen), log10(max_pen*control$min_ratio), len = control$n_penalties)
       } else {
@@ -172,11 +173,13 @@ Networkfamily <- R6Class(
           pull(param) %>% min() %>% match(self$penalties)
         model <- self$models[[id_stars]]$clone()
       } else {
-        stopifnot(!anyNA(self$criteria[[crit]]))
-        id <- 1
-        if (length(self$criteria[[crit]]) > 1) {
-          id <- which.max(self$criteria[[crit]])
-        }
+        ## a failed fit has NA criteria, and is left out of the selection
+        failed <- is.na(self$criteria[[crit]])
+        if (all(failed)) stop("The ", crit, " is NA for all the models of the collection.")
+        if (any(failed))
+          warning(sum(failed), " model(s) of the collection failed, and are left out of the selection.",
+                  call. = FALSE)
+        id <- which.max(self$criteria[[crit]])
         model <- self$models[[id]]$clone()
       }
       model
@@ -381,17 +384,6 @@ PLNnetworkfamily <- R6Class(
           PLNfit$new(data$Y, data$X, data$O, data$w, data$formula, ctrl_inc) # defaults to full
         )
         myPLN$optimize(data$Y, data$X, data$O, data$w, cfg_inception)
-
-        ## Empirical residual covariance is needed only when the fitted Sigma is not
-        ## full-rank: diagonal/spherical inception gives Σ_off-diag = 0 → max_pen = 0.
-        ## For truncated EM, the fitted Sigma is consistent with the (partially converged)
-        ## M so we also replace it. When only the backend differs (full covariance, no
-        ## iteration limit), the fitted Sigma from builtin is valid for max_pen.
-        need_empirical_sigma <- !is.null(control$inception_niter) || control$inception_cov != "full"
-        if (need_empirical_sigma) {
-          resid <- myPLN$var_par$M - data$X %*% myPLN$model_par$B
-          control$sigma_inception <- crossprod(resid) / nrow(resid)
-        }
         control$inception <- myPLN
       }
 

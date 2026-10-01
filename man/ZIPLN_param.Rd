@@ -10,7 +10,7 @@ ZIPLN_param(
   covariance = c("full", "diagonal", "spherical", "fixed", "sparse"),
   Omega = NULL,
   penalty = 0,
-  penalize_diagonal = TRUE,
+  penalize_diagonal = FALSE,
   penalty_weights = NULL,
   config_post = list(),
   config_optim = list(),
@@ -28,7 +28,10 @@ ZIPLN_param(
 
 \item{penalty}{a user-defined penalty to sparsify the residual covariance. Defaults to 0 (no sparsity).}
 
-\item{penalize_diagonal}{boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is \code{TRUE}}
+\item{penalize_diagonal}{boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is \code{FALSE}.
+Penalizing the diagonal inflates the latent variances by the penalty (\eqn{\Sigma_{ii} = S_{ii} + \rho}),
+which the VE step then feeds back into the residual covariance \eqn{S}: along the path, the
+network may then never become empty, whatever the penalty (#180).}
 
 \item{penalty_weights}{either a single or a list of p x p matrix of weights (default: all weights equal to 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.}
 

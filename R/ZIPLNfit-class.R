@@ -201,6 +201,20 @@ ZIPLNfit <- R6Class(
           -sum(vloglik) + private$objective_penalty(new_Omega, nrow(data$Y))
         convergence[nb_iter]  <- abs(new_objective - objective)/abs(new_objective)
 
+        ## A non-finite objective ends the optimization, on the best iterate so far
+        if (!is.finite(new_objective)) {
+          if (!is.finite(best$objective))
+            stop("The objective is not finite at the first iteration of the optimization.",
+                 call. = FALSE)
+          stop_reason <- "non-finite objective"
+          criterion   <- criterion[seq_len(nb_iter - 1)]
+          convergence <- convergence[seq_len(nb_iter - 1)]
+          warning("The optimization stopped at iteration ", nb_iter,
+                  ": the objective is not finite. The fit is the best iterate so far.",
+                  call. = FALSE)
+          break
+        }
+
         ## The variational EM should decrease the objective at every step: an
         ## increase is not a sign of convergence. It is counted, and the best
         ## iterate is the one returned.
@@ -326,6 +340,8 @@ ZIPLNfit <- R6Class(
 
         criterion[nb_iter] <- new_objective <- -sum(vloglik)
         convergence[nb_iter]  <- abs(new_objective - objective)/abs(new_objective)
+        if (!is.finite(new_objective))
+          stop("The objective of the VE step is not finite at iteration ", nb_iter, ".", call. = FALSE)
 
         objective_converged <-
           abs(objective - new_objective) <= control$ftol_out |
@@ -757,6 +773,7 @@ ZIPLNfit_sparse <- R6Class(
     rho    = NA, # the p x p penalty weight
     glasso_status    = "converged", # how the last graphical Lasso call ended
     glasso_nonconv   = 0L,   # number of non-converged graphical Lasso calls
+    glasso_indef     = 0L,   # number of graphical Lasso calls with an indefinite wi
     gamma_ebic       = 0.5,  # the tuning parameter of the EBIC
     ## The M step for Omega maximizes the ELBO minus this penalty, on the scale of
     ## the ELBO (graphical Lasso on the covariance S = crossprod/n, hence n/2)
@@ -784,6 +801,7 @@ ZIPLNfit_sparse <- R6Class(
                                  rho = private$lambda * private$rho)
           private$glasso_status <- out$status
           if (!out$converged) private$glasso_nonconv <- private$glasso_nonconv + 1L
+          if (isTRUE(out$shift > 0)) private$glasso_indef <- private$glasso_indef + 1L
           out$wi
         }
     },
@@ -793,9 +811,10 @@ ZIPLNfit_sparse <- R6Class(
     #' @param data a named list used internally to carry the data matrices
     #' @param control a list for controlling the optimization. See details.
     optimize = function(data, control) {
-      private$glasso_nonconv <- 0L
+      private$glasso_nonconv <- 0L; private$glasso_indef <- 0L
       super$optimize(data, control)
       private$monitoring$glasso_nonconverged <- private$glasso_nonconv
+      private$monitoring$glasso_indefinite   <- private$glasso_indef
       ## see PLNnetworkfit$optimize(): a stalled solve is benign, the others are not
       if (private$glasso_status %in% c("degenerate", "inner_failure", "max_iter"))
         warning("The graphical Lasso failed to converge (", private$glasso_status,
