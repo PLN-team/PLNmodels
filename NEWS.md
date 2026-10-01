@@ -28,6 +28,16 @@
   removes it.
   A floor on every cell was tried first and dropped: on `mollusk`, where nothing
   diverges, it constrained 39 % of the cells.
+* **The floor also applies to `ZIPLNnetwork()`** and to `ZIPLN()` with a sparse
+  covariance (`latent_floor` in `ZIPLNnetwork_param()` and `ZIPLN_param()`, `1e-3` by
+  default), which degenerate as `PLNnetwork()` does: zero inflation does not protect
+  from it. On `oaks`, the largest latent variance along the default path goes from
+  193 000 to 93 and the largest degree at about p edges from 111 to 21. As for
+  `PLNnetwork()`, a fit without degenerate species is left exactly as it is.
+* In the optimization of sparse ZIPLN fits, the best iterate is no longer chosen by an
+  objective that cannot be compared across iterations: on the correlation scale, where
+  the penalty weights change at each iteration, the last iterate is returned, and the
+  iterates preceding the bounding of a species by the floor are discarded.
 * On the covariance scale, the floor stabilizes the fit but does not repair the
   network: the degree of the hubs drops (from 107 to 22 on `oaks`), and the edges still
   concentrate on the degenerate species.

@@ -130,6 +130,60 @@ test_that("the projection on the floor sets the variance of the bounded cells to
   expect_equal(part$n_floor, sum(below[, some]))
 })
 
+test_that("the optimal variational variance solves its equation, for PLN and ZIPLN", {
+  z <- c(-5, -1, 0, 2); omega <- c(0.5, 2, 0.01, 1)
+  ## 1 / s = omega + weight * exp(z + s / 2)
+  s1 <- PLNmodels:::optimal_variational_variance(z, omega)
+  expect_equal(1 / s1, omega + exp(z + s1 / 2), tolerance = 1e-8)
+  weight <- c(0.3, 1, 0.9, 0.05)
+  s2 <- PLNmodels:::optimal_variational_variance(z, omega, weight)
+  expect_equal(1 / s2, omega + weight * exp(z + s2 / 2), tolerance = 1e-8)
+  ## a null weight (a cell that is a structural zero for sure) gives 1 / omega
+  expect_equal(PLNmodels:::optimal_variational_variance(z, omega, rep(0, 4)), 1 / omega, tolerance = 1e-8)
+})
+
+test_that("ZIPLNnetwork: the floor bounds the degenerate species, and only them", {
+  expect_equal(ZIPLNnetwork_param()$latent_floor, 1e-3)
+  expect_equal(ZIPLN_param()$latent_floor, 1e-3)
+  expect_null(ZIPLNnetwork_param(latent_floor = NULL)$latent_floor)
+  expect_error(ZIPLNnetwork_param(latent_floor = 0), "latent_floor")
+  O <- log(trichoptera$Offset)
+  f <- Abundance ~ 1 + offset(log(Offset))
+  floor <- 1e-1
+
+  ## no degenerate species on these data: the floor leaves the fit exactly as it is
+  free  <- ZIPLNnetwork(f, trichoptera, control = ZIPLNnetwork_param(trace = 0, n_penalties = 4, latent_floor = NULL))
+  quiet <- ZIPLNnetwork(f, trichoptera, control = ZIPLNnetwork_param(trace = 0, n_penalties = 4, latent_floor = floor))
+  expect_identical(quiet$criteria$loglik, free$criteria$loglik)
+  expect_identical(quiet$criteria$n_edges, free$criteria$n_edges)
+  expect_true(all(lengths(lapply(quiet$models, function(m) m$floored_species)) == 0))
+  expect_null(free$models[[1]]$latent_floor)
+
+  ## a low threshold stands for degenerate species
+  old <- options(PLNmodels.latent_variance_threshold = 3)
+  on.exit(options(old))
+  nets <- suppressWarnings( # the degenerate species are reported in a warning
+    ZIPLNnetwork(f, trichoptera, control = ZIPLNnetwork_param(trace = 0, n_penalties = 4, latent_floor = floor))
+  )
+  floored <- lapply(nets$models, function(m) m$floored_species)
+  expect_gt(length(floored[[4]]), 0)
+  expect_lt(length(floored[[4]]), nets$models[[4]]$p)
+  for (k in 2:4) expect_true(all(floored[[k - 1]] %in% floored[[k]]))
+  for (m in nets$models) {
+    expect_equal(m$latent_floor, floor)
+    counts <- exp(O + m$var_par$M)
+    bounded <- colnames(trichoptera$Abundance) %in% m$floored_species
+    if (any(bounded)) expect_gte(min(counts[, bounded]), floor * (1 - 1e-10))
+    expect_true(all(is.finite(m$var_par$S2)) && all(m$var_par$R >= 0 & m$var_par$R <= 1))
+    expect_true(is.finite(m$loglik))
+  }
+  ## a single sparse ZIPLN fit takes the floor too
+  one <- suppressWarnings(ZIPLN(f, trichoptera, control = ZIPLN_param(trace = 0, penalty = 0.3, latent_floor = floor)))
+  expect_equal(one$latent_floor, floor)
+  bounded <- colnames(trichoptera$Abundance) %in% one$floored_species
+  if (any(bounded)) expect_gte(min(exp(O + one$var_par$M)[, bounded]), floor * (1 - 1e-10))
+})
+
 test_that("ZIPLNnetwork and stability selection follow the scale of the penalty", {
   tri <- trichoptera[1:25, ]
   tri$Abundance <- tri$Abundance[, 1:6]

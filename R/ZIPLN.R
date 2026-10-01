@@ -72,6 +72,7 @@ ZIPLN <- function(formula, data, subset, zi = c("single", "row", "col"), control
 #' @param covariance character setting the model for the covariance matrix. Either "full", "diagonal", "spherical", "fixed" or "sparse". Default is "full".
 #' @param backend optimization backend, either `"builtin"` (default, built-in Newton optimizer for the joint VE step) or `"nlopt"` (NLOPT-based CCSAQ).
 #' @param penalty a user-defined penalty to sparsify the residual covariance. Defaults to 0 (no sparsity).
+#' @param latent_floor a positive number (default `1e-3`), or `NULL` for no floor: a floor on the variational means of the degenerate species, as in [PLNnetwork_param()]. Only used with a sparse covariance (`penalty > 0`).
 #' @return list of parameters used during the fit and post-processing steps
 #'
 #' @inherit PLN_param details
@@ -90,6 +91,7 @@ ZIPLN_param <- function(
     penalize_diagonal = FALSE  ,
     penalty_weights   = NULL   ,
     penalty_scale     = c("covariance", "correlation"),
+    latent_floor      = 1e-3   ,
     config_post   = list(),
     config_optim  = list(),
     inception     = NULL     # pretrained ZIPLNfit used as initialization
@@ -97,6 +99,9 @@ ZIPLN_param <- function(
 
   covariance <- match.arg(covariance)
   penalty_scale <- match.arg(penalty_scale)
+  if (!is.null(latent_floor))
+    stopifnot("latent_floor must be NULL or a positive number" =
+                is.numeric(latent_floor) && length(latent_floor) == 1L && !is.na(latent_floor) && latent_floor > 0)
   if (covariance == "fixed") stopifnot("Omega must be provied for fixed covariance" = inherits(Omega, "matrix") | inherits(Omega, "Matrix")) %>% try()
   if (inherits(Omega, "matrix") | inherits(Omega, "Matrix")) covariance <- "fixed"
   if (covariance == "sparse") stopifnot("You should provide a positive penalty when chosing 'sparse' covariance" = penalty > 0) %>% try()
@@ -127,6 +132,7 @@ ZIPLN_param <- function(
     penalize_diagonal = penalize_diagonal,
     penalty_weights   = penalty_weights  ,
     penalty_scale     = penalty_scale    ,
+    latent_floor      = latent_floor     ,
     config_post   = config_pst,
     config_optim  = config_opt,
     inception     = inception), class = "PLNmodels_param")

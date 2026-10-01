@@ -180,6 +180,12 @@ ZIPLNfit <- R6Class(
         new_M  <- MS_out$M
         new_S2 <- MS_out$S2
         new_R  <- MS_out$R
+        ## keep the variational means of the degenerate species above the latent
+        ## floor, if any (sparse fits only)
+        projected <- private$project_floor(new_M, new_S2, new_R, new_Pi, new_Omega, data)
+        if (!is.null(projected)) {
+          new_M <- projected$M; new_S2 <- projected$S2; new_R <- projected$R
+        }
         ## The builtin VE step optimizes M with B profiled (B = P_X M), so that
         ## the objective must be evaluated at the matching B, not at the one of
         ## the M step
@@ -217,13 +223,16 @@ ZIPLNfit <- R6Class(
 
         ## The variational EM should decrease the objective at every step: an
         ## increase is not a sign of convergence. It is counted, and the best
-        ## iterate is the one returned.
+        ## iterate is the one returned. When the objective cannot be compared
+        ## with the one of the previous iterates (see ZIPLNfit_sparse), the
+        ## current iterate is kept.
+        comparable <- private$objective_is_comparable()
         delta <- objective - new_objective
         objective_converged <-
           abs(delta) <= control$ftol_out |
           abs(delta)/abs(new_objective) <= control$ftol_out
-        if (delta < 0 && !objective_converged) nb_increase <- nb_increase + 1L
-        if (new_objective < best$objective)
+        if (comparable && delta < 0 && !objective_converged) nb_increase <- nb_increase + 1L
+        if (!comparable || new_objective < best$objective)
           best <- list(parameters = new_parameters, objective = new_objective, vloglik = vloglik)
 
         parameters_converged <- parameter_list_converged(
@@ -525,7 +534,15 @@ ZIPLNfit <- R6Class(
 
     ## Penalty added to the negative ELBO in the objective minimized by optimize():
     ## none here, the l1 penalty of the graphical Lasso for ZIPLNfit_sparse
-    objective_penalty = function(Omega, n) {0}
+    objective_penalty = function(Omega, n) {0},
+
+    ## Projection of the output of a VE step on the latent floor: none here, see
+    ## ZIPLNfit_sparse. Returns NULL when nothing changes.
+    project_floor = function(M, S2, R, Pi, Omega, data) {NULL},
+
+    ## Can the objective of the current iterate be compared with the one of the
+    ## previous iterates? Always here, see ZIPLNfit_sparse.
+    objective_is_comparable = function() {TRUE}
   ),
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ##  ACTIVE BINDINGS ----
@@ -783,6 +800,43 @@ ZIPLNfit_sparse <- R6Class(
     ## the ELBO (graphical Lasso on the covariance S = crossprod/n, hence n/2)
     objective_penalty = function(Omega, n) {
       .5 * n * sum(abs(private$rho_glasso * Omega))
+    },
+    floor   = NULL, # lower bound on exp(O + M) for the degenerate species, if any
+    floored = NULL, # species bounded by the floor so far (logical)
+    newly_floored = FALSE, # did the last projection bound a new species?
+    ## The objective of an iterate cannot be compared with the previous ones on
+    ## the correlation scale, where the penalty weights change with the residual
+    ## covariance at each iteration, nor when a species has just been bounded by
+    ## the floor, the previous iterates no longer being feasible
+    objective_is_comparable = function() {
+      private$scale != "correlation" && !private$newly_floored
+    },
+    n_floor = 0L,   # cells at the floor in the last iteration
+    ## As PLNnetworkfit: the floor applies to the species whose latent variance
+    ## has exceeded the threshold of the degenerate species, from then on. The
+    ## means below the bound are set to it; on these cells the variational
+    ## variance is set to its optimum given M and R, then R to its optimum
+    ## given the expected count (as zipln_update_R in src/covariance_zipln.h).
+    project_floor = function(M, S2, R, Pi, Omega, data) {
+      private$newly_floored <- FALSE
+      if (is.null(private$floor)) return(NULL)
+      residuals <- M - data$X %*% private$optimizer$B(M = M, X = data$X)
+      degenerate <- colMeans(residuals^2) + colMeans(S2) > latent_variance_threshold()
+      private$newly_floored <- any(degenerate & !private$floored)
+      private$floored <- private$floored | degenerate
+      private$n_floor <- 0L
+      if (!any(private$floored)) return(NULL)
+      bound <- log(private$floor) - data$O
+      bound[, !private$floored] <- -Inf
+      clipped <- M < bound
+      if (!any(clipped)) return(NULL)
+      private$n_floor <- sum(clipped)
+      M[clipped] <- bound[clipped]
+      omega <- matrix(diag(as.matrix(Omega)), nrow(M), ncol(M), byrow = TRUE)
+      S2[clipped] <- optimal_variational_variance((data$O + M)[clipped], omega[clipped], (1 - R)[clipped])
+      A <- exp(data$O + M + .5 * S2)
+      R[clipped] <- (stats::plogis(A + stats::qlogis(Pi)) * (data$Y == 0))[clipped]
+      list(M = M, S2 = S2, R = R)
     }
   ),
 
@@ -800,6 +854,7 @@ ZIPLNfit_sparse <- R6Class(
       private$lambda <- control$penalty
       private$rho    <- control$penalty_weights
       if (!is.null(control$penalty_scale)) private$scale <- control$penalty_scale
+      private$floor <- control$latent_floor
       private$optimizer$Omega <-
         function(M, X, B, S2) {
           S <- crossprod(M - X %*% B)/self$n + diag(colMeans(S2), self$p, self$p)
@@ -819,7 +874,13 @@ ZIPLNfit_sparse <- R6Class(
     #' @param control a list for controlling the optimization. See details.
     optimize = function(data, control) {
       private$glasso_nonconv <- 0L; private$glasso_indef <- 0L
+      ## species bounded by the floor so far along the path (see Networkfamily$optimize)
+      private$floored <- if (is.null(control$floored)) rep(FALSE, self$p) else control$floored
+      private$n_floor <- 0L
+      control$floored <- NULL
       super$optimize(data, control)
+      private$monitoring$n_floor <- private$n_floor
+      private$monitoring$floored <- private$floored
       private$monitoring$glasso_nonconverged <- private$glasso_nonconv
       private$monitoring$glasso_indefinite   <- private$glasso_indef
       ## see PLNnetworkfit$optimize(): a stalled solve is benign, the others are not
@@ -890,6 +951,15 @@ ZIPLNfit_sparse <- R6Class(
     penalty_weights = function() {private$rho},
     #' @field penalty_scale the scale on which the penalty applies, `"covariance"` or `"correlation"` (see [PLNnetwork_param()])
     penalty_scale   = function() {private$scale},
+    #' @field latent_floor the lower bound on `exp(O + M)` for the species in `floored_species`, `NULL` if none (see [PLNnetwork_param()])
+    latent_floor    = function() {private$floor},
+    #' @field floored_species names of the species whose variational means are bounded by `latent_floor`: those whose latent variance has exceeded the threshold of `degenerate_species` during the optimization, of this fit or of the previous ones along the penalty path
+    floored_species = function() {
+      floored <- private$monitoring$floored
+      if (is.null(floored)) return(character(0))
+      species <- if (is.null(colnames(private$Omega))) as.character(seq_along(floored)) else colnames(private$Omega)
+      species[floored]
+    },
     #' @field n_edges number of edges if the network (non null coefficient of the sparse precision matrix)
     n_edges         = function() {sum(private$Omega[upper.tri(private$Omega, diag = FALSE)] != 0)},
     #' @field nb_param_pln number of parameters in the PLN part of the current model
