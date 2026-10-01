@@ -13,6 +13,7 @@ cases <- list(
   list("trichoptera ~1", Abundance ~ 1, tri))
 settings <- list(
   covariance          = list(),
+  "covariance+floor"  = list(latent_floor = 1e-3),
   correlation         = list(penalty_scale = "correlation"),
   "correlation+floor" = list(penalty_scale = "correlation", latent_floor = 1e-3))
 degrees <- function(fit) { A <- as.matrix(fit$model_par$Omega) != 0; diag(A) <- FALSE; rowSums(A) }
@@ -27,7 +28,9 @@ for (cs in cases) for (s in names(settings)) {
     degenerate_path = length(unique(unlist(lapply(nets$models, function(m) m$degenerate_species)))),
     max_Sigma_path = signif(max(vapply(nets$models, function(m) max(diag(as.matrix(m$model_par$Sigma))), numeric(1))), 3),
     edges = m$n_edges, max_degree = max(degrees(m)), median_degree = median(degrees(m)),
-    cells_at_floor = round(m$optim_par$n_floor / length(cs[[3]]$Abundance), 3), time = round(unname(tt), 1)))
+    cells_at_floor = round(m$optim_par$n_floor / length(cs[[3]]$Abundance), 3),
+    floored_species = length(unique(unlist(lapply(nets$models, function(m) m$floored_species)))),
+    time = round(unname(tt), 1)))
   saveRDS(out, "real_package.rds")
 }
 options(width = 200); print(out, row.names = FALSE)

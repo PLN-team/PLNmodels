@@ -120,10 +120,89 @@ n'avoir ni espèce dégénérée ni hub artificiel sur l'ensemble des cas testé
 ## Implémentation
 
 Les pistes C et A sont maintenant des options du paquet, désactivées par défaut :
-`PLNnetwork_param(penalty_scale = "correlation", latent_floor = 1e-3)`. Les scripts
-`sim_known_network_package.R` et `real_package.R` refont la simulation et la comparaison sur
-données réelles avec ces options, et redonnent les résultats des prototypes. Le récit complet
-est dans `inst/devlog/DEVLOG_2026-09-30_10-01.md`.
+`PLNnetwork_param(penalty_scale = "correlation", latent_floor = 1e-3)`. Le plancher du paquet
+est le **plancher ciblé** de la section suivante : il ne borne que les espèces dont la
+variance latente dépasse 100 pendant l'optimisation (champ `$floored_species`), et remplace le
+plancher fixe prototypé ici. Les scripts `sim_known_network_package.R`,
+`sim_package_regimes.R` et `real_package.R` refont les comparaisons avec ces options. Le récit
+complet est dans `inst/devlog/DEVLOG_2026-09-30_10-01.md`.
+
+## Variantes du plancher (1er octobre, `floor_variants.R`)
+
+Le plancher du paquet est un seuil fixe : `M_ij ≥ log ε − O_ij` pour toutes les cellules.
+Trois variantes ont été comparées, toutes sur l'échelle des corrélations :
+
+- **fixe** : le plancher du paquet, ε = 1e-2 ou 1e-3 ;
+- **relatif** : `M_ij ≥ log c + ` le plus petit `log(Y) − O` observé pour l'espèce `j`, soit
+  une fraction `c` de sa plus petite abondance observée ;
+- **ciblé** : le plancher fixe, appliqué aux seules espèces dont la variance résiduelle a
+  dépassé le seuil de `$degenerate_species` (100) ; une espèce signalée le reste pour la
+  suite du chemin.
+
+### Simulation (`sim_floor_variants.R`, 20 répétitions, p = 40)
+
+Régimes : `random` (3 espèces absentes chacune de 65 % d'échantillons tirés au hasard),
+`groups` (3 groupes d'échantillons, 8 espèces ne vivant chacune que dans un groupe, où elles
+sont abondantes), `sparse` (comme `groups`, les autres espèces étant peu abondantes : 23 % de
+zéros naturels), `overdispersed` (comme `sparse`, variances latentes de 6 au lieu de 1).
+
+Sans plancher, la variance latente diverge dans 20 répétitions sur 20 pour tous les régimes
+sauf `random` (0 sur 20), y compris à n = 100 : des absences structurées en groupes suffisent,
+p proche de n n'est pas nécessaire. **Les trois variantes ramènent ce compte à 0 partout.**
+
+F1 à taille vraie entre espèces saines, données contaminées :
+
+| régime | sans plancher | fixe 1e-3 | relatif 1e-2 | ciblé 1e-3 | ciblé 1e-3, seuil 50 |
+|---|---|---|---|---|---|
+| `random`, n = 50 | 0.706 | 0.706 | 0.706 | 0.706 | – |
+| `groups`, n = 45 | 0.690 | 0.676 | 0.676 | 0.690 | 0.688 |
+| `groups`, n = 100 | 0.795 | 0.795 | 0.789 | 0.802 | – |
+| `sparse`, n = 45 | 0.401 | 0.334 | 0.341 | 0.380 | 0.341 |
+| `sparse`, n = 100 | 0.552 | 0.477 | 0.455 | 0.508 | 0.483 |
+| `overdispersed`, n = 100 | 0.735 | 0.753 | 0.758 | 0.746 | 0.747 |
+
+Les écarts entre variantes sont faibles. Le plancher ciblé fait au moins aussi bien que le
+fixe dans cinq régimes sur six (écart apparié significatif dans `sparse`, n = 45 : +0.046,
+p = 0.008) et un peu moins bien dans `overdispersed`. Cellules à la borne, régime `groups`
+n = 45 : 10.0 % (fixe), 13.3 % (relatif), 8.3 % (ciblé) ; régime `random` : 0.1 %, 2.6 %, 0 %.
+Sur données saines, aucune variante ne change la reconstruction.
+
+### Données réelles (`real_floor_variants.R`)
+
+| | sans plancher | fixe 1e-3 | relatif 1e-2 | ciblé 1e-3 |
+|---|---|---|---|---|
+| `oaks ~1` | diverge, 8 espèces | 2.7 % des cellules | 5.5 % | 2.0 %, 11 espèces |
+| `barents ~1` | diverge, 4 espèces | 6.8 % | 16.2 % | 2.3 %, 5 espèces |
+| `oaks ~tree` | sain | 2.1 % | 5.5 % | 0 %, inactif |
+| `mollusk ~1` | sain | 38.7 %, loglik −203 | 37.1 %, loglik −44 | 0 %, inactif |
+| `trichoptera ~1` | sain | 0 % | 2.7 % | 0 %, inactif |
+
+Le plancher ciblé stoppe la divergence là où elle se produit et redonne exactement
+l'ajustement sans plancher ailleurs, au même coût de calcul (mollusk : 3 s contre 23 s pour
+le fixe et 123 s pour le relatif).
+
+### Lecture
+
+- **Ciblé** : même protection que le fixe, reconstruction au moins aussi bonne dans la plupart
+  des régimes, et surtout aucune action sur les jeux sains. Avec lui, activer le plancher
+  devient sans risque. Réserve : la variance maximale reste autour de 90, juste sous le seuil
+  de déclenchement, car des espèces stationnent sous ce seuil sans le franchir.
+- **Déclenchement à 50 au lieu de 100** : variance maximale ramenée vers 48, mais plus
+  d'espèces bornées (9 au lieu de 5 sur barents) et reconstruction un peu moins bonne dans
+  le régime `sparse`. Pas d'intérêt.
+- **Relatif** : contraint plus de cellules que le fixe, coûte en vraisemblance à `c = 1e-1`,
+  et ralentit beaucoup sur données réelles. Pas d'intérêt.
+- **ε = 1e-2 ou 1e-3** : peu de différence pour le ciblé.
+- La simulation ne reproduit pas l'effet du plancher fixe sur mollusk (38.7 % des cellules à
+  la borne) : il tient aux offsets, la borne étant exprimée en comptage.
+
+## Autres modèles PLN (`degenerate_other_models.R`)
+
+Espèces dont la variance latente dépasse 100, réglages par défaut, sur les jeux du paquet :
+aucune avec `PLN()` et `ZIPLN()` en covariance pleine ou diagonale (une sur microcosm en
+covariance pleine) ; `PLNPCA()` en a 7 sur barents, 10 sur mollusk et 176 sur 259 pour
+microcosm ; `ZIPLNnetwork()` en a autant que `PLNnetwork()`. Un plancher serait donc utile
+pour PLNPCA et ZIPLNnetwork, où il reste à implémenter.
 
 ## Limites
 
@@ -146,3 +225,12 @@ est dans `inst/devlog/DEVLOG_2026-09-30_10-01.md`.
   nom.
 - `sim_known_network_package.R`, `real_package.R` : les mêmes comparaisons avec les options
   du paquet (`penalty_scale`, `latent_floor`), sans les prototypes.
+- `sim_package_regimes.R` : les quatre réglages du paquet (deux échelles, avec et sans
+  plancher ciblé) sur les régimes `random`, `groups`, `sparse` et `overdispersed` ;
+  résultats dans `sim_package_<régime>_n<n>.rds`.
+- `degenerate_other_models.R` : espèces dégénérées dans PLN, PLNPCA, ZIPLN et ZIPLNnetwork
+  sur les jeux du paquet.
+- `floor_variants.R`, `sim_floor_variants.R`, `real_floor_variants.R` : variantes du
+  plancher ; `Rscript sim_floor_variants.R groups 20 100` pour le régime `groups` à
+  n = 100 ; résultats dans `sim_floor_variants_<régime>_n<n>.rds` et
+  `real_floor_variants.rds`. Ne pas modifier un script pendant qu'il tourne.

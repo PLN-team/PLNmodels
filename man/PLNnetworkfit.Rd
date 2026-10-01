@@ -35,7 +35,9 @@ The function \code{\link[=PLNnetwork]{PLNnetwork()}}, the class \code{\link{PLNn
 
     \item{\code{penalty_scale}}{the scale on which the penalty applies, \code{"covariance"} or \code{"correlation"} (see \code{\link[=PLNnetwork_param]{PLNnetwork_param()}})}
 
-    \item{\code{latent_floor}}{the lower bound on \code{exp(O + M)}, \code{NULL} if none (see \code{\link[=PLNnetwork_param]{PLNnetwork_param()}})}
+    \item{\code{latent_floor}}{the lower bound on \code{exp(O + M)} for the species in \code{floored_species}, \code{NULL} if none (see \code{\link[=PLNnetwork_param]{PLNnetwork_param()}})}
+
+    \item{\code{floored_species}}{names of the species whose variational means are bounded by \code{latent_floor}: those whose latent variance has exceeded the threshold of \code{degenerate_species} during the optimization, of this fit or of the previous ones along the penalty path}
 
     \item{\code{n_edges}}{number of edges if the network (non null coefficient of the sparse precision matrix)}
 

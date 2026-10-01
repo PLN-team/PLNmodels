@@ -12,13 +12,14 @@
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 
-test_that("the defaults are the covariance scale and no floor, and are unchanged", {
+test_that("the defaults are the covariance scale and a floor of 1e-3", {
   ctrl <- PLNnetwork_param(trace = 0, n_penalties = 5)
   expect_equal(ctrl$penalty_scale, "covariance")
-  expect_null(ctrl$latent_floor)
+  expect_equal(ctrl$latent_floor, 1e-3)
+  expect_null(PLNnetwork_param(latent_floor = NULL)$latent_floor)
   nets <- PLNnetwork(Abundance ~ 1, trichoptera, control = ctrl)
   expect_equal(nets$models[[1]]$penalty_scale, "covariance")
-  expect_null(nets$models[[1]]$latent_floor)
+  expect_equal(nets$models[[1]]$latent_floor, 1e-3)
   explicit <- PLNnetwork(Abundance ~ 1, trichoptera,
                          control = PLNnetwork_param(trace = 0, n_penalties = 5, penalty_scale = "covariance"))
   expect_identical(nets$criteria$loglik, explicit$criteria$loglik)
@@ -54,29 +55,48 @@ test_that("PLNnetwork: on the correlation scale the penalties are between 0 and 
   expect_is(getBestModel(nets, "BIC"), "PLNnetworkfit")
 })
 
-test_that("PLNnetwork: the floor keeps the variational means above it", {
-  floor <- 1e-1 # high enough to bind on these data
-  nets <- PLNnetwork(Abundance ~ 1 + offset(log(Offset)), trichoptera,
-                     control = PLNnetwork_param(trace = 0, n_penalties = 5, latent_floor = floor))
+test_that("PLNnetwork: the floor bounds the degenerate species, and only them", {
   O <- log(trichoptera$Offset)
+  X <- model.matrix(~ 1, trichoptera)
+  f <- Abundance ~ 1 + offset(log(Offset))
+  floor <- 1e-1 # high enough to bind on these data
+
+  ## no degenerate species on these data: the floor leaves the fit exactly as it is
+  free  <- PLNnetwork(f, trichoptera, control = PLNnetwork_param(trace = 0, n_penalties = 5, latent_floor = NULL))
+  quiet <- PLNnetwork(f, trichoptera, control = PLNnetwork_param(trace = 0, n_penalties = 5, latent_floor = floor))
+  expect_equal(vapply(quiet$models, function(m) m$optim_par$n_floor, numeric(1)), rep(0, 5))
+  expect_true(all(lengths(lapply(quiet$models, function(m) m$floored_species)) == 0))
+  expect_identical(quiet$criteria$n_edges, free$criteria$n_edges)
+  expect_identical(quiet$criteria$loglik, free$criteria$loglik)
+  expect_null(free$models[[1]]$latent_floor)
+  expect_length(free$models[[1]]$floored_species, 0)
+
+  ## a low threshold stands for degenerate species
+  old <- options(PLNmodels.latent_variance_threshold = 3)
+  on.exit(options(old))
+  nets <- suppressWarnings( # the degenerate species are reported in a warning
+    PLNnetwork(f, trichoptera, control = PLNnetwork_param(trace = 0, n_penalties = 5, latent_floor = floor))
+  )
+  floored <- lapply(nets$models, function(m) m$floored_species)
+  expect_gt(length(floored[[5]]), 0)
+  expect_lt(length(floored[[5]]), nets$models[[5]]$p)
+  ## a species bounded at a penalty stays so down the path
+  for (k in 2:5) expect_true(all(floored[[k - 1]] %in% floored[[k]]))
   for (m in nets$models) {
     expect_equal(m$latent_floor, floor)
-    expect_gte(min(exp(O + m$var_par$M)), floor * (1 - 1e-10))
-    expect_gt(m$optim_par$n_floor, 0)
-    expect_equal(m$optim_par$n_floor, sum(exp(O + m$var_par$M) <= floor * (1 + 1e-10)))
+    counts <- exp(O + m$var_par$M)
+    bounded <- colnames(trichoptera$Abundance) %in% m$floored_species
+    ## the bounded species are above the floor, the others are free to go below
+    if (any(bounded)) expect_gte(min(counts[, bounded]), floor * (1 - 1e-10))
+    expect_equal(m$optim_par$n_floor, sum(counts[, bounded] <= floor * (1 + 1e-10)))
     ## the lower bound is the one of the parameters returned
-    X <- model.matrix(~ 1, trichoptera)
     expect_equal(m$loglik, sum(PLNmodels:::elbo_fixed_precision(
       as.matrix(trichoptera$Abundance), X, matrix(O, nrow(X), m$p), m$model_par$B,
       m$var_par$M, m$var_par$S2, m$model_par$Omega)), tolerance = 1e-8)
   }
-  ## a floor that does not bind leaves the fit where it was, up to the formula of the bound
-  free   <- PLNnetwork(Abundance ~ 1, trichoptera, control = PLNnetwork_param(trace = 0, n_penalties = 5))
-  loose  <- PLNnetwork(Abundance ~ 1, trichoptera,
-                       control = PLNnetwork_param(trace = 0, n_penalties = 5, latent_floor = 1e-12))
-  expect_equal(vapply(loose$models, function(m) m$optim_par$n_floor, numeric(1)), rep(0, 5))
-  expect_equal(loose$criteria$n_edges, free$criteria$n_edges)
-  expect_equal(loose$criteria$loglik, free$criteria$loglik, tolerance = 1e-3)
+  last <- nets$models[[5]]
+  expect_gt(last$optim_par$n_floor, 0)
+  expect_lt(min(exp(O + last$var_par$M)[, !colnames(trichoptera$Abundance) %in% last$floored_species]), floor)
 })
 
 test_that("the projection on the floor sets the variance of the bounded cells to its optimum", {
@@ -100,6 +120,14 @@ test_that("the projection on the floor sets the variance of the bounded cells to
   R <- sweep(proj$M, 2, colMeans(proj$M))
   expect_equal(proj$Sigma, crossprod(R) / n + diag(colMeans(proj$S2)))
   expect_equal(proj$Ji, PLNmodels:::elbo_fixed_precision(data$Y, data$X, data$O, proj$B, proj$M, proj$S2, Omega))
+
+  ## restricted to some species, the others are left as they are
+  some <- c(TRUE, FALSE, TRUE, FALSE)
+  part <- PLNmodels:::project_latent_floor(out, data, Omega, floor, some)
+  expect_equal(part$M[, !some], out$M[, !some])
+  expect_equal(part$S2[, !some], out$S2[, !some])
+  expect_true(all(part$M[, some] >= log(floor)))
+  expect_equal(part$n_floor, sum(below[, some]))
 })
 
 test_that("ZIPLNnetwork and stability selection follow the scale of the penalty", {

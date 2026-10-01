@@ -38,20 +38,25 @@ elbo_fixed_precision <- function(Y, X, O, B, M, S2, Omega) {
   Omega <- as.matrix(Omega)
   Z <- O + M
   R <- M - X %*% B
-  rowSums(Y * Z - exp(Z + .5 * S2) + .5 * log(S2) - lgamma(Y + 1)) +
+  ## log(Y!) by the approximation of Ramanujan, as logfact() in src/utils.h
+  Y1 <- replace(Y, Y == 0, 1)
+  log_factorial <- Y1 * log(Y1) - Y1 + log(8 * Y1^3 + 4 * Y1^2 + Y1 + 1 / 30) / 6 + log(pi) / 2
+  rowSums(Y * Z - exp(Z + .5 * S2) + .5 * log(S2) - log_factorial) +
     .5 * as.numeric(determinant(Omega, logarithm = TRUE)$modulus) -
     .5 * rowSums((R %*% Omega) * R) - .5 * as.vector(S2 %*% diag(Omega)) + .5 * ncol(Y)
 }
 
 ## Projection of the output of a VE step on the constraint exp(O + M) >= floor,
-## that is M >= log(floor) - O: the means below the bound are set to it, the
-## variational variance of these cells is set to its optimum given M (the root
-## of 1/s - Omega_jj - exp(O + M + s/2), a decreasing function of s), and B,
-## the residual covariance and the lower bound are updated accordingly.
+## that is M >= log(floor) - O, for the species in `species` (a logical vector):
+## the means below the bound are set to it, the variational variance of these
+## cells is set to its optimum given M (the root of 1/s - Omega_jj -
+## exp(O + M + s/2), a decreasing function of s), and B, the residual covariance
+## and the lower bound are updated accordingly.
 ## `optim_out` is the list returned by the optimizer of a PLNfit_fixedcov, `data`
 ## its data (with the normalized covariates), `Omega` the precision matrix.
-project_latent_floor <- function(optim_out, data, Omega, floor) {
+project_latent_floor <- function(optim_out, data, Omega, floor, species = rep(TRUE, ncol(data$Y))) {
   bound   <- log(floor) - data$O
+  bound[, !species] <- -Inf
   clipped <- optim_out$M < bound
   optim_out$n_floor <- sum(clipped)
   optim_out$M[clipped] <- bound[clipped]
@@ -71,9 +76,8 @@ project_latent_floor <- function(optim_out, data, Omega, floor) {
     optim_out$Sigma <- (crossprod(R, w * R) + diag(colSums(w * optim_out$S2), ncol(R))) / sum(w)
     optim_out$Z <- data$O + optim_out$M
     optim_out$A <- exp(optim_out$Z + .5 * optim_out$S2)
+    optim_out$Ji <- elbo_fixed_precision(data$Y, data$X, data$O, optim_out$B, optim_out$M, optim_out$S2, Omega)
   }
-  ## the same formula with or without clipped cells, for a consistent objective
-  optim_out$Ji <- elbo_fixed_precision(data$Y, data$X, data$O, optim_out$B, optim_out$M, optim_out$S2, Omega)
   optim_out
 }
 
@@ -97,17 +101,28 @@ degenerate_species <- function(Sigma) {
 ## in the fits of a collection
 warn_degenerate_species <- function(fits, call = rlang::caller_env()) {
   if (!is.list(fits)) fits <- list(fits)
-  degenerate <- lapply(fits, function(fit) fit$degenerate_species)
+  ## in a network, the species bounded by the latent floor are degenerate too:
+  ## the floor is what keeps their variance under the threshold
+  degenerate <- lapply(fits, function(fit) union(fit$degenerate_species, fit$floored_species))
   species <- unique(unlist(degenerate))
   if (length(species) == 0) return(invisible(character(0)))
-  n_fits <- sum(lengths(degenerate) > 0)
+  n_fits  <- sum(lengths(degenerate) > 0)
+  scales  <- unlist(lapply(fits, function(fit) fit$penalty_scale))
+  network <- length(scales) > 0
   cli::cli_warn(
     c(
-      "!" = "The latent variance of {length(species)} species is above {latent_variance_threshold()}{if (length(fits) > 1) paste0(', in ', n_fits, ' of the ', length(fits), ' models')}: {.val {species}}.",
-      "i" = "Their zeros are fitted by latent means going to minus infinity. In a network, such a species ends up connected to most of the others: these edges are artefacts, and should not be interpreted.",
+      "!" = "{length(species)} species {?is/are} degenerate{if (length(fits) > 1) paste0(', in ', n_fits, ' of the ', length(fits), ' models')}: {.val {species}}.",
+      "i" = if (network)
+        "Their zeros are fitted by latent means going to minus infinity: their latent variance exceeds {latent_variance_threshold()}, or is kept from it by the latent floor (see {.arg latent_floor} in {.fn PLNnetwork_param})."
+      else
+        "Their zeros are fitted by latent means going to minus infinity: their latent variance exceeds {latent_variance_threshold()}.",
+      "i" = if (network && any(scales != "correlation"))
+        "With a penalty on the covariance scale, such a species ends up connected to most of the others: these edges are artefacts, and should not be interpreted. A penalty on the correlation scale removes them (see {.arg penalty_scale} in {.fn PLNnetwork_param}).",
       "i" = "This happens to species that are often absent but abundant when present, notably those absent from a whole group of samples: adding the covariate that explains the absences helps for these (see {.fn structural_zeros}).",
-      "i" = "For a network, see {.arg penalty_scale} and {.arg latent_floor} in {.fn PLNnetwork_param}: a penalty on the correlation scale removes these artefacts.",
-      "i" = "See the field {.field degenerate_species} of a fit, and {.code options(PLNmodels.latent_variance_threshold = )} to change the threshold."
+      "i" = if (network)
+        "See the fields {.field degenerate_species} and {.field floored_species} of a fit, and {.code options(PLNmodels.latent_variance_threshold = )} to change the threshold."
+      else
+        "See the field {.field degenerate_species} of the fit, and {.code options(PLNmodels.latent_variance_threshold = )} to change the threshold."
     ),
     call = call
   )

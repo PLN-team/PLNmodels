@@ -67,6 +67,9 @@ PLNnetworkfit <- R6Class(
       ## Limit inner VE iterations per outer GLASSO turn (partial E-step, section 44).
       ## maxit_ve limits maxit_em (builtin) or maxeval (nlopt) of the inner optimizer.
       ## NULL = no limit = full convergence (default, backward-compatible).
+      ## species bounded by the floor so far along the path (see Networkfamily$optimize)
+      floored <- if (is.null(config$floored)) rep(FALSE, self$p) else config$floored
+      config$floored <- NULL
       inner_config <- config
       if (!is.null(config$maxit_ve)) {
         if (config$backend == "builtin") inner_config$maxit_em <- as.integer(config$maxit_ve)
@@ -101,9 +104,12 @@ PLNnetworkfit <- R6Class(
 
         ## CALL TO NLOPT OPTIMIZATION TO UPDATE OTHER PARAMETERS
         optim_out <- do.call(private$optimizer$main, args)
-        ## keep the variational means above the floor, if any
+        ## The floor, if any, applies to the species whose latent variance has
+        ## exceeded the threshold of the degenerate species, from then on: their
+        ## variational means are kept above it
         if (!is.null(private$floor)) {
-          optim_out <- project_latent_floor(optim_out, args$data, args$params$Omega, private$floor)
+          floored <- floored | diag(as.matrix(optim_out$Sigma)) > latent_variance_threshold()
+          optim_out <- project_latent_floor(optim_out, args$data, args$params$Omega, private$floor, floored)
           n_floor <- optim_out$n_floor; optim_out$n_floor <- NULL
         }
 
@@ -143,6 +149,7 @@ PLNnetworkfit <- R6Class(
       private$monitoring$glasso_stalled      <- glasso_stalled
       private$monitoring$glasso_indefinite   <- glasso_indefinite
       private$monitoring$n_floor             <- n_floor # cells at the floor in the last iteration
+      private$monitoring$floored             <- floored # species bounded by the floor
       private$monitoring$failure             <- failure
       if (is.null(last_glasso)) {
         ## Not a single iterate kept: the fit is marked as failed (its criteria
@@ -258,8 +265,15 @@ PLNnetworkfit <- R6Class(
     penalty_weights = function() {private$rho},
     #' @field penalty_scale the scale on which the penalty applies, `"covariance"` or `"correlation"` (see [PLNnetwork_param()])
     penalty_scale   = function() {private$scale},
-    #' @field latent_floor the lower bound on `exp(O + M)`, `NULL` if none (see [PLNnetwork_param()])
+    #' @field latent_floor the lower bound on `exp(O + M)` for the species in `floored_species`, `NULL` if none (see [PLNnetwork_param()])
     latent_floor    = function() {private$floor},
+    #' @field floored_species names of the species whose variational means are bounded by `latent_floor`: those whose latent variance has exceeded the threshold of `degenerate_species` during the optimization, of this fit or of the previous ones along the penalty path
+    floored_species = function() {
+      floored <- private$monitoring$floored
+      if (is.null(floored)) return(character(0))
+      species <- if (is.null(colnames(private$Sigma))) as.character(seq_along(floored)) else colnames(private$Sigma)
+      species[floored]
+    },
     #' @field n_edges number of edges if the network (non null coefficient of the sparse precision matrix)
     n_edges         = function() {sum(private$Omega[upper.tri(private$Omega, diag = FALSE)] != 0)},
     #' @field nb_param number of parameters in the current PLN model

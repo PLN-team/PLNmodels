@@ -105,6 +105,8 @@ Networkfamily <- R6Class(
           cat("\tsparsifying penalty =", self$models[[m]]$penalty, "- iteration:")
         }
         self$models[[m]]$optimize(data, config)
+        ## a species bounded by the latent floor stays so down the path
+        config$floored <- self$models[[m]]$optim_par$floored
         ## Save time by starting the optimization of model m + 1  with optimal parameters of model m
         if (m < length(self$penalties))
           self$models[[m + 1]]$update(
