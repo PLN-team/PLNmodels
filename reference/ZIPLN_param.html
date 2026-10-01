@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">PLNmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9300</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9350</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,6 +60,7 @@
 <span>  penalize_diagonal <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  penalty_weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  penalty_scale <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"covariance"</span>, <span class="st">"correlation"</span><span class="op">)</span>,</span>
+<span>  latent_floor <span class="op">=</span> <span class="fl">0.001</span>,</span>
 <span>  config_post <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  config_optim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  inception <span class="op">=</span> <span class="cn">NULL</span></span>
@@ -112,6 +113,10 @@ variance has nearly free edges, and one that is often absent but abundant when p
 fitted by very negative latent means, ends up connected to most of the others (see the field
 <code>degenerate_species</code> of a <code><a href="PLNfit.html">PLNfit</a></code>). <code>"correlation"</code> removes this artefact; see the section on the scale
 of the penalty.</p></dd>
+
+
+<dt id="arg-latent-floor">latent_floor<a class="anchor" aria-label="anchor" href="#arg-latent-floor"></a></dt>
+<dd><p>a positive number (default <code>1e-3</code>), or <code>NULL</code> for no floor: a floor on the variational means of the degenerate species, as in <code><a href="PLNnetwork_param.html">PLNnetwork_param()</a></code>. Only used with a sparse covariance (<code>penalty &gt; 0</code>).</p></dd>
 
 
 <dt id="arg-config-post">config_post<a class="anchor" aria-label="anchor" href="#arg-config-post"></a></dt>

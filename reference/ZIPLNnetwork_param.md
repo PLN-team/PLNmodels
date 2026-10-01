@@ -15,6 +15,7 @@ ZIPLNnetwork_param(
   penalize_diagonal = FALSE,
   penalty_weights = NULL,
   penalty_scale = c("covariance", "correlation"),
+  latent_floor = 0.001,
   config_post = list(),
   config_optim = list(),
   inception = NULL
@@ -89,6 +90,23 @@ ZIPLNnetwork_param(
   [`PLNfit`](https://pln-team.github.io/PLNmodels/reference/PLNfit.md)).
   `"correlation"` removes this artefact; see the section on the scale of
   the penalty.
+
+- latent_floor:
+
+  a positive number \\\epsilon\\ (default `1e-3`), or `NULL` for no
+  floor: a floor on the variational means of the degenerate species. As
+  soon as the latent variance of a species exceeds the threshold of the
+  field `degenerate_species` of a
+  [`PLNfit`](https://pln-team.github.io/PLNmodels/reference/PLNfit.md)
+  (100, see `options(PLNmodels.latent_variance_threshold = )`) during
+  the optimization, its variational means are kept above \\\log
+  \epsilon - O\\, that is \\\exp(O + M) \geq \epsilon\\, in this fit and
+  in the following ones along the penalty path. The species concerned
+  are in the field `floored_species` of the fits. This needs no
+  preparation of the data: the species are found by the optimization
+  itself. The floor restricts the variational family, not the model, and
+  stops the latent variances from diverging. It leaves a fit without
+  degenerate species exactly as it is.
 
 - config_post:
 

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">PLNmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9300</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9350</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,6 +60,7 @@
 <span>  penalize_diagonal <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  penalty_weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  penalty_scale <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"covariance"</span>, <span class="st">"correlation"</span><span class="op">)</span>,</span>
+<span>  latent_floor <span class="op">=</span> <span class="fl">0.001</span>,</span>
 <span>  config_post <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  config_optim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  inception <span class="op">=</span> <span class="cn">NULL</span></span>
@@ -116,6 +117,17 @@ variance has nearly free edges, and one that is often absent but abundant when p
 fitted by very negative latent means, ends up connected to most of the others (see the field
 <code>degenerate_species</code> of a <code><a href="PLNfit.html">PLNfit</a></code>). <code>"correlation"</code> removes this artefact; see the section on the scale
 of the penalty.</p></dd>
+
+
+<dt id="arg-latent-floor">latent_floor<a class="anchor" aria-label="anchor" href="#arg-latent-floor"></a></dt>
+<dd><p>a positive number \(\epsilon\) (default <code>1e-3</code>), or <code>NULL</code> for no floor: a floor on the
+variational means of the degenerate species. As soon as the latent variance of a species exceeds the threshold of
+the field <code>degenerate_species</code> of a <code><a href="PLNfit.html">PLNfit</a></code> (100, see <code>options(PLNmodels.latent_variance_threshold = )</code>) during
+the optimization, its variational means are kept above \(\log \epsilon - O\), that is
+\(\exp(O + M) \geq \epsilon\), in this fit and in the following ones along the penalty path. The species
+concerned are in the field <code>floored_species</code> of the fits. This needs no preparation of the data: the species are
+found by the optimization itself. The floor restricts the variational family, not the model, and stops the latent
+variances from diverging. It leaves a fit without degenerate species exactly as it is.</p></dd>
 
 
 <dt id="arg-config-post">config_post<a class="anchor" aria-label="anchor" href="#arg-config-post"></a></dt>

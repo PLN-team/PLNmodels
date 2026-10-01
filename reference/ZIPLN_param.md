@@ -15,6 +15,7 @@ ZIPLN_param(
   penalize_diagonal = FALSE,
   penalty_weights = NULL,
   penalty_scale = c("covariance", "correlation"),
+  latent_floor = 0.001,
   config_post = list(),
   config_optim = list(),
   inception = NULL
@@ -80,6 +81,13 @@ ZIPLN_param(
   [`PLNfit`](https://pln-team.github.io/PLNmodels/reference/PLNfit.md)).
   `"correlation"` removes this artefact; see the section on the scale of
   the penalty.
+
+- latent_floor:
+
+  a positive number (default `1e-3`), or `NULL` for no floor: a floor on
+  the variational means of the degenerate species, as in
+  [`PLNnetwork_param()`](https://pln-team.github.io/PLNmodels/reference/PLNnetwork_param.md).
+  Only used with a sparse covariance (`penalty > 0`).
 
 - config_post:
 
