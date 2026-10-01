@@ -636,6 +636,8 @@ and methods for their manipulation.
 - [`compute_offset()`](https://pln-team.github.io/PLNmodels/reference/compute_offset.md)
   : Compute offsets from a count data using one of several normalization
   schemes
+- [`structural_zeros()`](https://pln-team.github.io/PLNmodels/reference/structural_zeros.md)
+  : Species absent from a whole level of a factor
 - [`PLNfamily`](https://pln-team.github.io/PLNmodels/reference/PLNfamily.md)
   : An R6 Class to represent a collection of PLNfit
 - [`plot(`*`<PLNfamily>`*`)`](https://pln-team.github.io/PLNmodels/reference/plot.PLNfamily.md)

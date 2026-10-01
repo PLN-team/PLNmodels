@@ -90,6 +90,39 @@
 - A matrix of penalty weights that leaves no entry to penalize now stops
   with an explicit message.
 
+### Diagnostics of structural zeros and degenerate species
+
+- **Species with a degenerate latent variance are now reported.** A PLN
+  model fits the zeros of a species that is often absent but abundant
+  when present by sending its latent means to minus infinity: its latent
+  variance blows up (thousands, where an ordinary one is below 30), and
+  in a network fit the species ends up connected to most of the others.
+  On `oaks` without covariate, the networks along the path of
+  [`PLNnetwork()`](https://pln-team.github.io/PLNmodels/reference/PLNnetwork.md)
+  are made of little else: `f_OTU_1011`, present on all the trees of one
+  type and on no other, carries 103 of the 103 edges of the first
+  non-empty networks. This is not new, and does not depend on the
+  penalization of the diagonal.
+  [`PLN()`](https://pln-team.github.io/PLNmodels/reference/PLN.md),
+  [`PLNnetwork()`](https://pln-team.github.io/PLNmodels/reference/PLNnetwork.md),
+  [`ZIPLN()`](https://pln-team.github.io/PLNmodels/reference/ZIPLN.md)
+  and
+  [`ZIPLNnetwork()`](https://pln-team.github.io/PLNmodels/reference/ZIPLNnetwork.md)
+  now raise a warning (one per call, for a whole collection) naming the
+  species whose latent variance is above 100, which the new field
+  `$degenerate_species` of a fit returns. The threshold is set by
+  `options(PLNmodels.latent_variance_threshold = )`.
+- **New `structural_zeros(counts, covariates)`** finds the species
+  absent from all the samples of a level of a factor covariate while
+  present elsewhere, beyond what chance would explain (exact
+  hypergeometric test, Bonferroni-corrected, so that rare species absent
+  from a level by chance are not reported).
+  [`prepare_data()`](https://pln-team.github.io/PLNmodels/reference/prepare_data.md)
+  runs it on all the factor, character and logical covariates and
+  reports the result in a message; it does not remove anything. On
+  `oaks` it finds the 8 species that live on one or two of the three
+  types of trees.
+
 ### Bug fixes
 
 - **The builtin backend now decreases the objective at every iteration**

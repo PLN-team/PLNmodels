@@ -59,6 +59,15 @@ variants with two specials components: an abundance count matrix (in
 component "Abundance") and an offset vector/matrix (in component
 "Offset", only if offset is not set to "none")
 
+## Details
+
+The function also reports, in a message, the species that are absent
+from all the samples of a level of a factor covariate while present
+elsewhere, beyond what chance would explain: see
+[`structural_zeros()`](https://pln-team.github.io/PLNmodels/reference/structural_zeros.md),
+which is run on all the factor, character and logical columns of
+`covariates`. Nothing is removed from the data.
+
 ## Note
 
 User supplied offsets should be either vectors/column-matrices or have
@@ -93,7 +102,8 @@ differential expression analysis of RNA-seq data. Genome Biol 11, R25
 ## See also
 
 [`compute_offset()`](https://pln-team.github.io/PLNmodels/reference/compute_offset.md)
-for details on the different normalization schemes
+for details on the different normalization schemes,
+[`structural_zeros()`](https://pln-team.github.io/PLNmodels/reference/structural_zeros.md)
 
 ## Examples
 

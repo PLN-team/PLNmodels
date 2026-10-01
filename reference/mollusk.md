@@ -65,4 +65,10 @@ mollusc <- prepare_data(mollusk$Abundance, mollusk$Covariate)
 #> Warning: ! There is at least one empty sample in `counts`.
 #> ℹ <4> samples (<134/137/145/146>) in `counts` have been dropped for lack of
 #>   positive counts.
+#> ! 3 species are absent from all the samples of a level of a factor covariate,
+#>   while present elsewhere beyond what chance would explain (site: 3).
+#> ℹ A model without this covariate fits these structural zeros by sending latent
+#>   means to minus infinity, which distorts the variances and, in a network, the
+#>   edges of these species.
+#> ℹ See `structural_zeros()` for the list.
 ```
