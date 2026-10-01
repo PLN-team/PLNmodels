@@ -90,8 +90,9 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #' @param penalty_scale character, the scale on which the l1 penalty applies. `"correlation"` (default) penalizes
 #'   the entries of the precision matrix on the scale of the variables, with a penalty
 #'   \eqn{\lambda \sqrt{S_{ii} S_{jj}}} on the pair \eqn{(i, j)}, where \eqn{S} is the current residual covariance.
-#'   This amounts to applying the graphical-Lasso to the residual *correlation* matrix, as is customary for
-#'   Gaussian graphical models, and makes the penalties dimensionless, between 0 and 1. `"covariance"`, the only
+#'   This amounts to applying the graphical-Lasso to the residual *correlation* matrix and rescaling the result, the
+#'   correlation-based estimator of Rothman, Bickel, Levina and Zhu (2008), and makes the penalties dimensionless,
+#'   between 0 and 1. `"covariance"`, the only
 #'   behavior until version 1.3.2, penalizes the entries of the precision matrix as they are. These are not scale
 #'   invariant: a species with a large latent variance then has nearly free edges, and one that is often absent but
 #'   abundant when present ends up connected to most of the others (see the field `degenerate_species` of a
@@ -115,7 +116,11 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #'
 #' @section Scale of the penalty:
 #' With `penalty_scale = "correlation"`, the penalty on the pair \eqn{(i, j)} is \eqn{\lambda w_{ij} \sqrt{S_{ii} S_{jj}}},
-#' recomputed at each M step from the current residual covariance \eqn{S}. The grid of penalties is built on
+#' recomputed at each M step from the current residual covariance \eqn{S}. Without weights, the precision matrix is
+#' \eqn{\Omega = D^{-1/2} K D^{-1/2}}, where \eqn{D} is the diagonal of \eqn{S} and \eqn{K} the graphical-Lasso
+#' estimate on the correlation matrix \eqn{D^{-1/2} S D^{-1/2}}: this is the correlation-based estimator of Rothman
+#' et al. (2008), who show that it has a better rate of convergence in operator norm than the estimator on the
+#' covariance scale. The grid of penalties is built on
 #' the residual correlation of the inception, and lies between 0 and 1. Since the weights depend on \eqn{S}, the
 #' alternating optimization does not maximize a fixed penalized criterion: it looks for a fixed point.
 #'
@@ -136,6 +141,9 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #' On either scale, the latent variance of a species absent from whole groups of samples diverges along the path
 #' without `latent_floor`. On the covariance scale, the floor stabilizes the fit without repairing the network: the
 #' degenerate species have fewer edges, but the edges still concentrate on them.
+#'
+#' @references Rothman, A. J., Bickel, P. J., Levina, E. and Zhu, J. (2008). Sparse permutation invariant
+#'   covariance estimation. *Electronic Journal of Statistics*, 2, 494--515. \doi{10.1214/08-EJS176}
 #'
 #' @seealso [PLN_param()]
 #' @export

@@ -88,9 +88,8 @@ PLNnetworkfit <- R6Class(
         iter <- iter + 1
         if (config$trace > 1) cat("", iter)
         ## CALL TO GLASSO TO UPDATE Omega
-        glasso_out <- graphical_lasso(
-          private$Sigma, rho = glasso_penalty(self$penalty, self$penalty_weights, private$Sigma, private$scale)
-        )
+        rho <- glasso_penalty(self$penalty, self$penalty_weights, private$Sigma, private$scale)
+        glasso_out <- graphical_lasso(private$Sigma, rho = rho)
         if (!glasso_out$converged) glasso_nonconv <- glasso_nonconv + 1L
         if (!all(is.finite(glasso_out$wi))) {
           failure <- paste("the graphical Lasso failed (", glasso_out$status, ")", sep = "")
@@ -123,6 +122,7 @@ PLNnetworkfit <- R6Class(
         }
         do.call(self$update, optim_out)  # private$B now holds B_sc
         last_glasso <- glasso_out
+        private$rho_glasso <- rho # the penalty matrix of the iterate kept, for pen_loglik
 
         ## Check convergence
         objective[iter]   <- new_objective
@@ -154,6 +154,7 @@ PLNnetworkfit <- R6Class(
       if (is.null(last_glasso)) {
         ## Not a single iterate kept: the fit is marked as failed (its criteria
         ## are NA), with the precision matrix of the empty network
+        private$rho_glasso <- glasso_penalty(self$penalty, self$penalty_weights, private$Sigma, private$scale)
         private$Omega <- diag(1 / (diag(as.matrix(private$Sigma)) +
                                      diag(glasso_penalty(self$penalty, self$penalty_weights, private$Sigma, private$scale))),
                               self$p, self$p)
@@ -248,6 +249,7 @@ PLNnetworkfit <- R6Class(
   private = list(
     lambda = NA,  # the sparsity tuning parameter
     rho    = NA,  # the p x p penalty weight
+    rho_glasso = NULL, # the penalty matrix of the graphical Lasso of the iterate kept
     scale  = "covariance", # the scale of the penalty: "covariance" or "correlation"
     floor  = NULL, # lower bound on exp(O + M), if any
     gamma_ebic = 0.5 # the tuning parameter of the EBIC
@@ -278,8 +280,11 @@ PLNnetworkfit <- R6Class(
     n_edges         = function() {sum(private$Omega[upper.tri(private$Omega, diag = FALSE)] != 0)},
     #' @field nb_param number of parameters in the current PLN model
     nb_param        = function() {self$p * self$d + self$p + self$n_edges},
-    #' @field pen_loglik variational lower bound of the l1-penalized loglikelihood
-    pen_loglik      = function() {self$loglik - private$lambda * sum(abs(private$Omega))},
+    #' @field pen_loglik variational lower bound of the l1-penalized loglikelihood, the criterion that the M step of the last iteration maximizes: `loglik - n/2 * sum(abs(rho * Omega))`, where `rho` is the penalty matrix of the graphical Lasso, that is the penalty times the penalty weights and, on the correlation scale, times \eqn{\sqrt{S_{ii} S_{jj}}}
+    pen_loglik      = function() {
+      if (is.null(private$rho_glasso)) return(NA_real_)
+      self$loglik - .5 * sum(self$weights) * sum(abs(private$rho_glasso * as.matrix(private$Omega)))
+    },
     #' @field ebic_gamma the tuning parameter gamma of the EBIC, between 0 and 1. Zero
     #' gives back the BIC; the default 0.5 is the value recommended by Foygel and
     #' Drton (2010). Assign to it to change the EBIC of this fit.

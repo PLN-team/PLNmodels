@@ -89,6 +89,25 @@ test_that("the penalty on the correlation scale is the graphical Lasso on the co
                tolerance = 1e-8)
 })
 
+test_that("pen_loglik is the criterion that the M step maximizes, on both scales", {
+  n <- nrow(trichoptera)
+  for (scale in c("correlation", "covariance")) {
+    nets <- PLNnetwork(Abundance ~ 1, trichoptera,
+                       control = PLNnetwork_param(trace = 0, n_penalties = 4, penalty_scale = scale))
+    for (m in nets$models) {
+      ## the diagonal is not penalized: the variances of the fit are those of S
+      rho <- PLNmodels:::glasso_penalty(m$penalty, m$penalty_weights, m$model_par$Sigma, scale)
+      expect_equal(m$pen_loglik, m$loglik - .5 * n * sum(abs(rho * as.matrix(m$model_par$Omega))))
+      expect_lte(m$pen_loglik, m$loglik)
+    }
+    expect_equal(nets$criteria$pen_loglik, vapply(nets$models, function(m) m$pen_loglik, numeric(1)))
+    ## for a sparse ZIPLN fit, it is the objective of the optimization
+    zi <- ZIPLNnetwork(Abundance ~ 1, trichoptera,
+                       control = ZIPLNnetwork_param(trace = 0, n_penalties = 3, penalty_scale = scale))
+    for (m in zi$models) expect_equal(m$pen_loglik, -tail(m$optim_par$objective, 1))
+  }
+})
+
 test_that("PLNnetwork: on the correlation scale the penalties are between 0 and 1, from the empty network", {
   nets <- PLNnetwork(Abundance ~ 1, trichoptera,
                      control = PLNnetwork_param(trace = 0, penalty_scale = "correlation"))

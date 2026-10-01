@@ -968,8 +968,11 @@ ZIPLNfit_sparse <- R6Class(
     },
     #' @field vcov_model character: the model used for the residual covariance
     vcov_model = function() {"sparse"},
-    #' @field pen_loglik variational lower bound of the l1-penalized loglikelihood
-    pen_loglik      = function() {self$loglik - private$lambda * sum(abs(private$Omega))},
+    #' @field pen_loglik variational lower bound of the l1-penalized loglikelihood, the criterion that the M step of the last iteration maximizes: `loglik - n/2 * sum(abs(rho * Omega))`, where `rho` is the penalty matrix of the graphical Lasso, that is the penalty times the penalty weights and, on the correlation scale, times \eqn{\sqrt{S_{ii} S_{jj}}}
+    pen_loglik      = function() {
+      if (is.null(private$rho_glasso)) return(NA_real_)
+      self$loglik - private$objective_penalty(as.matrix(private$Omega), self$n)
+    },
     #' @field ebic_gamma the tuning parameter gamma of the EBIC, between 0 and 1. Zero
     #' gives back the BIC; the default 0.5 is the value recommended by Foygel and
     #' Drton (2010). Assign to it to change the EBIC of this fit.

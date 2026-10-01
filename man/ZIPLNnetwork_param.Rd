@@ -45,8 +45,9 @@ variances diverge (#180).}
 \item{penalty_scale}{character, the scale on which the l1 penalty applies. \code{"correlation"} (default) penalizes
 the entries of the precision matrix on the scale of the variables, with a penalty
 \eqn{\lambda \sqrt{S_{ii} S_{jj}}} on the pair \eqn{(i, j)}, where \eqn{S} is the current residual covariance.
-This amounts to applying the graphical-Lasso to the residual \emph{correlation} matrix, as is customary for
-Gaussian graphical models, and makes the penalties dimensionless, between 0 and 1. \code{"covariance"}, the only
+This amounts to applying the graphical-Lasso to the residual \emph{correlation} matrix and rescaling the result, the
+correlation-based estimator of Rothman, Bickel, Levina and Zhu (2008), and makes the penalties dimensionless,
+between 0 and 1. \code{"covariance"}, the only
 behavior until version 1.3.2, penalizes the entries of the precision matrix as they are. These are not scale
 invariant: a species with a large latent variance then has nearly free edges, and one that is often absent but
 abundant when present ends up connected to most of the others (see the field \code{degenerate_species} of a
@@ -81,6 +82,10 @@ See \code{\link[=PLNnetwork_param]{PLNnetwork_param()}} for a full description o
 \item "ftol_out" (outer loop convergence tolerance the objective function) is set by default to 1e-6
 \item "maxit_out" (max number of iterations for the outer loop) is set by default to 50
 }
+}
+\references{
+Rothman, A. J., Bickel, P. J., Levina, E. and Zhu, J. (2008). Sparse permutation invariant
+covariance estimation. \emph{Electronic Journal of Statistics}, 2, 494--515. \doi{10.1214/08-EJS176}
 }
 \seealso{
 \code{\link[=PLNnetwork_param]{PLNnetwork_param()}} and \code{\link[=PLN_param]{PLN_param()}}

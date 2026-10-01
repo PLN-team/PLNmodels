@@ -120,6 +120,14 @@ same computing time. The gain carries over to model selection, less strongly (BI
 * The scripts and a summary of the exploration are in
   `inst/simus_PLNnetwork/degenerate_species/`, the account in
   `inst/devlog/DEVLOG_2026-09-30_10-01.md`.
+* **`$pen_loglik` is now the criterion that the M step maximizes**, `loglik - n/2 *
+  sum(abs(rho * Omega))`, where `rho` is the penalty matrix of the graphical Lasso: the
+  penalty times the penalty weights and, on the correlation scale, times
+  `sqrt(S_ii * S_jj)`. It was `loglik - penalty * sum(abs(Omega))`, which ignored the
+  weights, the factor `n/2` and the scale, and was not the criterion being optimized.
+  Its values change, on both scales, in `$criteria` and in the plots of the criteria.
+* The correlation scale is the correlation-based estimator of Rothman, Bickel, Levina
+  and Zhu (2008), now cited in `?PLNnetwork_param` and in the PLNnetwork vignette.
 * The fits have new fields `$penalty_scale`, `$latent_floor` and `$floored_species`,
   the number of cells at the floor is in `$optim_par$n_floor`, and
   `stability_selection()` refits the subsamples with the settings of the collection.

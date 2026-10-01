@@ -65,6 +65,9 @@ ZIPLNnetwork <- function(formula, data, subset, weights, zi = c("single", "row",
 #' * "ftol_out" (outer loop convergence tolerance the objective function) is set by default to 1e-6
 #' * "maxit_out" (max number of iterations for the outer loop) is set by default to 50
 #'
+#' @references Rothman, A. J., Bickel, P. J., Levina, E. and Zhu, J. (2008). Sparse permutation invariant
+#'   covariance estimation. *Electronic Journal of Statistics*, 2, 494--515. \doi{10.1214/08-EJS176}
+#'
 #' @seealso [PLNnetwork_param()] and [PLN_param()]
 #' @export
 ZIPLNnetwork_param <- function(
