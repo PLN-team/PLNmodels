@@ -48,6 +48,7 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
   myPLN$postTreatment(args$Y, args$X, args$O, args$w, control$config_post, control$config_optim)
 
   if (control$trace > 0) cat("\n DONE!\n")
+  warn_degenerate_species(myPLN)
   myPLN
 }
 

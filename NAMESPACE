@@ -79,6 +79,7 @@ export(prepare_data)
 export(rPLN)
 export(stability_selection)
 export(standard_error)
+export(structural_zeros)
 import(Matrix)
 import(R6)
 import(dplyr)
@@ -146,6 +147,7 @@ importFrom(stats,
   model.offset,
   model.response,
   model.weights,
+  phyper,
   poisson,
   quantile,
   residuals,

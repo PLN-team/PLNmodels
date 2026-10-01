@@ -704,6 +704,8 @@ PLNfit <- R6Class(
     var_par    = function() {list(M = private$M, S2 = private$S2, S = sqrt(private$S2))},
     #' @field optim_par a list with parameters useful for monitoring the optimization
     optim_par  = function() {private$monitoring},
+    #' @field degenerate_species names of the species whose latent variance is above 100 (a standard deviation of 10 on the log scale, see `options(PLNmodels.latent_variance_threshold = )`). The zeros of such a species are fitted by latent means going to minus infinity. This happens to species that are often absent but abundant when present, notably those absent from a whole group of samples (see [structural_zeros()]), for which the model lacks the covariate that explains the absences. In a network fit, such a species ends up connected to most of the others: these edges are artefacts.
+    degenerate_species = function() {degenerate_species(private$Sigma)},
     #' @field latent a matrix: values of the latent vector (Z in the model)
     latent     = function() {private$Z},
     #' @field latent_pos a matrix: values of the latent position vector (Z) without covariates effects or offset
