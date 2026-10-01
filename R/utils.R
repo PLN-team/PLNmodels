@@ -46,12 +46,26 @@ elbo_fixed_precision <- function(Y, X, O, B, M, S2, Omega) {
     .5 * rowSums((R %*% Omega) * R) - .5 * as.vector(S2 %*% diag(Omega)) + .5 * ncol(Y)
 }
 
+## Optimal variational variance of a cell given its variational mean: the root
+## in s of 1/s - omega - weight * exp(z + s/2), a decreasing function of s, where
+## z = O + M, omega is the diagonal entry of the precision matrix of the species
+## and weight is 1 for PLN, 1 - R for ZIPLN. By bisection on log(s), vectorized.
+optimal_variational_variance <- function(z, omega, weight = 1) {
+  lo <- rep(-30, length(z)); hi <- rep(30, length(z))
+  for (k in seq_len(60)) {
+    mid <- (lo + hi) / 2
+    ## the exponent is capped, so that a null weight (R = 1) gives 0 and not NaN
+    positive <- 1 / exp(mid) - omega - weight * exp(pmin(z + exp(mid) / 2, 700)) > 0
+    lo <- ifelse(positive, mid, lo); hi <- ifelse(positive, hi, mid)
+  }
+  exp((lo + hi) / 2)
+}
+
 ## Projection of the output of a VE step on the constraint exp(O + M) >= floor,
 ## that is M >= log(floor) - O, for the species in `species` (a logical vector):
 ## the means below the bound are set to it, the variational variance of these
-## cells is set to its optimum given M (the root of 1/s - Omega_jj -
-## exp(O + M + s/2), a decreasing function of s), and B, the residual covariance
-## and the lower bound are updated accordingly.
+## cells is set to its optimum given M (optimal_variational_variance()), and B,
+## the residual covariance and the lower bound are updated accordingly.
 ## `optim_out` is the list returned by the optimizer of a PLNfit_fixedcov, `data`
 ## its data (with the normalized covariates), `Omega` the precision matrix.
 project_latent_floor <- function(optim_out, data, Omega, floor, species = rep(TRUE, ncol(data$Y))) {
@@ -61,15 +75,8 @@ project_latent_floor <- function(optim_out, data, Omega, floor, species = rep(TR
   optim_out$n_floor <- sum(clipped)
   optim_out$M[clipped] <- bound[clipped]
   if (optim_out$n_floor > 0) {
-    z  <- (data$O + optim_out$M)[clipped]
-    om <- matrix(diag(as.matrix(Omega)), nrow(clipped), ncol(clipped), byrow = TRUE)[clipped]
-    lo <- rep(-30, length(z)); hi <- rep(30, length(z))   # bisection on log(s)
-    for (k in seq_len(60)) {
-      mid <- (lo + hi) / 2
-      positive <- 1 / exp(mid) - om - exp(z + exp(mid) / 2) > 0
-      lo <- ifelse(positive, mid, lo); hi <- ifelse(positive, hi, mid)
-    }
-    optim_out$S2[clipped] <- exp((lo + hi) / 2)
+    om <- matrix(diag(as.matrix(Omega)), nrow(clipped), ncol(clipped), byrow = TRUE)
+    optim_out$S2[clipped] <- optimal_variational_variance((data$O + optim_out$M)[clipped], om[clipped])
     w <- data$w
     optim_out$B <- solve(crossprod(data$X, w * data$X), crossprod(data$X, w * optim_out$M))
     R <- optim_out$M - data$X %*% optim_out$B

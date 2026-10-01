@@ -13,6 +13,7 @@ ZIPLN_param(
   penalize_diagonal = FALSE,
   penalty_weights = NULL,
   penalty_scale = c("covariance", "correlation"),
+  latent_floor = 0.001,
   config_post = list(),
   config_optim = list(),
   inception = NULL
@@ -46,6 +47,8 @@ variance has nearly free edges, and one that is often absent but abundant when p
 fitted by very negative latent means, ends up connected to most of the others (see the field
 \code{degenerate_species} of a \code{\link{PLNfit}}). \code{"correlation"} removes this artefact; see the section on the scale
 of the penalty.}
+
+\item{latent_floor}{a positive number (default \code{1e-3}), or \code{NULL} for no floor: a floor on the variational means of the degenerate species, as in \code{\link[=PLNnetwork_param]{PLNnetwork_param()}}. Only used with a sparse covariance (\code{penalty > 0}).}
 
 \item{config_post}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details}
 

@@ -603,6 +603,7 @@ ZIPLNnetworkfamily <- R6Class(
         control$penalize_diagonal = (sum(diag(inception_$penalty_weights)) != 0)
         ## the subsamples are fitted as the collection was
         control$penalty_scale = inception_$penalty_scale
+        control$latent_floor  = inception_$latent_floor
         control$trace <- 0
         control$config_optim$trace <- 0
         control$ziparam <- inception_$zi_model
