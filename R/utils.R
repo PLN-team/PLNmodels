@@ -31,6 +31,40 @@ glasso_penalty <- function(penalty, weights, S, scale = "covariance") {
   rho
 }
 
+## Penalties given by the user while the scale of the penalty was left to its
+## default, "correlation" since 1.3.3, where they lie between 0 and 1. Until
+## 1.3.2 they were on the covariance scale: the user is told, and how to get
+## the former behavior back. Penalties above 1 cannot be on the correlation
+## scale: when the residual covariance S is given, they are taken as penalties
+## on the covariance scale and divided by the ratio of the largest off-diagonal
+## residual covariance to the largest residual correlation, so that the penalty
+## giving the empty network on one scale gives it on the other (when all
+## variances are sigma^2, this ratio is sigma^2 and the conversion is exact).
+explicit_penalties_on_correlation_scale <- function(penalties, S = NULL, call = NULL) {
+  revert <- "Set {.code penalty_scale = \"covariance\"} in the control parameters to get the former behavior back, or {.code penalty_scale = \"correlation\"} to keep the penalties as they are, without this message."
+  if (any(penalties > 1)) {
+    if (is.null(S)) {
+      cli::cli_warn(c(
+        "!" = "A penalty above 1 was given, while the penalty now applies on the correlation scale by default, where it lies between 0 and 1: the network will be empty.",
+        "i" = revert), call = call)
+    } else {
+      ## the penalty above which the network is empty, on each scale
+      off <- upper.tri(S)
+      ratio <- max(abs(S[off])) / max(abs((S / tcrossprod(sqrt(diag(S))))[off]))
+      cli::cli_warn(c(
+        "!" = "Penalties above 1 were given, while the penalty now applies on the correlation scale by default, where it lies between 0 and 1.",
+        "i" = "They are taken as penalties on the covariance scale, the default until version 1.3.2, and divided by {signif(ratio, 3)}, so that the penalty giving the empty network on one scale gives it on the other.",
+        "i" = revert), call = call)
+      penalties <- penalties / ratio
+    }
+  } else {
+    cli::cli_inform(c(
+      "i" = "The penalty now applies on the correlation scale by default: the penalties given are taken as such, between 0 and 1. Until version 1.3.2 they were on the covariance scale.",
+      "i" = revert), .frequency = "once", .frequency_id = "PLNmodels_penalty_scale")
+  }
+  penalties
+}
+
 ## Variational lower bound of each sample of a PLN model with precision matrix
 ## Omega, at given parameters (the formula of DenseOmegaImpl::final_loglik in
 ## src/covariance_pln.h).

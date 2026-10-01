@@ -105,15 +105,25 @@ ne dit rien de la sélection. Un taux de zéros plus faible serait plus instruct
 - Limites : une seule force d'arêtes, des graphes de degré moyen 2 à 3, p ≤ 80, pas de
   poids de pénalité, un seul taux de zéro-inflation, peu instructif.
 
-## Conséquences d'un changement de défaut
+## Décision
 
-- **Les pénalités changent de sens.** Sur l'échelle des corrélations elles sont sans
-  dimension, entre 0 et 1. Un code qui passe `penalties = ` explicitement (par exemple des
-  valeurs supérieures à 1) obtiendrait d'autres réseaux, souvent vides.
-- Les chemins, les critères et les modèles retenus changent pour tous les utilisateurs de
-  `PLNnetwork()` et `ZIPLNnetwork()`.
+`penalty_scale = "correlation"` est le défaut depuis la version 1.3.2.9500, pour
+`PLNnetwork()`, `ZIPLNnetwork()` et `ZIPLN()` en covariance creuse. Conséquences :
+
+- **Les pénalités changent de sens.** Elles sont sans dimension, entre 0 et 1.
+- **Retour au comportement précédent** : `PLNnetwork_param(penalty_scale = "covariance")`.
+- **Pénalités fournies sans choisir l'échelle** : jusqu'à 1, elles sont prises telles
+  quelles, avec un message par session ; au-dessus de 1, elles sont prises pour des
+  pénalités sur l'échelle des covariances et divisées par le rapport entre la plus grande
+  covariance résiduelle de l'inception et sa plus grande corrélation, avec un avertissement.
+  Cette conversion fait correspondre les pénalités donnant le réseau vide sur les deux
+  échelles ; elle est exacte à variances égales, et seulement indicative sinon (sur
+  trichoptera, les pénalités 3, 1 et 0.3 donnaient 1, 19 et 35 arêtes ; converties, 0, 31
+  et 56).
 - Le critère n'est plus fixe : l'algorithme alterné cherche un point fixe, les poids de
   pénalité étant recalculés à chaque M-step.
+- Avec `penalize_diagonal = TRUE`, l'échelle des corrélations gonfle les variances de façon
+  multiplicative (`Σ_ii = S_ii (1 + λ)`) : combinaison à éviter.
 
 ## Fichiers
 

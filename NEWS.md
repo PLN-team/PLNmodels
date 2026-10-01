@@ -1,9 +1,69 @@
 # PLNmodels (development version)
 
+## Breaking changes in network fits
+
+The defaults of `PLNnetwork()`, `ZIPLNnetwork()` and `ZIPLN()` with a sparse covariance
+have changed since version 1.3.2. Penalty paths, criteria and selected models differ.
+
+* **The l1 penalty now applies on the correlation scale** (`penalty_scale =
+  "correlation"`), where it used to apply on the covariance scale. **The penalties
+  change meaning**: they are dimensionless and lie between 0 and 1, a penalty of 1 or
+  more giving the empty network. This concerns the grid built by default as well as
+  the penalties given through `penalties =` (or `penalty =` in `ZIPLN_param()`).
+* The variational means of the degenerate species are bounded (`latent_floor = 1e-3`).
+* The diagonal of the precision matrix is no longer penalized (`penalize_diagonal =
+  FALSE`), and `PLNnetwork()` starts from a diagonal inception (`inception_cov =
+  "diagonal"`).
+
+**To get the former behavior back**, set the scale in the control parameters:
+
+```r
+PLNnetwork(..., control = PLNnetwork_param(penalty_scale = "covariance"))
+```
+
+and, to undo the other changes as well,
+
+```r
+PLNnetwork_param(penalty_scale = "covariance", latent_floor = NULL,
+                 penalize_diagonal = TRUE, inception_cov = "full")
+```
+
+(likewise in `ZIPLNnetwork_param()` and `ZIPLN_param()`, without `inception_cov`, whose
+default has not changed there). The fits are then close to those of 1.3.2, not
+identical: the graphical Lasso and the grid of penalties have changed too (see below).
+
+**Penalties given explicitly.** When `penalties` is given while `penalty_scale` is left
+to its default:
+
+* penalties of at most 1 are taken on the correlation scale, as they are, with a
+  message, once per session, recalling the change and how to undo it;
+* penalties above 1 cannot be on the correlation scale. They are taken as penalties on
+  the covariance scale and converted, with a warning: they are divided by the ratio of
+  the largest residual covariance of the inception to its largest residual
+  correlation, so that the penalty giving the empty network on one scale gives it on
+  the other. This is exact when all latent variances are equal, and only a guide
+  otherwise, the two scales not giving the same networks;
+* in `ZIPLN_param()`, a `penalty` above 1 is not converted: a warning says that the
+  network will be empty.
+
+Setting `penalty_scale` explicitly, to either value, leaves the penalties as given and
+silences these messages.
+
+**Why.** The entries of a precision matrix are not scale invariant, so that on the
+covariance scale a species with a large latent variance has nearly free edges. In
+simulations with a known network (1 960 datasets, a hundred configurations of graph,
+sample size, dimension, latent variances, abundances, contamination, covariates and
+zero inflation), the edges were recovered better on the correlation scale in every
+configuration: the F1 score at the true network size went from 0.58 to 0.74 on
+uncontaminated data (from 0.45 to 0.73 when the latent variances differ between
+species), and from 0.27 to 0.78 with species absent from part of the samples, for the
+same computing time. The gain carries over to model selection, less strongly (BIC:
+0.47 to 0.56; StARS: 0.59 to 0.71). See `inst/simus_PLNnetwork/penalty_scale/`.
+
 ## Scale of the penalty in network fits
 
-* **New `penalty_scale = "correlation"`** in `PLNnetwork_param()`, `ZIPLNnetwork_param()`
-  and `ZIPLN_param()`. The l1 penalty of the graphical Lasso bears on the entries of the
+* **New `penalty_scale`** in `PLNnetwork_param()`, `ZIPLNnetwork_param()` and
+  `ZIPLN_param()`, `"correlation"` (default) or `"covariance"`. The l1 penalty of the graphical Lasso bears on the entries of the
   precision matrix, which are not scale invariant: a species with a large latent
   variance has nearly free edges. A species that is often absent but abundant when
   present, whose zeros are fitted by very negative latent means, therefore ends up
@@ -50,12 +110,10 @@
   well (n = 200) or better (0.71 against 0.63, n = 50). A floor alone contains the
   latent variances but not the hubs; excluding the degenerate species from the
   network moves the problem to others.
-* **Defaults.** `penalty_scale = "covariance"` remains the default until the correlation
-  scale has been assessed more widely. The floor being on, the fits of `PLNnetwork()`
-  change where species degenerate, and only there: among the datasets of the package,
-  `oaks`, `barents` and `mollusk` (17, 10 and 8 species bounded along the default
-  paths), while a fit without degenerate species, as on `trichoptera`, is exactly the
-  one obtained without the floor.
+* **Defaults.** `penalty_scale = "correlation"` and `latent_floor = 1e-3` (see the
+  breaking changes above). The floor changes the fits where species degenerate, and
+  only there: a fit without degenerate species, as on `trichoptera`, is exactly the one
+  obtained without the floor.
 * The warning on degenerate species of `PLNnetwork()` now also names the species
   bounded by the floor, since the floor is what keeps their variance under the
   threshold, and says, on the covariance scale, that their edges are artefacts.

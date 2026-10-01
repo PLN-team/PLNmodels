@@ -75,7 +75,7 @@ ZIPLNnetwork_param <- function(
     min_ratio         = 0.1    ,
     penalize_diagonal = FALSE  ,
     penalty_weights   = NULL   ,
-    penalty_scale     = c("covariance", "correlation"),
+    penalty_scale     = c("correlation", "covariance"),
     latent_floor      = 1e-3   ,
     config_post       = list(),
     config_optim      = list(),
@@ -92,6 +92,8 @@ ZIPLNnetwork_param <- function(
   ## optimization config
   backend <- match.arg(backend)
   inception_cov <- match.arg(inception_cov)
+  ## was the scale left to its default? (see the handling of user-defined penalties)
+  penalty_scale_implicit <- missing(penalty_scale)
   penalty_scale <- match.arg(penalty_scale)
   if (!is.null(latent_floor))
     stopifnot("latent_floor must be NULL or a positive number" =
@@ -107,6 +109,7 @@ ZIPLNnetwork_param <- function(
     min_ratio         = min_ratio        ,
     penalize_diagonal = penalize_diagonal,
     penalty_scale     = penalty_scale    ,
+    penalty_scale_implicit = penalty_scale_implicit,
     latent_floor      = latent_floor     ,
     penalty_weights   = penalty_weights  ,
     jackknife         = FALSE            ,

@@ -15,7 +15,7 @@ PLNnetwork_param(
   min_ratio = 0.1,
   penalize_diagonal = FALSE,
   penalty_weights = NULL,
-  penalty_scale = c("covariance", "correlation"),
+  penalty_scale = c("correlation", "covariance"),
   latent_floor = 0.001,
   config_post = list(),
   config_optim = list(),
@@ -64,22 +64,22 @@ turn prevents over-convergence that causes oscillations with the GLASSO M-step â
 \item{min_ratio}{the penalty grid ranges from the minimal value that produces a sparse to this value multiplied by \code{min_ratio}. Default is 0.1.}
 
 \item{penalize_diagonal}{boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is \code{FALSE}.
-Penalizing the diagonal inflates the latent variances by the penalty (\eqn{\Sigma_{ii} = S_{ii} + \rho}),
-which the VE step then feeds back into the residual covariance \eqn{S}: along the path, the
-network may then never become empty, whatever the penalty (#180).}
+Penalizing the diagonal inflates the latent variances (\eqn{\Sigma_{ii} = S_{ii} + \rho} on the covariance
+scale, \eqn{\Sigma_{ii} = S_{ii} (1 + \rho)} on the correlation scale), which the VE step then feeds back into
+the residual covariance \eqn{S}: along the path, the network may then never become empty, and the latent
+variances diverge (#180).}
 
 \item{penalty_weights}{either a single or a list of p x p matrix of weights (default: all weights equal to 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.}
 
-\item{penalty_scale}{character, the scale on which the l1 penalty applies: \code{"covariance"} (default) penalizes
-the entries of the precision matrix as they are, \code{"correlation"} penalizes them on the scale of the
-variables, with a penalty \eqn{\lambda \sqrt{S_{ii} S_{jj}}} on the pair \eqn{(i, j)}, where \eqn{S} is the
-current residual covariance. This amounts to applying the graphical-Lasso to the residual \emph{correlation}
-matrix, as is customary for Gaussian graphical models, and makes the penalties dimensionless, between 0 and 1.
-The entries of a precision matrix are not scale invariant: with \code{"covariance"}, a species with a large latent
-variance has nearly free edges, and one that is often absent but abundant when present, whose zeros are
-fitted by very negative latent means, ends up connected to most of the others (see the field
-\code{degenerate_species} of a \code{\link{PLNfit}}). \code{"correlation"} removes this artefact; see the section on the scale
-of the penalty.}
+\item{penalty_scale}{character, the scale on which the l1 penalty applies. \code{"correlation"} (default) penalizes
+the entries of the precision matrix on the scale of the variables, with a penalty
+\eqn{\lambda \sqrt{S_{ii} S_{jj}}} on the pair \eqn{(i, j)}, where \eqn{S} is the current residual covariance.
+This amounts to applying the graphical-Lasso to the residual \emph{correlation} matrix, as is customary for
+Gaussian graphical models, and makes the penalties dimensionless, between 0 and 1. \code{"covariance"}, the only
+behavior until version 1.3.2, penalizes the entries of the precision matrix as they are. These are not scale
+invariant: a species with a large latent variance then has nearly free edges, and one that is often absent but
+abundant when present ends up connected to most of the others (see the field \code{degenerate_species} of a
+\code{\link{PLNfit}}). See the section on the scale of the penalty.}
 
 \item{latent_floor}{a positive number \eqn{\epsilon} (default \code{1e-3}), or \code{NULL} for no floor: a floor on the
 variational means of the degenerate species. As soon as the latent variance of a species exceeds the threshold of
@@ -166,15 +166,23 @@ The list of parameters \code{config_post} controls the post-treatment processing
 \section{Scale of the penalty}{
 
 With \code{penalty_scale = "correlation"}, the penalty on the pair \eqn{(i, j)} is \eqn{\lambda w_{ij} \sqrt{S_{ii} S_{jj}}},
-recomputed at each M step from the current residual covariance \eqn{S}. The grid of penalties is then built on
+recomputed at each M step from the current residual covariance \eqn{S}. The grid of penalties is built on
 the residual correlation of the inception, and lies between 0 and 1. Since the weights depend on \eqn{S}, the
-alternating optimization no longer maximizes a fixed penalized criterion: it looks for a fixed point.
+alternating optimization does not maximize a fixed penalized criterion: it looks for a fixed point.
 
-In simulations with a known network where three species out of forty were made absent from a group of samples,
-the species concerned carried 34 to 93 \% of the edges with \code{"covariance"} (15 \% expected) and 0 to 2 \% with
-\code{"correlation"}, and the edges between the other species were recovered as well as on uncontaminated data, on
-which \code{"correlation"} did as well or better. \code{"covariance"} remains the default until this has been assessed
-more widely.
+It is the default since version 1.3.3. In simulations with a known network (a hundred configurations of graph,
+sample size, dimension, latent variances and abundances, with or without species absent from groups of samples),
+the edges were recovered better on the correlation scale in every configuration, the more so as the latent
+variances differed between species, and the time was the same.
+
+\strong{To get the behavior of version 1.3.2 back}, use \code{PLNnetwork_param(penalty_scale = "covariance")}; penalties are
+then on the covariance scale. Penalties given through \code{penalties} are otherwise taken on the correlation scale.
+Since values above 1 cannot be on that scale (they all give the empty network), when some are given while
+\code{penalty_scale} is left to its default they are taken as penalties on the covariance scale and converted, with a
+warning: they are divided by the ratio of the largest residual covariance of the inception to its largest residual
+correlation, so that the penalty giving the empty network on one scale gives it on the other. This is exact when
+all latent variances are equal, and only a guide otherwise: the two scales do not give the same networks.
+Setting \code{penalty_scale} explicitly, to either value, leaves the penalties as given.
 
 On either scale, the latent variance of a species absent from whole groups of samples diverges along the path
 without \code{latent_floor}. On the covariance scale, the floor stabilizes the fit without repairing the network: the
