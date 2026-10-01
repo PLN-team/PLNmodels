@@ -42,6 +42,7 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
   myPLN$postTreatment(control$config_post, control$config_optim)
 
   if (control$trace > 0) cat("\n DONE!\n")
+  warn_degenerate_species(myPLN$models)
   myPLN
 }
 

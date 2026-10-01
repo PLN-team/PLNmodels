@@ -56,6 +56,7 @@ ZIPLN <- function(formula, data, subset, zi = c("single", "row", "col"), control
   myPLN$optimize(data_, control$config_optim)
 
   if (control$trace > 0) cat("\n DONE!\n")
+  warn_degenerate_species(myPLN)
   myPLN
 }
 

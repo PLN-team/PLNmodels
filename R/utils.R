@@ -21,6 +21,42 @@ residual_covariance <- function(fit, X, w = rep(1, nrow(X))) {
   S
 }
 
+## Latent variance above which a species is reported as degenerate: 100, a
+## standard deviation of 10 on the log scale, unless set through
+## options(PLNmodels.latent_variance_threshold = ).
+latent_variance_threshold <- function() {
+  getOption("PLNmodels.latent_variance_threshold", 100)
+}
+
+## Names (indices if unnamed) of the species whose latent variance is above
+## the threshold, from the latent covariance matrix of a fit
+degenerate_species <- function(Sigma) {
+  if (!is.numeric(Sigma) && !inherits(Sigma, "Matrix")) return(character(0))
+  variances <- diag(as.matrix(Sigma))
+  species <- if (is.null(colnames(Sigma))) as.character(seq_along(variances)) else colnames(Sigma)
+  species[which(variances > latent_variance_threshold())]
+}
+
+## Warn, once, about the species with a degenerate latent variance in a fit or
+## in the fits of a collection
+warn_degenerate_species <- function(fits, call = rlang::caller_env()) {
+  if (!is.list(fits)) fits <- list(fits)
+  degenerate <- lapply(fits, function(fit) fit$degenerate_species)
+  species <- unique(unlist(degenerate))
+  if (length(species) == 0) return(invisible(character(0)))
+  n_fits <- sum(lengths(degenerate) > 0)
+  cli::cli_warn(
+    c(
+      "!" = "The latent variance of {length(species)} species is above {latent_variance_threshold()}{if (length(fits) > 1) paste0(', in ', n_fits, ' of the ', length(fits), ' models')}: {.val {species}}.",
+      "i" = "Their zeros are fitted by latent means going to minus infinity. In a network, such a species ends up connected to most of the others: these edges are artefacts, and should not be interpreted.",
+      "i" = "This happens to species that are often absent but abundant when present, notably those absent from a whole group of samples: adding the covariate that explains the absences helps for these (see {.fn structural_zeros}). Otherwise, consider leaving these species out.",
+      "i" = "See the field {.field degenerate_species} of a fit, and {.code options(PLNmodels.latent_variance_threshold = )} to change the threshold."
+    ),
+    call = call
+  )
+  invisible(species)
+}
+
 config_default_nlopt <-
   list(
     algorithm     = "CCSAQ",
