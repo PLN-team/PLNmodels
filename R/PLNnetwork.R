@@ -96,12 +96,15 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #'   fitted by very negative latent means, ends up connected to most of the others (see the field
 #'   `degenerate_species` of a [`PLNfit`]). `"correlation"` removes this artefact; see the section on the scale
 #'   of the penalty.
-#' @param latent_floor `NULL` (default, no bound) or a positive number \eqn{\epsilon}: the variational means are
-#'   kept above \eqn{\log \epsilon - O}, that is \eqn{\exp(O + M) \geq \epsilon}, so that no cell is fitted by an
-#'   expected count vanishing to zero. This restricts the variational family, not the model, and is a safeguard
-#'   against latent variances diverging along the path, which `penalty_scale = "correlation"` alone does not
-#'   always prevent. It acts as a regularization, the stronger the larger \eqn{\epsilon}: `1e-3` was found
-#'   to be enough to prevent the divergence while leaving ordinary fits unchanged.
+#' @param latent_floor `NULL` (default, no bound) or a positive number \eqn{\epsilon}: a floor on the variational
+#'   means of the degenerate species. As soon as the latent variance of a species exceeds the threshold of the field
+#'   `degenerate_species` of a [`PLNfit`] (100, see `options(PLNmodels.latent_variance_threshold = )`) during the
+#'   optimization, its variational means are kept above \eqn{\log \epsilon - O}, that is
+#'   \eqn{\exp(O + M) \geq \epsilon}, in this fit and in the following ones along the penalty path. The species
+#'   concerned are in the field `floored_species` of the fits. This needs no preparation of the data: the species are
+#'   found by the optimization itself. The floor restricts the variational family, not the model, and stops the latent
+#'   variances from diverging, which `penalty_scale = "correlation"` alone does not prevent when species are absent
+#'   from whole groups of samples. It has no effect on a fit without degenerate species. `1e-3` is a sensible value.
 #' @inheritParams PLN_param trace config_optim config_post inception
 #'
 #' @return list of parameters configuring the fit.
@@ -120,9 +123,9 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #' In simulations with a known network where three species out of forty were made absent from a group of samples,
 #' the species concerned carried 34 to 93 % of the edges with `"covariance"` (15 % expected) and 0 to 2 % with
 #' `"correlation"`, and the edges between the other species were recovered as well as on uncontaminated data, on
-#' which `"correlation"` did as well or better. On real data, the latent variance of some species could still
-#' diverge along the path with `"correlation"` alone, which `latent_floor = 1e-3` prevented. `"covariance"`
-#' remains the default until this has been assessed more widely.
+#' which `"correlation"` did as well or better. The latent variance of some species can still diverge along the
+#' path with `"correlation"` alone (in simulations, whenever species were absent from whole groups of samples),
+#' which `latent_floor = 1e-3` prevents. `"covariance"` remains the default until this has been assessed more widely.
 #'
 #' @seealso [PLN_param()]
 #' @export

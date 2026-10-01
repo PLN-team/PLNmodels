@@ -44,14 +44,16 @@ elbo_fixed_precision <- function(Y, X, O, B, M, S2, Omega) {
 }
 
 ## Projection of the output of a VE step on the constraint exp(O + M) >= floor,
-## that is M >= log(floor) - O: the means below the bound are set to it, the
-## variational variance of these cells is set to its optimum given M (the root
-## of 1/s - Omega_jj - exp(O + M + s/2), a decreasing function of s), and B,
-## the residual covariance and the lower bound are updated accordingly.
+## that is M >= log(floor) - O, for the species in `species` (a logical vector):
+## the means below the bound are set to it, the variational variance of these
+## cells is set to its optimum given M (the root of 1/s - Omega_jj -
+## exp(O + M + s/2), a decreasing function of s), and B, the residual covariance
+## and the lower bound are updated accordingly.
 ## `optim_out` is the list returned by the optimizer of a PLNfit_fixedcov, `data`
 ## its data (with the normalized covariates), `Omega` the precision matrix.
-project_latent_floor <- function(optim_out, data, Omega, floor) {
+project_latent_floor <- function(optim_out, data, Omega, floor, species = rep(TRUE, ncol(data$Y))) {
   bound   <- log(floor) - data$O
+  bound[, !species] <- -Inf
   clipped <- optim_out$M < bound
   optim_out$n_floor <- sum(clipped)
   optim_out$M[clipped] <- bound[clipped]

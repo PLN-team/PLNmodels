@@ -81,12 +81,15 @@ fitted by very negative latent means, ends up connected to most of the others (s
 \code{degenerate_species} of a \code{\link{PLNfit}}). \code{"correlation"} removes this artefact; see the section on the scale
 of the penalty.}
 
-\item{latent_floor}{\code{NULL} (default, no bound) or a positive number \eqn{\epsilon}: the variational means are
-kept above \eqn{\log \epsilon - O}, that is \eqn{\exp(O + M) \geq \epsilon}, so that no cell is fitted by an
-expected count vanishing to zero. This restricts the variational family, not the model, and is a safeguard
-against latent variances diverging along the path, which \code{penalty_scale = "correlation"} alone does not
-always prevent. It acts as a regularization, the stronger the larger \eqn{\epsilon}: \code{1e-3} was found
-to be enough to prevent the divergence while leaving ordinary fits unchanged.}
+\item{latent_floor}{\code{NULL} (default, no bound) or a positive number \eqn{\epsilon}: a floor on the variational
+means of the degenerate species. As soon as the latent variance of a species exceeds the threshold of the field
+\code{degenerate_species} of a \code{\link{PLNfit}} (100, see \code{options(PLNmodels.latent_variance_threshold = )}) during the
+optimization, its variational means are kept above \eqn{\log \epsilon - O}, that is
+\eqn{\exp(O + M) \geq \epsilon}, in this fit and in the following ones along the penalty path. The species
+concerned are in the field \code{floored_species} of the fits. This needs no preparation of the data: the species are
+found by the optimization itself. The floor restricts the variational family, not the model, and stops the latent
+variances from diverging, which \code{penalty_scale = "correlation"} alone does not prevent when species are absent
+from whole groups of samples. It has no effect on a fit without degenerate species. \code{1e-3} is a sensible value.}
 
 \item{config_post}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details}
 
@@ -171,9 +174,9 @@ alternating optimization no longer maximizes a fixed penalized criterion: it loo
 In simulations with a known network where three species out of forty were made absent from a group of samples,
 the species concerned carried 34 to 93 \% of the edges with \code{"covariance"} (15 \% expected) and 0 to 2 \% with
 \code{"correlation"}, and the edges between the other species were recovered as well as on uncontaminated data, on
-which \code{"correlation"} did as well or better. On real data, the latent variance of some species could still
-diverge along the path with \code{"correlation"} alone, which \code{latent_floor = 1e-3} prevented. \code{"covariance"}
-remains the default until this has been assessed more widely.
+which \code{"correlation"} did as well or better. The latent variance of some species can still diverge along the
+path with \code{"correlation"} alone (in simulations, whenever species were absent from whole groups of samples),
+which \code{latent_floor = 1e-3} prevents. \code{"covariance"} remains the default until this has been assessed more widely.
 }
 
 \seealso{
