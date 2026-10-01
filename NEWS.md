@@ -13,12 +13,23 @@
   residual covariance `S`: this is the graphical Lasso on the residual correlation
   matrix, as is customary for Gaussian graphical models, and the penalties become
   dimensionless, between 0 and 1.
-* **New `latent_floor`** in `PLNnetwork_param()`: a lower bound on `exp(O + M)`, which
-  keeps the variational means from going to minus infinity. It restricts the
-  variational family, not the model. It is a safeguard against latent variances
-  diverging along the path, which the correlation scale alone does not always prevent,
-  and acts as a regularization, the stronger the larger the bound. `NULL` (no bound) by
-  default; `1e-3` was enough on the datasets of the package.
+* **New `latent_floor`** in `PLNnetwork_param()`: a floor on the variational means of
+  the degenerate species. As soon as the latent variance of a species exceeds the
+  threshold of `$degenerate_species` (100) during the optimization, its variational
+  means are kept above `log(floor) - O`, that is `exp(O + M) >= floor`, in this fit and
+  in the following ones along the penalty path. The species are found by the
+  optimization itself, so that no preparation of the data is needed, and are returned
+  by the new field `$floored_species`. The floor restricts the variational family, not
+  the model, and has no effect on a fit without degenerate species. It stops the
+  latent variances from diverging, which the correlation scale alone does not prevent
+  when species are absent from whole groups of samples: in simulations with such
+  groups the variances diverged in 20 replicates out of 20 without the floor, on both
+  scales, and in none with it. `NULL` (no floor) by default; `1e-3` is a sensible value.
+  A floor on every cell was tried first and dropped: on `mollusk`, where nothing
+  diverges, it constrained 39 % of the cells.
+* On the covariance scale, the floor stabilizes the fit but does not repair the
+  network: the degree of the hubs drops (from 107 to 22 on `oaks`), and the edges still
+  concentrate on the degenerate species.
 * In simulations with a known network of 40 species, 3 of which were made absent from
   65 % of the samples, these species carried 34 % (n = 200) to 93 % (n = 50) of the
   edges on the covariance scale, where 15 % was expected, and 0 to 2 % on the
@@ -26,16 +37,16 @@
   network size, went from 0.76 to 0.85 (n = 200) and from 0.13 to 0.70 (n = 50), the
   level of uncontaminated data. Without contamination, the correlation scale did as
   well (n = 200) or better (0.71 against 0.63, n = 50). A floor alone contains the
-  latent variances but not the hubs; excluding the flagged species from the network
-  moves the problem to others.
+  latent variances but not the hubs; excluding the degenerate species from the
+  network moves the problem to others.
 * **The defaults are unchanged** (`penalty_scale = "covariance"`, no floor), until these
   settings have been assessed more widely: fits are identical to those of the previous
   development version. The scripts and a summary of the exploration are in
   `inst/simus_PLNnetwork/degenerate_species/`, the account in
   `inst/devlog/DEVLOG_2026-09-30_10-01.md`.
-* The fits have new fields `$penalty_scale` and `$latent_floor`, the number of cells at
-  the floor is in `$optim_par$n_floor`, and `stability_selection()` refits the
-  subsamples with the settings of the collection.
+* The fits have new fields `$penalty_scale`, `$latent_floor` and `$floored_species`,
+  the number of cells at the floor is in `$optim_par$n_floor`, and
+  `stability_selection()` refits the subsamples with the settings of the collection.
 
 ## Graphical Lasso and network fits (#184)
 

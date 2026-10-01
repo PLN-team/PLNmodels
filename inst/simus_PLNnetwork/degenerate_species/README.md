@@ -120,10 +120,12 @@ n'avoir ni espèce dégénérée ni hub artificiel sur l'ensemble des cas testé
 ## Implémentation
 
 Les pistes C et A sont maintenant des options du paquet, désactivées par défaut :
-`PLNnetwork_param(penalty_scale = "correlation", latent_floor = 1e-3)`. Les scripts
-`sim_known_network_package.R` et `real_package.R` refont la simulation et la comparaison sur
-données réelles avec ces options, et redonnent les résultats des prototypes. Le récit complet
-est dans `inst/devlog/DEVLOG_2026-09-30_10-01.md`.
+`PLNnetwork_param(penalty_scale = "correlation", latent_floor = 1e-3)`. Le plancher du paquet
+est le **plancher ciblé** de la section suivante : il ne borne que les espèces dont la
+variance latente dépasse 100 pendant l'optimisation (champ `$floored_species`), et remplace le
+plancher fixe prototypé ici. Les scripts `sim_known_network_package.R`,
+`sim_package_regimes.R` et `real_package.R` refont les comparaisons avec ces options. Le récit
+complet est dans `inst/devlog/DEVLOG_2026-09-30_10-01.md`.
 
 ## Variantes du plancher (1er octobre, `floor_variants.R`)
 
@@ -194,6 +196,14 @@ le fixe et 123 s pour le relatif).
 - La simulation ne reproduit pas l'effet du plancher fixe sur mollusk (38.7 % des cellules à
   la borne) : il tient aux offsets, la borne étant exprimée en comptage.
 
+## Autres modèles PLN (`degenerate_other_models.R`)
+
+Espèces dont la variance latente dépasse 100, réglages par défaut, sur les jeux du paquet :
+aucune avec `PLN()` et `ZIPLN()` en covariance pleine ou diagonale (une sur microcosm en
+covariance pleine) ; `PLNPCA()` en a 7 sur barents, 10 sur mollusk et 176 sur 259 pour
+microcosm ; `ZIPLNnetwork()` en a autant que `PLNnetwork()`. Un plancher serait donc utile
+pour PLNPCA et ZIPLNnetwork, où il reste à implémenter.
+
 ## Limites
 
 - Le plancher est prototypé par projection après le pas de Newton, non par un pas de Newton
@@ -215,6 +225,11 @@ le fixe et 123 s pour le relatif).
   nom.
 - `sim_known_network_package.R`, `real_package.R` : les mêmes comparaisons avec les options
   du paquet (`penalty_scale`, `latent_floor`), sans les prototypes.
+- `sim_package_regimes.R` : les quatre réglages du paquet (deux échelles, avec et sans
+  plancher ciblé) sur les régimes `random`, `groups`, `sparse` et `overdispersed` ;
+  résultats dans `sim_package_<régime>_n<n>.rds`.
+- `degenerate_other_models.R` : espèces dégénérées dans PLN, PLNPCA, ZIPLN et ZIPLNnetwork
+  sur les jeux du paquet.
 - `floor_variants.R`, `sim_floor_variants.R`, `real_floor_variants.R` : variantes du
   plancher ; `Rscript sim_floor_variants.R groups 20 100` pour le régime `groups` à
   n = 100 ; résultats dans `sim_floor_variants_<régime>_n<n>.rds` et
