@@ -21,6 +21,62 @@ residual_covariance <- function(fit, X, w = rep(1, nrow(X))) {
   S
 }
 
+## Penalty matrix of the graphical Lasso: the weighted penalty, on the scale of
+## the entries of the precision matrix ("covariance"), or on the scale of the
+## variables ("correlation"): rho w_ij sqrt(S_ii S_jj), which amounts to
+## applying the graphical Lasso to the correlation matrix of S.
+glasso_penalty <- function(penalty, weights, S, scale = "covariance") {
+  rho <- penalty * weights
+  if (identical(scale, "correlation")) rho <- rho * tcrossprod(sqrt(diag(as.matrix(S))))
+  rho
+}
+
+## Variational lower bound of each sample of a PLN model with precision matrix
+## Omega, at given parameters (the formula of DenseOmegaImpl::final_loglik in
+## src/covariance_pln.h).
+elbo_fixed_precision <- function(Y, X, O, B, M, S2, Omega) {
+  Omega <- as.matrix(Omega)
+  Z <- O + M
+  R <- M - X %*% B
+  rowSums(Y * Z - exp(Z + .5 * S2) + .5 * log(S2) - lgamma(Y + 1)) +
+    .5 * as.numeric(determinant(Omega, logarithm = TRUE)$modulus) -
+    .5 * rowSums((R %*% Omega) * R) - .5 * as.vector(S2 %*% diag(Omega)) + .5 * ncol(Y)
+}
+
+## Projection of the output of a VE step on the constraint exp(O + M) >= floor,
+## that is M >= log(floor) - O: the means below the bound are set to it, the
+## variational variance of these cells is set to its optimum given M (the root
+## of 1/s - Omega_jj - exp(O + M + s/2), a decreasing function of s), and B,
+## the residual covariance and the lower bound are updated accordingly.
+## `optim_out` is the list returned by the optimizer of a PLNfit_fixedcov, `data`
+## its data (with the normalized covariates), `Omega` the precision matrix.
+project_latent_floor <- function(optim_out, data, Omega, floor) {
+  bound   <- log(floor) - data$O
+  clipped <- optim_out$M < bound
+  optim_out$n_floor <- sum(clipped)
+  optim_out$M[clipped] <- bound[clipped]
+  if (optim_out$n_floor > 0) {
+    z  <- (data$O + optim_out$M)[clipped]
+    om <- matrix(diag(as.matrix(Omega)), nrow(clipped), ncol(clipped), byrow = TRUE)[clipped]
+    lo <- rep(-30, length(z)); hi <- rep(30, length(z))   # bisection on log(s)
+    for (k in seq_len(60)) {
+      mid <- (lo + hi) / 2
+      positive <- 1 / exp(mid) - om - exp(z + exp(mid) / 2) > 0
+      lo <- ifelse(positive, mid, lo); hi <- ifelse(positive, hi, mid)
+    }
+    optim_out$S2[clipped] <- exp((lo + hi) / 2)
+    w <- data$w
+    optim_out$B <- solve(crossprod(data$X, w * data$X), crossprod(data$X, w * optim_out$M))
+    R <- optim_out$M - data$X %*% optim_out$B
+    optim_out$Sigma <- (crossprod(R, w * R) + diag(colSums(w * optim_out$S2), ncol(R))) / sum(w)
+    optim_out$Z <- data$O + optim_out$M
+    optim_out$A <- exp(optim_out$Z + .5 * optim_out$S2)
+  }
+  ## the same formula with or without clipped cells, for a consistent objective
+  optim_out$Ji <- elbo_fixed_precision(data$Y, data$X, data$O, optim_out$B, optim_out$M, optim_out$S2, Omega)
+  optim_out
+}
+
 ## Latent variance above which a species is reported as degenerate: 100, a
 ## standard deviation of 10 on the log scale, unless set through
 ## options(PLNmodels.latent_variance_threshold = ).
@@ -49,7 +105,8 @@ warn_degenerate_species <- function(fits, call = rlang::caller_env()) {
     c(
       "!" = "The latent variance of {length(species)} species is above {latent_variance_threshold()}{if (length(fits) > 1) paste0(', in ', n_fits, ' of the ', length(fits), ' models')}: {.val {species}}.",
       "i" = "Their zeros are fitted by latent means going to minus infinity. In a network, such a species ends up connected to most of the others: these edges are artefacts, and should not be interpreted.",
-      "i" = "This happens to species that are often absent but abundant when present, notably those absent from a whole group of samples: adding the covariate that explains the absences helps for these (see {.fn structural_zeros}). Otherwise, consider leaving these species out.",
+      "i" = "This happens to species that are often absent but abundant when present, notably those absent from a whole group of samples: adding the covariate that explains the absences helps for these (see {.fn structural_zeros}).",
+      "i" = "For a network, see {.arg penalty_scale} and {.arg latent_floor} in {.fn PLNnetwork_param}: a penalty on the correlation scale removes these artefacts.",
       "i" = "See the field {.field degenerate_species} of a fit, and {.code options(PLNmodels.latent_variance_threshold = )} to change the threshold."
     ),
     call = call

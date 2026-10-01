@@ -69,6 +69,9 @@ Networkfamily <- R6Class(
         ## diagonal and a diagonal inception, which is then the empty network
         ## itself, this bound is exact: the top of the path is the empty network.
         S_inception <- residual_covariance(control$inception, data$X, data$w)
+        ## on the correlation scale, the penalty on (i, j) is rho * sqrt(S_ii S_jj)
+        if (identical(control$penalty_scale, "correlation"))
+          S_inception <- S_inception / tcrossprod(sqrt(diag(S_inception)))
         in_grid <- upper.tri(S_inception, diag = control$penalize_diagonal)
         if (!any(vapply(list_penalty_weights, function(w) any(in_grid & w > 0), logical(1))))
           stop("The penalty weights leave no entry to penalize: no grid of penalties can be built.")
@@ -429,6 +432,9 @@ PLNnetworkfamily <- R6Class(
         control$inception = inception_
         control$penalty_weights = map(self$models, "penalty_weights")
         control$penalize_diagonal = (sum(diag(inception_$penalty_weights)) != 0)
+        ## the subsamples are fitted as the collection was
+        control$penalty_scale = inception_$penalty_scale
+        control$latent_floor  = inception_$latent_floor
         control$trace <- 0
         control$config_optim$trace <- 0
 
@@ -593,6 +599,8 @@ ZIPLNnetworkfamily <- R6Class(
         control$inception = inception_
         control$penalty_weights = map(self$models, "penalty_weights")
         control$penalize_diagonal = (sum(diag(inception_$penalty_weights)) != 0)
+        ## the subsamples are fitted as the collection was
+        control$penalty_scale = inception_$penalty_scale
         control$trace <- 0
         control$config_optim$trace <- 0
         control$ziparam <- inception_$zi_model

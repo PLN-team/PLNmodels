@@ -45,6 +45,8 @@ PLNnetworkfit <- R6Class(
       if (!control$penalize_diagonal) diag(control$penalty_weights) <- 0
       private$lambda <- control$penalty
       private$rho    <- control$penalty_weights
+      if (!is.null(control$penalty_scale)) private$scale <- control$penalty_scale
+      private$floor  <- control$latent_floor
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -75,7 +77,7 @@ PLNnetworkfit <- R6Class(
                    config = inner_config)
       M_res_init <- private$M - nrm$X_sc %*% B_sc
       private$Sigma <- crossprod(M_res_init)/self$n + diag(colMeans(private$S2), self$p, self$p)
-      glasso_nonconv <- 0L; glasso_stalled <- 0L; glasso_indefinite <- 0L
+      glasso_nonconv <- 0L; glasso_stalled <- 0L; glasso_indefinite <- 0L; n_floor <- 0L
       last_glasso <- NULL # graphical Lasso output of the last iterate kept
       failure <- NULL
       w_pos <- data$w > .Machine$double.eps
@@ -83,7 +85,9 @@ PLNnetworkfit <- R6Class(
         iter <- iter + 1
         if (config$trace > 1) cat("", iter)
         ## CALL TO GLASSO TO UPDATE Omega
-        glasso_out <- graphical_lasso(private$Sigma, rho = self$penalty * self$penalty_weights)
+        glasso_out <- graphical_lasso(
+          private$Sigma, rho = glasso_penalty(self$penalty, self$penalty_weights, private$Sigma, private$scale)
+        )
         if (!glasso_out$converged) glasso_nonconv <- glasso_nonconv + 1L
         if (!all(is.finite(glasso_out$wi))) {
           failure <- paste("the graphical Lasso failed (", glasso_out$status, ")", sep = "")
@@ -97,6 +101,11 @@ PLNnetworkfit <- R6Class(
 
         ## CALL TO NLOPT OPTIMIZATION TO UPDATE OTHER PARAMETERS
         optim_out <- do.call(private$optimizer$main, args)
+        ## keep the variational means above the floor, if any
+        if (!is.null(private$floor)) {
+          optim_out <- project_latent_floor(optim_out, args$data, args$params$Omega, private$floor)
+          n_floor <- optim_out$n_floor; optim_out$n_floor <- NULL
+        }
 
         ## An iterate with a non-finite objective is not kept: the fit stays at
         ## the previous one
@@ -133,11 +142,13 @@ PLNnetworkfit <- R6Class(
       private$monitoring$glasso_nonconverged <- glasso_nonconv
       private$monitoring$glasso_stalled      <- glasso_stalled
       private$monitoring$glasso_indefinite   <- glasso_indefinite
+      private$monitoring$n_floor             <- n_floor # cells at the floor in the last iteration
       private$monitoring$failure             <- failure
       if (is.null(last_glasso)) {
         ## Not a single iterate kept: the fit is marked as failed (its criteria
         ## are NA), with the precision matrix of the empty network
-        private$Omega <- diag(1 / (diag(as.matrix(private$Sigma)) + self$penalty * diag(self$penalty_weights)),
+        private$Omega <- diag(1 / (diag(as.matrix(private$Sigma)) +
+                                     diag(glasso_penalty(self$penalty, self$penalty_weights, private$Sigma, private$scale))),
                               self$p, self$p)
         private$Ji    <- rep(NA_real_, self$n)
         warning("The alternating optimization failed at its first iteration for penalty ",
@@ -230,6 +241,8 @@ PLNnetworkfit <- R6Class(
   private = list(
     lambda = NA,  # the sparsity tuning parameter
     rho    = NA,  # the p x p penalty weight
+    scale  = "covariance", # the scale of the penalty: "covariance" or "correlation"
+    floor  = NULL, # lower bound on exp(O + M), if any
     gamma_ebic = 0.5 # the tuning parameter of the EBIC
   ),
 
@@ -243,6 +256,10 @@ PLNnetworkfit <- R6Class(
     penalty         = function() {private$lambda},
     #' @field penalty_weights a matrix of weights controlling the amount of penalty element-wise.
     penalty_weights = function() {private$rho},
+    #' @field penalty_scale the scale on which the penalty applies, `"covariance"` or `"correlation"` (see [PLNnetwork_param()])
+    penalty_scale   = function() {private$scale},
+    #' @field latent_floor the lower bound on `exp(O + M)`, `NULL` if none (see [PLNnetwork_param()])
+    latent_floor    = function() {private$floor},
     #' @field n_edges number of edges if the network (non null coefficient of the sparse precision matrix)
     n_edges         = function() {sum(private$Omega[upper.tri(private$Omega, diag = FALSE)] != 0)},
     #' @field nb_param number of parameters in the current PLN model

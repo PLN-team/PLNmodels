@@ -12,6 +12,7 @@ ZIPLNnetwork_param(
   min_ratio = 0.1,
   penalize_diagonal = FALSE,
   penalty_weights = NULL,
+  penalty_scale = c("covariance", "correlation"),
   config_post = list(),
   config_optim = list(),
   inception = NULL
@@ -38,6 +39,17 @@ which the VE step then feeds back into the residual covariance \eqn{S}: along th
 network may then never become empty, whatever the penalty (#180).}
 
 \item{penalty_weights}{either a single or a list of p x p matrix of weights (default: all weights equal to 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.}
+
+\item{penalty_scale}{character, the scale on which the l1 penalty applies: \code{"covariance"} (default) penalizes
+the entries of the precision matrix as they are, \code{"correlation"} penalizes them on the scale of the
+variables, with a penalty \eqn{\lambda \sqrt{S_{ii} S_{jj}}} on the pair \eqn{(i, j)}, where \eqn{S} is the
+current residual covariance. This amounts to applying the graphical-Lasso to the residual \emph{correlation}
+matrix, as is customary for Gaussian graphical models, and makes the penalties dimensionless, between 0 and 1.
+The entries of a precision matrix are not scale invariant: with \code{"covariance"}, a species with a large latent
+variance has nearly free edges, and one that is often absent but abundant when present, whose zeros are
+fitted by very negative latent means, ends up connected to most of the others (see the field
+\code{degenerate_species} of a \code{\link{PLNfit}}). \code{"correlation"} removes this artefact; see the section on the scale
+of the penalty.}
 
 \item{config_post}{a list for controlling the post-treatments (optional bootstrap, jackknife, R2, etc.). See details}
 

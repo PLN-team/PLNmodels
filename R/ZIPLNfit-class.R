@@ -774,13 +774,15 @@ ZIPLNfit_sparse <- R6Class(
     lambda = NA, # the sparsity tuning parameter
     rho    = NA, # the p x p penalty weight
     glasso_status    = "converged", # how the last graphical Lasso call ended
+    scale      = "covariance", # the scale of the penalty: "covariance" or "correlation"
+    rho_glasso = NULL, # the penalty matrix of the last graphical Lasso call
     glasso_nonconv   = 0L,   # number of non-converged graphical Lasso calls
     glasso_indef     = 0L,   # number of graphical Lasso calls with an indefinite wi
     gamma_ebic       = 0.5,  # the tuning parameter of the EBIC
     ## The M step for Omega maximizes the ELBO minus this penalty, on the scale of
     ## the ELBO (graphical Lasso on the covariance S = crossprod/n, hence n/2)
     objective_penalty = function(Omega, n) {
-      .5 * n * private$lambda * sum(abs(private$rho * Omega))
+      .5 * n * sum(abs(private$rho_glasso * Omega))
     }
   ),
 
@@ -797,10 +799,13 @@ ZIPLNfit_sparse <- R6Class(
       if (!control$penalize_diagonal) diag(control$penalty_weights) <- 0
       private$lambda <- control$penalty
       private$rho    <- control$penalty_weights
+      if (!is.null(control$penalty_scale)) private$scale <- control$penalty_scale
       private$optimizer$Omega <-
         function(M, X, B, S2) {
-          out <- graphical_lasso(crossprod(M - X %*% B)/self$n + diag(colMeans(S2), self$p, self$p),
-                                 rho = private$lambda * private$rho)
+          S <- crossprod(M - X %*% B)/self$n + diag(colMeans(S2), self$p, self$p)
+          ## kept for the penalized objective, since it depends on S on the correlation scale
+          private$rho_glasso <- glasso_penalty(private$lambda, private$rho, S, private$scale)
+          out <- graphical_lasso(S, rho = private$rho_glasso)
           private$glasso_status <- out$status
           if (!out$converged) private$glasso_nonconv <- private$glasso_nonconv + 1L
           if (isTRUE(out$shift > 0)) private$glasso_indef <- private$glasso_indef + 1L
@@ -883,6 +888,8 @@ ZIPLNfit_sparse <- R6Class(
     penalty         = function() {private$lambda},
     #' @field penalty_weights a matrix of weights controlling the amount of penalty element-wise.
     penalty_weights = function() {private$rho},
+    #' @field penalty_scale the scale on which the penalty applies, `"covariance"` or `"correlation"` (see [PLNnetwork_param()])
+    penalty_scale   = function() {private$scale},
     #' @field n_edges number of edges if the network (non null coefficient of the sparse precision matrix)
     n_edges         = function() {sum(private$Omega[upper.tri(private$Omega, diag = FALSE)] != 0)},
     #' @field nb_param_pln number of parameters in the PLN part of the current model

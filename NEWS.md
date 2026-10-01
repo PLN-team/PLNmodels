@@ -1,5 +1,42 @@
 # PLNmodels (development version)
 
+## Scale of the penalty in network fits
+
+* **New `penalty_scale = "correlation"`** in `PLNnetwork_param()`, `ZIPLNnetwork_param()`
+  and `ZIPLN_param()`. The l1 penalty of the graphical Lasso bears on the entries of the
+  precision matrix, which are not scale invariant: a species with a large latent
+  variance has nearly free edges. A species that is often absent but abundant when
+  present, whose zeros are fitted by very negative latent means, therefore ends up
+  connected to most of the others (see `$degenerate_species` below), and this happens
+  well before its latent variance blows up. On the correlation scale, the penalty on
+  the pair `(i, j)` is `lambda * sqrt(S_ii * S_jj)`, recomputed at each M step from the
+  residual covariance `S`: this is the graphical Lasso on the residual correlation
+  matrix, as is customary for Gaussian graphical models, and the penalties become
+  dimensionless, between 0 and 1.
+* **New `latent_floor`** in `PLNnetwork_param()`: a lower bound on `exp(O + M)`, which
+  keeps the variational means from going to minus infinity. It restricts the
+  variational family, not the model. It is a safeguard against latent variances
+  diverging along the path, which the correlation scale alone does not always prevent,
+  and acts as a regularization, the stronger the larger the bound. `NULL` (no bound) by
+  default; `1e-3` was enough on the datasets of the package.
+* In simulations with a known network of 40 species, 3 of which were made absent from
+  65 % of the samples, these species carried 34 % (n = 200) to 93 % (n = 50) of the
+  edges on the covariance scale, where 15 % was expected, and 0 to 2 % on the
+  correlation scale; the F1 score of the edges between the other species, at the true
+  network size, went from 0.76 to 0.85 (n = 200) and from 0.13 to 0.70 (n = 50), the
+  level of uncontaminated data. Without contamination, the correlation scale did as
+  well (n = 200) or better (0.71 against 0.63, n = 50). A floor alone contains the
+  latent variances but not the hubs; excluding the flagged species from the network
+  moves the problem to others.
+* **The defaults are unchanged** (`penalty_scale = "covariance"`, no floor), until these
+  settings have been assessed more widely: fits are identical to those of the previous
+  development version. The scripts and a summary of the exploration are in
+  `inst/simus_PLNnetwork/degenerate_species/`, the account in
+  `inst/devlog/DEVLOG_2026-09-30_10-01.md`.
+* The fits have new fields `$penalty_scale` and `$latent_floor`, the number of cells at
+  the floor is in `$optim_par$n_floor`, and `stability_selection()` refits the
+  subsamples with the settings of the collection.
+
 ## Graphical Lasso and network fits (#184)
 
 * **`graphical_lasso()` now solves the problem scaled to a unit diagonal.** For any
