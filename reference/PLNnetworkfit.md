@@ -44,8 +44,16 @@ the class
 
 - `latent_floor`:
 
-  the lower bound on `exp(O + M)`, `NULL` if none (see
+  the lower bound on `exp(O + M)` for the species in `floored_species`,
+  `NULL` if none (see
   [`PLNnetwork_param()`](https://pln-team.github.io/PLNmodels/reference/PLNnetwork_param.md))
+
+- `floored_species`:
+
+  names of the species whose variational means are bounded by
+  `latent_floor`: those whose latent variance has exceeded the threshold
+  of `degenerate_species` during the optimization, of this fit or of the
+  previous ones along the penalty path
 
 - `n_edges`:
 

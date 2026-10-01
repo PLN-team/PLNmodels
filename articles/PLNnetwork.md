@@ -191,14 +191,14 @@ A diagnostic of the optimization process is available via the
 network_models$convergence %>% head() %>% knitr::kable()
 ```
 
-|  | param | nb_param | status | backend | objective | iterations | convergence | glasso_nonconverged | glasso_stalled | glasso_indefinite | n_floor |
-|:---|---:|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|
-| out | 0.8883632 | 35 | 3 | newton | 1109.6 | 20 | 4.766354e-05 | 0 | 0 | 0 | 0 |
-| elt | 0.8205552 | 35 | 3 | newton | 1108.511 | 20 | 1.710477e-05 | 0 | 0 | 0 | 0 |
-| elt.1 | 0.7579229 | 35 | 3 | newton | 1107.916 | 18 | 9.943289e-06 | 0 | 0 | 0 | 0 |
-| elt.2 | 0.7000713 | 35 | 3 | newton | 1107.575 | 7 | 9.48024e-06 | 0 | 0 | 0 | 0 |
-| elt.3 | 0.6466354 | 35 | 3 | newton | 1107.298 | 5 | 9.947209e-06 | 0 | 0 | 0 | 0 |
-| elt.4 | 0.5972783 | 35 | 3 | newton | 1107.055 | 5 | 8.646742e-06 | 0 | 0 | 0 | 0 |
+|  | param | nb_param | status | backend | objective | iterations | convergence | glasso_nonconverged | glasso_stalled | glasso_indefinite | n_floor | floored |
+|:---|---:|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|
+| out | 0.8883632 | 35 | 3 | newton | 1109.6 | 20 | 4.766354e-05 | 0 | 0 | 0 | 0 | FALSE |
+| elt | 0.8205552 | 35 | 3 | newton | 1108.511 | 20 | 1.710477e-05 | 0 | 0 | 0 | 0 | FALSE |
+| elt.1 | 0.7579229 | 35 | 3 | newton | 1107.916 | 18 | 9.943289e-06 | 0 | 0 | 0 | 0 | FALSE |
+| elt.2 | 0.7000713 | 35 | 3 | newton | 1107.575 | 7 | 9.48024e-06 | 0 | 0 | 0 | 0 | FALSE |
+| elt.3 | 0.6466354 | 35 | 3 | newton | 1107.298 | 5 | 9.947209e-06 | 0 | 0 | 0 | 0 | FALSE |
+| elt.4 | 0.5972783 | 35 | 3 | newton | 1107.055 | 5 | 8.646742e-06 | 0 | 0 | 0 | 0 | FALSE |
 
 An nicer view of this output comes with the option “diagnostic” in the
 `plot` method:
@@ -380,10 +380,10 @@ my_graph <- plot(model_StARS, plot = FALSE)
 my_graph
 ```
 
-    ## IGRAPH ae58d49 UNW- 17 1 -- 
+    ## IGRAPH 3370b5d UNW- 17 1 -- 
     ## + attr: name (v/c), label (v/c), label.cex (v/n), size (v/n),
     ## | label.color (v/c), weight (e/n), width (e/n), color (e/c)
-    ## + edge from ae58d49 (vertex names):
+    ## + edge from 3370b5d (vertex names):
     ## [1] Hfo--Hsp
 
 ``` r
