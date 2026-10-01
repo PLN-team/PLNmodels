@@ -138,7 +138,7 @@ pheatmap::pheatmap(coefficients(zi_site, "count"), cluster_rows = FALSE)
 `ZIPLNnetwork` adjusts the model for a series of penalties controlling the number of edges in the network, just like `PLNnetwork`, but on top of a zero-inflation component. We keep the default `zi = "single"` here for simplicity and focus on the network. The default `backend = "builtin"` is used (it now finds a consistently better ELBO than `"nlopt"` here, at the cost of being slower); we lower `min_ratio` to explore a wider, sparser range of the penalty path:
 
 ```{r ziplnnetwork, results = FALSE}
-zi_models <- ZIPLNnetwork(Abundance ~ site + offset(log(Offset)), data = microcosm, control = ZIPLNnetwork_param(min_ratio = 0.01))
+zi_models <- ZIPLNnetwork(Abundance ~ site + offset(log(Offset)), data = microcosm, control = ZIPLNnetwork_param(min_ratio = 0.05))
 ```
 
 As for `PLNnetwork`, a diagnostic plot and the evolution of the criteria along the path are available:
@@ -154,7 +154,7 @@ plot(zi_models)
 We select a network with `getBestModel()` and represent it:
 
 ```{r ziplnnetwork_best, fig.cap = "Sparse residual network between the 30 most abundant taxa"}
-zi_net <- getBestModel(zi_models, "EBIC")
+zi_net <- getBestModel(zi_models, "BIC")
 plot(zi_net)
 ```
 

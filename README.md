@@ -72,7 +72,7 @@ geographic coordinates for each site.
 library(PLNmodels)
 ```
 
-    This is package 'PLNmodels' version 1.3.2
+    This is package 'PLNmodels' version 1.3.2.9500
 
 ``` r
 data(barents)
@@ -164,36 +164,36 @@ myNets <- PLNnetwork(Abundance ~ Depth + Temperature + offset(log(Offset)), data
      Initialization...
      Adjusting 30 PLN with sparse inverse covariance estimation
         Joint optimization alternating gradient descent and graphical-lasso
-        sparsifying penalty = 3.77829 
-        sparsifying penalty = 3.489896 
-        sparsifying penalty = 3.223515 
-        sparsifying penalty = 2.977467 
-        sparsifying penalty = 2.7502 
-        sparsifying penalty = 2.540279 
-        sparsifying penalty = 2.346382 
-        sparsifying penalty = 2.167285 
-        sparsifying penalty = 2.001858 
-        sparsifying penalty = 1.849058 
-        sparsifying penalty = 1.707921 
-        sparsifying penalty = 1.577557 
-        sparsifying penalty = 1.457143 
-        sparsifying penalty = 1.345921 
-        sparsifying penalty = 1.243188 
-        sparsifying penalty = 1.148296 
-        sparsifying penalty = 1.060648 
-        sparsifying penalty = 0.9796893 
-        sparsifying penalty = 0.9049105 
-        sparsifying penalty = 0.8358394 
-        sparsifying penalty = 0.7720405 
-        sparsifying penalty = 0.7131113 
-        sparsifying penalty = 0.6586802 
-        sparsifying penalty = 0.6084037 
-        sparsifying penalty = 0.5619647 
-        sparsifying penalty = 0.5190704 
-        sparsifying penalty = 0.4794502 
-        sparsifying penalty = 0.4428542 
-        sparsifying penalty = 0.4090515 
-        sparsifying penalty = 0.377829 
+        sparsifying penalty = 0.5329204 
+        sparsifying penalty = 0.492243 
+        sparsifying penalty = 0.4546705 
+        sparsifying penalty = 0.4199659 
+        sparsifying penalty = 0.3879103 
+        sparsifying penalty = 0.3583014 
+        sparsifying penalty = 0.3309526 
+        sparsifying penalty = 0.3056912 
+        sparsifying penalty = 0.2823581 
+        sparsifying penalty = 0.2608059 
+        sparsifying penalty = 0.2408988 
+        sparsifying penalty = 0.2225112 
+        sparsifying penalty = 0.2055272 
+        sparsifying penalty = 0.1898394 
+        sparsifying penalty = 0.1753492 
+        sparsifying penalty = 0.1619649 
+        sparsifying penalty = 0.1496023 
+        sparsifying penalty = 0.1381833 
+        sparsifying penalty = 0.1276358 
+        sparsifying penalty = 0.1178935 
+        sparsifying penalty = 0.1088948 
+        sparsifying penalty = 0.100583 
+        sparsifying penalty = 0.09290554 
+        sparsifying penalty = 0.08581414 
+        sparsifying penalty = 0.07926402 
+        sparsifying penalty = 0.07321387 
+        sparsifying penalty = 0.06762551 
+        sparsifying penalty = 0.06246372 
+        sparsifying penalty = 0.05769591 
+        sparsifying penalty = 0.05329204 
      Post-treatments
      DONE!
 
@@ -233,10 +233,10 @@ table(cluster = myMixture$memberships, zone = barents$zone)
 
            zone
     cluster North South
-          1     1    17
-          2    11     0
-          3    21     6
-          4    11    22
+          1     1    21
+          2    11    18
+          3    11     0
+          4    21     6
 
 ## References
 
