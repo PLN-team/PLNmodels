@@ -2,6 +2,94 @@
 
 ## PLNmodels (development version)
 
+### Graphical Lasso and network fits ([\#184](https://github.com/pln-team/PLNmodels/issues/184))
+
+- **[`graphical_lasso()`](https://pln-team.github.io/PLNmodels/reference/graphical_lasso.md)
+  now solves the problem scaled to a unit diagonal.** For any positive
+  diagonal `D`, `Theta` solves the problem for `(S, rho)` if and only if
+  `D^-1 Theta D^-1` solves it for `(DSD, D rho D)`: the change of
+  variables is exact, and only the stopping rule sees it. On ordinary
+  input the result is the one of glassoFast up to the tolerance (same
+  supports along penalty paths, relative differences below 1e-4). On a
+  covariance whose variances span orders of magnitude, as the residual
+  covariance of
+  [`PLNnetwork()`](https://pln-team.github.io/PLNmodels/reference/PLNnetwork.md)
+  does, the unscaled descent stalled in a limit cycle, failed in its
+  inner loop, or returned an indefinite precision matrix; scaled, it
+  converges in a few sweeps. On 91 such problems met along
+  [`PLNnetwork()`](https://pln-team.github.io/PLNmodels/reference/PLNnetwork.md)
+  paths, all converged once scaled, to a lower objective; on ordinary
+  ones, the median number of sweeps went from 646 to 4. The detection of
+  limit cycles (`"stalled"`) is kept as a safeguard.
+- **[`graphical_lasso()`](https://pln-team.github.io/PLNmodels/reference/graphical_lasso.md)
+  always returns a positive definite `wi`.** It is backed out of the
+  regression coefficients of the algorithm, so that it is the inverse of
+  `w` only at the exact solution, and could come out indefinite short of
+  it, whatever the `status`. Its diagonal is then shifted, which keeps
+  the network, so that its smallest eigenvalue is the one of the inverse
+  of `w`; the shift is reported in the new `shift` component.
+- **A failure along the alternating optimization of
+  [`PLNnetwork()`](https://pln-team.github.io/PLNmodels/reference/PLNnetwork.md)
+  no longer stops the whole path.** A non-finite precision matrix from
+  the graphical Lasso, or a non-finite objective, ends the optimization
+  for that penalty on the previous iterate, with a warning; if there is
+  none, the fit is marked as failed (`NA` criteria), and
+  [`getBestModel()`](https://pln-team.github.io/PLNmodels/reference/getBestModel.md)
+  leaves it out of the selection, with a warning, instead of stopping.
+  The reason is in `$optim_par$failure`, and the number of shifted
+  precision matrices in `$optim_par$glasso_indefinite` (also for
+  [`ZIPLNnetwork()`](https://pln-team.github.io/PLNmodels/reference/ZIPLNnetwork.md)).
+  [`ZIPLN()`](https://pln-team.github.io/PLNmodels/reference/ZIPLN.md)
+  likewise stops on a non-finite objective, on the best iterate so far,
+  instead of failing with “missing value where TRUE/FALSE needed”.
+- On the simulations of
+  [\#184](https://github.com/pln-team/PLNmodels/issues/184) (30
+  multispecies Gompertz communities, `PLNnetwork(Abundance ~ 1)`),
+  version 1.3.2 failed with an error on 3 of them, returned `NA`
+  criteria on 3 more, and non-finite or absurd log-likelihoods (up to
+  1e109) on 4 others. All 30 paths now fit, the BIC of the selected
+  model is higher (median +7 on the 20 datasets where 1.3.2 did fit),
+  and the whole study runs twice as fast.
+
+### Penalty path of network fits ([\#180](https://github.com/pln-team/PLNmodels/issues/180))
+
+- **The diagonal of the precision matrix is no longer penalized by
+  default** (`penalize_diagonal = FALSE` in
+  [`PLNnetwork_param()`](https://pln-team.github.io/PLNmodels/reference/PLNnetwork_param.md),
+  [`ZIPLNnetwork_param()`](https://pln-team.github.io/PLNmodels/reference/ZIPLNnetwork_param.md)
+  and
+  [`ZIPLN_param()`](https://pln-team.github.io/PLNmodels/reference/ZIPLN_param.md)).
+  Penalizing it inflates the latent variances by the penalty
+  (`Sigma_ii = S_ii + rho`), which the VE step feeds back into the
+  residual covariance `S`: along the path, the network could then never
+  become empty, whatever the penalty. On `oaks`, the top of the path had
+  149 edges, for a residual covariance 73 times the largest penalty of
+  the grid. Set `penalize_diagonal = TRUE` to get the former behavior
+  back.
+- **The top of the penalty grid is now computed from the residual
+  covariance of the inception**, `crossprod(M - XB) / n`, whatever its
+  covariance model, rather than from its fitted `Sigma`, and
+  [`PLNnetwork()`](https://pln-team.github.io/PLNmodels/reference/PLNnetwork.md)
+  now starts from a diagonal inception (`inception_cov = "diagonal"`,
+  fully converged). With an unpenalized diagonal, the inception is then
+  the empty network, and the top of the grid the penalty above which it
+  is a fixed point of the alternating optimization: the path starts from
+  the empty network (up to a pair on the boundary).
+  [`ZIPLNnetwork()`](https://pln-team.github.io/PLNmodels/reference/ZIPLNnetwork.md)
+  keeps a full inception, which led to a better BIC along the path.
+- Penalty paths, and hence selected models, change. Against version
+  1.3.2, the BIC of the model selected by
+  [`PLNnetwork()`](https://pln-team.github.io/PLNmodels/reference/PLNnetwork.md)
+  goes from -1390 to -1300 on `trichoptera`, from -5331 to -5149 on
+  `barents`, from -38664 to -37566 on `oaks` and from -37399 to -36630
+  on `oaks` with the `tree` covariate, as fast or faster. For
+  [`ZIPLNnetwork()`](https://pln-team.github.io/PLNmodels/reference/ZIPLNnetwork.md),
+  from -1418 to -1306, -5448 to -5206, -39786 to -37585 and -38348 to
+  -36716, in up to 2.5 times as long on `oaks`, where the paths are
+  denser.
+- A matrix of penalty weights that leaves no entry to penalize now stops
+  with an explicit message.
+
 ### Bug fixes
 
 - **The builtin backend now decreases the objective at every iteration**

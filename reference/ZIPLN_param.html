@@ -57,7 +57,7 @@
 <span>  covariance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"full"</span>, <span class="st">"diagonal"</span>, <span class="st">"spherical"</span>, <span class="st">"fixed"</span>, <span class="st">"sparse"</span><span class="op">)</span>,</span>
 <span>  Omega <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  penalty <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  penalize_diagonal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  penalize_diagonal <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  penalty_weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  config_post <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  config_optim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -90,7 +90,10 @@
 
 
 <dt id="arg-penalize-diagonal">penalize_diagonal<a class="anchor" aria-label="anchor" href="#arg-penalize-diagonal"></a></dt>
-<dd><p>boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is <code>TRUE</code></p></dd>
+<dd><p>boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is <code>FALSE</code>.
+Penalizing the diagonal inflates the latent variances by the penalty (\(\Sigma_{ii} = S_{ii} + \rho\)),
+which the VE step then feeds back into the residual covariance \(S\): along the path, the
+network may then never become empty, whatever the penalty (#180).</p></dd>
 
 
 <dt id="arg-penalty-weights">penalty_weights<a class="anchor" aria-label="anchor" href="#arg-penalty-weights"></a></dt>

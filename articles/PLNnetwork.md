@@ -138,7 +138,7 @@ network_models <- PLNnetwork(Abundance ~ 1 + offset(log(Offset)), data = trichop
     ##  Initialization...
     ##  Adjusting 30 PLN with sparse inverse covariance estimation
     ##  Joint optimization alternating gradient descent and graphical-lasso
-    ##  sparsifying penalty = 2.123258  sparsifying penalty = 1.961192  sparsifying penalty = 1.811496  sparsifying penalty = 1.673226  sparsifying penalty = 1.54551   sparsifying penalty = 1.427542  sparsifying penalty = 1.318579  sparsifying penalty = 1.217933  sparsifying penalty = 1.124969  sparsifying penalty = 1.039101  sparsifying penalty = 0.9597877     sparsifying penalty = 0.886528  sparsifying penalty = 0.81886   sparsifying penalty = 0.7563572     sparsifying penalty = 0.6986251     sparsifying penalty = 0.6452996     sparsifying penalty = 0.5960444     sparsifying penalty = 0.5505489     sparsifying penalty = 0.508526  sparsifying penalty = 0.4697106     sparsifying penalty = 0.433858  sparsifying penalty = 0.400742  sparsifying penalty = 0.3701537     sparsifying penalty = 0.3419002     sparsifying penalty = 0.3158032     sparsifying penalty = 0.2916982     sparsifying penalty = 0.2694332     sparsifying penalty = 0.2488676     sparsifying penalty = 0.2298717     sparsifying penalty = 0.2123258 
+    ##  sparsifying penalty = 0.8883632     sparsifying penalty = 0.8205552     sparsifying penalty = 0.7579229     sparsifying penalty = 0.7000713     sparsifying penalty = 0.6466354     sparsifying penalty = 0.5972783     sparsifying penalty = 0.5516886     sparsifying penalty = 0.5095787     sparsifying penalty = 0.470683  sparsifying penalty = 0.4347561     sparsifying penalty = 0.4015716     sparsifying penalty = 0.37092   sparsifying penalty = 0.342608  sparsifying penalty = 0.316457  sparsifying penalty = 0.2923021     sparsifying penalty = 0.2699909     sparsifying penalty = 0.2493827     sparsifying penalty = 0.2303476     sparsifying penalty = 0.2127653     sparsifying penalty = 0.1965251     sparsifying penalty = 0.1815246     sparsifying penalty = 0.1676689     sparsifying penalty = 0.1548709     sparsifying penalty = 0.1430497     sparsifying penalty = 0.1321309     sparsifying penalty = 0.1220454     sparsifying penalty = 0.1127298     sparsifying penalty = 0.1041253     sparsifying penalty = 0.09617746    sparsifying penalty = 0.08883632 
     ##  Post-treatments
     ##  DONE!
 
@@ -162,9 +162,9 @@ network_models
     ## --------------------------------------------------------
     ##  Task: Network Inference 
     ## ========================================================
-    ##  - 30 penalties considered: from 0.2123258 to 2.123258 
-    ##  - Best model (greater BIC): lambda = 0.47 
-    ##  - Best model (greater EBIC): lambda = 0.756
+    ##  - 30 penalties considered: from 0.08883632 to 0.8883632 
+    ##  - Best model (greater BIC): lambda = 0.552 
+    ##  - Best model (greater EBIC): lambda = 0.552
 
 One can also easily access the successive values of the criteria in the
 collection
@@ -176,12 +176,12 @@ network_models$criteria %>% head() %>% knitr::kable()
 
 | param | nb_param | loglik | BIC | AIC | ICL | n_edges | EBIC | pen_loglik | density | stability |
 |---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|:---|
-| 2.123258 | 35 | -1240.599 | -1308.706 | -1275.599 | -2719.514 | 1 | -1311.539 | -1245.892 | 0.0073529 | NA |
-| 1.961192 | 35 | -1233.931 | -1302.038 | -1268.931 | -2704.993 | 1 | -1304.871 | -1239.082 | 0.0073529 | NA |
-| 1.811495 | 35 | -1227.261 | -1295.368 | -1262.261 | -2689.054 | 1 | -1298.201 | -1232.280 | 0.0073529 | NA |
-| 1.673226 | 35 | -1220.836 | -1288.943 | -1255.836 | -2673.301 | 1 | -1291.776 | -1225.724 | 0.0073529 | NA |
-| 1.545510 | 35 | -1214.663 | -1282.770 | -1249.663 | -2657.834 | 1 | -1285.603 | -1219.420 | 0.0073529 | NA |
-| 1.427542 | 35 | -1208.743 | -1276.850 | -1243.743 | -2642.672 | 1 | -1279.683 | -1213.368 | 0.0073529 | NA |
+| 0.8883632 | 35 | -1109.600 | -1177.707 | -1144.600 | -2187.804 | 1 | -1180.540 | -1131.228 | 0.0073529 | NA |
+| 0.8205552 | 35 | -1108.511 | -1176.617 | -1143.511 | -2167.318 | 1 | -1179.451 | -1129.466 | 0.0073529 | NA |
+| 0.7579229 | 35 | -1107.916 | -1176.023 | -1142.916 | -2153.575 | 1 | -1178.856 | -1128.113 | 0.0073529 | NA |
+| 0.7000713 | 35 | -1107.575 | -1175.682 | -1142.575 | -2148.803 | 1 | -1178.515 | -1126.551 | 0.0073529 | NA |
+| 0.6466354 | 35 | -1107.298 | -1175.405 | -1142.298 | -2145.526 | 1 | -1178.238 | -1125.043 | 0.0073529 | NA |
+| 0.5972783 | 35 | -1107.055 | -1175.162 | -1142.055 | -2142.413 | 1 | -1177.995 | -1123.650 | 0.0073529 | NA |
 
 A diagnostic of the optimization process is available via the
 `convergence` field:
@@ -191,14 +191,14 @@ A diagnostic of the optimization process is available via the
 network_models$convergence %>% head() %>% knitr::kable()
 ```
 
-|  | param | nb_param | status | backend | objective | iterations | convergence | glasso_nonconverged | glasso_stalled |
-|:---|---:|:---|:---|:---|:---|:---|:---|:---|:---|
-| out | 2.123258 | 35 | 3 | newton | 1240.599 | 20 | 2.382757e-05 | 0 | 0 |
-| elt | 1.961192 | 35 | 3 | newton | 1233.931 | 15 | 8.428628e-06 | 0 | 0 |
-| elt.1 | 1.811495 | 35 | 3 | newton | 1227.261 | 16 | 9.377476e-06 | 0 | 0 |
-| elt.2 | 1.673226 | 35 | 3 | newton | 1220.836 | 16 | 9.633539e-06 | 0 | 0 |
-| elt.3 | 1.545510 | 35 | 3 | newton | 1214.663 | 16 | 9.636082e-06 | 0 | 0 |
-| elt.4 | 1.427542 | 35 | 3 | newton | 1208.743 | 16 | 9.5936e-06 | 0 | 0 |
+|  | param | nb_param | status | backend | objective | iterations | convergence | glasso_nonconverged | glasso_stalled | glasso_indefinite |
+|:---|---:|:---|:---|:---|:---|:---|:---|:---|:---|:---|
+| out | 0.8883632 | 35 | 3 | newton | 1109.6 | 20 | 4.766354e-05 | 0 | 0 | 0 |
+| elt | 0.8205552 | 35 | 3 | newton | 1108.511 | 20 | 1.710477e-05 | 0 | 0 | 0 |
+| elt.1 | 0.7579229 | 35 | 3 | newton | 1107.916 | 18 | 9.943289e-06 | 0 | 0 | 0 |
+| elt.2 | 0.7000713 | 35 | 3 | newton | 1107.575 | 7 | 9.48024e-06 | 0 | 0 | 0 |
+| elt.3 | 0.6466354 | 35 | 3 | newton | 1107.298 | 5 | 9.947209e-06 | 0 | 0 | 0 |
+| elt.4 | 0.5972783 | 35 | 3 | newton | 1107.055 | 5 | 8.646742e-06 | 0 | 0 | 0 |
 
 An nicer view of this output comes with the option “diagnostic” in the
 `plot` method:
@@ -351,10 +351,10 @@ are recalled when such an object is printed:
 model_StARS
 ```
 
-    ## Poisson Lognormal with sparse inverse covariance (penalty = 1.04)
+    ## Poisson Lognormal with sparse inverse covariance (penalty = 0.597)
     ## ==================================================================
-    ##  nb_param   loglik       BIC      AIC       ICL n_edges     EBIC pen_loglik
-    ##        35 -1187.49 -1255.597 -1222.49 -2585.114       1 -1258.43  -1191.596
+    ##  nb_param    loglik       BIC       AIC       ICL n_edges      EBIC pen_loglik
+    ##        35 -1107.055 -1175.162 -1142.055 -2142.413       1 -1177.995   -1123.65
     ##  density
     ##    0.007
     ## ==================================================================
@@ -380,10 +380,10 @@ my_graph <- plot(model_StARS, plot = FALSE)
 my_graph
 ```
 
-    ## IGRAPH 3c3b54d UNW- 17 1 -- 
+    ## IGRAPH 41020ff UNW- 17 1 -- 
     ## + attr: name (v/c), label (v/c), label.cex (v/n), size (v/n),
     ## | label.color (v/c), weight (e/n), width (e/n), color (e/c)
-    ## + edge from 3c3b54d (vertex names):
+    ## + edge from 41020ff (vertex names):
     ## [1] Hfo--Hsp
 
 ``` r

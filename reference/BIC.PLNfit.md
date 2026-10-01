@@ -38,5 +38,5 @@ model <- PLN(Abundance ~ 1, data = trichoptera)
 #>  Post-treatments...
 #>  DONE!
 BIC(model)
-#> [1] -1460.442
+#> [1] -1460.429
 ```

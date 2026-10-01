@@ -12,7 +12,7 @@ ZIPLNnetwork_param(
   trace = 1,
   n_penalties = 30,
   min_ratio = 0.1,
-  penalize_diagonal = TRUE,
+  penalize_diagonal = FALSE,
   penalty_weights = NULL,
   config_post = list(),
   config_optim = list(),
@@ -31,12 +31,15 @@ ZIPLNnetwork_param(
 
 - inception_cov:
 
-  Covariance structure used for the inception PLN: `"full"` (default),
-  `"diagonal"` or `"spherical"`. Non-full structures are now fully
-  supported: when `inception_cov != "full"`, the penalty grid is built
-  from the empirical covariance of latent residuals \\M - XB\\ (a
-  full-rank proxy for \\\Sigma\\), avoiding the broken `max_pen = 0`
-  that previously occurred with diagonal/spherical.
+  Covariance structure used for the inception ZIPLN, which starts the
+  penalty path and sets its top: `"full"` (default), `"diagonal"` or
+  `"spherical"`. The top of the grid of penalties is computed as in
+  [`PLNnetwork_param()`](https://pln-team.github.io/PLNmodels/reference/PLNnetwork_param.md).
+  Unlike for
+  [`PLNnetwork()`](https://pln-team.github.io/PLNmodels/reference/PLNnetwork.md),
+  a full inception is the default: a diagonal one makes the top of the
+  path exactly the empty network, but was found to lead to a lower BIC
+  along the path, at a higher cost.
 
 - trace:
 
@@ -55,7 +58,11 @@ ZIPLNnetwork_param(
 - penalize_diagonal:
 
   boolean: should the diagonal terms be penalized in the
-  graphical-Lasso? Default is `TRUE`
+  graphical-Lasso? Default is `FALSE`. Penalizing the diagonal inflates
+  the latent variances by the penalty (\\\Sigma\_{ii} = S\_{ii} +
+  \rho\\), which the VE step then feeds back into the residual
+  covariance \\S\\: along the path, the network may then never become
+  empty, whatever the penalty (#180).
 
 - penalty_weights:
 

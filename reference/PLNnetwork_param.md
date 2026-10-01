@@ -8,14 +8,14 @@ arguments have defaults.
 ``` r
 PLNnetwork_param(
   backend = c("builtin", "nlopt", "torch"),
-  inception_cov = c("full", "spherical", "diagonal"),
+  inception_cov = c("diagonal", "full", "spherical"),
   inception_backend = NULL,
   inception_niter = NULL,
   maxit_ve = NULL,
   trace = 1,
   n_penalties = 30,
   min_ratio = 0.1,
-  penalize_diagonal = TRUE,
+  penalize_diagonal = FALSE,
   penalty_weights = NULL,
   config_post = list(),
   config_optim = list(),
@@ -38,12 +38,15 @@ PLNnetwork_param(
 
 - inception_cov:
 
-  Covariance structure used for the inception PLN: `"full"` (default),
-  `"diagonal"` or `"spherical"`. Non-full structures are now fully
-  supported: when `inception_cov != "full"`, the penalty grid is built
-  from the empirical covariance of latent residuals \\M - XB\\ (a
-  full-rank proxy for \\\Sigma\\), avoiding the broken `max_pen = 0`
-  that previously occurred with diagonal/spherical.
+  Covariance structure used for the inception PLN, which starts the
+  penalty path and sets its top: `"diagonal"` (default), `"full"` or
+  `"spherical"`. The top of the grid of penalties is the largest
+  off-diagonal entry of the residual covariance of the inception,
+  \\crossprod(M - XB) / n\\, the penalty above which the graphical Lasso
+  returns the empty network (weighted by `penalty_weights`, and on the
+  diagonal too when `penalize_diagonal = TRUE`). With a diagonal
+  inception and an unpenalized diagonal (the defaults), the inception is
+  itself the empty network, and the path starts from it.
 
 - inception_backend:
 
@@ -55,13 +58,13 @@ PLNnetwork_param(
 
   integer or `NULL`. Limits the inception PLN to at most this many
   iterations (EM iterations for `"builtin"`, function evaluations × 10
-  for `"nlopt"`). Default is `5L` when `backend = "builtin"` (`NULL`,
-  i.e. full convergence, otherwise): fewer iterations keep the latent
-  mean M from over-converging toward the unconstrained optimum, which
-  would make it harder to warm-start the sparse penalty models. Values
-  above ~20 typically hurt. When `inception_cov != "full"` or
-  `inception_niter` is set, the penalty grid uses the empirical residual
-  covariance \\crossprod(M - XB) / n\\ for `max_pen`.
+  for `"nlopt"`). Default is `5L` when `backend = "builtin"` and
+  `inception_cov = "full"`, `NULL` (full convergence) otherwise: for a
+  full inception, fewer iterations keep the latent mean M from
+  over-converging toward the unconstrained optimum, which would make it
+  harder to warm-start the sparse penalty models (values above ~20
+  typically hurt); a diagonal inception is the empty network, which is
+  better converged.
 
 - maxit_ve:
 
@@ -91,7 +94,11 @@ PLNnetwork_param(
 - penalize_diagonal:
 
   boolean: should the diagonal terms be penalized in the
-  graphical-Lasso? Default is `TRUE`
+  graphical-Lasso? Default is `FALSE`. Penalizing the diagonal inflates
+  the latent variances by the penalty (\\\Sigma\_{ii} = S\_{ii} +
+  \rho\\), which the VE step then feeds back into the residual
+  covariance \\S\\: along the path, the network may then never become
+  empty, whatever the penalty (#180).
 
 - penalty_weights:
 

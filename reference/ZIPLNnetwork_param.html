@@ -57,7 +57,7 @@
 <span>  trace <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  n_penalties <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  min_ratio <span class="op">=</span> <span class="fl">0.1</span>,</span>
-<span>  penalize_diagonal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  penalize_diagonal <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  penalty_weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  config_post <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  config_optim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -74,11 +74,11 @@
 
 
 <dt id="arg-inception-cov">inception_cov<a class="anchor" aria-label="anchor" href="#arg-inception-cov"></a></dt>
-<dd><p>Covariance structure used for the inception PLN:
-<code>"full"</code> (default), <code>"diagonal"</code> or <code>"spherical"</code>. Non-full structures are now
-fully supported: when <code>inception_cov != "full"</code>, the penalty grid is built from the
-empirical covariance of latent residuals \(M - XB\) (a full-rank proxy for \(\Sigma\)),
-avoiding the broken <code>max_pen = 0</code> that previously occurred with diagonal/spherical.</p></dd>
+<dd><p>Covariance structure used for the inception ZIPLN, which starts the
+penalty path and sets its top: <code>"full"</code> (default), <code>"diagonal"</code> or <code>"spherical"</code>. The top of
+the grid of penalties is computed as in <code><a href="PLNnetwork_param.html">PLNnetwork_param()</a></code>. Unlike for <code><a href="PLNnetwork.html">PLNnetwork()</a></code>, a
+full inception is the default: a diagonal one makes the top of the path exactly the empty
+network, but was found to lead to a lower BIC along the path, at a higher cost.</p></dd>
 
 
 <dt id="arg-trace">trace<a class="anchor" aria-label="anchor" href="#arg-trace"></a></dt>
@@ -94,7 +94,10 @@ avoiding the broken <code>max_pen = 0</code> that previously occurred with diago
 
 
 <dt id="arg-penalize-diagonal">penalize_diagonal<a class="anchor" aria-label="anchor" href="#arg-penalize-diagonal"></a></dt>
-<dd><p>boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is <code>TRUE</code></p></dd>
+<dd><p>boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is <code>FALSE</code>.
+Penalizing the diagonal inflates the latent variances by the penalty (\(\Sigma_{ii} = S_{ii} + \rho\)),
+which the VE step then feeds back into the residual covariance \(S\): along the path, the
+network may then never become empty, whatever the penalty (#180).</p></dd>
 
 
 <dt id="arg-penalty-weights">penalty_weights<a class="anchor" aria-label="anchor" href="#arg-penalty-weights"></a></dt>

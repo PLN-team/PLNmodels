@@ -12,7 +12,7 @@ ZIPLN_param(
   covariance = c("full", "diagonal", "spherical", "fixed", "sparse"),
   Omega = NULL,
   penalty = 0,
-  penalize_diagonal = TRUE,
+  penalize_diagonal = FALSE,
   penalty_weights = NULL,
   config_post = list(),
   config_optim = list(),
@@ -49,7 +49,11 @@ ZIPLN_param(
 - penalize_diagonal:
 
   boolean: should the diagonal terms be penalized in the
-  graphical-Lasso? Default is `TRUE`
+  graphical-Lasso? Default is `FALSE`. Penalizing the diagonal inflates
+  the latent variances by the penalty (\\\Sigma\_{ii} = S\_{ii} +
+  \rho\\), which the VE step then feeds back into the residual
+  covariance \\S\\: along the path, the network may then never become
+  empty, whatever the penalty (#180).
 
 - penalty_weights:
 
