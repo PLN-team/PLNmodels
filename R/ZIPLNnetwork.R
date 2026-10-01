@@ -75,6 +75,7 @@ ZIPLNnetwork_param <- function(
     min_ratio         = 0.1    ,
     penalize_diagonal = FALSE  ,
     penalty_weights   = NULL   ,
+    penalty_scale     = c("covariance", "correlation"),
     config_post       = list(),
     config_optim      = list(),
     inception         = NULL
@@ -90,6 +91,7 @@ ZIPLNnetwork_param <- function(
   ## optimization config
   backend <- match.arg(backend)
   inception_cov <- match.arg(inception_cov)
+  penalty_scale <- match.arg(penalty_scale)
   config_opt <- make_config_optim(backend, config_optim, trace,
                                   extra = list(ftol_out = 1e-6, maxit_out = 50, maxit_ve = 1L))
 
@@ -100,6 +102,7 @@ ZIPLNnetwork_param <- function(
     n_penalties       = n_penalties      ,
     min_ratio         = min_ratio        ,
     penalize_diagonal = penalize_diagonal,
+    penalty_scale     = penalty_scale    ,
     penalty_weights   = penalty_weights  ,
     jackknife         = FALSE            ,
     bootstrap         = 0                ,

@@ -27,6 +27,8 @@ plot(myPLN)
 
     \item{\code{penalty_weights}}{a matrix of weights controlling the amount of penalty element-wise.}
 
+    \item{\code{penalty_scale}}{the scale on which the penalty applies, \code{"covariance"} or \code{"correlation"} (see \code{\link[=PLNnetwork_param]{PLNnetwork_param()}})}
+
     \item{\code{n_edges}}{number of edges if the network (non null coefficient of the sparse precision matrix)}
 
     \item{\code{nb_param_pln}}{number of parameters in the PLN part of the current model}

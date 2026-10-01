@@ -89,12 +89,14 @@ ZIPLN_param <- function(
     penalty       = 0,
     penalize_diagonal = FALSE  ,
     penalty_weights   = NULL   ,
+    penalty_scale     = c("covariance", "correlation"),
     config_post   = list(),
     config_optim  = list(),
     inception     = NULL     # pretrained ZIPLNfit used as initialization
 ) {
 
   covariance <- match.arg(covariance)
+  penalty_scale <- match.arg(penalty_scale)
   if (covariance == "fixed") stopifnot("Omega must be provied for fixed covariance" = inherits(Omega, "matrix") | inherits(Omega, "Matrix")) %>% try()
   if (inherits(Omega, "matrix") | inherits(Omega, "Matrix")) covariance <- "fixed"
   if (covariance == "sparse") stopifnot("You should provide a positive penalty when chosing 'sparse' covariance" = penalty > 0) %>% try()
@@ -124,6 +126,7 @@ ZIPLN_param <- function(
     penalty       = penalty   ,
     penalize_diagonal = penalize_diagonal,
     penalty_weights   = penalty_weights  ,
+    penalty_scale     = penalty_scale    ,
     config_post   = config_pst,
     config_optim  = config_opt,
     inception     = inception), class = "PLNmodels_param")
