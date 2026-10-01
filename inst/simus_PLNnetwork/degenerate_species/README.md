@@ -117,6 +117,14 @@ symptômes. Elle a besoin d'un garde-fou contre la divergence de la variance, r�
 remplit le plancher (A) avec un ε petit. La combinaison C + A, ε = 1e-3 est la seule à
 n'avoir ni espèce dégénérée ni hub artificiel sur l'ensemble des cas testés.
 
+## Implémentation
+
+Les pistes C et A sont maintenant des options du paquet, désactivées par défaut :
+`PLNnetwork_param(penalty_scale = "correlation", latent_floor = 1e-3)`. Les scripts
+`sim_known_network_package.R` et `real_package.R` refont la simulation et la comparaison sur
+données réelles avec ces options, et redonnent les résultats des prototypes. Le récit complet
+est dans `inst/devlog/DEVLOG_2026-09-30_10-01.md`.
+
 ## Limites
 
 - Le plancher est prototypé par projection après le pas de Newton, non par un pas de Newton
@@ -136,3 +144,5 @@ n'avoir ni espèce dégénérée ni hub artificiel sur l'ensemble des cas testé
   répétitions à n = 50 ; résultats dans `sim_known_network_n50.rds` et `_n200.rds`.
 - `real_bic.R`, `real_fixed_size.R` : données réelles ; résultats dans les `.rds` de même
   nom.
+- `sim_known_network_package.R`, `real_package.R` : les mêmes comparaisons avec les options
+  du paquet (`penalty_scale`, `latent_floor`), sans les prototypes.
