@@ -39,7 +39,7 @@ plot(myPLN)
 
     \item{\code{vcov_model}}{character: the model used for the residual covariance}
 
-    \item{\code{pen_loglik}}{variational lower bound of the l1-penalized loglikelihood}
+    \item{\code{pen_loglik}}{variational lower bound of the l1-penalized loglikelihood, the criterion that the M step of the last iteration maximizes: \code{loglik - n/2 * sum(abs(rho * Omega))}, where \code{rho} is the penalty matrix of the graphical Lasso, that is the penalty times the penalty weights and, on the correlation scale, times \eqn{\sqrt{S_{ii} S_{jj}}}}
 
     \item{\code{ebic_gamma}}{the tuning parameter gamma of the EBIC, between 0 and 1. Zero
 gives back the BIC; the default 0.5 is the value recommended by Foygel and

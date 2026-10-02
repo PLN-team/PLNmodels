@@ -60,6 +60,7 @@ Networkfamily <- R6Class(
         })
 
       ## Get an appropriate grid of penalties
+      on_correlation <- identical(control$penalty_scale, "correlation")
       if (is.null(penalties)) {
         if (control$trace > 1) cat("\nComputing an appropriate grid of penalties.")
         ## The graphical Lasso on S returns the empty network iff |S_ij| <= rho w_ij
@@ -70,7 +71,7 @@ Networkfamily <- R6Class(
         ## itself, this bound is exact: the top of the path is the empty network.
         S_inception <- residual_covariance(control$inception, data$X, data$w)
         ## on the correlation scale, the penalty on (i, j) is rho * sqrt(S_ii S_jj)
-        if (identical(control$penalty_scale, "correlation"))
+        if (on_correlation)
           S_inception <- S_inception / tcrossprod(sqrt(diag(S_inception)))
         in_grid <- upper.tri(S_inception, diag = control$penalize_diagonal)
         if (!any(vapply(list_penalty_weights, function(w) any(in_grid & w > 0), logical(1))))
@@ -82,6 +83,12 @@ Networkfamily <- R6Class(
       } else {
         if (control$trace > 1) cat("\nUsing penalties penalties provided by the user.")
         stopifnot(all(penalties > 0))
+        ## penalties given while the scale was left to its default: they may
+        ## have been meant for the covariance scale, the default until 1.3.2
+        if (on_correlation && isTRUE(control$penalty_scale_implicit))
+          penalties <- explicit_penalties_on_correlation_scale(
+            penalties, residual_covariance(control$inception, data$X, data$w)
+          )
       }
       ## Sort the penalty in decreasing order
       o <- order(penalties, decreasing = TRUE)
@@ -436,6 +443,7 @@ PLNnetworkfamily <- R6Class(
         control$penalize_diagonal = (sum(diag(inception_$penalty_weights)) != 0)
         ## the subsamples are fitted as the collection was
         control$penalty_scale = inception_$penalty_scale
+        control$penalty_scale_implicit = FALSE # the penalties are those of the collection
         control$latent_floor  = inception_$latent_floor
         control$trace <- 0
         control$config_optim$trace <- 0
@@ -603,6 +611,7 @@ ZIPLNnetworkfamily <- R6Class(
         control$penalize_diagonal = (sum(diag(inception_$penalty_weights)) != 0)
         ## the subsamples are fitted as the collection was
         control$penalty_scale = inception_$penalty_scale
+        control$penalty_scale_implicit = FALSE # the penalties are those of the collection
         control$latent_floor  = inception_$latent_floor
         control$trace <- 0
         control$config_optim$trace <- 0

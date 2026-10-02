@@ -187,7 +187,8 @@ test_that("ZIPLN: the objective decreases and the fit is at least as good as PLN
 
 test_that("ZIPLN: the objective of a sparse fit includes the penalty and decreases",  {
   dat <- simulate_competing_community(1)
-  zi <- ZIPLN(Abundance ~ 1 + x + I(x^2), dat, control = ZIPLN_param(penalty = 0.2, trace = 0))
+  ## on the covariance scale, where the penalty weights are fixed along the optimization
+  zi <- ZIPLN(Abundance ~ 1 + x + I(x^2), dat, control = ZIPLN_param(penalty = 0.2, trace = 0, penalty_scale = "covariance"))
   obj <- zi$optim_par$objective
   expect_true(all(diff(obj) <= 1e-6 * abs(obj[-1])))
   expect_equal(tail(obj, 1),

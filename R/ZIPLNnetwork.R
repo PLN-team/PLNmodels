@@ -65,6 +65,9 @@ ZIPLNnetwork <- function(formula, data, subset, weights, zi = c("single", "row",
 #' * "ftol_out" (outer loop convergence tolerance the objective function) is set by default to 1e-6
 #' * "maxit_out" (max number of iterations for the outer loop) is set by default to 50
 #'
+#' @references Rothman, A. J., Bickel, P. J., Levina, E. and Zhu, J. (2008). Sparse permutation invariant
+#'   covariance estimation. *Electronic Journal of Statistics*, 2, 494--515. \doi{10.1214/08-EJS176}
+#'
 #' @seealso [PLNnetwork_param()] and [PLN_param()]
 #' @export
 ZIPLNnetwork_param <- function(
@@ -75,7 +78,7 @@ ZIPLNnetwork_param <- function(
     min_ratio         = 0.1    ,
     penalize_diagonal = FALSE  ,
     penalty_weights   = NULL   ,
-    penalty_scale     = c("covariance", "correlation"),
+    penalty_scale     = c("correlation", "covariance"),
     latent_floor      = 1e-3   ,
     config_post       = list(),
     config_optim      = list(),
@@ -92,6 +95,8 @@ ZIPLNnetwork_param <- function(
   ## optimization config
   backend <- match.arg(backend)
   inception_cov <- match.arg(inception_cov)
+  ## was the scale left to its default? (see the handling of user-defined penalties)
+  penalty_scale_implicit <- missing(penalty_scale)
   penalty_scale <- match.arg(penalty_scale)
   if (!is.null(latent_floor))
     stopifnot("latent_floor must be NULL or a positive number" =
@@ -107,6 +112,7 @@ ZIPLNnetwork_param <- function(
     min_ratio         = min_ratio        ,
     penalize_diagonal = penalize_diagonal,
     penalty_scale     = penalty_scale    ,
+    penalty_scale_implicit = penalty_scale_implicit,
     latent_floor      = latent_floor     ,
     penalty_weights   = penalty_weights  ,
     jackknife         = FALSE            ,

@@ -12,7 +12,7 @@ ZIPLNnetwork_param(
   min_ratio = 0.1,
   penalize_diagonal = FALSE,
   penalty_weights = NULL,
-  penalty_scale = c("covariance", "correlation"),
+  penalty_scale = c("correlation", "covariance"),
   latent_floor = 0.001,
   config_post = list(),
   config_optim = list(),
@@ -35,22 +35,23 @@ network, but was found to lead to a lower BIC along the path, at a higher cost.}
 \item{min_ratio}{the penalty grid ranges from the minimal value that produces a sparse to this value multiplied by \code{min_ratio}. Default is 0.1.}
 
 \item{penalize_diagonal}{boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is \code{FALSE}.
-Penalizing the diagonal inflates the latent variances by the penalty (\eqn{\Sigma_{ii} = S_{ii} + \rho}),
-which the VE step then feeds back into the residual covariance \eqn{S}: along the path, the
-network may then never become empty, whatever the penalty (#180).}
+Penalizing the diagonal inflates the latent variances (\eqn{\Sigma_{ii} = S_{ii} + \rho} on the covariance
+scale, \eqn{\Sigma_{ii} = S_{ii} (1 + \rho)} on the correlation scale), which the VE step then feeds back into
+the residual covariance \eqn{S}: along the path, the network may then never become empty, and the latent
+variances diverge (#180).}
 
 \item{penalty_weights}{either a single or a list of p x p matrix of weights (default: all weights equal to 1) to adapt the amount of shrinkage to each pairs of node. Must be symmetric with positive values.}
 
-\item{penalty_scale}{character, the scale on which the l1 penalty applies: \code{"covariance"} (default) penalizes
-the entries of the precision matrix as they are, \code{"correlation"} penalizes them on the scale of the
-variables, with a penalty \eqn{\lambda \sqrt{S_{ii} S_{jj}}} on the pair \eqn{(i, j)}, where \eqn{S} is the
-current residual covariance. This amounts to applying the graphical-Lasso to the residual \emph{correlation}
-matrix, as is customary for Gaussian graphical models, and makes the penalties dimensionless, between 0 and 1.
-The entries of a precision matrix are not scale invariant: with \code{"covariance"}, a species with a large latent
-variance has nearly free edges, and one that is often absent but abundant when present, whose zeros are
-fitted by very negative latent means, ends up connected to most of the others (see the field
-\code{degenerate_species} of a \code{\link{PLNfit}}). \code{"correlation"} removes this artefact; see the section on the scale
-of the penalty.}
+\item{penalty_scale}{character, the scale on which the l1 penalty applies. \code{"correlation"} (default) penalizes
+the entries of the precision matrix on the scale of the variables, with a penalty
+\eqn{\lambda \sqrt{S_{ii} S_{jj}}} on the pair \eqn{(i, j)}, where \eqn{S} is the current residual covariance.
+This amounts to applying the graphical-Lasso to the residual \emph{correlation} matrix and rescaling the result, the
+correlation-based estimator of Rothman, Bickel, Levina and Zhu (2008), and makes the penalties dimensionless,
+between 0 and 1. \code{"covariance"}, the only
+behavior until version 1.3.2, penalizes the entries of the precision matrix as they are. These are not scale
+invariant: a species with a large latent variance then has nearly free edges, and one that is often absent but
+abundant when present ends up connected to most of the others (see the field \code{degenerate_species} of a
+\code{\link{PLNfit}}). See the section on the scale of the penalty.}
 
 \item{latent_floor}{a positive number \eqn{\epsilon} (default \code{1e-3}), or \code{NULL} for no floor: a floor on the
 variational means of the degenerate species. As soon as the latent variance of a species exceeds the threshold of
@@ -81,6 +82,10 @@ See \code{\link[=PLNnetwork_param]{PLNnetwork_param()}} for a full description o
 \item "ftol_out" (outer loop convergence tolerance the objective function) is set by default to 1e-6
 \item "maxit_out" (max number of iterations for the outer loop) is set by default to 50
 }
+}
+\references{
+Rothman, A. J., Bickel, P. J., Levina, E. and Zhu, J. (2008). Sparse permutation invariant
+covariance estimation. \emph{Electronic Journal of Statistics}, 2, 494--515. \doi{10.1214/08-EJS176}
 }
 \seealso{
 \code{\link[=PLNnetwork_param]{PLNnetwork_param()}} and \code{\link[=PLN_param]{PLN_param()}}

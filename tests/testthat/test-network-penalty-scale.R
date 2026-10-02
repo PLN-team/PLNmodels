@@ -12,21 +12,67 @@
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 
-test_that("the defaults are the covariance scale and a floor of 1e-3", {
+test_that("the defaults are the correlation scale and a floor of 1e-3", {
   ctrl <- PLNnetwork_param(trace = 0, n_penalties = 5)
-  expect_equal(ctrl$penalty_scale, "covariance")
+  expect_equal(ctrl$penalty_scale, "correlation")
+  expect_equal(ZIPLNnetwork_param()$penalty_scale, "correlation")
+  expect_equal(ZIPLN_param()$penalty_scale, "correlation")
   expect_equal(ctrl$latent_floor, 1e-3)
   expect_null(PLNnetwork_param(latent_floor = NULL)$latent_floor)
   nets <- PLNnetwork(Abundance ~ 1, trichoptera, control = ctrl)
-  expect_equal(nets$models[[1]]$penalty_scale, "covariance")
+  expect_equal(nets$models[[1]]$penalty_scale, "correlation")
   expect_equal(nets$models[[1]]$latent_floor, 1e-3)
+  expect_true(all(nets$penalties > 0 & nets$penalties <= 1))
   explicit <- PLNnetwork(Abundance ~ 1, trichoptera,
-                         control = PLNnetwork_param(trace = 0, n_penalties = 5, penalty_scale = "covariance"))
+                         control = PLNnetwork_param(trace = 0, n_penalties = 5, penalty_scale = "correlation"))
   expect_identical(nets$criteria$loglik, explicit$criteria$loglik)
+  ## the former behavior
+  former <- PLNnetwork(Abundance ~ 1, trichoptera,
+                       control = PLNnetwork_param(trace = 0, n_penalties = 5, penalty_scale = "covariance"))
+  expect_equal(former$models[[1]]$penalty_scale, "covariance")
+  expect_gt(max(former$penalties), 1)
 
   expect_error(PLNnetwork_param(latent_floor = -1), "latent_floor")
   expect_error(PLNnetwork_param(latent_floor = c(1, 2)), "latent_floor")
   expect_error(PLNnetwork_param(penalty_scale = "nawak"))
+})
+
+test_that("penalties given by the user are handled according to the scale", {
+  f <- Abundance ~ 1
+  quiet <- function(...) PLNnetwork_param(trace = 0, ...)
+  ## a scale chosen explicitly: the penalties are used as they are, silently
+  expect_no_warning(expect_no_message(
+    a <- PLNnetwork(f, trichoptera, penalties = c(3, 0.3), control = quiet(penalty_scale = "covariance"))))
+  expect_equal(a$penalties, c(3, 0.3))
+  expect_no_warning(expect_no_message(
+    b <- PLNnetwork(f, trichoptera, penalties = c(3, 0.3), control = quiet(penalty_scale = "correlation"))))
+  expect_equal(b$penalties, c(3, 0.3))
+  expect_equal(b$models[[1]]$n_edges, 0) # no correlation is above 1
+
+  ## the scale left to its default, penalties below 1: taken on the correlation
+  ## scale, with a message (once per session) on how to get the former behavior
+  rlang::reset_message_verbosity("PLNmodels_penalty_scale")
+  expect_message(d <- PLNnetwork(f, trichoptera, penalties = c(0.5, 0.1), control = quiet()),
+                 "penalty_scale = \"covariance\"")
+  expect_equal(d$penalties, c(0.5, 0.1))
+  expect_no_message(PLNnetwork(f, trichoptera, penalties = c(0.5, 0.1), control = quiet()))
+
+  ## penalties above 1 cannot be on the correlation scale: they are converted
+  ## from the covariance scale, with a warning
+  expect_warning(e <- PLNnetwork(f, trichoptera, penalties = c(3, 1, 0.3), control = quiet()),
+                 "covariance scale")
+  expect_true(all(e$penalties < c(3, 1, 0.3)))
+  expect_equal(e$penalties / c(3, 1, 0.3), rep(e$penalties[1] / 3, 3)) # a single factor
+  expect_gt(max(e$criteria$n_edges), 0)
+  ## the stability selection keeps the penalties of the collection as they are
+  subs <- replicate(2, sample.int(nrow(trichoptera), 30), simplify = FALSE)
+  expect_no_warning(capture.output(e$stability_selection(subsamples = subs)))
+
+  ## the same for ZIPLNnetwork, and for the penalty of a sparse ZIPLN fit
+  expect_warning(ZIPLNnetwork(f, trichoptera, penalties = c(3, 0.3), control = ZIPLNnetwork_param(trace = 0)),
+                 "covariance scale")
+  expect_warning(ZIPLN_param(penalty = 2), "network will be empty")
+  expect_no_warning(ZIPLN_param(penalty = 2, penalty_scale = "covariance"))
 })
 
 test_that("the penalty on the correlation scale is the graphical Lasso on the correlation matrix", {
@@ -41,6 +87,25 @@ test_that("the penalty on the correlation scale is the graphical Lasso on the co
   d <- sqrt(diag(S))
   expect_equal(graphical_lasso(S, rho)$wi, graphical_lasso(cov2cor(S), 0.2 * W)$wi / tcrossprod(d),
                tolerance = 1e-8)
+})
+
+test_that("pen_loglik is the criterion that the M step maximizes, on both scales", {
+  n <- nrow(trichoptera)
+  for (scale in c("correlation", "covariance")) {
+    nets <- PLNnetwork(Abundance ~ 1, trichoptera,
+                       control = PLNnetwork_param(trace = 0, n_penalties = 4, penalty_scale = scale))
+    for (m in nets$models) {
+      ## the diagonal is not penalized: the variances of the fit are those of S
+      rho <- PLNmodels:::glasso_penalty(m$penalty, m$penalty_weights, m$model_par$Sigma, scale)
+      expect_equal(m$pen_loglik, m$loglik - .5 * n * sum(abs(rho * as.matrix(m$model_par$Omega))))
+      expect_lte(m$pen_loglik, m$loglik)
+    }
+    expect_equal(nets$criteria$pen_loglik, vapply(nets$models, function(m) m$pen_loglik, numeric(1)))
+    ## for a sparse ZIPLN fit, it is the objective of the optimization
+    zi <- ZIPLNnetwork(Abundance ~ 1, trichoptera,
+                       control = ZIPLNnetwork_param(trace = 0, n_penalties = 3, penalty_scale = scale))
+    for (m in zi$models) expect_equal(m$pen_loglik, -tail(m$optim_par$objective, 1))
+  }
 })
 
 test_that("PLNnetwork: on the correlation scale the penalties are between 0 and 1, from the empty network", {
@@ -220,7 +285,7 @@ test_that("a species absent from a group of samples is not a hub on the correlat
     net <- as.matrix(nets$models[[which.min(abs(n_edges - sum(A) / 2))]]$latent_network("support"))
     (sum(net) / 2 - sum(net[-contaminated, -contaminated]) / 2) / (sum(net) / 2)
   }
-  covariance  <- suppressWarnings(PLNnetwork(Abundance ~ 1, dat, control = PLNnetwork_param(trace = 0, min_ratio = 0.05)))
+  covariance  <- suppressWarnings(PLNnetwork(Abundance ~ 1, dat, control = PLNnetwork_param(trace = 0, min_ratio = 0.05, penalty_scale = "covariance")))
   correlation <- suppressWarnings(PLNnetwork(Abundance ~ 1, dat, control = PLNnetwork_param(trace = 0, min_ratio = 0.05, penalty_scale = "correlation")))
   ## 2 species out of 20: about 20 % of the edges would touch them by chance
   expect_gt(contaminated_share(covariance), 0.5)

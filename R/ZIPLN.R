@@ -71,7 +71,7 @@ ZIPLN <- function(formula, data, subset, zi = c("single", "row", "col"), control
 #' @inheritParams PLNnetwork_param
 #' @param covariance character setting the model for the covariance matrix. Either "full", "diagonal", "spherical", "fixed" or "sparse". Default is "full".
 #' @param backend optimization backend, either `"builtin"` (default, built-in Newton optimizer for the joint VE step) or `"nlopt"` (NLOPT-based CCSAQ).
-#' @param penalty a user-defined penalty to sparsify the residual covariance. Defaults to 0 (no sparsity).
+#' @param penalty a user-defined penalty to sparsify the residual covariance. Defaults to 0 (no sparsity). With the default `penalty_scale = "correlation"`, it applies on the scale of the correlations and lies between 0 and 1 (a penalty above 1 gives the empty network); `penalty_scale = "covariance"` gives back the behavior of version 1.3.2.
 #' @param latent_floor a positive number (default `1e-3`), or `NULL` for no floor: a floor on the variational means of the degenerate species, as in [PLNnetwork_param()]. Only used with a sparse covariance (`penalty > 0`).
 #' @return list of parameters used during the fit and post-processing steps
 #'
@@ -90,7 +90,7 @@ ZIPLN_param <- function(
     penalty       = 0,
     penalize_diagonal = FALSE  ,
     penalty_weights   = NULL   ,
-    penalty_scale     = c("covariance", "correlation"),
+    penalty_scale     = c("correlation", "covariance"),
     latent_floor      = 1e-3   ,
     config_post   = list(),
     config_optim  = list(),
@@ -98,6 +98,8 @@ ZIPLN_param <- function(
 ) {
 
   covariance <- match.arg(covariance)
+  ## was the scale left to its default? (see the handling of user-defined penalties)
+  penalty_scale_implicit <- missing(penalty_scale)
   penalty_scale <- match.arg(penalty_scale)
   if (!is.null(latent_floor))
     stopifnot("latent_floor must be NULL or a positive number" =
@@ -106,6 +108,8 @@ ZIPLN_param <- function(
   if (inherits(Omega, "matrix") | inherits(Omega, "Matrix")) covariance <- "fixed"
   if (covariance == "sparse") stopifnot("You should provide a positive penalty when chosing 'sparse' covariance" = penalty > 0) %>% try()
   if (penalty > 0) covariance <- "sparse"
+  if (penalty > 0 && penalty_scale == "correlation" && penalty_scale_implicit)
+    explicit_penalties_on_correlation_scale(penalty)
   if (!is.null(inception)) stopifnot(isZIPLNfit(inception))
 
   ## post-treatment config
@@ -132,6 +136,7 @@ ZIPLN_param <- function(
     penalize_diagonal = penalize_diagonal,
     penalty_weights   = penalty_weights  ,
     penalty_scale     = penalty_scale    ,
+    penalty_scale_implicit = penalty_scale_implicit,
     latent_floor      = latent_floor     ,
     config_post   = config_pst,
     config_optim  = config_opt,

@@ -193,9 +193,10 @@ test_that("PLNnetwork: a failing graphical Lasso does not stop the path (#184)",
   ## fail at the second iteration of the first penalty, and at the first
   ## iteration of the third one
   local_mocked_bindings(graphical_lasso = failing_graphical_lasso(list("2" = pens[1], "1" = pens[3])))
+  ## on the covariance scale, where the penalty passed to the solver is the one of the fit
   warns <- capture_warnings(
     models <- PLNnetwork(Abundance ~ 1, data = trichoptera, penalties = pens,
-                         control = PLNnetwork_param(trace = 0))
+                         control = PLNnetwork_param(trace = 0, penalty_scale = "covariance"))
   )
   expect_true(any(grepl("stopped at iteration 2", warns)))
   expect_true(any(grepl("failed at its first iteration", warns)))
@@ -225,8 +226,11 @@ test_that("PLNnetwork: the top of the default path is the empty network (#180)",
   expect_lte(edges[1], 1)
   expect_gt(max(edges), 10)
 
-  ## the penalized diagonal is still available
-  nets_pen <- PLNnetwork(Abundance ~ 1, data = tri, control = PLNnetwork_param(trace = 0, penalize_diagonal = TRUE))
+  ## the penalized diagonal is still available (it inflates the latent
+  ## variances, hence the warning on degenerate species it may raise)
+  nets_pen <- suppressWarnings(
+    PLNnetwork(Abundance ~ 1, data = tri, control = PLNnetwork_param(trace = 0, penalize_diagonal = TRUE))
+  )
   expect_true(all(diag(nets_pen$models[[1]]$penalty_weights) > 0))
   expect_true(all(diag(nets$models[[1]]$penalty_weights) == 0))
 })

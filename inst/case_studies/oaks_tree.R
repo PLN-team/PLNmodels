@@ -91,23 +91,23 @@ factoextra::fviz_pca_biplot(
   labs(col = "distance (cm)") + scale_color_viridis_c()
 
 ## Network inference with sparse covariance estimation - difficult because close to singular n ~ p
-system.time(myPLNnets <- PLNnetwork(Abundance ~ 1 + offset(log(Offset)), data = oaks, control = PLNnetwork_param(min_ratio = 0.05)))
+system.time(myPLNnets <- PLNnetwork(Abundance ~ 1 + offset(log(Offset)), data = oaks, control = PLNnetwork_param(min_ratio = 0.1)))
 plot(myPLNnets)
-plot(getBestModel(myPLNnets, "EBIC"), output = "corrplot")
+plot(getBestModel(myPLNnets, "BIC"), output = "corrplot")
 plot(getBestModel(myPLNnets, "EBIC"), output = "igraph")
 
 RhpcBLASctl::blas_set_num_threads(1)
 options(mc.cores = ncores)
 stability_selection(myPLNnets)
 RhpcBLASctl::blas_set_num_threads(ncores)
-plot(myPLNnets, "stability")
-plot(getBestModel(myPLNnets, "StARS", stability = .99))
+plot(myPLNnets, "stability", stability = 0.985)
+plot(getBestModel(myPLNnets, "StARS", stability = .985))
 
 RhpcBLASctl::blas_set_num_threads(ncores)
 system.time(myPLNnets <- PLNnetwork(Abundance ~ 0 + tree + offset(log(Offset)), data = oaks, control = PLNnetwork_param(min_ratio = 0.1)))
 plot(myPLNnets)
-plot(getBestModel(myPLNnets, "EBIC"), output = "corrplot")
-plot(getBestModel(myPLNnets, "EBIC"), output = "igraph")
+plot(getBestModel(myPLNnets, "BIC"), output = "corrplot")
+plot(getBestModel(myPLNnets, "BIC"), output = "igraph")
 
 RhpcBLASctl::blas_set_num_threads(1)
 options(mc.cores = ncores)
