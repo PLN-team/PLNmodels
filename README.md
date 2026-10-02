@@ -233,10 +233,21 @@ table(cluster = myMixture$memberships, zone = barents$zone)
 
            zone
     cluster North South
-          1     1    21
-          2    11    18
-          3    11     0
-          4    21     6
+          1    11    22
+          2     1    17
+          3    21     6
+          4    11     0
+
+## Note on the use of generative AI
+
+The models implemented here (their definition and every algebraic
+derivation) were worked out by Mahendra Mariadassou, Stéphane Robin and
+Julien Chiquet, who also designed the algorithms, the package and its
+object-oriented architecture, and have been developing the code for
+years. More recently (since summer 2026), we have used generative AI
+(Claude Sonnet and Claude Opus) to improve the documentation and to
+audit, test and improve the code – in particular to port several
+algorithmic components to C++.
 
 ## References
 
