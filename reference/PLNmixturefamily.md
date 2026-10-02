@@ -61,8 +61,6 @@ Inherited methods
 
 ### `PLNmixturefamily$new()`
 
-helper function for forward smoothing: split a group
-
 Initialize all models in the collection.
 
 #### Usage

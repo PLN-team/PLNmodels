@@ -32,7 +32,6 @@ PLNnetworkfit, PLNLDAfit).
   An R6 Class to represent a PLNfit in a standard, general framework
 
 - [`PLNfit_diagonal`](https://pln-team.github.io/PLNmodels/reference/PLNfit_diagonal.md)
-  [`PLNLDAfit_spherical`](https://pln-team.github.io/PLNmodels/reference/PLNfit_diagonal.md)
   : An R6 Class to represent a PLNfit in a standard, general framework,
   with diagonal residual covariance
 
@@ -158,10 +157,9 @@ Description of the PLNLDAfit object and methods for its manipulation.
   : An R6 Class to represent a PLNfit in a LDA framework with diagonal
   covariance
 
-- [`PLNfit_diagonal`](https://pln-team.github.io/PLNmodels/reference/PLNfit_diagonal.md)
-  [`PLNLDAfit_spherical`](https://pln-team.github.io/PLNmodels/reference/PLNfit_diagonal.md)
-  : An R6 Class to represent a PLNfit in a standard, general framework,
-  with diagonal residual covariance
+- [`PLNLDAfit_spherical`](https://pln-team.github.io/PLNmodels/reference/PLNLDAfit_spherical.md)
+  : An R6 Class to represent a PLNfit in a LDA framework with spherical
+  covariance
 
 - [`PLNLDA_param()`](https://pln-team.github.io/PLNmodels/reference/PLNLDA_param.md)
   : Control of a PLNLDA fit

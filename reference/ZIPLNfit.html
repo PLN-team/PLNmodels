@@ -13,7 +13,7 @@ Fields are accessed via active binding and cannot be changed by the user."><meta
 
     <a class="navbar-brand me-2" href="../index.html">PLNmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9500</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9550</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -112,7 +112,7 @@ Note that different covariates can be used for each part.</p>
 
 
     <dt><code>degenerate_species</code></dt>
-<dd><p>names of the species whose latent variance is above 100 (a standard deviation of 10 on the log scale, see <code>options(PLNmodels.latent_variance_threshold = )</code>). The zeros of such a species are fitted by latent means going to minus infinity. This happens to species that are often absent but abundant when present, notably those absent from a whole group of samples (see <code><a href="structural_zeros.html">structural_zeros()</a></code>), for which the model lacks the covariate that explains the absences. In a network fit, such a species ends up connected to most of the others: these edges are artefacts.</p></dd>
+<dd><p>names of the species whose latent variance is above 100, see the field of the same name in <code><a href="PLNfit.html">PLNfit</a></code></p></dd>
 
 
     <dt><code>latent</code></dt>

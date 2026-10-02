@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="index.html">PLNmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9500</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9550</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -240,11 +240,16 @@
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span>cluster <span class="op">=</span> <span class="va">myMixture</span><span class="op">$</span><span class="va">memberships</span>, zone <span class="op">=</span> <span class="va">barents</span><span class="op">$</span><span class="va">zone</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb23"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a>       zone</span>
 <span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>cluster North South</span>
-<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>      <span class="dv">1</span>     <span class="dv">1</span>    <span class="dv">21</span></span>
-<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a>      <span class="dv">2</span>    <span class="dv">11</span>    <span class="dv">18</span></span>
-<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a>      <span class="dv">3</span>    <span class="dv">11</span>     <span class="dv">0</span></span>
-<span id="cb23-6"><a href="#cb23-6" tabindex="-1"></a>      <span class="dv">4</span>    <span class="dv">21</span>     <span class="dv">6</span></span></code></pre></div>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>      <span class="dv">1</span>    <span class="dv">11</span>    <span class="dv">22</span></span>
+<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a>      <span class="dv">2</span>     <span class="dv">1</span>    <span class="dv">17</span></span>
+<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a>      <span class="dv">3</span>    <span class="dv">21</span>     <span class="dv">6</span></span>
+<span id="cb23-6"><a href="#cb23-6" tabindex="-1"></a>      <span class="dv">4</span>    <span class="dv">11</span>     <span class="dv">0</span></span></code></pre></div>
 </div>
+</div>
+<div class="section level2">
+<h2 id="note-on-the-use-of-generative-ai">Note on the use of generative AI<a class="anchor" aria-label="anchor" href="#note-on-the-use-of-generative-ai"></a>
+</h2>
+<p>The models implemented here (their definition and every algebraic derivation) were worked out by Mahendra Mariadassou, Stéphane Robin and Julien Chiquet, who also designed the algorithms, the package and its object-oriented architecture, and have been developing the code for years. More recently (since summer 2026), we have used generative AI (Claude Sonnet and Claude Opus) to improve the documentation and to audit, test and improve the code – in particular to port several algorithmic components to C++.</p>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>

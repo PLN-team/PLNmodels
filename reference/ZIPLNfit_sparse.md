@@ -33,9 +33,8 @@ with sparse inverse residual covariance
 - `floored_species`:
 
   names of the species whose variational means are bounded by
-  `latent_floor`: those whose latent variance has exceeded the threshold
-  of `degenerate_species` during the optimization, of this fit or of the
-  previous ones along the penalty path
+  `latent_floor`, as in
+  [`PLNnetworkfit`](https://pln-team.github.io/PLNmodels/reference/PLNnetworkfit.md)
 
 - `n_edges`:
 
@@ -52,18 +51,13 @@ with sparse inverse residual covariance
 
 - `pen_loglik`:
 
-  variational lower bound of the l1-penalized loglikelihood, the
-  criterion that the M step of the last iteration maximizes:
-  `loglik - n/2 * sum(abs(rho * Omega))`, where `rho` is the penalty
-  matrix of the graphical Lasso, that is the penalty times the penalty
-  weights and, on the correlation scale, times \\\sqrt{S\_{ii}
-  S\_{jj}}\\
+  variational lower bound of the l1-penalized loglikelihood, as in
+  [`PLNnetworkfit`](https://pln-team.github.io/PLNmodels/reference/PLNnetworkfit.md)
 
 - `ebic_gamma`:
 
-  the tuning parameter gamma of the EBIC, between 0 and 1. Zero gives
-  back the BIC; the default 0.5 is the value recommended by Foygel and
-  Drton (2010). Assign to it to change the EBIC of this fit.
+  the tuning parameter gamma of the EBIC, as in
+  [`PLNnetworkfit`](https://pln-team.github.io/PLNmodels/reference/PLNnetworkfit.md)
 
 - `EBIC`:
 

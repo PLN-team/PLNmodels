@@ -18,6 +18,8 @@
 
 - **Giovanni Poggiato**. Contributor.
 
+- **Daniel Agyapong**. Contributor.
+
 - **Cole Trapnell**. Contributor.
 
 - **Maddy Duran**. Contributor.

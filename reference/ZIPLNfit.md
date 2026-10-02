@@ -71,16 +71,9 @@ covariates can be used for each part.
 
 - `degenerate_species`:
 
-  names of the species whose latent variance is above 100 (a standard
-  deviation of 10 on the log scale, see
-  `options(PLNmodels.latent_variance_threshold = )`). The zeros of such
-  a species are fitted by latent means going to minus infinity. This
-  happens to species that are often absent but abundant when present,
-  notably those absent from a whole group of samples (see
-  [`structural_zeros()`](https://pln-team.github.io/PLNmodels/reference/structural_zeros.md)),
-  for which the model lacks the covariate that explains the absences. In
-  a network fit, such a species ends up connected to most of the others:
-  these edges are artefacts.
+  names of the species whose latent variance is above 100, see the field
+  of the same name in
+  [`PLNfit`](https://pln-team.github.io/PLNmodels/reference/PLNfit.md)
 
 - `latent`:
 

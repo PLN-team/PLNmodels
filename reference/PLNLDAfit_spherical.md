@@ -1,4 +1,4 @@
-# An R6 Class to represent a PLNfit in a LDA framework with diagonal covariance
+# An R6 Class to represent a PLNfit in a LDA framework with spherical covariance
 
 The function
 [`PLNLDA()`](https://pln-team.github.io/PLNmodels/reference/PLNLDA.md)
@@ -17,7 +17,7 @@ prediction
 
 [`PLNfit`](https://pln-team.github.io/PLNmodels/reference/PLNfit.md) -\>
 [`PLNLDAfit`](https://pln-team.github.io/PLNmodels/reference/PLNLDAfit.md)
--\> `PLNLDAfit_diagonal`
+-\> `PLNLDAfit_spherical`
 
 ## Active bindings
 
@@ -33,9 +33,9 @@ prediction
 
 ### Public methods
 
-- [`PLNLDAfit_diagonal$new()`](#method-PLNLDAfit_diagonal-initialize)
+- [`PLNLDAfit_spherical$new()`](#method-PLNLDAfit_spherical-initialize)
 
-- [`PLNLDAfit_diagonal$clone()`](#method-PLNLDAfit_diagonal-clone)
+- [`PLNLDAfit_spherical$clone()`](#method-PLNLDAfit_spherical-clone)
 
 Inherited methods
 
@@ -54,7 +54,7 @@ Inherited methods
 
 ------------------------------------------------------------------------
 
-### `PLNLDAfit_diagonal$new()`
+### `PLNLDAfit_spherical$new()`
 
 Initialize a
 [`PLNfit`](https://pln-team.github.io/PLNmodels/reference/PLNfit.md)
@@ -62,7 +62,7 @@ model
 
 #### Usage
 
-    PLNLDAfit_diagonal$new(
+    PLNLDAfit_spherical$new(
       grouping,
       responses,
       covariates,
@@ -110,13 +110,13 @@ model
 
 ------------------------------------------------------------------------
 
-### `PLNLDAfit_diagonal$clone()`
+### `PLNLDAfit_spherical$clone()`
 
 The objects of this class are cloneable with this method.
 
 #### Usage
 
-    PLNLDAfit_diagonal$clone(deep = FALSE)
+    PLNLDAfit_spherical$clone(deep = FALSE)
 
 #### Arguments
 
@@ -131,7 +131,7 @@ if (FALSE) { # \dontrun{
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 myPLNLDA <- PLNLDA(Abundance ~ 1, grouping = Group, data = trichoptera,
-                   control = PLNLDA_param(covariance = "diagonal"))
+                   control = PLNLDA_param(covariance = "spherical"))
 class(myPLNLDA)
 print(myPLNLDA)
 } # }

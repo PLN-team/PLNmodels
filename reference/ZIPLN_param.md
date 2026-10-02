@@ -129,6 +129,4 @@ ZIPLN_param() has two parameters controlling the outer EM loop:
   value of the parameter. Default is 1e-6
 
 - "maxit_out" outer solver stops when the number of iteration exceeds
-  `maxit_out`. Default is 200 for "builtin", 100 for "nlopt" and one
-  additional parameter controlling the form of the variational
-  approximation of the zero inflation:
+  `maxit_out`. Default is 200 for "builtin", 100 for "nlopt"

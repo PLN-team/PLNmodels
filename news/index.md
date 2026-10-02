@@ -371,6 +371,12 @@ to model selection, less strongly (BIC: 0.47 to 0.56; StARS: 0.59 to
     for the empty ones, instead of a `0` offset (hence `log(0) = -Inf`)
     or uninformative `NA/NaN/Inf` errors when several methods are called
     directly.
+- Jackknife and bootstrap estimates of the variance
+  (`config_post = list(jackknife = TRUE, bootstrap = ...)`) failed with
+  a fixed or a `"genpop"` covariance, the fixed precision matrix `Omega`
+  or correlation matrix `C` not being passed to the fits on the
+  resampled data. They now work, also in
+  [`PLNnetwork()`](https://pln-team.github.io/PLNmodels/reference/PLNnetwork.md).
 
 ## PLNmodels 1.3.2
 

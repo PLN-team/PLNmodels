@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">PLNmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9500</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9550</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -133,6 +133,7 @@
 <li>
 <code><a href="../reference/compute_offset.html">compute_offset()</a></code> detects empty (all-zero) samples before dispatching, warns naming them, computes the offset on the non-empty samples and returns <code>NA</code> for the empty ones, instead of a <code>0</code> offset (hence <code>log(0) = -Inf</code>) or uninformative <code>NA/NaN/Inf</code> errors when several methods are called directly.</li>
 </ul></li>
+<li>Jackknife and bootstrap estimates of the variance (<code>config_post = list(jackknife = TRUE, bootstrap = ...)</code>) failed with a fixed or a <code>"genpop"</code> covariance, the fixed precision matrix <code>Omega</code> or correlation matrix <code>C</code> not being passed to the fits on the resampled data. They now work, also in <code><a href="../reference/PLNnetwork.html">PLNnetwork()</a></code>.</li>
 </ul></div>
 </div>
     <div class="section level2">

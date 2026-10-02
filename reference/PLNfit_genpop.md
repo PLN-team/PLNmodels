@@ -32,12 +32,11 @@ the C++ side.
 
 - [`PLNfit_genpop$new()`](#method-PLNfit_genpop-initialize)
 
-- [`PLNfit_genpop$optimize()`](#method-PLNfit_genpop-optimize)
-
 - [`PLNfit_genpop$clone()`](#method-PLNfit_genpop-clone)
 
 Inherited methods
 
+- [`PLNfit$optimize()`](https://pln-team.github.io/PLNmodels/reference/PLNfit.html#method-optimize)
 - [`PLNfit$optimize_vestep()`](https://pln-team.github.io/PLNmodels/reference/PLNfit.html#method-optimize_vestep)
 - [`PLNfit$postTreatment()`](https://pln-team.github.io/PLNmodels/reference/PLNfit.html#method-postTreatment)
 - [`PLNfit$predict()`](https://pln-team.github.io/PLNmodels/reference/PLNfit.html#method-predict)
@@ -87,42 +86,6 @@ Initialize a `PLNfit_genpop` model
 
   a list for controlling the optimization, must include a field `C` (the
   fixed p x p correlation matrix). See details.
-
-------------------------------------------------------------------------
-
-### `PLNfit_genpop$optimize()`
-
-Call to the NLopt or builtin optimizer and update of the relevant fields
-
-#### Usage
-
-    PLNfit_genpop$optimize(responses, covariates, offsets, weights, config)
-
-#### Arguments
-
-- `responses`:
-
-  the matrix of responses (called Y in the model). Will usually be
-  extracted from the corresponding field in PLNfamily-class
-
-- `covariates`:
-
-  design matrix (called X in the model). Will usually be extracted from
-  the corresponding field in PLNfamily-class
-
-- `offsets`:
-
-  offset matrix (called O in the model). Will usually be extracted from
-  the corresponding field in PLNfamily-class
-
-- `weights`:
-
-  an optional vector of observation weights to be used in the fitting
-  process.
-
-- `config`:
-
-  part of the `control` argument which configures the optimizer
 
 ------------------------------------------------------------------------
 
