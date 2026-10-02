@@ -52,10 +52,8 @@ PLNPCAfamily <- R6Class(
       ## initialize the required fields
       super$initialize(responses, covariates, offsets, weights, control)
       private$params <- ranks
-      ## compute starting point for the common SVD:
-      ##   user-provided inception PLNfit → use its converged M and B
-      ##   "EM": run K truncated PLN-EM iterations (builtin, fast) for a better M
-      ##   otherwise: LM or GLM on log-transformed data
+      ## starting point of the common SVD: a user-defined PLNfit, a truncated
+      ## PLN-EM ("EM"), or a LM/GLM on the log-transformed data
       if (isPLNfit(control$inception)) {
         init_B <- control$inception$model_par$B
         init_M <- control$inception$var_par$M
@@ -78,8 +76,7 @@ PLNPCAfamily <- R6Class(
       ## SVD of the residual M - XB, shared across all ranks
       private$svdM <- svd(init_M - covariates %*% init_B, nu = max(ranks), nv = ncol(responses))
       control$svdM <- private$svdM
-      ## "EM" has served its purpose; PLNPCAfit$new inherits PLNfit$initialize which would
-      ## pass init_method to compute_PLN_starting_point — force "LM" for individual models.
+      ## "EM" is not a starting point for the models themselves (see PLNfit$initialize)
       if (identical(control$init_method, "EM")) control$init_method <- "LM"
       ## instantiate as many models as ranks
       self$models <- lapply(ranks, function(rank){

@@ -6,13 +6,9 @@
 // Rank-constrained covariance — shared math for the joint (nlopt/builtin) and
 // VE-step (nlopt/builtin) rank-constrained PLN optimizers.
 //
-// Unlike full/diagonal/spherical/fixed PLN, B has no closed-form profiling here:
-// the KL term only involves the q-dim score M (standard normal prior, independent
-// of B), and B appears only in the non-quadratic Poisson data term via
-// Z = O + X*B + M*C'. So B stays in the optimized parameter vector for both
-// backends, and there is exactly one covariance structure (rank-constrained) —
-// no CRTP/trait abstraction is warranted here, just the shared objective/gradient
-// math that both backends would otherwise duplicate.
+// Unlike the other PLN models, B has no closed-form profiling: it only appears
+// in the Poisson term, via Z = O + X*B + M*C' (the KL term involves the q-dim
+// scores M alone), and stays in the optimized parameter vector.
 //
 // Variational parameter: ψ = log(S²) (unconstrained) instead of S2 (bounded > 0).
 // ─────────────────────────────────────────────────────────────────────────────
@@ -65,12 +61,9 @@ inline double rank_vestep_obj_grad(
 
 // Per-observation log-likelihood, shared by the joint and VE-step variants.
 //
-// Note the use of -logfact(Y) where the full-covariance models use ki(Y), that
-// is, -logfact(Y) + p/2. Here the variational distribution is over the
-// q-dimensional scores W_i, not over Z_i, so its entropy constant is q/2 -- and
-// that constant is already carried by the "- 1." inside the KL sum below, which
-// is -KL(N(m_i, diag(s_i^2)) || N(0, I_q)) written out. Adding ki(Y)'s p/2 on
-// top of it inflated every rank model's ELBO by n * p / 2.
+// -logfact(Y) and not ki(Y) = -logfact(Y) + p/2 as in the full-covariance
+// models: the variational distribution is over the q scores, and its entropy
+// constant q/2 is carried by the "- 1." of the KL sum below.
 inline arma::vec rank_final_loglik(
     const arma::mat & Y, const arma::mat & Z, const arma::mat & A,
     const arma::mat & M, const arma::mat & S2, const arma::mat & psi)

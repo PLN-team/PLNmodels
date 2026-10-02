@@ -6,17 +6,14 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Profiled trust-region Newton for rank-constrained PLN (PLNPCA), fixed rank q.
 //
-// Idea (validated in R prototypes): the variational block (M, ψ) is a CONCAVE
-// inner problem at fixed (B, C); profile it out with a per-observation Newton
-// VE-step, giving g(B,C) = max_{M,ψ} ELBO and, by the envelope theorem, ∇g for
-// free (= ∂ELBO/∂(B,C) at the VE optimum). Then optimise g(B,C) with a
-// saddle-aware trust-region Newton, whose reduced (Schur-complement) Hessian
+// The variational block (M, ψ) is a concave inner problem at fixed (B, C): it is
+// profiled out by a per-observation Newton VE-step, giving g(B,C) = max_{M,ψ} ELBO
+// and its gradient (envelope theorem). g is then optimized by a trust-region
+// Newton, aware of negative curvature (the landscape has saddles), whose reduced
+// (Schur-complement) Hessian
 //     H_red = L_θθ − L_θφ L_φφ⁻¹ L_φθ ,   θ = (B,C),  φ = (M,ψ)
-// is applied matrix-free: L_φφ is block-diagonal per observation (2q×2q,
-// analytic below); the cross/θθ terms come from `hess_dir`, the analytic
-// directional Hessian of the joint objective (same nonlinearity, A=exp(η), as
-// `rank_obj_grad`). Block-coordinate ascent gets stuck at saddles of this
-// non-convex landscape; the negative-curvature-aware TR does not.
+// is applied matrix-free: L_φφ is block-diagonal per observation (2q×2q), the
+// other terms come from `hess_dir`, the directional Hessian of the joint objective.
 // ─────────────────────────────────────────────────────────────────────────────
 
 namespace builtin {
@@ -108,10 +105,9 @@ inline arma::cube inner_blocks_inv(const PlnData & d, const arma::mat & XB, cons
     return Hinv;
 }
 
-// Hessian of the joint objective applied to a direction (dB,dC,dM,dψ), returning
-// the induced change of every gradient block. The only nonlinearity is A=exp(η),
-// so everything reduces to dA = A ⊙ dη + product rule. Consistent term-by-term
-// with `rank_obj_grad`. A, S2 are the values at the current (B,C,M,ψ).
+// Hessian of the joint objective (as in `rank_obj_grad`) applied to a direction
+// (dB,dC,dM,dψ): the induced change of every gradient block. A, S2 are the
+// values at the current (B,C,M,ψ).
 inline void hess_dir(const PlnData & d, const arma::mat & Xw,
                      const arma::mat & C, const arma::mat & C2, const arma::mat & M,
                      const arma::mat & A, const arma::mat & S2,
@@ -139,9 +135,9 @@ inline void hess_dir(const PlnData & d, const arma::mat & Xw,
          + (A.t() * S2w) % dC;
 }
 
-// Diagonal of the outer-block Hessian L_θθ (analytic, strictly positive) — Jacobi
-// preconditioner for the CG. Ignores the Schur correction (H_red ≤ L_θθ) but captures
-// the dominant B-vs-C curvature scale that otherwise makes the CG ill-conditioned.
+// Diagonal of the outer-block Hessian L_θθ (strictly positive), the Jacobi
+// preconditioner of the CG: it ignores the Schur correction but captures the
+// B-vs-C curvature scale.
 //   diag(L_BB)_{ab} = Σ_i w_i X_ia² A_ib
 //   diag(L_CC)_{jk} = Σ_i w_i A_ij [(M_ik + S²_ik C_jk)² + S²_ik]
 inline void precond_diag(const PlnData & d, const arma::mat & XX,   // XX = X⊙X

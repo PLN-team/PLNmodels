@@ -3,21 +3,16 @@
 #include "utils.h"
 
 // ─────────────────────────────────────────────────────────────────────────────
-// CRTP base shared by all covariance traits (Full, Fixed, Diagonal, Spherical).
-// Implements the optimization machinery that is structurally identical across
-// covariance structures, in terms of a handful of primitives each concrete
-// trait (Derived) supplies on its own State:
+// CRTP base shared by all covariance traits: the optimization machinery, in
+// terms of the primitives each trait (Derived) supplies on its own State:
 //   - times_Omega(M, s)     = M * Omega                              (n×p)
 //   - diag_scale(S2, s)     = S2 ⊙ diag(Omega), broadcast over rows  (n×p)
 //   - add_diag(X, s)        = X + diag(Omega), broadcast over rows   (n×p)
 //   - penalty_S(S2, s, w)   = ½ Σ w ⊙ S2 ⊙ diag(Omega)               (scalar)
 //   - elbo_cov(s, w_bar, p) = -½ w_bar log|Sigma|                    (scalar)
 //
-// Each method below is itself templated on State (deduced from the call site)
-// rather than using `typename Derived::State`: Derived is still incomplete at
-// the point FullCovTraits/etc. inherit from CovTraitsBase<Derived>, so State
-// can only be referenced inside (lazily-instantiated) method bodies, never in
-// a declaration that the compiler must resolve immediately.
+// The methods are templated on State rather than using `typename Derived::State`:
+// Derived is incomplete where the traits inherit from CovTraitsBase<Derived>.
 // ─────────────────────────────────────────────────────────────────────────────
 template <typename Derived>
 struct CovTraitsBase {
@@ -25,10 +20,8 @@ struct CovTraitsBase {
         return 0.5 * arma::as_scalar(w.t() * arma::sum(MO % M, 1));
     }
 
-    // Objective value only (no gradient) at a given point — used by the builtin Newton
-    // solver's Armijo line search, which evaluates several trial points per step without
-    // needing their gradient. A, MO are passed in (already available/cheaply updated at
-    // the call site) rather than recomputed here.
+    // Objective value only, for the line search of the builtin Newton solver
+    // (A and MO are passed in rather than recomputed)
     template <typename State>
     static double objective(
         const arma::mat & M_res, const arma::mat & Z,
@@ -55,10 +48,9 @@ struct CovTraitsBase {
         return data_term + penalty_M(MO, M_res, w) + Derived::penalty_S(S2, s, w);
     }
 
-    // Profiled joint objective + gradient: profiles Omega/sigma² from (M_res, S2) at
-    // every eval (envelope theorem: same gradient as the fixed-Omega objective above).
-    // Only the returned value differs: the quadratic penalty collapses to elbo_cov
-    // because Omega is the MLE of (M_res, S2) at every evaluation.
+    // Profiled joint objective + gradient: Omega is profiled from (M_res, S2) at
+    // every eval. Same gradient as with a fixed Omega (envelope theorem); in the
+    // value, the quadratic penalty collapses to elbo_cov.
     template <typename State>
     static double profile_and_grad(
         State & s,
@@ -123,9 +115,8 @@ private:
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Shared base for dense (full p×p) Omega variants (FullCovTraits and FixedCovTraits).
-// Provides the primitives required by CovTraitsBase, plus final_loglik (which
-// differs too much in form across structures to be worth factoring further).
+// Shared base for the dense Omega variants (Full, Fixed, Genetic): the
+// primitives required by CovTraitsBase, plus final_loglik.
 // ─────────────────────────────────────────────────────────────────────────────
 struct DenseOmegaImpl {
     struct State {
@@ -352,15 +343,9 @@ struct FixedCovTraits : DenseOmegaImpl, CovTraitsBase<FixedCovTraits> {
 // computed once and cached in State — never recomputed by update()):
 //   Sigma  = sigma2 * V * diag(u) * V',  u_j = rho * Lambda_j + (1 - rho)
 //   Omega  =          V * diag(1 / (sigma2 * u)) * V'
-// sigma2 has a closed form given rho (envelope theorem, same trick as the
-// other profiled traits); rho itself has no closed form and is found by 1-D
-// bisection on its profiled gradient — see VEM-PLN-struct_var.tex, section
-// "A covariance modeling heritability", for the derivation (math verified
-// term-by-term against that document and against the pre-existing, separate
-// nlopt_optimize_genetic_modeling in optim_genet_cov.cpp before this port).
-// Because Omega ends up dense, Genetic reuses DenseOmegaImpl's primitives
-// (times_Omega, diag_scale, add_diag, penalty_S, final_loglik) unchanged —
-// the only genuinely new code is State::update() below.
+// sigma2 has a closed form given rho; rho is found by 1-D bisection on its
+// profiled gradient (see VEM-PLN-struct_var.tex, section "A covariance modeling
+// heritability"). Omega being dense, the primitives are those of DenseOmegaImpl.
 // ─────────────────────────────────────────────────────────────────────────────
 struct GeneticCovTraits : DenseOmegaImpl, CovTraitsBase<GeneticCovTraits> {
     struct State : DenseOmegaImpl::State {
@@ -376,10 +361,8 @@ struct GeneticCovTraits : DenseOmegaImpl, CovTraitsBase<GeneticCovTraits> {
             Omega      = omega;
             diag_Omega = arma::diagvec(omega);
         }
-        // One-time setup from the fixed correlation matrix C: eigendecomposition
-        // only (cost O(p^3), same order as Full's inv_sympd, paid once per EM
-        // iteration — not on every nlopt eval). Call update() right after to get
-        // a usable (rho, sigma2, Omega) fit.
+        // One-time eigendecomposition of the fixed correlation matrix C; call
+        // update() right after to get (rho, sigma2, Omega).
         static State from_correlation(const arma::mat & C) {
             State s;
             arma::eig_sym(s.Lambda, s.V, C);
@@ -410,10 +393,8 @@ struct GeneticCovTraits : DenseOmegaImpl, CovTraitsBase<GeneticCovTraits> {
             return -0.5 * w_bar * arma::accu(lam_m1 / u)
                   + 0.5 / s2 * arma::accu(Rdiag % lam_m1 / arma::square(u));
         }
-        // J(rho) is a single variance-ratio profile, unimodal in practice over
-        // (0,1); bisection on the sign of dJ/drho is robust and cheap (O(p) per
-        // eval) — falls back to the nearest boundary if the gradient never
-        // changes sign (optimum at rho = 0 or rho = 1).
+        // Bisection on the sign of dJ/drho over (0,1), where J is unimodal in
+        // practice; the nearest boundary if the gradient never changes sign.
         double solve_rho(const arma::vec & Rdiag, double w_bar) const {
             constexpr double eps = 1e-8;
             double lo = eps, hi = 1.0 - eps;

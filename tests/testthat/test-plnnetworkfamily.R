@@ -35,30 +35,7 @@ test_that("PLNnetwork: main function, fields access and methods", {
 
   expect_equal(myPLN$criteria$BIC, models$criteria$BIC)
 
-  ## S3 methods
-  expect_true(PLNmodels:::isNetworkfamily(myPLN))
-  expect_is(plot(myPLN), "ggplot")
-  expect_is(plot(myPLN, reverse = TRUE), "ggplot")
-  expect_is(plot(myPLN, type = "diagnostic"), "ggplot")
-  expect_is(getBestModel(myPLN), "PLNnetworkfit")
-  expect_is(getModel(myPLN, myPLN$penalties[1]), "PLNnetworkfit")
-
-  ## Field access
-  expect_true(all(myPLN$penalties > 0))
-  expect_null(myPLN$stability_path)
-  expect_true(anyNA(myPLN$stability))
-
-  ## Other R6 methods
-  expect_true(is.data.frame(myPLN$coefficient_path()))
-  subs <- replicate(2,
-                    sample.int(nrow(trichoptera), size = nrow(trichoptera)/2),
-                    simplify = FALSE)
-  myPLN$stability_selection(subsamples = subs)
-  expect_is(plot(myPLN, type = "stability"), "ggplot")
-  expect_true(!is.null(myPLN$stability_path))
-  expect_true(inherits(myPLN$plot(), "ggplot"))
-  expect_true(inherits(myPLN$plot_objective(), "ggplot"))
-  expect_true(inherits(myPLN$plot_stars(), "ggplot"))
+  expect_network_family(myPLN, "PLNnetworkfit")
 })
 
 test_that("PLNnetwork computes the stability path only once.", {
@@ -93,30 +70,7 @@ test_that("PLNnetwork: matrix of penalties work", {
   W[lower.tri(W)] <- t(W)[lower.tri(W)]
   myPLN <- PLNnetwork(Abundance ~ 1, data = trichoptera, control = PLNnetwork_param(penalty_weights = W))
 
-  ## S3 methods
-  expect_true(PLNmodels:::isNetworkfamily(myPLN))
-  expect_is(plot(myPLN), "ggplot")
-  expect_is(plot(myPLN, reverse = TRUE), "ggplot")
-  expect_is(plot(myPLN, type = "diagnostic"), "ggplot")
-  expect_is(getBestModel(myPLN), "PLNnetworkfit")
-  expect_is(getModel(myPLN, myPLN$penalties[1]), "PLNnetworkfit")
-
-  ## Field access
-  expect_true(all(myPLN$penalties > 0))
-  expect_null(myPLN$stability_path)
-  expect_true(anyNA(myPLN$stability))
-
-  ## Other R6 methods
-  expect_true(is.data.frame(myPLN$coefficient_path()))
-  subs <- replicate(2,
-                    sample.int(nrow(trichoptera), size = nrow(trichoptera)/2),
-                    simplify = FALSE)
-  myPLN$stability_selection(subsamples = subs, control = PLNnetwork_param(penalty_weights = W))
-  expect_is(plot(myPLN, type = "stability"), "ggplot")
-  expect_true(!is.null(myPLN$stability_path))
-  expect_true(inherits(myPLN$plot(), "ggplot"))
-  expect_true(inherits(myPLN$plot_objective(), "ggplot"))
-  expect_true(inherits(myPLN$plot_stars(), "ggplot"))
+  expect_network_family(myPLN, "PLNnetworkfit", control = PLNnetwork_param(penalty_weights = W))
 
   ## missspecification of penlaty weights should induce errors
   ## not symmetric
@@ -144,30 +98,7 @@ test_that("PLNnetwork: list of matrices of penalties work", {
 
   myPLN <- PLNnetwork(Abundance ~ 1, data = trichoptera, control = PLNnetwork_param(penalty_weights = list_W))
 
-  ## S3 methods
-  expect_true(PLNmodels:::isNetworkfamily(myPLN))
-  expect_is(plot(myPLN), "ggplot")
-  expect_is(plot(myPLN, reverse = TRUE), "ggplot")
-  expect_is(plot(myPLN, type = "diagnostic"), "ggplot")
-  expect_is(getBestModel(myPLN), "PLNnetworkfit")
-  expect_is(getModel(myPLN, myPLN$penalties[1]), "PLNnetworkfit")
-
-  ## Field access
-  expect_true(all(myPLN$penalties > 0))
-  expect_null(myPLN$stability_path)
-  expect_true(anyNA(myPLN$stability))
-
-  ## Other R6 methods
-  expect_true(is.data.frame(myPLN$coefficient_path()))
-  subs <- replicate(2,
-                    sample.int(nrow(trichoptera), size = nrow(trichoptera)/2),
-                    simplify = FALSE)
-  myPLN$stability_selection(subsamples = subs, control = PLNnetwork_param(penalty_weights = W))
-  expect_is(plot(myPLN, type = "stability"), "ggplot")
-  expect_true(!is.null(myPLN$stability_path))
-  expect_true(inherits(myPLN$plot(), "ggplot"))
-  expect_true(inherits(myPLN$plot_objective(), "ggplot"))
-  expect_true(inherits(myPLN$plot_stars(), "ggplot"))
+  expect_network_family(myPLN, "PLNnetworkfit", control = PLNnetwork_param(penalty_weights = W))
 
 })
 

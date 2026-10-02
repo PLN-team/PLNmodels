@@ -26,13 +26,24 @@ PLNmixturefamily <-
     ),
     private = list(
       formula = NULL,
-      #' @description helper function for forward smoothing: split a group
-      add_one_cluster = function(model, k = NULL, control) {
-        ## Control options
+      ## Among candidate clusterings, the one with the best loglik after a couple
+      ## of EM iterations, then fully optimized
+      best_candidate = function(tau_candidates, control) {
         control$trace <- FALSE
         config_fast <- control$config_optim
         config_fast$maxit_em <- 2
+        loglik_candidates <- parallel::mclapply(tau_candidates, function(tau_) {
+          model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_, private$formula, control)
+          model$optimize(self$responses, self$covariates, self$offsets, config_fast)
+          model$loglik
+        }, mc.cores = getOption("mc.cores", 1L)) %>% unlist()
 
+        best_one <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_candidates[[which.max(loglik_candidates)]], private$formula, control)
+        best_one$optimize(self$responses, self$covariates, self$offsets, control$config_optim)
+        best_one
+      },
+      ## forward smoothing: split a group
+      add_one_cluster = function(model, k = NULL, control) {
         ## Effective number of clusters (remove empty classes) and current clustering with clusters numbered in 1:k (with no gaps)
         cl  <- model$memberships
         k <- length(unique(cl))
@@ -53,15 +64,7 @@ PLNmixturefamily <-
           candidate
         }) %>% map(as_indicator)
 
-        loglik_candidates <- parallel::mclapply(tau_candidates, function(tau_) {
-          model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_, private$formula, control)
-          model$optimize(self$responses, self$covariates, self$offsets, config_fast)
-          model$loglik
-        }, mc.cores = getOption("mc.cores", 1L)) %>% unlist()
-
-        best_one <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_candidates[[which.max(loglik_candidates)]], private$formula, control)
-        best_one$optimize(self$responses, self$covariates, self$offsets, control$config_optim)
-        best_one
+        private$best_candidate(tau_candidates, control)
       },
       smooth_forward  = function(control) {
         ## setup and verbosity levels
@@ -88,18 +91,12 @@ PLNmixturefamily <-
           if (candidate_k != target_k) next
           if (candidate$loglik > self$models[[model_index + 1]]$loglik) {
             self$models[[model_index + 1]] <- candidate
-            # cat("found one")
           }
 
       }
       if (trace) cat("\r                                                                                                    \r")
       },
       remove_one_cluster = function(model, k = NULL, control) {
-        ## Control options
-        control$trace <- FALSE
-        config_fast <- control$config_optim
-        config_fast$maxit_em <- 2
-
         ## number of clusters
         if (is.null(k)) k <- length(model$components)
 
@@ -111,15 +108,7 @@ PLNmixturefamily <-
           tau_merged
         })
 
-        loglik_candidates <- parallel::mclapply(tau_candidates, function(tau_) {
-          model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_, private$formula, control)
-          model$optimize(self$responses, self$covariates, self$offsets, config_fast)
-          model$loglik
-        }, mc.cores = getOption("mc.cores", 1L)) %>% unlist()
-
-        best_one <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_candidates[[which.max(loglik_candidates)]], private$formula, control)
-        best_one$optimize(self$responses, self$covariates, self$offsets, control$config_optim)
-        best_one
+        private$best_candidate(tau_candidates, control)
       },
       smooth_backward = function(control) {
         trace <- control$trace > 0
@@ -143,7 +132,6 @@ PLNmixturefamily <-
           if (current_k != target_k) next ## should never happen
           if (candidate$loglik > self$models[[model_index - 1]]$loglik) {
             self$models[[model_index - 1]] <- candidate
-            # cat("found one")
           }
         }
         if (trace) cat("\r                                                                                                    \r")

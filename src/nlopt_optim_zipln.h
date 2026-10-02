@@ -7,19 +7,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // nlopt VE-step for ZIPLN: joint (M, ψ = log S²), Omega and B fixed.
 //
-// R is fixed at its exact conditional optimum R* = σ(A₀ + logit(Pi)) [Y=0],
-// computed once from the initial (M, S²) before the nlopt solve — required
-// for a consistent (objective, gradient) pair across nlopt's line search.
-// The final R is recomputed from the optimised (M, S²) before returning.
-//
-// B is kept fixed at the value from the preceding M-step (no re-profiling
-// inside the nlopt solve, unlike the Newton path: at the start of each VE
-// step B is already at its optimum and stays close throughout the small
-// nlopt steps, so dynamic profiling here was tested and found to add cost
-// without improving the loglik).
-//
-// Mirrors nlopt_vestep_impl (nlopt_optim_pln.h): same (data, params, config)
-// signature, State built from params["Omega"] inside the function.
+// R is fixed at its conditional optimum R* = σ(A₀ + logit(Pi)) [Y=0] at the
+// initial (M, S²), so that nlopt sees a consistent (objective, gradient) pair,
+// and recomputed from the optimised (M, S²) before returning. B is kept at the
+// value of the preceding M-step (no re-profiling, unlike the Newton path).
 template <typename Traits>
 Rcpp::List nlopt_vestep_zipln_impl(
     const Rcpp::List & data,    // List(Y, X, O, w)

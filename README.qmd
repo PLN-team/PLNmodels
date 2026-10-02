@@ -103,4 +103,8 @@ plot(myMixture, "pca", main = "Clustering membership in the individual factor ma
 table(cluster = myMixture$memberships, zone = barents$zone)
 ```
 
+## Note on the use of generative AI
+
+The models implemented here (their definition and every algebraic derivation) were worked out by Mahendra Mariadassou, Stéphane Robin and Julien Chiquet, who also designed the algorithms, the package and its object-oriented architecture, and have been developing the code for years. More recently (since summer 2026), we have used generative AI (Claude Sonnet and Claude Opus) to improve the documentation and to audit, test and improve the code -- in particular to port several algorithmic components to C++.
+
 ## References

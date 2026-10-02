@@ -101,16 +101,15 @@ PLNfit <- R6Class(
 
     torch_optimize = function(data, params, config) {
 
-      #config$device = "mps"
       if (config$trace >  1)
         message (paste("optimizing with device: ", config$device))
       ## Conversion of data and parameters to torch tensors (pointers)
       ## X is already column-normalized by optimize() before this call.
       data    <- lapply(data, torch_tensor, dtype = torch_float32(), device = config$device)  # Y, X, O, w
-      S2_init <- params$S2      # extract S2 as plain R matrix before torch conversion
-      params$S2 <- NULL         # remove it: psi (leaf tensor) replaces it
+      ## psi = log(S2), unconstrained, replaces S2 (as in the other backends)
+      S2_init <- params$S2
+      params$S2 <- NULL
       params  <- lapply(params, torch_tensor, dtype = torch_float32(), requires_grad = TRUE, device = config$device)
-      ## ψ = log(S²) — created as a fresh leaf tensor, unconstrained (same reparameterisation as Newton/nlopt)
       params$psi <- torch_tensor(log(S2_init), dtype = torch_float32(), requires_grad = TRUE, device = config$device)
 
       ## Initialize optimizer
@@ -128,14 +127,10 @@ PLNfit <- R6Class(
       batch_size <- floor(self$n/num_batch)
 
       objective <- double(length = config$num_epoch + 1)
-      #B_old = optimizer$param_groups[[1]]$params$B$clone()
       for (iterate in 1:num_epoch) {
-        #B_old <- as.numeric(optimizer$param_groups[[1]]$params$B)
         # rearrange the data each epoch
-        #permute <- torch::torch_randperm(self$n, device = "cpu") + 1L
         permute = torch::torch_tensor(sample.int(self$n), dtype = torch_long(), device=config$device)
 
-        #print (paste("num batches", num_batch))
         for (batch_idx in 1:num_batch) {
           # here index is a vector of the indices in the batch
           index <- permute[(batch_size*(batch_idx - 1) + 1):(batch_idx*batch_size)]
@@ -163,9 +158,7 @@ PLNfit <- R6Class(
               'delta_f'  , round(delta_f, 6))
 
         ## Check for convergence
-        #print (delta_f)
         if (delta_f < config$ftol_rel) status <- 3
-        #if (delta_x < config$xtol_rel) status <- 4
         if (status %in% c(3,4)) {
           objective <- objective[1:iterate + 1]
           break
@@ -181,7 +174,7 @@ PLNfit <- R6Class(
         x = x$cpu()
         as.matrix(x)}
         )
-      out$S2  <- exp(out$psi)   # convert ψ back to S² for the rest of the package
+      out$S2  <- exp(out$psi)
       out$psi <- NULL
       out$Ji <- private$torch_vloglik(data, params)
       out$monitoring <- list(
@@ -211,11 +204,7 @@ PLNfit <- R6Class(
       } else {
         var_B <- vcov_B %>% diag() %>% matrix(nrow = self$d)
       }
-      rownames(vcov_B) <- colnames(vcov_B) <-
-        expand.grid(covariates = rownames(private$B),
-                    responses  = colnames(private$B)) %>% rev() %>%
-        ## Hack to make sure that species is first and varies slowest
-        apply(1, paste0, collapse = "_")
+      rownames(vcov_B) <- colnames(vcov_B) <- private$coef_names()
       attr(private$B, "vcov_variational") <- vcov_B
       dimnames(var_B) <- dimnames(private$B)
       attr(private$B, "variance_variational") <- var_B
@@ -227,6 +216,13 @@ PLNfit <- R6Class(
       invisible(list(var_B = var_B, var_Omega = var_Omega))
     },
 
+    ## Names of the entries of vec(B): "species_covariate", species varying slowest
+    coef_names = function() {
+      expand.grid(covariates = rownames(private$B),
+                  responses  = colnames(private$B)) %>% rev() %>%
+        apply(1, paste0, collapse = "_")
+    },
+
     compute_vcov_from_resamples = function(resamples){
       B_list = resamples %>% map("B")
       vcov_B = lapply(seq(1, ncol(private$B)), function(B_col){
@@ -235,16 +231,8 @@ PLNfit <- R6Class(
         row_vcov = cov(param_ests_for_col)
       })
       vcov_B = Matrix::bdiag(vcov_B) %>% as.matrix()
-
-      rownames(vcov_B) <- colnames(vcov_B) <-
-        expand.grid(covariates = rownames(private$B),
-                    responses  = colnames(private$B)) %>% rev() %>%
-        ## Hack to make sure that species is first and varies slowest
-        apply(1, paste0, collapse = "_")
-
-      vcov_B = methods::as(vcov_B, "dgCMatrix")
-
-      return(vcov_B)
+      rownames(vcov_B) <- colnames(vcov_B) <- private$coef_names()
+      methods::as(vcov_B, "dgCMatrix")
     },
 
     vcov_sandwich_B = function(Y, X) {
@@ -256,69 +244,53 @@ PLNfit <- R6Class(
                                                      dimnames = dimnames(private$B))
     },
 
-    variance_jackknife = function(Y, X, O, w, config = config_default_nlopt) {
-      jacks <- parallel::mclapply(seq_len(self$n), function(i) {
-        data <- list(Y = Y[-i, , drop = FALSE],
-                     X = X[-i, , drop = FALSE],
-                     O = O[-i, , drop = FALSE],
-                     w = w[-i])
+    ## Parameters held fixed during the optimization, passed to the optimizer
+    ## with the others: none here, see PLNfit_fixedcov and PLNfit_genpop
+    fixed_params = function() {list()},
+
+    ## Parameters whose bias and variance are estimated by resampling
+    resampled_params = c("B", "Omega"),
+
+    ## Estimates of B and Omega on subsets of the samples
+    resample_fits = function(Y, X, O, w, subsets, config) {
+      parallel::mclapply(subsets, function(subset) {
+        data <- list(Y = Y[subset, , drop = FALSE],
+                     X = X[subset, , drop = FALSE],
+                     O = O[subset, , drop = FALSE],
+                     w = w[subset])
         args <- list(data = data,
-                     params = compute_PLN_starting_point(data$Y, data$X, data$O, data$w),
+                     params = c(compute_PLN_starting_point(data$Y, data$X, data$O, data$w),
+                                private$fixed_params()),
                      config = config)
-        optim_out <- do.call(private$optimizer$main, args)
-        optim_out[c("B", "Omega")]
+        do.call(private$optimizer$main, args)[c("B", "Omega")]
       }, mc.cores = getOption("mc.cores", 1L))
+    },
 
-      B_jack <- jacks %>% map("B") %>% reduce(`+`) / self$n
-      var_jack   <- jacks %>% map("B") %>% map(~( (. - B_jack)^2)) %>% reduce(`+`) %>%
-        `dimnames<-`(dimnames(private$B))
-      B_hat  <- private$B[,] ## strips attributes while preserving names
-      attr(private$B, "bias") <- (self$n - 1) * (B_jack - B_hat)
-      attr(private$B, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
-
-      vcov_jacks = private$compute_vcov_from_resamples(jacks)
-      attr(private$B, "vcov_jackknife") <- vcov_jacks
-
-      Omega_jack <- jacks %>% map("Omega") %>% reduce(`+`) / self$n
-      var_jack   <- jacks %>% map("Omega") %>% map(~( (. - Omega_jack)^2)) %>% reduce(`+`) %>%
-        `dimnames<-`(dimnames(private$Omega))
-      Omega_hat  <- private$Omega[,] ## strips attributes while preserving names
-      attr(private$Omega, "bias") <- (self$n - 1) * (Omega_jack - Omega_hat)
-      attr(private$Omega, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
+    variance_jackknife = function(Y, X, O, w, config = config_default_nlopt) {
+      jacks <- private$resample_fits(Y, X, O, w, lapply(seq_len(self$n), function(i) -i), config)
+      for (par in private$resampled_params) {
+        estimates <- map(jacks, par)
+        mean_jack <- reduce(estimates, `+`) / self$n
+        var_jack  <- estimates %>% map(~( (. - mean_jack)^2)) %>% reduce(`+`) %>%
+          `dimnames<-`(dimnames(private[[par]]))
+        estimate  <- private[[par]][,] ## strips attributes while preserving names
+        attr(private[[par]], "bias") <- (self$n - 1) * (mean_jack - estimate)
+        attr(private[[par]], "variance_jackknife") <- (self$n - 1) / self$n * var_jack
+      }
+      attr(private$B, "vcov_jackknife") <- private$compute_vcov_from_resamples(jacks)
     },
 
     variance_bootstrap = function(Y, X, O, w, n_resamples = 100, config = config_default_nlopt) {
       resamples <- replicate(n_resamples, sample.int(self$n, replace = TRUE), simplify = FALSE)
-      boots <- parallel::mclapply(resamples, function(resample) {
-        data <- list(Y = Y[resample, , drop = FALSE],
-                     X = X[resample, , drop = FALSE],
-                     O = O[resample, , drop = FALSE],
-                     w = w[resample])
-        if (config$backend == "torch") # Convert data to torch tensors
-          data   <- lapply(data, torch_tensor, device = config$device)
-
-        args <- list(data = data,
-                     params = compute_PLN_starting_point(data$Y, data$X, data$O, data$w),
-                     config = config)
-        if (config$backend == "torch") # Convert data to torch tensors
-          args$params <- lapply(args$params, torch_tensor, requires_grad = TRUE, device = config$device) # list with B, M, S
-
-        optim_out <- do.call(private$optimizer$main, args)
-        optim_out[c("B", "Omega", "monitoring")]
-      }, mc.cores = getOption("mc.cores", 1L))
-
-      B_boots <- boots %>% map("B") %>% reduce(`+`) / n_resamples
-      attr(private$B, "variance_bootstrap") <-
-        boots %>% map("B") %>% map(~( (. - B_boots)^2)) %>% reduce(`+`)  %>%
-          `dimnames<-`(dimnames(private$B)) / n_resamples
-
-      vcov_boots = private$compute_vcov_from_resamples(boots)
-      attr(private$B, "vcov_bootstrap") <- vcov_boots
-
-      Omega_boots <- boots %>% map("Omega") %>% reduce(`+`) / n_resamples
-      attr(private$Omega, "variance_bootstrap") <-
-        boots %>% map("Omega") %>% map(~( (. - Omega_boots)^2)) %>% reduce(`+`)  %>%
-        `dimnames<-`(dimnames(private$Omega)) / n_resamples
+      boots <- private$resample_fits(Y, X, O, w, resamples, config)
+      for (par in private$resampled_params) {
+        estimates <- map(boots, par)
+        mean_boot <- reduce(estimates, `+`) / n_resamples
+        attr(private[[par]], "variance_bootstrap") <-
+          estimates %>% map(~( (. - mean_boot)^2)) %>% reduce(`+`) %>%
+          `dimnames<-`(dimnames(private[[par]])) / n_resamples
+      }
+      attr(private$B, "vcov_bootstrap") <- private$compute_vcov_from_resamples(boots)
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -333,8 +305,7 @@ PLNfit <- R6Class(
       private$R2 <- (loglik - lmin) / (lmax - lmin)
     },
 
-    ## Set optimizer$main and (optionally) optimizer$vestep from the four covariance-specific
-    ## C++ functions. Called by every subclass initialize() so the dispatch logic lives once.
+    ## Set optimizer$main and (optionally) optimizer$vestep according to the backend
     setup_optimizer = function(backend, nlopt_fn, newton_fn,
                                nlopt_vestep_fn = NULL, newton_vestep_fn = NULL) {
       private$optimizer$main <- if (backend == "torch") {
@@ -388,11 +359,7 @@ PLNfit <- R6Class(
         private$M  <- start_point$M
         private$S2 <- start_point$S2
       }
-      ## "profiled" (nlopt only, default TRUE): profile both B and Omega at every nlopt eval
-      ## instead of running an EM loop (Omega fixed per inner nlopt solve, B profiled in
-      ## closed form). Benchmarked faster than the EM loop (1.1x-4.5x) with a slightly
-      ## better loglik across n in [50,300], p in [10,600] and on oaks (see PLN_param() docs).
-      ## Set config_optim$profiled = FALSE to recover the EM loop (nlopt_optimize_full).
+      ## nlopt: B and Omega profiled at every evaluation (default), or EM loop (see PLN_param())
       nlopt_main_fn <- if (isTRUE(control$config_optim$profiled)) nlopt_optimize_full_profiled else nlopt_optimize_full
       private$setup_optimizer(control$backend,
         nlopt_main_fn,                builtin_optimize_full,
@@ -434,8 +401,8 @@ PLNfit <- R6Class(
     optimize = function(responses, covariates, offsets, weights, config) {
       nrm  <- normalize_covariates(covariates)
       args <- list(data   = list(Y = responses, X = nrm$X_sc, O = offsets, w = weights),
-                   params = list(B = sweep(private$B, 1, nrm$scales, "*"),
-                                 M = private$M, S2 = private$S2),
+                   params = c(list(B = sweep(private$B, 1, nrm$scales, "*"),
+                                   M = private$M, S2 = private$S2), private$fixed_params()),
                    config = config)
       optim_out <- do.call(private$optimizer$main, args)
       optim_out$B <- sweep(optim_out$B, 1, nrm$scales, "/")
@@ -515,10 +482,7 @@ PLNfit <- R6Class(
       }
       ## 4. Bootstrap estimation of variance
       if (config_post$bootstrap > 0) {
-        if(config_post$trace > 1) {
-          cat("\n\tComputing bootstrap estimator of the variance...")
-          #print (str(config_optim))
-        }
+        if(config_post$trace > 1) cat("\n\tComputing bootstrap estimator of the variance...")
         private$variance_bootstrap(responses, covariates, offsets, weights, n_resamples=config_post$bootstrap, config = config_optim)
       }
       ## 5. compute and store matrix of standard variances for B with sandwich correction approximation
@@ -614,10 +578,8 @@ PLNfit <- R6Class(
       O <- model.offset(model.frame(formula(private$formula)[-2], newdata))
       if (is.null(O)) O <- matrix(0, n_new, self$p)
 
-      # Compute parameters of the law
-      # as.matrix() coerces sparse Matrix (returned by diagonal/spherical covariance
-      # models) to dense, so that simplify2array() in the map below produces a
-      # numeric array rather than a list of sparse Matrix objects.
+      # Parameters of the conditional law (dense: Sigma is a sparse Matrix for
+      # the diagonal and spherical models)
       vcov11 <- as.matrix(private$Sigma[cond ,  cond, drop = FALSE])
       vcov22 <- as.matrix(private$Sigma[!cond, !cond, drop = FALSE])
       vcov12 <- as.matrix(private$Sigma[cond , !cond, drop = FALSE])
@@ -960,15 +922,8 @@ PLNfit_fixedcov <- R6Class(
     },
     #' @description Call to the NLopt or TORCH optimizer and update of the relevant fields
     optimize = function(responses, covariates, offsets, weights, config) {
-      nrm  <- normalize_covariates(covariates)
-      args <- list(data   = list(Y = responses, X = nrm$X_sc, O = offsets, w = weights),
-                   params = list(B = sweep(private$B, 1, nrm$scales, "*"),
-                                 M = private$M, S2 = private$S2, Omega = private$Omega),
-                   config = config)
-      optim_out <- do.call(private$optimizer$main, args)
-      optim_out$B <- sweep(optim_out$B, 1, nrm$scales, "/")
-      do.call(self$update, optim_out)
-      private$Sigma <- solve(optim_out$Omega)
+      super$optimize(responses, covariates, offsets, weights, config)
+      private$Sigma <- solve(private$Omega)
     }
 
   ),
@@ -993,30 +948,8 @@ PLNfit_fixedcov <- R6Class(
     ## END OF TORCH METHODS FOR OPTIMIZATION
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    ## PRIVATE METHODS FOR VARIANCE OF THE ESTIMATORS
-    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    variance_jackknife = function(Y, X, O, w, config = config_default_nlopt) {
-      jacks <- parallel::mclapply(seq_len(self$n), function(i) {
-        data <- list(Y = Y[-i, , drop = FALSE],
-                     X = X[-i, , drop = FALSE],
-                     O = O[-i, , drop = FALSE],
-                     w = w[-i])
-        args <- list(data = data,
-                     params = compute_PLN_starting_point(data$Y, data$X, data$O, data$w),
-                     config = config)
-        optim_out <- do.call(private$optimizer$main, args)
-        optim_out[c("B", "Omega")]
-      }, mc.cores = getOption("mc.cores", 1L))
-
-      B_jack <- jacks %>% map("B") %>% reduce(`+`) / self$n
-      var_jack   <- jacks %>% map("B") %>% map(~( (. - B_jack)^2)) %>% reduce(`+`) %>%
-        `dimnames<-`(dimnames(private$B))
-      B_hat  <- private$B[,] ## strips attributes while preserving names
-      attr(private$B, "bias") <- (self$n - 1) * (B_jack - B_hat)
-      attr(private$B, "variance_jackknife") <- (self$n - 1) / self$n * var_jack
-    }
+    fixed_params     = function() {list(Omega = private$Omega)},
+    resampled_params = "B"
   ),
   active = list(
     #' @field nb_param number of parameters in the current PLN model
@@ -1078,24 +1011,14 @@ PLNfit_genpop <- R6Class(
       private$C <- as.matrix(control$C)
       private$setup_optimizer(control$backend, nlopt_optimize_genetic, builtin_optimize_genetic,
                               nlopt_optimize_vestep_genetic, builtin_optimize_vestep_genetic)
-    },
-    #' @description Call to the NLopt or builtin optimizer and update of the relevant fields
-    optimize = function(responses, covariates, offsets, weights, config) {
-      nrm  <- normalize_covariates(covariates)
-      args <- list(data   = list(Y = responses, X = nrm$X_sc, O = offsets, w = weights),
-                   params = list(B = sweep(private$B, 1, nrm$scales, "*"),
-                                 M = private$M, S2 = private$S2, C = private$C),
-                   config = config)
-      optim_out <- do.call(private$optimizer$main, args)
-      optim_out$B <- sweep(optim_out$B, 1, nrm$scales, "/")
-      do.call(self$update, optim_out)
     }
   ),
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ## PRIVATE MEMBERS ----
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   private = list(
-    C = NULL # fixed p x p correlation matrix (e.g. genetic relationship matrix)
+    C = NULL, # fixed p x p correlation matrix (e.g. genetic relationship matrix)
+    fixed_params = function() {list(C = private$C)}
   ),
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ## ACTIVE BINDINGS ----

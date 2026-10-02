@@ -75,9 +75,8 @@ PLNPCAfit <- R6Class(
         C2 <- torch_square(params$C)
         Z  <- data$O + torch_mm(params$M, torch_t(params$C)) + torch_mm(data$X, params$B)
         A  <- torch_exp(Z + 0.5 * torch_mm(S2, torch_t(C2)))
-        ## no p/2 constant here, unlike the full-covariance models: the
-        ## variational distribution is over the q-dimensional scores, and its
-        ## q/2 entropy constant is already carried by the "- 1" in the KL sum
+        ## no p/2 constant: the variational distribution is over the q scores,
+        ## and its entropy constant is carried by the "- 1" of the KL sum
         Ji <- - torch_sum(.logfactorial_torch(data$Y), dim = 2) +
               torch_sum(data$Y * Z - A, dim = 2) -
               0.5 * torch_sum(torch_square(params$M) + S2 - params$psi - 1, dim = 2)
@@ -308,9 +307,7 @@ PLNPCAfit <- R6Class(
       ## Optimization ----------------------
       #' @description Call to the C++ optimizer and update of the relevant fields
       optimize = function(responses, covariates, offsets, weights, config) {
-        ## The builtin (trust-region Newton) backend is naturally well-conditioned
-        ## (analytic Hessian) and its trust region is not scale-invariant, so covariate
-        ## normalization degrades it: keep the natural scale for that backend.
+        ## no normalization for the builtin backend, whose trust region is not scale-invariant
         nrm  <- if (identical(private$optimizer$main, builtin_optimize_rank))
                   list(X_sc = covariates, scales = rep(1, ncol(covariates)))
                 else normalize_covariates(covariates)
@@ -488,29 +485,7 @@ PLNPCAfit <- R6Class(
           diag.grobs <- list(textGrob(percentV.text),
                              g_legend(self$plot_individual_map(plot=FALSE, cols=ind_cols) + guides(colour = guide_legend(nrow = 4, title="classification"))),
                              textGrob(criteria.text))
-          if (nb_axes > 3)
-            diag.grobs <- c(diag.grobs, rep(list(nullGrob()), nb_axes - 3))
-
-
-          grobs <- vector("list", nb_axes^2)
-          i.cor <- 1; i.ind <- 1; i.dia <- 1
-          ind <- 0
-          for (i in 1:nb_axes) {
-            for (j in 1:nb_axes) {
-              ind <- ind + 1
-              if (j > i) { ## upper triangular  -> cor plot
-                grobs[[ind]] <- cor.plot[[i.ind]]
-                i.ind <- i.ind + 1
-              } else if (i == j) { ## diagonal
-                grobs[[ind]] <- diag.grobs[[i.dia]]
-                i.dia <- i.dia + 1
-              } else {
-                grobs[[ind]] <- ind.plot[[i.cor]]
-                i.cor <- i.cor + 1
-              }
-            }
-          }
-          p <- arrangeGrob(grobs = grobs, ncol = nb_axes)
+          p <- arrange_factor_maps(ind.plot, cor.plot, diag.grobs, nb_axes)
         } else {
           p <- arrangeGrob(grobs = list(
             self$plot_individual_map(plot = FALSE),

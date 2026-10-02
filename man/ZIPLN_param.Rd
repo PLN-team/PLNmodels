@@ -70,6 +70,5 @@ See \code{\link[=PLN_param]{PLN_param()}} for a description of the generic \code
 \itemize{
 \item "ftol_out" outer solver stops when an optimization step changes the objective function by less than \code{ftol_out} multiplied by the absolute value of the parameter. Default is 1e-6
 \item "maxit_out" outer solver stops when the number of iteration exceeds \code{maxit_out}. Default is 200 for "builtin", 100 for "nlopt"
-and one additional parameter controlling the form of the variational approximation of the zero inflation:
 }
 }

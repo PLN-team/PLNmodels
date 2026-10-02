@@ -167,10 +167,8 @@ plot_matrix = function(Mat, rowFG = "sample", colFG = "variable", clustering = N
     igraph::V(G)$label.cex <- V.deg / max(V.deg) + .5
     igraph::V(G)$size <- V.deg * 100
     igraph::V(G)$label.color <- rgb(0, 0, .2, .8)
-    ## Nice edges: both the width and the opacity carry the strength of the edge,
-    ## so that a dense network does not collapse into an unreadable solid blob.
-    ## Weights are scaled by the largest one, so the scale is relative to the
-    ## network at hand rather than to the (model-dependent) range of the values.
+    ## Nice edges: width and opacity carry the strength of the edge, relative
+    ## to the strongest one
     E.col <- ifelse(igraph::E(G)$weight > 0, edge.color[1], edge.color[2])
     if (type == "support") {
       igraph::E(G)$width <- abs(igraph::E(G)$weight)
@@ -187,9 +185,7 @@ plot_matrix = function(Mat, rowFG = "sample", colFG = "variable", clustering = N
     if (remove.isolated) {
       G <- delete.vertices(G, which(degree(G) == 0))
     }
-    ## vertex.frame.color = NA must be passed as a plot() argument, not a vertex
-    ## attribute: as an attribute it triggers a spurious "contains NAs" warning
-    ## from igraph, even though NA is its own documented way of requesting no frame.
+    ## vertex.frame.color = NA as a vertex attribute triggers a spurious igraph warning
     if (plot) plot(G, layout = layout, vertex.frame.color = NA)
   }
   if (output == "corrplot") {
@@ -204,4 +200,32 @@ plot_matrix = function(Mat, rowFG = "sample", colFG = "variable", clustering = N
     }
   }
   invisible(G)
+}
+
+## Grid of a summary plot of nb_axes axes: correlation plots above the diagonal,
+## individual maps below, and `diag.grobs` on the diagonal
+#' @importFrom gridExtra arrangeGrob
+#' @importFrom grid nullGrob
+arrange_factor_maps <- function(ind.plot, cor.plot, diag.grobs, nb_axes) {
+  if (nb_axes > 3)
+    diag.grobs <- c(diag.grobs, rep(list(nullGrob()), nb_axes - 3))
+  grobs <- vector("list", nb_axes^2)
+  i.cor <- 1; i.ind <- 1; i.dia <- 1
+  ind <- 0
+  for (i in 1:nb_axes) {
+    for (j in 1:nb_axes) {
+      ind <- ind + 1
+      if (j > i) {
+        grobs[[ind]] <- cor.plot[[i.cor]]
+        i.cor <- i.cor + 1
+      } else if (i == j) {
+        grobs[[ind]] <- diag.grobs[[i.dia]]
+        i.dia <- i.dia + 1
+      } else {
+        grobs[[ind]] <- ind.plot[[i.ind]]
+        i.ind <- i.ind + 1
+      }
+    }
+  }
+  arrangeGrob(grobs = grobs, ncol = nb_axes)
 }

@@ -31,7 +31,7 @@ plot(myPLN)
 
     \item{\code{latent_floor}}{the lower bound on \code{exp(O + M)} for the species in \code{floored_species}, \code{NULL} if none (see \code{\link[=PLNnetwork_param]{PLNnetwork_param()}})}
 
-    \item{\code{floored_species}}{names of the species whose variational means are bounded by \code{latent_floor}: those whose latent variance has exceeded the threshold of \code{degenerate_species} during the optimization, of this fit or of the previous ones along the penalty path}
+    \item{\code{floored_species}}{names of the species whose variational means are bounded by \code{latent_floor}, as in \code{\link{PLNnetworkfit}}}
 
     \item{\code{n_edges}}{number of edges if the network (non null coefficient of the sparse precision matrix)}
 
@@ -39,11 +39,9 @@ plot(myPLN)
 
     \item{\code{vcov_model}}{character: the model used for the residual covariance}
 
-    \item{\code{pen_loglik}}{variational lower bound of the l1-penalized loglikelihood, the criterion that the M step of the last iteration maximizes: \code{loglik - n/2 * sum(abs(rho * Omega))}, where \code{rho} is the penalty matrix of the graphical Lasso, that is the penalty times the penalty weights and, on the correlation scale, times \eqn{\sqrt{S_{ii} S_{jj}}}}
+    \item{\code{pen_loglik}}{variational lower bound of the l1-penalized loglikelihood, as in \code{\link{PLNnetworkfit}}}
 
-    \item{\code{ebic_gamma}}{the tuning parameter gamma of the EBIC, between 0 and 1. Zero
-gives back the BIC; the default 0.5 is the value recommended by Foygel and
-Drton (2010). Assign to it to change the EBIC of this fit.}
+    \item{\code{ebic_gamma}}{the tuning parameter gamma of the EBIC, as in \code{\link{PLNnetworkfit}}}
 
     \item{\code{EBIC}}{variational lower bound of the EBIC of Foygel and Drton (2010),
 that is the BIC with the additional penalty 2 gamma |E| log(p) on the edge set}
