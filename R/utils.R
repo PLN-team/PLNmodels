@@ -87,55 +87,58 @@ explicit_penalties_on_correlation_scale <- function(penalties, S = NULL, call = 
 
 ## Variational lower bound of each sample of a PLN model with precision matrix
 ## Omega (as DenseOmegaImpl::final_loglik in src/covariance_pln.h)
-elbo_fixed_precision <- function(Y, X, O, B, M, S2, Omega) {
+elbo_fixed_precision <- function(Y, X, O, B, M, S2, Omega, log_factorial = .logfactorial(Y)) {
   Omega <- as.matrix(Omega)
   Z <- O + M
   R <- M - X %*% B
-  rowSums(Y * Z - exp(Z + .5 * S2) + .5 * log(S2) - .logfactorial(Y)) +
+  rowSums(Y * Z - exp(Z + .5 * S2) + .5 * log(S2) - log_factorial) +
     .5 * as.numeric(determinant(Omega, logarithm = TRUE)$modulus) -
     .5 * rowSums((R %*% Omega) * R) - .5 * as.vector(S2 %*% diag(Omega)) + .5 * ncol(Y)
 }
 
 ## Optimal variational variance of a cell given its variational mean: the root
-## in s of the decreasing function 1/s - omega - weight * exp(z + s/2), with
-## z = O + M, omega the diagonal of the precision matrix and weight = 1 (PLN)
-## or 1 - R (ZIPLN). By bisection on log(s), vectorized.
+## in s of 1/s - omega - weight * exp(z + s/2), with z = O + M, omega the diagonal
+## of the precision matrix and weight = 1 (PLN) or 1 - R (ZIPLN). In u = log(s),
+## it is the root of u + log(omega + weight * exp(z + exp(u)/2)), increasing and
+## convex: Newton's method from the upper bound s = 1/omega decreases to it.
 optimal_variational_variance <- function(z, omega, weight = 1) {
-  lo <- rep(-30, length(z)); hi <- rep(30, length(z))
-  for (k in seq_len(60)) {
-    mid <- (lo + hi) / 2
-    s   <- exp(mid)
-    ## the exponent is capped, so that a null weight (R = 1) gives 0 and not NaN
-    positive <- 1 / s - omega - weight * exp(pmin(z + s / 2, 700)) > 0
-    up <- which(positive); down <- which(!positive)
-    lo[up] <- mid[up]; hi[down] <- mid[down]
+  log_omega <- log(omega)
+  u <- -log_omega + 0 * (z + weight)
+  for (k in seq_len(100)) {
+    s <- exp(u)
+    d <- log(weight) + z + s / 2 - log_omega
+    step <- (u + log_omega + pmax(d, 0) + log1p(exp(-abs(d)))) / (1 + .5 * s * stats::plogis(d))
+    u <- u - step
+    if (all(abs(step) < 1e-10, na.rm = TRUE)) break
   }
-  s <- exp((lo + hi) / 2)
-  s[is.na(z + omega + weight)] <- NA
-  s
+  exp(u)
 }
 
 ## Projection of the output of a VE step (`optim_out`, from the optimizer of a
 ## PLNfit_fixedcov) on the constraint M >= log(floor) - O, for the species
 ## flagged in `species`: the means below the bound are set to it, their
 ## variational variance to its optimum given M, and B, Sigma and the lower bound
-## are updated accordingly.
-project_latent_floor <- function(optim_out, data, Omega, floor, species = rep(TRUE, ncol(data$Y))) {
+## are updated accordingly. `log_factorial` (log(Y!), cell by cell) can be given
+## to avoid computing it at each call.
+project_latent_floor <- function(optim_out, data, Omega, floor, species = rep(TRUE, ncol(data$Y)),
+                                 log_factorial = .logfactorial(data$Y)) {
   bound   <- log(floor) - data$O
   bound[, !species] <- -Inf
   clipped <- optim_out$M < bound
   optim_out$n_floor <- sum(clipped)
   optim_out$M[clipped] <- bound[clipped]
   if (optim_out$n_floor > 0) {
-    om <- matrix(diag(as.matrix(Omega)), nrow(clipped), ncol(clipped), byrow = TRUE)
-    optim_out$S2[clipped] <- optimal_variational_variance((data$O + optim_out$M)[clipped], om[clipped])
+    ## at the bound O + M = log(floor): the optimal variance only depends on the species
+    s2 <- optimal_variational_variance(rep(log(floor), ncol(clipped)), diag(as.matrix(Omega)))
+    optim_out$S2[clipped] <- s2[col(clipped)[clipped]]
     w <- data$w
     optim_out$B <- solve(crossprod(data$X, w * data$X), crossprod(data$X, w * optim_out$M))
     R <- optim_out$M - data$X %*% optim_out$B
     optim_out$Sigma <- (crossprod(R, w * R) + diag(colSums(w * optim_out$S2), ncol(R))) / sum(w)
     optim_out$Z <- data$O + optim_out$M
     optim_out$A <- exp(optim_out$Z + .5 * optim_out$S2)
-    optim_out$Ji <- elbo_fixed_precision(data$Y, data$X, data$O, optim_out$B, optim_out$M, optim_out$S2, Omega)
+    optim_out$Ji <- elbo_fixed_precision(data$Y, data$X, data$O, optim_out$B, optim_out$M, optim_out$S2, Omega,
+                                         log_factorial)
   }
   optim_out
 }

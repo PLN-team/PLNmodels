@@ -77,6 +77,7 @@ PLNnetworkfit <- R6Class(
       last_glasso <- NULL # graphical Lasso output of the last iterate kept
       failure <- NULL
       w_pos <- data$w > .Machine$double.eps
+      if (!is.null(private$floor)) log_factorial <- .logfactorial(data$Y)
       while (!cond) {
         iter <- iter + 1
         if (config$trace > 1) cat("", iter)
@@ -100,7 +101,8 @@ PLNnetworkfit <- R6Class(
         ## the threshold of the degenerate species
         if (!is.null(private$floor)) {
           floored <- floored | diag(as.matrix(optim_out$Sigma)) > latent_variance_threshold()
-          optim_out <- project_latent_floor(optim_out, args$data, args$params$Omega, private$floor, floored)
+          optim_out <- project_latent_floor(optim_out, args$data, args$params$Omega, private$floor, floored,
+                                            log_factorial)
           n_floor <- optim_out$n_floor; optim_out$n_floor <- NULL
         }
 
