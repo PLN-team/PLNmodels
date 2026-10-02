@@ -11,6 +11,7 @@ Authors@R: c(
     person("Julie", "Aubert", , "julie.aubert@inrae.fr", role = "ctb"),
     person("Bastien", "Batardière", , "bastien.batardiere@inrae.fr", role = "ctb"),
     person("Giovanni", "Poggiato", , "giov.poggiato@gmail.com", role = "ctb"),
+    person("Daniel", "Agyapong", , "da2343@nau.edu", role = "ctb"),
     person("Cole", "Trapnell", , "coletrap@uw.edu", role = "ctb"),
     person("Maddy", "Duran", , "duran@uw.edu", role = "ctb"),
     person("Ryan", "Friedman", , "ryanfriedman22@gmail.com", role = "ctb")
