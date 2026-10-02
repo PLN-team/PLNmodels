@@ -127,7 +127,13 @@ class `PLNnetworkfamily`.
 This set can be controlled by the user, but use it with care and check
 details in
 [`?PLNnetwork`](https://pln-team.github.io/PLNmodels/reference/PLNnetwork.md).
-The collection of models is fitted as follows:
+By default the penalty applies on the scale of the correlations between
+the latent variables, so that it does not depend on their variances (the
+correlation-based estimator of [Rothman et al. 2008](#ref-Rothman2008)):
+the penalties lie between 0 and 1, and the path starts from the empty
+network. The penalty on the covariance scale of versions up to 1.3.2 is
+obtained with `PLNnetwork_param(penalty_scale = "covariance")`. The
+collection of models is fitted as follows:
 
 ``` r
 
@@ -138,7 +144,7 @@ network_models <- PLNnetwork(Abundance ~ 1 + offset(log(Offset)), data = trichop
     ##  Initialization...
     ##  Adjusting 30 PLN with sparse inverse covariance estimation
     ##  Joint optimization alternating gradient descent and graphical-lasso
-    ##  sparsifying penalty = 0.8883632     sparsifying penalty = 0.8205552     sparsifying penalty = 0.7579229     sparsifying penalty = 0.7000713     sparsifying penalty = 0.6466354     sparsifying penalty = 0.5972783     sparsifying penalty = 0.5516886     sparsifying penalty = 0.5095787     sparsifying penalty = 0.470683  sparsifying penalty = 0.4347561     sparsifying penalty = 0.4015716     sparsifying penalty = 0.37092   sparsifying penalty = 0.342608  sparsifying penalty = 0.316457  sparsifying penalty = 0.2923021     sparsifying penalty = 0.2699909     sparsifying penalty = 0.2493827     sparsifying penalty = 0.2303476     sparsifying penalty = 0.2127653     sparsifying penalty = 0.1965251     sparsifying penalty = 0.1815246     sparsifying penalty = 0.1676689     sparsifying penalty = 0.1548709     sparsifying penalty = 0.1430497     sparsifying penalty = 0.1321309     sparsifying penalty = 0.1220454     sparsifying penalty = 0.1127298     sparsifying penalty = 0.1041253     sparsifying penalty = 0.09617746    sparsifying penalty = 0.08883632 
+    ##  sparsifying penalty = 0.3985143     sparsifying penalty = 0.368096  sparsifying penalty = 0.3399996     sparsifying penalty = 0.3140477     sparsifying penalty = 0.2900767     sparsifying penalty = 0.2679354     sparsifying penalty = 0.2474841     sparsifying penalty = 0.2285939     sparsifying penalty = 0.2111455     sparsifying penalty = 0.1950289     sparsifying penalty = 0.1801425     sparsifying penalty = 0.1663924     sparsifying penalty = 0.1536918     sparsifying penalty = 0.1419607     sparsifying penalty = 0.1311249     sparsifying penalty = 0.1211163     sparsifying penalty = 0.1118716     sparsifying penalty = 0.1033325     sparsifying penalty = 0.09544523    sparsifying penalty = 0.08815998    sparsifying penalty = 0.0814308     sparsifying penalty = 0.07521526    sparsifying penalty = 0.06947414    sparsifying penalty = 0.06417124    sparsifying penalty = 0.0592731     sparsifying penalty = 0.05474884    sparsifying penalty = 0.05056991    sparsifying penalty = 0.04670995    sparsifying penalty = 0.04314462    sparsifying penalty = 0.03985143 
     ##  Post-treatments
     ##  DONE!
 
@@ -162,9 +168,9 @@ network_models
     ## --------------------------------------------------------
     ##  Task: Network Inference 
     ## ========================================================
-    ##  - 30 penalties considered: from 0.08883632 to 0.8883632 
-    ##  - Best model (greater BIC): lambda = 0.552 
-    ##  - Best model (greater EBIC): lambda = 0.552
+    ##  - 30 penalties considered: from 0.03985143 to 0.3985143 
+    ##  - Best model (greater BIC): lambda = 0.399 
+    ##  - Best model (greater EBIC): lambda = 0.399
 
 One can also easily access the successive values of the criteria in the
 collection
@@ -176,12 +182,12 @@ network_models$criteria %>% head() %>% knitr::kable()
 
 | param | nb_param | loglik | BIC | AIC | ICL | n_edges | EBIC | pen_loglik | density | stability |
 |---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|:---|
-| 0.8883632 | 35 | -1109.600 | -1177.707 | -1144.600 | -2187.804 | 1 | -1180.540 | -1131.228 | 0.0073529 | NA |
-| 0.8205552 | 35 | -1108.511 | -1176.617 | -1143.511 | -2167.318 | 1 | -1179.451 | -1129.466 | 0.0073529 | NA |
-| 0.7579229 | 35 | -1107.916 | -1176.023 | -1142.916 | -2153.575 | 1 | -1178.856 | -1128.113 | 0.0073529 | NA |
-| 0.7000713 | 35 | -1107.575 | -1175.682 | -1142.575 | -2148.803 | 1 | -1178.515 | -1126.551 | 0.0073529 | NA |
-| 0.6466354 | 35 | -1107.298 | -1175.405 | -1142.298 | -2145.526 | 1 | -1178.238 | -1125.043 | 0.0073529 | NA |
-| 0.5972783 | 35 | -1107.055 | -1175.162 | -1142.055 | -2142.413 | 1 | -1177.995 | -1123.650 | 0.0073529 | NA |
+| 0.3985143 | 34 | -1110.844 | -1177.005 | -1144.844 | -2184.456 | 0 | -1177.005 | -1110.844 | 0.0000000 | NA |
+| 0.3680960 | 35 | -1109.801 | -1177.907 | -1144.801 | -2164.680 | 1 | -1180.741 | -1110.406 | 0.0073529 | NA |
+| 0.3399996 | 35 | -1109.101 | -1177.208 | -1144.101 | -2160.080 | 1 | -1180.041 | -1110.275 | 0.0073529 | NA |
+| 0.3140477 | 37 | -1108.090 | -1180.089 | -1145.090 | -2159.745 | 3 | -1188.589 | -1110.116 | 0.0220588 | NA |
+| 0.2900767 | 37 | -1106.539 | -1178.538 | -1143.539 | -2155.230 | 3 | -1187.038 | -1109.880 | 0.0220588 | NA |
+| 0.2679354 | 39 | -1104.642 | -1180.533 | -1143.642 | -2154.964 | 5 | -1194.699 | -1109.567 | 0.0367647 | NA |
 
 A diagnostic of the optimization process is available via the
 `convergence` field:
@@ -193,12 +199,12 @@ network_models$convergence %>% head() %>% knitr::kable()
 
 |  | param | nb_param | status | backend | objective | iterations | convergence | glasso_nonconverged | glasso_stalled | glasso_indefinite | n_floor | floored |
 |:---|---:|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|
-| out | 0.8883632 | 35 | 3 | newton | 1109.6 | 20 | 4.766354e-05 | 0 | 0 | 0 | 0 | FALSE |
-| elt | 0.8205552 | 35 | 3 | newton | 1108.511 | 20 | 1.710477e-05 | 0 | 0 | 0 | 0 | FALSE |
-| elt.1 | 0.7579229 | 35 | 3 | newton | 1107.916 | 18 | 9.943289e-06 | 0 | 0 | 0 | 0 | FALSE |
-| elt.2 | 0.7000713 | 35 | 3 | newton | 1107.575 | 7 | 9.48024e-06 | 0 | 0 | 0 | 0 | FALSE |
-| elt.3 | 0.6466354 | 35 | 3 | newton | 1107.298 | 5 | 9.947209e-06 | 0 | 0 | 0 | 0 | FALSE |
-| elt.4 | 0.5972783 | 35 | 3 | newton | 1107.055 | 5 | 8.646742e-06 | 0 | 0 | 0 | 0 | FALSE |
+| out | 0.3985143 | 34 | 3 | newton | 1110.844 | 20 | 2.752916e-05 | 0 | 0 | 0 | 0 | FALSE |
+| elt | 0.3680960 | 35 | 3 | newton | 1109.801 | 20 | 1.391163e-05 | 0 | 0 | 0 | 0 | FALSE |
+| elt.1 | 0.3399996 | 35 | 3 | newton | 1109.101 | 5 | 8.789914e-06 | 0 | 0 | 0 | 0 | FALSE |
+| elt.2 | 0.3140477 | 37 | 3 | newton | 1108.09 | 5 | 9.913613e-06 | 0 | 0 | 0 | 0 | FALSE |
+| elt.3 | 0.2900767 | 37 | 3 | newton | 1106.539 | 6 | 6.967549e-06 | 0 | 0 | 0 | 0 | FALSE |
+| elt.4 | 0.2679354 | 39 | 3 | newton | 1104.642 | 5 | 5.714751e-06 | 0 | 0 | 0 | 0 | FALSE |
 
 An nicer view of this output comes with the option “diagnostic” in the
 `plot` method:
@@ -351,12 +357,12 @@ are recalled when such an object is printed:
 model_StARS
 ```
 
-    ## Poisson Lognormal with sparse inverse covariance (penalty = 0.597)
+    ## Poisson Lognormal with sparse inverse covariance (penalty = 0.29)
     ## ==================================================================
-    ##  nb_param    loglik       BIC       AIC       ICL n_edges      EBIC pen_loglik
-    ##        35 -1107.055 -1175.162 -1142.055 -2142.413       1 -1177.995   -1123.65
+    ##  nb_param    loglik       BIC       AIC      ICL n_edges      EBIC pen_loglik
+    ##        37 -1106.539 -1178.538 -1143.539 -2155.23       3 -1187.038   -1109.88
     ##  density
-    ##    0.007
+    ##    0.022
     ## ==================================================================
     ## * Useful fields
     ##     $model_par, $latent, $latent_pos, $var_par, $optim_par
@@ -380,11 +386,11 @@ my_graph <- plot(model_StARS, plot = FALSE)
 my_graph
 ```
 
-    ## IGRAPH e5e6f9c UNW- 17 1 -- 
+    ## IGRAPH ad59d5a UNW- 17 3 -- 
     ## + attr: name (v/c), label (v/c), label.cex (v/n), size (v/n),
     ## | label.color (v/c), weight (e/n), width (e/n), color (e/c)
-    ## + edge from e5e6f9c (vertex names):
-    ## [1] Hfo--Hsp
+    ## + edges from ad59d5a (vertex names):
+    ## [1] Psy--Han Psy--Sta Hfo--Hsp
 
 ``` r
 
@@ -454,6 +460,10 @@ Information Processing Systems - Volume 2* (USA), 1432–40.
 Meinshausen, Nicolai, and Peter Bühlmann. 2010. “Stability Selection.”
 *Journal of the Royal Statistical Society: Series B (Statistical
 Methodology)* 72 (4): 417–73.
+
+Rothman, Adam J., Peter J. Bickel, Elizaveta Levina, and Ji Zhu. 2008.
+“Sparse Permutation Invariant Covariance Estimation.” *Electronic
+Journal of Statistics* 2: 494–515. <https://doi.org/10.1214/08-EJS176>.
 
 Sustik, Mátyás A, and Ben Calderhead. 2012. “GLASSOFAST: An Efficient
 GLASSO Implementation.” *UTCS Technical Report TR-12-29 2012*.

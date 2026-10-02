@@ -49,7 +49,7 @@ model <- PLN(Abundance ~ 1, data = trichoptera)
 #>  Post-treatments...
 #>  DONE!
 ICL(model)
-#> [1] -2267.891
+#> [1] -2270.936
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 #> Warning: ! There are no matching names in `counts` and `covariates`.

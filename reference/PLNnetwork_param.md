@@ -17,7 +17,7 @@ PLNnetwork_param(
   min_ratio = 0.1,
   penalize_diagonal = FALSE,
   penalty_weights = NULL,
-  penalty_scale = c("covariance", "correlation"),
+  penalty_scale = c("correlation", "covariance"),
   latent_floor = 0.001,
   config_post = list(),
   config_optim = list(),
@@ -97,10 +97,11 @@ PLNnetwork_param(
 
   boolean: should the diagonal terms be penalized in the
   graphical-Lasso? Default is `FALSE`. Penalizing the diagonal inflates
-  the latent variances by the penalty (\\\Sigma\_{ii} = S\_{ii} +
-  \rho\\), which the VE step then feeds back into the residual
-  covariance \\S\\: along the path, the network may then never become
-  empty, whatever the penalty (#180).
+  the latent variances (\\\Sigma\_{ii} = S\_{ii} + \rho\\ on the
+  covariance scale, \\\Sigma\_{ii} = S\_{ii} (1 + \rho)\\ on the
+  correlation scale), which the VE step then feeds back into the
+  residual covariance \\S\\: along the path, the network may then never
+  become empty, and the latent variances diverge (#180).
 
 - penalty_weights:
 
@@ -110,22 +111,21 @@ PLNnetwork_param(
 
 - penalty_scale:
 
-  character, the scale on which the l1 penalty applies: `"covariance"`
-  (default) penalizes the entries of the precision matrix as they are,
-  `"correlation"` penalizes them on the scale of the variables, with a
-  penalty \\\lambda \sqrt{S\_{ii} S\_{jj}}\\ on the pair \\(i, j)\\,
-  where \\S\\ is the current residual covariance. This amounts to
-  applying the graphical-Lasso to the residual *correlation* matrix, as
-  is customary for Gaussian graphical models, and makes the penalties
-  dimensionless, between 0 and 1. The entries of a precision matrix are
-  not scale invariant: with `"covariance"`, a species with a large
-  latent variance has nearly free edges, and one that is often absent
-  but abundant when present, whose zeros are fitted by very negative
-  latent means, ends up connected to most of the others (see the field
-  `degenerate_species` of a
+  character, the scale on which the l1 penalty applies. `"correlation"`
+  (default) penalizes the entries of the precision matrix on the scale
+  of the variables, with a penalty \\\lambda \sqrt{S\_{ii} S\_{jj}}\\ on
+  the pair \\(i, j)\\, where \\S\\ is the current residual covariance.
+  This amounts to applying the graphical-Lasso to the residual
+  *correlation* matrix and rescaling the result, the correlation-based
+  estimator of Rothman, Bickel, Levina and Zhu (2008), and makes the
+  penalties dimensionless, between 0 and 1. `"covariance"`, the only
+  behavior until version 1.3.2, penalizes the entries of the precision
+  matrix as they are. These are not scale invariant: a species with a
+  large latent variance then has nearly free edges, and one that is
+  often absent but abundant when present ends up connected to most of
+  the others (see the field `degenerate_species` of a
   [`PLNfit`](https://pln-team.github.io/PLNmodels/reference/PLNfit.md)).
-  `"correlation"` removes this artefact; see the section on the scale of
-  the penalty.
+  See the section on the scale of the penalty.
 
 - latent_floor:
 
@@ -296,25 +296,50 @@ GLASSO/VEM loop:
 
 With `penalty_scale = "correlation"`, the penalty on the pair \\(i, j)\\
 is \\\lambda w\_{ij} \sqrt{S\_{ii} S\_{jj}}\\, recomputed at each M step
-from the current residual covariance \\S\\. The grid of penalties is
-then built on the residual correlation of the inception, and lies
-between 0 and 1. Since the weights depend on \\S\\, the alternating
-optimization no longer maximizes a fixed penalized criterion: it looks
-for a fixed point.
+from the current residual covariance \\S\\. Without weights, the
+precision matrix is \\\Omega = D^{-1/2} K D^{-1/2}\\, where \\D\\ is the
+diagonal of \\S\\ and \\K\\ the graphical-Lasso estimate on the
+correlation matrix \\D^{-1/2} S D^{-1/2}\\: this is the
+correlation-based estimator of Rothman et al. (2008), who show that it
+has a better rate of convergence in operator norm than the estimator on
+the covariance scale. The grid of penalties is built on the residual
+correlation of the inception, and lies between 0 and 1. Since the
+weights depend on \\S\\, the alternating optimization does not maximize
+a fixed penalized criterion: it looks for a fixed point.
 
-In simulations with a known network where three species out of forty
-were made absent from a group of samples, the species concerned carried
-34 to 93 % of the edges with `"covariance"` (15 % expected) and 0 to 2 %
-with `"correlation"`, and the edges between the other species were
-recovered as well as on uncontaminated data, on which `"correlation"`
-did as well or better. `"covariance"` remains the default until this has
-been assessed more widely.
+It is the default since version 1.3.3. In simulations with a known
+network (a hundred configurations of graph, sample size, dimension,
+latent variances and abundances, with or without species absent from
+groups of samples), the edges were recovered better on the correlation
+scale in every configuration, the more so as the latent variances
+differed between species, and the time was the same.
+
+**To get the behavior of version 1.3.2 back**, use
+`PLNnetwork_param(penalty_scale = "covariance")`; penalties are then on
+the covariance scale. Penalties given through `penalties` are otherwise
+taken on the correlation scale. Since values above 1 cannot be on that
+scale (they all give the empty network), when some are given while
+`penalty_scale` is left to its default they are taken as penalties on
+the covariance scale and converted, with a warning: they are divided by
+the ratio of the largest residual covariance of the inception to its
+largest residual correlation, so that the penalty giving the empty
+network on one scale gives it on the other. This is exact when all
+latent variances are equal, and only a guide otherwise: the two scales
+do not give the same networks. Setting `penalty_scale` explicitly, to
+either value, leaves the penalties as given.
 
 On either scale, the latent variance of a species absent from whole
 groups of samples diverges along the path without `latent_floor`. On the
 covariance scale, the floor stabilizes the fit without repairing the
 network: the degenerate species have fewer edges, but the edges still
 concentrate on them.
+
+## References
+
+Rothman, A. J., Bickel, P. J., Levina, E. and Zhu, J. (2008). Sparse
+permutation invariant covariance estimation. *Electronic Journal of
+Statistics*, 2, 494–515.
+[doi:10.1214/08-EJS176](https://doi.org/10.1214/08-EJS176)
 
 ## See also
 

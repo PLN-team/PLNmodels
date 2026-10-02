@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">PLNmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9350</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9500</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,7 +59,7 @@
 <span>  penalty <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  penalize_diagonal <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  penalty_weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  penalty_scale <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"covariance"</span>, <span class="st">"correlation"</span><span class="op">)</span>,</span>
+<span>  penalty_scale <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"correlation"</span>, <span class="st">"covariance"</span><span class="op">)</span>,</span>
 <span>  latent_floor <span class="op">=</span> <span class="fl">0.001</span>,</span>
 <span>  config_post <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  config_optim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -88,14 +88,15 @@
 
 
 <dt id="arg-penalty">penalty<a class="anchor" aria-label="anchor" href="#arg-penalty"></a></dt>
-<dd><p>a user-defined penalty to sparsify the residual covariance. Defaults to 0 (no sparsity).</p></dd>
+<dd><p>a user-defined penalty to sparsify the residual covariance. Defaults to 0 (no sparsity). With the default <code>penalty_scale = "correlation"</code>, it applies on the scale of the correlations and lies between 0 and 1 (a penalty above 1 gives the empty network); <code>penalty_scale = "covariance"</code> gives back the behavior of version 1.3.2.</p></dd>
 
 
 <dt id="arg-penalize-diagonal">penalize_diagonal<a class="anchor" aria-label="anchor" href="#arg-penalize-diagonal"></a></dt>
 <dd><p>boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is <code>FALSE</code>.
-Penalizing the diagonal inflates the latent variances by the penalty (\(\Sigma_{ii} = S_{ii} + \rho\)),
-which the VE step then feeds back into the residual covariance \(S\): along the path, the
-network may then never become empty, whatever the penalty (#180).</p></dd>
+Penalizing the diagonal inflates the latent variances (\(\Sigma_{ii} = S_{ii} + \rho\) on the covariance
+scale, \(\Sigma_{ii} = S_{ii} (1 + \rho)\) on the correlation scale), which the VE step then feeds back into
+the residual covariance \(S\): along the path, the network may then never become empty, and the latent
+variances diverge (#180).</p></dd>
 
 
 <dt id="arg-penalty-weights">penalty_weights<a class="anchor" aria-label="anchor" href="#arg-penalty-weights"></a></dt>
@@ -103,16 +104,16 @@ network may then never become empty, whatever the penalty (#180).</p></dd>
 
 
 <dt id="arg-penalty-scale">penalty_scale<a class="anchor" aria-label="anchor" href="#arg-penalty-scale"></a></dt>
-<dd><p>character, the scale on which the l1 penalty applies: <code>"covariance"</code> (default) penalizes
-the entries of the precision matrix as they are, <code>"correlation"</code> penalizes them on the scale of the
-variables, with a penalty \(\lambda \sqrt{S_{ii} S_{jj}}\) on the pair \((i, j)\), where \(S\) is the
-current residual covariance. This amounts to applying the graphical-Lasso to the residual <em>correlation</em>
-matrix, as is customary for Gaussian graphical models, and makes the penalties dimensionless, between 0 and 1.
-The entries of a precision matrix are not scale invariant: with <code>"covariance"</code>, a species with a large latent
-variance has nearly free edges, and one that is often absent but abundant when present, whose zeros are
-fitted by very negative latent means, ends up connected to most of the others (see the field
-<code>degenerate_species</code> of a <code><a href="PLNfit.html">PLNfit</a></code>). <code>"correlation"</code> removes this artefact; see the section on the scale
-of the penalty.</p></dd>
+<dd><p>character, the scale on which the l1 penalty applies. <code>"correlation"</code> (default) penalizes
+the entries of the precision matrix on the scale of the variables, with a penalty
+\(\lambda \sqrt{S_{ii} S_{jj}}\) on the pair \((i, j)\), where \(S\) is the current residual covariance.
+This amounts to applying the graphical-Lasso to the residual <em>correlation</em> matrix and rescaling the result, the
+correlation-based estimator of Rothman, Bickel, Levina and Zhu (2008), and makes the penalties dimensionless,
+between 0 and 1. <code>"covariance"</code>, the only
+behavior until version 1.3.2, penalizes the entries of the precision matrix as they are. These are not scale
+invariant: a species with a large latent variance then has nearly free edges, and one that is often absent but
+abundant when present ends up connected to most of the others (see the field <code>degenerate_species</code> of a
+<code><a href="PLNfit.html">PLNfit</a></code>). See the section on the scale of the penalty.</p></dd>
 
 
 <dt id="arg-latent-floor">latent_floor<a class="anchor" aria-label="anchor" href="#arg-latent-floor"></a></dt>

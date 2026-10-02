@@ -62,7 +62,15 @@ ZIPLNnetwork(
   sparsity of the underlying network. if NULL (the default), will be set
   internally. See
   [`PLNnetwork_param()`](https://pln-team.github.io/PLNmodels/reference/PLNnetwork_param.md)
-  for additional tuning of the penalty.
+  for additional tuning of the penalty. With the default
+  `penalty_scale = "correlation"`, the penalties apply on the scale of
+  the correlations and lie between 0 and 1; until version 1.3.2 they
+  were on the covariance scale, which
+  `PLNnetwork_param(penalty_scale = "covariance")` gives back. When
+  penalties above 1 are given without choosing the scale, they are taken
+  as penalties on the covariance scale and converted, with a warning
+  (see
+  [`PLNnetwork_param()`](https://pln-team.github.io/PLNmodels/reference/PLNnetwork_param.md)).
 
 - control:
 
@@ -100,6 +108,6 @@ myZIPLNs <- ZIPLNnetwork(Abundance ~ 1, data = trichoptera, zi = "single")
 #> 
 #>  Initialization...
 #>  Adjusting 30 ZI-PLN with sparse inverse covariance estimation and single specific parameter(s) in Zero inflation component.
-#>  sparsifying penalty = 3.403046  sparsifying penalty = 3.143294  sparsifying penalty = 2.90337   sparsifying penalty = 2.681758  sparsifying penalty = 2.477062  sparsifying penalty = 2.28799   sparsifying penalty = 2.113349  sparsifying penalty = 1.952039  sparsifying penalty = 1.803042  sparsifying penalty = 1.665417  sparsifying penalty = 1.538297  sparsifying penalty = 1.42088   sparsifying penalty = 1.312426  sparsifying penalty = 1.212249  sparsifying penalty = 1.119719  sparsifying penalty = 1.034252  sparsifying penalty = 0.9553086     sparsifying penalty = 0.8823907     sparsifying penalty = 0.8150386     sparsifying penalty = 0.7528274     sparsifying penalty = 0.6953647     sparsifying penalty = 0.6422881     sparsifying penalty = 0.5932628     sparsifying penalty = 0.5479796     sparsifying penalty = 0.5061528     sparsifying penalty = 0.4675186     sparsifying penalty = 0.4318333     sparsifying penalty = 0.3988718     sparsifying penalty = 0.3684263     sparsifying penalty = 0.3403046 
+#>  sparsifying penalty = 0.7468446     sparsifying penalty = 0.6898385     sparsifying penalty = 0.6371838     sparsifying penalty = 0.5885481     sparsifying penalty = 0.5436247     sparsifying penalty = 0.5021303     sparsifying penalty = 0.4638031     sparsifying penalty = 0.4284014     sparsifying penalty = 0.3957019     sparsifying penalty = 0.3654983     sparsifying penalty = 0.3376001     sparsifying penalty = 0.3118314     sparsifying penalty = 0.2880296     sparsifying penalty = 0.2660445     sparsifying penalty = 0.2457376     sparsifying penalty = 0.2269807     sparsifying penalty = 0.2096554     sparsifying penalty = 0.1936526     sparsifying penalty = 0.1788713     sparsifying penalty = 0.1652182     sparsifying penalty = 0.1526072     sparsifying penalty = 0.1409588     sparsifying penalty = 0.1301996     sparsifying penalty = 0.1202615     sparsifying penalty = 0.1110821     sparsifying penalty = 0.1026033     sparsifying penalty = 0.09477166    sparsifying penalty = 0.08753782    sparsifying penalty = 0.08085613    sparsifying penalty = 0.07468446 
 #>  DONE!
 ```

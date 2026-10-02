@@ -111,11 +111,11 @@ data.frame(
 
 | model                  |   loglik |      BIC |       ICL |
 |:-----------------------|---------:|---------:|----------:|
-| PLN                    | -51733.9 | -53717.1 | -100735.3 |
+| PLN                    | -51716.2 | -53699.3 | -100954.0 |
 | ZIPLN (single)         | -48790.2 | -50776.7 |  -91026.5 |
 | ZIPLN (row)            | -46798.4 | -51764.7 |  -90658.9 |
 | ZIPLN (col)            | -48703.5 | -50788.3 |  -90155.3 |
-| ZIPLN (site-dependent) | -47593.7 | -49983.7 |  -81233.0 |
+| ZIPLN (site-dependent) | -47593.7 | -49983.7 |  -81232.5 |
 
 Accounting for zero-inflation brings a large improvement over plain
 `PLN`, and letting the zero-inflation probability depend on the body
@@ -204,7 +204,7 @@ to explore a wider, sparser range of the penalty path:
 
 ``` r
 
-zi_models <- ZIPLNnetwork(Abundance ~ site + offset(log(Offset)), data = microcosm, control = ZIPLNnetwork_param(min_ratio = 0.01))
+zi_models <- ZIPLNnetwork(Abundance ~ site + offset(log(Offset)), data = microcosm, control = ZIPLNnetwork_param(min_ratio = 0.05))
 ```
 
 As for `PLNnetwork`, a diagnostic plot and the evolution of the criteria
@@ -236,7 +236,7 @@ and represent it:
 
 ``` r
 
-zi_net <- getBestModel(zi_models, "EBIC")
+zi_net <- getBestModel(zi_models, "BIC")
 plot(zi_net)
 ```
 

@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="index.html">PLNmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9350</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9500</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -108,7 +108,7 @@
 <p>We illustrate the main models on the <code>barents</code> data set (<a href="#ref-fossheim2006">Fossheim et al. 2006</a>): the abundance of 30 fish species observed in 89 sites in the Barents sea, along with depth, temperature and geographic coordinates for each site.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pln-team.github.io/PLNmodels/">PLNmodels</a></span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>This is package <span class="st">'PLNmodels'</span> version <span class="dv">1</span>.<span class="fl">3.2</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>This is package <span class="st">'PLNmodels'</span> version <span class="dv">1</span>.<span class="dv">3</span>.<span class="fl">2.9500</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">barents</span><span class="op">)</span></span>
 <span><span class="co">## a simple North/South split of the sites, used below to illustrate PLNLDA</span></span>
@@ -181,36 +181,36 @@
 <div class="sourceCode" id="cb17"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a> Initialization...</span>
 <span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a> Adjusting <span class="dv">30</span> PLN with sparse inverse covariance estimation</span>
 <span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>    Joint optimization alternating gradient descent and graphical<span class="sc">-</span>lasso</span>
-<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">3.77829</span> </span>
-<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">3.489896</span> </span>
-<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">3.223515</span> </span>
-<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">2.977467</span> </span>
-<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">2.7502</span> </span>
-<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">2.540279</span> </span>
-<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">2.346382</span> </span>
-<span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">2.167285</span> </span>
-<span id="cb17-12"><a href="#cb17-12" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">2.001858</span> </span>
-<span id="cb17-13"><a href="#cb17-13" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">1.849058</span> </span>
-<span id="cb17-14"><a href="#cb17-14" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">1.707921</span> </span>
-<span id="cb17-15"><a href="#cb17-15" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">1.577557</span> </span>
-<span id="cb17-16"><a href="#cb17-16" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">1.457143</span> </span>
-<span id="cb17-17"><a href="#cb17-17" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">1.345921</span> </span>
-<span id="cb17-18"><a href="#cb17-18" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">1.243188</span> </span>
-<span id="cb17-19"><a href="#cb17-19" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">1.148296</span> </span>
-<span id="cb17-20"><a href="#cb17-20" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">1.060648</span> </span>
-<span id="cb17-21"><a href="#cb17-21" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.9796893</span> </span>
-<span id="cb17-22"><a href="#cb17-22" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.9049105</span> </span>
-<span id="cb17-23"><a href="#cb17-23" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.8358394</span> </span>
-<span id="cb17-24"><a href="#cb17-24" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.7720405</span> </span>
-<span id="cb17-25"><a href="#cb17-25" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.7131113</span> </span>
-<span id="cb17-26"><a href="#cb17-26" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.6586802</span> </span>
-<span id="cb17-27"><a href="#cb17-27" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.6084037</span> </span>
-<span id="cb17-28"><a href="#cb17-28" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.5619647</span> </span>
-<span id="cb17-29"><a href="#cb17-29" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.5190704</span> </span>
-<span id="cb17-30"><a href="#cb17-30" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.4794502</span> </span>
-<span id="cb17-31"><a href="#cb17-31" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.4428542</span> </span>
-<span id="cb17-32"><a href="#cb17-32" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.4090515</span> </span>
-<span id="cb17-33"><a href="#cb17-33" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.377829</span> </span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.5329204</span> </span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.492243</span> </span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.4546705</span> </span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.4199659</span> </span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.3879103</span> </span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.3583014</span> </span>
+<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.3309526</span> </span>
+<span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.3056912</span> </span>
+<span id="cb17-12"><a href="#cb17-12" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.2823581</span> </span>
+<span id="cb17-13"><a href="#cb17-13" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.2608059</span> </span>
+<span id="cb17-14"><a href="#cb17-14" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.2408988</span> </span>
+<span id="cb17-15"><a href="#cb17-15" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.2225112</span> </span>
+<span id="cb17-16"><a href="#cb17-16" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.2055272</span> </span>
+<span id="cb17-17"><a href="#cb17-17" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.1898394</span> </span>
+<span id="cb17-18"><a href="#cb17-18" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.1753492</span> </span>
+<span id="cb17-19"><a href="#cb17-19" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.1619649</span> </span>
+<span id="cb17-20"><a href="#cb17-20" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.1496023</span> </span>
+<span id="cb17-21"><a href="#cb17-21" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.1381833</span> </span>
+<span id="cb17-22"><a href="#cb17-22" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.1276358</span> </span>
+<span id="cb17-23"><a href="#cb17-23" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.1178935</span> </span>
+<span id="cb17-24"><a href="#cb17-24" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.1088948</span> </span>
+<span id="cb17-25"><a href="#cb17-25" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.100583</span> </span>
+<span id="cb17-26"><a href="#cb17-26" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.09290554</span> </span>
+<span id="cb17-27"><a href="#cb17-27" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.08581414</span> </span>
+<span id="cb17-28"><a href="#cb17-28" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.07926402</span> </span>
+<span id="cb17-29"><a href="#cb17-29" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.07321387</span> </span>
+<span id="cb17-30"><a href="#cb17-30" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.06762551</span> </span>
+<span id="cb17-31"><a href="#cb17-31" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.06246372</span> </span>
+<span id="cb17-32"><a href="#cb17-32" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.05769591</span> </span>
+<span id="cb17-33"><a href="#cb17-33" tabindex="-1"></a>    sparsifying penalty <span class="ot">=</span> <span class="fl">0.05329204</span> </span>
 <span id="cb17-34"><a href="#cb17-34" tabindex="-1"></a> Post<span class="sc">-</span>treatments</span>
 <span id="cb17-35"><a href="#cb17-35" tabindex="-1"></a> DONE<span class="sc">!</span></span></code></pre></div>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
@@ -240,10 +240,10 @@
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span>cluster <span class="op">=</span> <span class="va">myMixture</span><span class="op">$</span><span class="va">memberships</span>, zone <span class="op">=</span> <span class="va">barents</span><span class="op">$</span><span class="va">zone</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb23"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a>       zone</span>
 <span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>cluster North South</span>
-<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>      <span class="dv">1</span>     <span class="dv">1</span>    <span class="dv">17</span></span>
-<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a>      <span class="dv">2</span>    <span class="dv">11</span>     <span class="dv">0</span></span>
-<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a>      <span class="dv">3</span>    <span class="dv">21</span>     <span class="dv">6</span></span>
-<span id="cb23-6"><a href="#cb23-6" tabindex="-1"></a>      <span class="dv">4</span>    <span class="dv">11</span>    <span class="dv">22</span></span></code></pre></div>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>      <span class="dv">1</span>     <span class="dv">1</span>    <span class="dv">21</span></span>
+<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a>      <span class="dv">2</span>    <span class="dv">11</span>    <span class="dv">18</span></span>
+<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a>      <span class="dv">3</span>    <span class="dv">11</span>     <span class="dv">0</span></span>
+<span id="cb23-6"><a href="#cb23-6" tabindex="-1"></a>      <span class="dv">4</span>    <span class="dv">21</span>     <span class="dv">6</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">

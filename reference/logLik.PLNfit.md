@@ -41,5 +41,5 @@ model <- PLN(Abundance ~ 1, data = trichoptera)
 #>  Post-treatments...
 #>  DONE!
 logLik(model)
-#> 'log Lik.' -1129.637 (df=170)
+#> 'log Lik.' -1129.624 (df=170)
 ```

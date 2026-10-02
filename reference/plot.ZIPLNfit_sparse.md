@@ -88,6 +88,13 @@ large ones)
 data(trichoptera)
 trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
 fit <- ZIPLN(Abundance ~ 1, data = trichoptera, control = ZIPLN_param(penalty = 0.1))
+#> ℹ The penalty now applies on the correlation scale by default: the penalties
+#>   given are taken as such, between 0 and 1. Until version 1.3.2 they were on
+#>   the covariance scale.
+#> ℹ Set `penalty_scale = "covariance"` in the control parameters to get the
+#>   former behavior back, or `penalty_scale = "correlation"` to keep the
+#>   penalties as they are, without this message.
+#> This message is displayed once per session.
 #> 
 #>  Initialization...
 #>  Adjusting a ZI-PLN model with sparse covariance model and single specific parameter(s) in Zero inflation component.

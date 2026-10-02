@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">PLNmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9350</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9500</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,7 +68,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Zero-inflated PLN models for multivariate count data with excess zeros</h1>
                         <h4 data-toc-skip class="author">PLN team</h4>
             
-            <h4 data-toc-skip class="date">2026-10-01</h4>
+            <h4 data-toc-skip class="date">2026-10-02</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/pln-team/PLNmodels/blob/master/vignettes/ZIPLN.Rmd" class="external-link"><code>vignettes/ZIPLN.Rmd</code></a></small>
       <div class="d-none name"><code>ZIPLN.Rmd</code></div>
@@ -196,9 +196,9 @@ fit:</p>
 <tbody>
 <tr class="odd">
 <td align="left">PLN</td>
-<td align="right">-51733.9</td>
-<td align="right">-53717.1</td>
-<td align="right">-100735.3</td>
+<td align="right">-51716.2</td>
+<td align="right">-53699.3</td>
+<td align="right">-100954.0</td>
 </tr>
 <tr class="even">
 <td align="left">ZIPLN (single)</td>
@@ -222,7 +222,7 @@ fit:</p>
 <td align="left">ZIPLN (site-dependent)</td>
 <td align="right">-47593.7</td>
 <td align="right">-49983.7</td>
-<td align="right">-81233.0</td>
+<td align="right">-81232.5</td>
 </tr>
 </tbody>
 </table>
@@ -306,7 +306,7 @@ used (it now finds a consistently better ELBO than <code>"nlopt"</code>
 here, at the cost of being slower); we lower <code>min_ratio</code> to
 explore a wider, sparser range of the penalty path:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">zi_models</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ZIPLNnetwork.html">ZIPLNnetwork</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="va">site</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">microcosm</span>, control <span class="op">=</span> <span class="fu"><a href="../reference/ZIPLNnetwork_param.html">ZIPLNnetwork_param</a></span><span class="op">(</span>min_ratio <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">zi_models</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ZIPLNnetwork.html">ZIPLNnetwork</a></span><span class="op">(</span><span class="va">Abundance</span> <span class="op">~</span> <span class="va">site</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Offset</span><span class="op">)</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">microcosm</span>, control <span class="op">=</span> <span class="fu"><a href="../reference/ZIPLNnetwork_param.html">ZIPLNnetwork_param</a></span><span class="op">(</span>min_ratio <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>As for <code>PLNnetwork</code>, a diagnostic plot and the evolution
 of the criteria along the path are available:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
@@ -326,7 +326,7 @@ Evolution of model selection criteria
 <p>We select a network with <code><a href="../reference/getBestModel.html">getBestModel()</a></code> and represent
 it:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">zi_net</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBestModel.html">getBestModel</a></span><span class="op">(</span><span class="va">zi_models</span>, <span class="st">"EBIC"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">zi_net</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBestModel.html">getBestModel</a></span><span class="op">(</span><span class="va">zi_models</span>, <span class="st">"BIC"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">zi_net</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="ZIPLN_files/figure-html/ziplnnetwork_best-1.png" class="r-plt" alt="Sparse residual network between the 30 most abundant taxa" width="672"><p class="caption">

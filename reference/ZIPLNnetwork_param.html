@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">PLNmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9350</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9500</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,7 +59,7 @@
 <span>  min_ratio <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  penalize_diagonal <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  penalty_weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  penalty_scale <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"covariance"</span>, <span class="st">"correlation"</span><span class="op">)</span>,</span>
+<span>  penalty_scale <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"correlation"</span>, <span class="st">"covariance"</span><span class="op">)</span>,</span>
 <span>  latent_floor <span class="op">=</span> <span class="fl">0.001</span>,</span>
 <span>  config_post <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  config_optim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -97,9 +97,10 @@ network, but was found to lead to a lower BIC along the path, at a higher cost.<
 
 <dt id="arg-penalize-diagonal">penalize_diagonal<a class="anchor" aria-label="anchor" href="#arg-penalize-diagonal"></a></dt>
 <dd><p>boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is <code>FALSE</code>.
-Penalizing the diagonal inflates the latent variances by the penalty (\(\Sigma_{ii} = S_{ii} + \rho\)),
-which the VE step then feeds back into the residual covariance \(S\): along the path, the
-network may then never become empty, whatever the penalty (#180).</p></dd>
+Penalizing the diagonal inflates the latent variances (\(\Sigma_{ii} = S_{ii} + \rho\) on the covariance
+scale, \(\Sigma_{ii} = S_{ii} (1 + \rho)\) on the correlation scale), which the VE step then feeds back into
+the residual covariance \(S\): along the path, the network may then never become empty, and the latent
+variances diverge (#180).</p></dd>
 
 
 <dt id="arg-penalty-weights">penalty_weights<a class="anchor" aria-label="anchor" href="#arg-penalty-weights"></a></dt>
@@ -107,16 +108,16 @@ network may then never become empty, whatever the penalty (#180).</p></dd>
 
 
 <dt id="arg-penalty-scale">penalty_scale<a class="anchor" aria-label="anchor" href="#arg-penalty-scale"></a></dt>
-<dd><p>character, the scale on which the l1 penalty applies: <code>"covariance"</code> (default) penalizes
-the entries of the precision matrix as they are, <code>"correlation"</code> penalizes them on the scale of the
-variables, with a penalty \(\lambda \sqrt{S_{ii} S_{jj}}\) on the pair \((i, j)\), where \(S\) is the
-current residual covariance. This amounts to applying the graphical-Lasso to the residual <em>correlation</em>
-matrix, as is customary for Gaussian graphical models, and makes the penalties dimensionless, between 0 and 1.
-The entries of a precision matrix are not scale invariant: with <code>"covariance"</code>, a species with a large latent
-variance has nearly free edges, and one that is often absent but abundant when present, whose zeros are
-fitted by very negative latent means, ends up connected to most of the others (see the field
-<code>degenerate_species</code> of a <code><a href="PLNfit.html">PLNfit</a></code>). <code>"correlation"</code> removes this artefact; see the section on the scale
-of the penalty.</p></dd>
+<dd><p>character, the scale on which the l1 penalty applies. <code>"correlation"</code> (default) penalizes
+the entries of the precision matrix on the scale of the variables, with a penalty
+\(\lambda \sqrt{S_{ii} S_{jj}}\) on the pair \((i, j)\), where \(S\) is the current residual covariance.
+This amounts to applying the graphical-Lasso to the residual <em>correlation</em> matrix and rescaling the result, the
+correlation-based estimator of Rothman, Bickel, Levina and Zhu (2008), and makes the penalties dimensionless,
+between 0 and 1. <code>"covariance"</code>, the only
+behavior until version 1.3.2, penalizes the entries of the precision matrix as they are. These are not scale
+invariant: a species with a large latent variance then has nearly free edges, and one that is often absent but
+abundant when present ends up connected to most of the others (see the field <code>degenerate_species</code> of a
+<code><a href="PLNfit.html">PLNfit</a></code>). See the section on the scale of the penalty.</p></dd>
 
 
 <dt id="arg-latent-floor">latent_floor<a class="anchor" aria-label="anchor" href="#arg-latent-floor"></a></dt>
@@ -153,6 +154,11 @@ which sometimes speeds up the inference.</p></dd>
     <p>See <code><a href="PLNnetwork_param.html">PLNnetwork_param()</a></code> for a full description of the optimization parameters. Note that some defaults values are different than those used in <code><a href="PLNnetwork_param.html">PLNnetwork_param()</a></code>:</p><ul><li><p>"ftol_out" (outer loop convergence tolerance the objective function) is set by default to 1e-6</p></li>
 <li><p>"maxit_out" (max number of iterations for the outer loop) is set by default to 50</p></li>
 </ul></div>
+    <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+    <p>Rothman, A. J., Bickel, P. J., Levina, E. and Zhu, J. (2008). Sparse permutation invariant
+covariance estimation. <em>Electronic Journal of Statistics</em>, 2, 494–515. <a href="https://doi.org/10.1214/08-EJS176" class="external-link">doi:10.1214/08-EJS176</a></p>
+    </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="PLNnetwork_param.html">PLNnetwork_param()</a></code> and <code><a href="PLN_param.html">PLN_param()</a></code></p></div>

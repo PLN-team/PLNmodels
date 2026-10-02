@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">PLNmodels</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9350</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2.9500</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -89,7 +89,7 @@
 
 
     <dt><code>pen_loglik</code></dt>
-<dd><p>variational lower bound of the l1-penalized loglikelihood</p></dd>
+<dd><p>variational lower bound of the l1-penalized loglikelihood, the criterion that the M step of the last iteration maximizes: <code>loglik - n/2 * sum(abs(rho * Omega))</code>, where <code>rho</code> is the penalty matrix of the graphical Lasso, that is the penalty times the penalty weights and, on the correlation scale, times \(\sqrt{S_{ii} S_{jj}}\)</p></dd>
 
 
     <dt><code>ebic_gamma</code></dt>

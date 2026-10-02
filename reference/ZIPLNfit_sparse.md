@@ -52,7 +52,12 @@ with sparse inverse residual covariance
 
 - `pen_loglik`:
 
-  variational lower bound of the l1-penalized loglikelihood
+  variational lower bound of the l1-penalized loglikelihood, the
+  criterion that the M step of the last iteration maximizes:
+  `loglik - n/2 * sum(abs(rho * Omega))`, where `rho` is the penalty
+  matrix of the graphical Lasso, that is the penalty times the penalty
+  weights and, on the correlation scale, times \\\sqrt{S\_{ii}
+  S\_{jj}}\\
 
 - `ebic_gamma`:
 
