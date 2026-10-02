@@ -121,14 +121,11 @@ ZIPLNfit <- R6Class(
     #' @description Call to the Cpp optimizer and update of the relevant fields
     #' @param control a list for controlling the optimization. See details.
     optimize = function(data, control) {
-      ## Normalize X columns so all backends handle large-magnitude covariates well.
       nrm    <- normalize_covariates(data$X)
       data$X <- nrm$X_sc
-      ## ZIPLN does not (yet) support per-observation weights; ones() satisfies the
-      ## (data, params, config) C++ convention shared with PLN's PlnData (which expects w).
+      ## ZIPLN has no observation weights: unit ones for the C++ VE step
       ve_data <- list(Y = data$Y, X = data$X, O = data$O, w = rep(1, nrow(data$Y)))
-      ## maxit_ve caps the VE-step's own Newton iteration count (builtin only — the
-      ## nlopt VE-step already reads "maxeval" from config directly).
+      ## maxit_ve caps the Newton iterations of the builtin VE step
       ve_config <- control
       if (control$backend == "builtin" && !is.null(control$maxit_ve))
         ve_config$maxeval <- as.integer(control$maxit_ve)
@@ -137,7 +134,6 @@ ZIPLNfit <- R6Class(
         list(Omega = NA, B0 = private$B0, B = sweep(private$B, 1, nrm$scales, "*"),
              Pi = private$Pi, M = private$M, S2 = private$S2, R = private$R)
 
-      # Outer loop
       nb_iter <- 0
       criterion   <- numeric(control$maxit_out)
       convergence <- numeric(control$maxit_out)
@@ -146,7 +142,6 @@ ZIPLNfit <- R6Class(
       nb_increase <- 0L
       best <- list(parameters = parameters, objective = Inf, vloglik = vloglik)
       repeat {
-        # Check maxeval
         if (control$maxit_out >= 0 && nb_iter >= control$maxit_out) {
           stop_reason <- "maximum number of iterations reached"
           criterion   <- criterion[1:nb_iter]
@@ -155,8 +150,7 @@ ZIPLNfit <- R6Class(
         }
 
         ### M Step
-        # PLN part: B = P_X M is optimal whatever Omega, so the pair (B, Omega) is
-        # the joint optimum when Omega is computed with the new B
+        # PLN part: B = P_X M is optimal whatever Omega, which is then computed with it
         new_B <- private$optimizer$B(
           M = parameters$M, X = data$X
         )
@@ -171,7 +165,7 @@ ZIPLNfit <- R6Class(
         new_B0 <- optim_new_zipar$B0
         new_Pi <- optim_new_zipar$Pi
 
-        ### VE Step — joint (M, ψ, R): both CCSAQ and NEWTON handle R internally
+        ### VE Step, joint in (M, S2, R)
         MS_out <- do.call(private$optimizer$MS, list(
           data   = ve_data,
           params = list(M = parameters$M, S2 = parameters$S2, Pi = new_Pi, B = new_B, Omega = new_Omega),
@@ -180,19 +174,15 @@ ZIPLNfit <- R6Class(
         new_M  <- MS_out$M
         new_S2 <- MS_out$S2
         new_R  <- MS_out$R
-        ## keep the variational means of the degenerate species above the latent
-        ## floor, if any (sparse fits only)
+        ## latent floor, if any (sparse fits only)
         projected <- private$project_floor(new_M, new_S2, new_R, new_Pi, new_Omega, data)
         if (!is.null(projected)) {
           new_M <- projected$M; new_S2 <- projected$S2; new_R <- projected$R
         }
-        ## The builtin VE step optimizes M with B profiled (B = P_X M), so that
-        ## the objective must be evaluated at the matching B, not at the one of
-        ## the M step
+        ## the builtin VE step profiles B = P_X M: the objective is evaluated at this B
         if (control$backend == "builtin")
           new_B <- private$optimizer$B(M = new_M, X = data$X)
 
-        # Check convergence
         new_parameters <- list(
           Omega = new_Omega, B = new_B, B0 = new_B0, Pi = new_Pi,
           R = new_R, M = new_M, S2 = new_S2
@@ -221,11 +211,9 @@ ZIPLNfit <- R6Class(
           break
         }
 
-        ## The variational EM should decrease the objective at every step: an
-        ## increase is not a sign of convergence. It is counted, and the best
-        ## iterate is the one returned. When the objective cannot be compared
-        ## with the one of the previous iterates (see ZIPLNfit_sparse), the
-        ## current iterate is kept.
+        ## An increase of the objective is counted, not taken as convergence, and
+        ## the best iterate is returned. When the objective cannot be compared with
+        ## the previous ones (see ZIPLNfit_sparse), the current iterate is kept.
         comparable <- private$objective_is_comparable()
         delta <- objective - new_objective
         objective_converged <-
@@ -309,7 +297,6 @@ ZIPLNfit <- R6Class(
       parameters <-
         list(M = matrix(0, n, self$p), S2 = matrix(.01, n, self$p), R = matrix(0, n, self$p))
 
-      # Outer loop
       nb_iter <- 0
       criterion   <- numeric(control$maxit_out)
       convergence <- numeric(control$maxit_out)
@@ -318,7 +305,6 @@ ZIPLNfit <- R6Class(
 
       repeat {
 
-        # Check maxeval
         if (control$maxit_out >= 0 && nb_iter >= control$maxit_out) {
           stop_reason <- "maximum number of iterations reached"
           criterion   <- criterion[1:nb_iter]
@@ -330,7 +316,7 @@ ZIPLNfit <- R6Class(
           R = parameters$R, init_B0 = B0, X0 = data$X0, config = config_default_nlopt
         )$Pi
 
-        # VE Step — joint (M, ψ, R): R handled internally by optimizer
+        # VE Step, joint in (M, S2, R)
         MS_out <- do.call(private$optimizer$MS, list(
           data   = ve_data,
           params = list(M = parameters$M, S2 = parameters$S2, Pi = Pi, B = B, Omega = Omega),
@@ -339,7 +325,6 @@ ZIPLNfit <- R6Class(
         new_M  <- MS_out$M
         new_S2 <- MS_out$S2
         new_R  <- MS_out$R
-        # Check convergence
         new_parameters <- list(R = new_R, M = new_M, S2 = new_S2)
         nb_iter <- nb_iter + 1
 
@@ -361,11 +346,9 @@ ZIPLNfit <- R6Class(
           xtol_abs = control$xtol_abs, xtol_rel = control$xtol_rel
         )
 
-        ## Update parameters
         parameters <- new_parameters
         objective <- new_objective
 
-        ## End outer loop in case of convergence
         if (parameters_converged | objective_converged) {
           stop_reason <- "converged"
           criterion   <- criterion[1:nb_iter]
@@ -525,9 +508,7 @@ ZIPLNfit <- R6Class(
     optimizer  = list(), # list of links to the functions doing the optimization
     monitoring = list(), # list with optimization monitoring quantities
 
-    ## Set optimizer$MS to the covariance-specific C++ VE-step export matching
-    ## control$backend (mirrors PLNfit's private$setup_optimizer). Called by
-    ## every subclass initialize() so the dispatch logic lives once.
+    ## Set optimizer$MS to the C++ VE step of the backend and covariance structure
     setup_MS_optimizer = function(backend, suffix) {
       private$optimizer$MS <- zipln_MS_fn(backend, suffix)
     },
@@ -536,12 +517,10 @@ ZIPLNfit <- R6Class(
     ## none here, the l1 penalty of the graphical Lasso for ZIPLNfit_sparse
     objective_penalty = function(Omega, n) {0},
 
-    ## Projection of the output of a VE step on the latent floor: none here, see
-    ## ZIPLNfit_sparse. Returns NULL when nothing changes.
+    ## Projection of a VE step on the latent floor: none here, see ZIPLNfit_sparse
     project_floor = function(M, S2, R, Pi, Omega, data) {NULL},
 
-    ## Can the objective of the current iterate be compared with the one of the
-    ## previous iterates? Always here, see ZIPLNfit_sparse.
+    ## Can the objective of an iterate be compared with the previous ones?
     objective_is_comparable = function() {TRUE}
   ),
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -580,7 +559,7 @@ ZIPLNfit <- R6Class(
     var_par    = function() {list(M = private$M, S2 = private$S2, S = sqrt(private$S2), R = private$R)},
     #' @field optim_par a list with parameters useful for monitoring the optimization
     optim_par   = function() {private$monitoring},
-    #' @field degenerate_species names of the species whose latent variance is above 100 (a standard deviation of 10 on the log scale, see `options(PLNmodels.latent_variance_threshold = )`). The zeros of such a species are fitted by latent means going to minus infinity. This happens to species that are often absent but abundant when present, notably those absent from a whole group of samples (see [structural_zeros()]), for which the model lacks the covariate that explains the absences. In a network fit, such a species ends up connected to most of the others: these edges are artefacts.
+    #' @field degenerate_species names of the species whose latent variance is above 100, see the field of the same name in [`PLNfit`]
     degenerate_species = function() {degenerate_species(private$Sigma)},
     #' @field latent a matrix: values of the latent vector (Z in the model)
     latent  = function() {private$Z},
@@ -796,27 +775,25 @@ ZIPLNfit_sparse <- R6Class(
     glasso_nonconv   = 0L,   # number of non-converged graphical Lasso calls
     glasso_indef     = 0L,   # number of graphical Lasso calls with an indefinite wi
     gamma_ebic       = 0.5,  # the tuning parameter of the EBIC
-    ## The M step for Omega maximizes the ELBO minus this penalty, on the scale of
-    ## the ELBO (graphical Lasso on the covariance S = crossprod/n, hence n/2)
+    ## l1 penalty of the graphical Lasso, on the scale of the ELBO (hence n/2)
     objective_penalty = function(Omega, n) {
       .5 * n * sum(abs(private$rho_glasso * Omega))
     },
     floor   = NULL, # lower bound on exp(O + M) for the degenerate species, if any
     floored = NULL, # species bounded by the floor so far (logical)
     newly_floored = FALSE, # did the last projection bound a new species?
-    ## The objective of an iterate cannot be compared with the previous ones on
-    ## the correlation scale, where the penalty weights change with the residual
-    ## covariance at each iteration, nor when a species has just been bounded by
-    ## the floor, the previous iterates no longer being feasible
+    ## Not on the correlation scale, where the penalty changes with the residual
+    ## covariance at each iteration, nor when a species has just been floored,
+    ## the previous iterates no longer being feasible
     objective_is_comparable = function() {
       private$scale != "correlation" && !private$newly_floored
     },
     n_floor = 0L,   # cells at the floor in the last iteration
-    ## As PLNnetworkfit: the floor applies to the species whose latent variance
-    ## has exceeded the threshold of the degenerate species, from then on. The
-    ## means below the bound are set to it; on these cells the variational
-    ## variance is set to its optimum given M and R, then R to its optimum
-    ## given the expected count (as zipln_update_R in src/covariance_zipln.h).
+    ## As in PLNnetworkfit, the floor applies to a species once its latent
+    ## variance has exceeded the threshold of the degenerate species. On the
+    ## cells set to the bound, S2 is set to its optimum given M and R, then R to
+    ## its optimum given the expected count (as zipln_update_R in src/covariance_zipln.h).
+    ## Returns NULL when nothing changes.
     project_floor = function(M, S2, R, Pi, Omega, data) {
       private$newly_floored <- FALSE
       if (is.null(private$floor)) return(NULL)
@@ -832,10 +809,11 @@ ZIPLNfit_sparse <- R6Class(
       if (!any(clipped)) return(NULL)
       private$n_floor <- sum(clipped)
       M[clipped] <- bound[clipped]
-      omega <- matrix(diag(as.matrix(Omega)), nrow(M), ncol(M), byrow = TRUE)
-      S2[clipped] <- optimal_variational_variance((data$O + M)[clipped], omega[clipped], (1 - R)[clipped])
-      A <- exp(data$O + M + .5 * S2)
-      R[clipped] <- (stats::plogis(A + stats::qlogis(Pi)) * (data$Y == 0))[clipped]
+      Z <- (data$O + M)[clipped]
+      omega <- diag(as.matrix(Omega))[col(M)[clipped]]
+      S2[clipped] <- optimal_variational_variance(Z, omega, 1 - R[clipped])
+      A <- exp(Z + .5 * S2[clipped])
+      R[clipped] <- stats::plogis(A + stats::qlogis(Pi[clipped])) * (data$Y[clipped] == 0)
       list(M = M, S2 = S2, R = R)
     }
   ),
@@ -847,18 +825,14 @@ ZIPLNfit_sparse <- R6Class(
     #' @description Initialize a [`ZIPLNfit_fixed`] model
     initialize = function(data, control) {
       super$initialize(data, control)
-      ## Default for penalty weights (if not already set)
-      if (is.null(control$penalty_weights)) control$penalty_weights <- matrix(1, self$p, self$p)
-      stopifnot(isSymmetric(control$penalty_weights), all(control$penalty_weights >= 0))
-      if (!control$penalize_diagonal) diag(control$penalty_weights) <- 0
       private$lambda <- control$penalty
-      private$rho    <- control$penalty_weights
+      private$rho    <- check_penalty_weights(control$penalty_weights, self$p, control$penalize_diagonal)
       if (!is.null(control$penalty_scale)) private$scale <- control$penalty_scale
       private$floor <- control$latent_floor
       private$optimizer$Omega <-
         function(M, X, B, S2) {
           S <- crossprod(M - X %*% B)/self$n + diag(colMeans(S2), self$p, self$p)
-          ## kept for the penalized objective, since it depends on S on the correlation scale
+          ## kept for the penalized objective
           private$rho_glasso <- glasso_penalty(private$lambda, private$rho, S, private$scale)
           out <- graphical_lasso(S, rho = private$rho_glasso)
           private$glasso_status <- out$status
@@ -897,18 +871,7 @@ ZIPLNfit_sparse <- R6Class(
     #' @importFrom Matrix Matrix
     #' @return a square matrix of size `ZIPLNfit_sparse$n`
     latent_network = function(type = c("partial_cor", "support", "precision")) {
-      net <- switch(
-        match.arg(type),
-        "support"     = 1 * (private$Omega != 0 & !diag(TRUE, ncol(private$Omega))),
-        "precision"   = private$Omega,
-        "partial_cor" = {
-          tmp <- -private$Omega / tcrossprod(sqrt(diag(private$Omega))); diag(tmp) <- 1
-          tmp
-        }
-      )
-      ## Enforce sparse Matrix encoding to avoid downstream problems with igraph::graph_from_adjacency_matrix
-      ## as it fails when given dsyMatrix objects
-      Matrix(net, sparse = TRUE)
+      .latent_network(private$Omega, match.arg(type))
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -953,13 +916,8 @@ ZIPLNfit_sparse <- R6Class(
     penalty_scale   = function() {private$scale},
     #' @field latent_floor the lower bound on `exp(O + M)` for the species in `floored_species`, `NULL` if none (see [PLNnetwork_param()])
     latent_floor    = function() {private$floor},
-    #' @field floored_species names of the species whose variational means are bounded by `latent_floor`: those whose latent variance has exceeded the threshold of `degenerate_species` during the optimization, of this fit or of the previous ones along the penalty path
-    floored_species = function() {
-      floored <- private$monitoring$floored
-      if (is.null(floored)) return(character(0))
-      species <- if (is.null(colnames(private$Omega))) as.character(seq_along(floored)) else colnames(private$Omega)
-      species[floored]
-    },
+    #' @field floored_species names of the species whose variational means are bounded by `latent_floor`, as in [`PLNnetworkfit`]
+    floored_species = function() {flagged_species(private$monitoring$floored, colnames(private$Omega))},
     #' @field n_edges number of edges if the network (non null coefficient of the sparse precision matrix)
     n_edges         = function() {sum(private$Omega[upper.tri(private$Omega, diag = FALSE)] != 0)},
     #' @field nb_param_pln number of parameters in the PLN part of the current model
@@ -968,14 +926,12 @@ ZIPLNfit_sparse <- R6Class(
     },
     #' @field vcov_model character: the model used for the residual covariance
     vcov_model = function() {"sparse"},
-    #' @field pen_loglik variational lower bound of the l1-penalized loglikelihood, the criterion that the M step of the last iteration maximizes: `loglik - n/2 * sum(abs(rho * Omega))`, where `rho` is the penalty matrix of the graphical Lasso, that is the penalty times the penalty weights and, on the correlation scale, times \eqn{\sqrt{S_{ii} S_{jj}}}
+    #' @field pen_loglik variational lower bound of the l1-penalized loglikelihood, as in [`PLNnetworkfit`]
     pen_loglik      = function() {
       if (is.null(private$rho_glasso)) return(NA_real_)
       self$loglik - private$objective_penalty(as.matrix(private$Omega), self$n)
     },
-    #' @field ebic_gamma the tuning parameter gamma of the EBIC, between 0 and 1. Zero
-    #' gives back the BIC; the default 0.5 is the value recommended by Foygel and
-    #' Drton (2010). Assign to it to change the EBIC of this fit.
+    #' @field ebic_gamma the tuning parameter gamma of the EBIC, as in [`PLNnetworkfit`]
     ebic_gamma = function(value) {
       if (missing(value)) return(private$gamma_ebic)
       stopifnot(is.numeric(value), length(value) == 1L, !is.na(value), value >= 0, value <= 1)

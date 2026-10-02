@@ -63,14 +63,10 @@ Networkfamily <- R6Class(
       on_correlation <- identical(control$penalty_scale, "correlation")
       if (is.null(penalties)) {
         if (control$trace > 1) cat("\nComputing an appropriate grid of penalties.")
-        ## The graphical Lasso on S returns the empty network iff |S_ij| <= rho w_ij
-        ## off the diagonal, where S is the residual covariance of the variational
-        ## means, whatever the covariance model of the inception (its fitted Sigma
-        ## has no off-diagonal part when it is diagonal). With an unpenalized
-        ## diagonal and a diagonal inception, which is then the empty network
-        ## itself, this bound is exact: the top of the path is the empty network.
+        ## the top of the grid gives the empty network: the graphical Lasso on S
+        ## returns it iff |S_ij| <= rho w_ij off the diagonal (S being the
+        ## residual correlation matrix on the correlation scale)
         S_inception <- residual_covariance(control$inception, data$X, data$w)
-        ## on the correlation scale, the penalty on (i, j) is rho * sqrt(S_ii S_jj)
         if (on_correlation)
           S_inception <- S_inception / tcrossprod(sqrt(diag(S_inception)))
         in_grid <- upper.tri(S_inception, diag = control$penalize_diagonal)
@@ -83,8 +79,7 @@ Networkfamily <- R6Class(
       } else {
         if (control$trace > 1) cat("\nUsing penalties penalties provided by the user.")
         stopifnot(all(penalties > 0))
-        ## penalties given while the scale was left to its default: they may
-        ## have been meant for the covariance scale, the default until 1.3.2
+        ## they may have been meant for the covariance scale, the default until 1.3.2
         if (on_correlation && isTRUE(control$penalty_scale_implicit))
           penalties <- explicit_penalties_on_correlation_scale(
             penalties, residual_covariance(control$inception, data$X, data$w)
@@ -276,7 +271,73 @@ Networkfamily <- R6Class(
 
   private = list(
     penalties_weights = NULL, # a field to store the weights for each penalty,
-    stab_path = NULL # a field to store the stability path,
+    stab_path = NULL, # a field to store the stability path,
+
+    ## Data of a subsample, for the stability selection
+    subsample_data = function(subsample) {
+      list(Y = self$responses [subsample, , drop = FALSE],
+           X = self$covariates[subsample, , drop = FALSE],
+           O = self$offsets   [subsample, , drop = FALSE],
+           w = self$weights   [subsample])
+    },
+
+    ## Stability selection: the collection is fitted on each subsample by its
+    ## R6 generator `family`, as it was on the whole data set
+    compute_stability_path = function(subsamples, control, family) {
+
+      ## select default subsamples according to Liu et al. (2010) recommendations.
+      if (is.null(subsamples)) {
+        subsample.size <- round(ifelse(private$n >= 144, 10*sqrt(private$n), 0.8*private$n))
+        subsamples <- replicate(20, sample.int(private$n, subsample.size), simplify = FALSE)
+      }
+
+      cat("\nStability Selection for ", sub("family$", "", family$classname), ": ", sep = "")
+      cat("\nsubsampling: ")
+
+      stabs_out <- parallel::mclapply(subsamples, function(subsample) {
+        cat("+")
+        inception_ <- self$getModel(self$penalties[1])
+        var_par <- inception_$var_par[intersect(c("R", "M", "S2"), names(inception_$var_par))]
+        do.call(inception_$update, lapply(var_par, function(par) par[subsample, , drop = FALSE]))
+
+        ## force some control parameters
+        control$inception = inception_
+        control$penalty_weights = map(self$models, "penalty_weights")
+        control$penalize_diagonal = (sum(diag(inception_$penalty_weights)) != 0)
+        control$penalty_scale = inception_$penalty_scale
+        control$penalty_scale_implicit = FALSE # the penalties are those of the collection
+        control$latent_floor  = inception_$latent_floor
+        control$trace <- 0
+        control$config_optim$trace <- 0
+
+        data <- private$subsample_data(subsample)
+        myPLN <- family$new(self$penalties, data, control)
+        myPLN$optimize(data, control$config_optim)
+        do.call(cbind, lapply(myPLN$models, function(model) {
+          ## no precision matrix (failed fit): no edge
+          if (is.null(model$model_par$Omega)) {
+            support <- matrix(0, nrow = private$p, ncol = private$p)
+          } else {
+            support <- as.matrix(model$latent_network("support"))
+          }
+          support[upper.tri(diag(private$p))]
+        }))
+      }, mc.cores = getOption("mc.cores", 1L))
+
+      prob <- Reduce("+", stabs_out, accumulate = FALSE) / length(subsamples)
+      node_set <- colnames(self$getModel(index = 1)$model_par$B)
+      colnames(prob) <- self$penalties
+      private$stab_path <- prob %>%
+        as.data.frame() %>%
+        mutate(Edge = 1:n()) %>%
+        gather(key = "Penalty", value = "Prob", -Edge) %>%
+        mutate(Penalty = as.numeric(Penalty),
+               Node1   = node_set[edge_to_node(Edge)$node1],
+               Node2   = node_set[edge_to_node(Edge)$node2],
+               Edge    = paste0(Node1, "|", Node2))
+
+      invisible(subsamples)
+    }
   ),
 
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -364,13 +425,9 @@ PLNnetworkfamily <- R6Class(
 
       ## A basic model (constrained model) for inception, ignored if inception is provided by the user
       if (is.null(control$inception)) {
-        ## Determine inception backend (may differ from the main grid backend)
+        ## the inception may use another backend than the path, in which case
+        ## its optimizer config is rebuilt (the fields are not compatible)
         inc_backend <- if (!is.null(control$inception_backend)) control$inception_backend else control$backend
-
-        ## Build a standalone optimizer config for the inception PLN.
-        ## Start from control$config_optim (carries ftol_em, maxit_em, etc. set by
-        ## PLNnetwork_param) and only rebuild from scratch when a different backend
-        ## is explicitly requested (different optimizer family = incompatible fields).
         cfg_inception <- if (!is.null(control$inception_backend) && inc_backend != control$backend) {
           make_config_optim(inc_backend, list(), trace = 0)
         } else {
@@ -385,7 +442,6 @@ PLNnetworkfamily <- R6Class(
           }
         }
 
-        ## Patch control to use the inception backend for new() (optimizer is configured there)
         ctrl_inc <- control
         ctrl_inc$backend      <- inc_backend
         ctrl_inc$config_optim <- cfg_inception
@@ -418,70 +474,7 @@ PLNnetworkfamily <- R6Class(
     #' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines the number of subsamples used in the stability selection. Automatically set to 20 subsamples with size `10*sqrt(n)` if `n >= 144` and `0.8*n` otherwise following Liu et al. (2010) recommendations.
     #' @param control a list controlling the main optimization process in each call to [`PLNnetwork()`]. See [PLNnetwork()] and [PLN_param()] for details.
     stability_selection = function(subsamples = NULL, control = PLNnetwork_param()) {
-
-      ## select default subsamples according to Liu et al. (2010) recommendations.
-      if (is.null(subsamples)) {
-        subsample.size <- round(ifelse(private$n >= 144, 10*sqrt(private$n), 0.8*private$n))
-        subsamples <- replicate(20, sample.int(private$n, subsample.size), simplify = FALSE)
-      }
-
-      ## got for stability selection
-      cat("\nStability Selection for PLNnetwork: ")
-      cat("\nsubsampling: ")
-
-      stabs_out <- parallel::mclapply(subsamples, function(subsample) {
-        cat("+")
-        inception_ <- self$getModel(self$penalties[1])
-        inception_$update(
-          M  = inception_$var_par$M[subsample, ],
-          S2 = inception_$var_par$S2[subsample, ]
-        )
-
-        ## force some control parameters
-        control$inception = inception_
-        control$penalty_weights = map(self$models, "penalty_weights")
-        control$penalize_diagonal = (sum(diag(inception_$penalty_weights)) != 0)
-        ## the subsamples are fitted as the collection was
-        control$penalty_scale = inception_$penalty_scale
-        control$penalty_scale_implicit = FALSE # the penalties are those of the collection
-        control$latent_floor  = inception_$latent_floor
-        control$trace <- 0
-        control$config_optim$trace <- 0
-
-        data <- list(
-          Y  = self$responses [subsample, , drop = FALSE],
-          X = self$covariates[subsample, , drop = FALSE],
-          O = self$offsets   [subsample, , drop = FALSE],
-          w = self$weights   [subsample])
-
-        myPLN <- PLNnetworkfamily$new(self$penalties, data, control)
-        myPLN$optimize(data, control$config_optim)
-        nets <- do.call(cbind, lapply(myPLN$models, function(model) {
-          # If Omega is null, glasso diverged on the first iteration, so the network is completely unstable
-          if (is.null(model$model_par$Omega)) {
-            support <- matrix(0, nrow = private$p, ncol = private$p)
-          } else {
-            support <- as.matrix(model$latent_network("support"))
-          }
-          support[upper.tri(diag(private$p))]
-        }))
-        nets
-      }, mc.cores = getOption("mc.cores", 1L))
-
-      prob <- Reduce("+", stabs_out, accumulate = FALSE) / length(subsamples)
-      ## formatting/tyding
-      node_set <- colnames(self$getModel(index = 1)$model_par$B)
-      colnames(prob) <- self$penalties
-      private$stab_path <- prob %>%
-        as.data.frame() %>%
-        mutate(Edge = 1:n()) %>%
-        gather(key = "Penalty", value = "Prob", -Edge) %>%
-        mutate(Penalty = as.numeric(Penalty),
-               Node1   = node_set[edge_to_node(Edge)$node1],
-               Node2   = node_set[edge_to_node(Edge)$node2],
-               Edge    = paste0(Node1, "|", Node2))
-
-      invisible(subsamples)
+      private$compute_stability_path(subsamples, control, PLNnetworkfamily)
     }
   )
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -531,22 +524,10 @@ ZIPLNnetworkfamily <- R6Class(
 
       ## A basic model for inception, useless one is defined by the user
       if (is.null(control$inception)) {
-        ## Build a standalone optimizer config for the inception ZIPLN.
-        ##
-        ## ZIPLNnetwork_param() deliberately truncates the optimizer for the
-        ## regularization path: maxit_ve = 1 caps the VE step at a single Newton
-        ## iteration and maxit_out is lowered to 50. Those settings are appropriate
-        ## for the models along the path, which are warm-started from one another,
-        ## but not for the inception, which starts from scratch. Under zero-inflation
-        ## the VE step also has to fit the responsibilities R of the Bernoulli
-        ## component, and one Newton iteration is not enough: the inception stalls at
-        ## a markedly worse optimum and the warm starts carry that solution all the
-        ## way down the path, including its unpenalized end.
-        ##
-        ## We therefore fit the inception with the same budget a standalone ZIPLN()
-        ## would use. The cost is negligible (a single extra fit) and the path itself
-        ## keeps its truncated settings. This mirrors the cfg_inception mechanism of
-        ## PLNnetworkfamily above.
+        ## The inception starts from scratch: it is fitted with the budget of a
+        ## standalone ZIPLN(), not with the truncated one of the path (maxit_ve = 1,
+        ## maxit_out = 50), meant for warm-started fits, with which it stalls at a
+        ## worse optimum that the warm starts then carry down the whole path
         cfg_inception <- modifyList(
           control$config_optim,
           list(trace = 0, maxit_ve = NULL, maxit_out = 200L)
@@ -554,8 +535,6 @@ ZIPLNnetworkfamily <- R6Class(
         ctrl_inc <- control
         ctrl_inc$config_optim <- cfg_inception
 
-        ## Allow inception with spherical / diagonal / full PLNfit before switching back to PLNfit_fixedcov
-        ## for the inner-outer loop of PLNnetwork.
         myPLN <- switch(
           control$inception_cov,
           "spherical" = ZIPLNfit_spherical$new(data, ctrl_inc),
@@ -585,74 +564,15 @@ ZIPLNnetworkfamily <- R6Class(
     #' @param subsamples a list of vectors describing the subsamples. The number of vectors (or list length) determines the number of subsamples used in the stability selection. Automatically set to 20 subsamples with size `10*sqrt(n)` if `n >= 144` and `0.8*n` otherwise following Liu et al. (2010) recommendations.
     #' @param control a list controlling the main optimization process in each call to [`PLNnetwork()`]. See [ZIPLNnetwork()] and [ZIPLN_param()] for details.
     stability_selection = function(subsamples = NULL, control = ZIPLNnetwork_param()) {
-
-      ## select default subsamples according to Liu et al. (2010) recommendations.
-      if (is.null(subsamples)) {
-        subsample.size <- round(ifelse(private$n >= 144, 10*sqrt(private$n), 0.8*private$n))
-        subsamples <- replicate(20, sample.int(private$n, subsample.size), simplify = FALSE)
-      }
-
-      ## got for stability selection
-      cat("\nStability Selection for ZIPLNnetwork: ")
-      cat("\nsubsampling: ")
-
-      stabs_out <- parallel::mclapply(subsamples, function(subsample) {
-          cat("+")
-        inception_ <- self$getModel(self$penalties[1])
-        inception_$update(
-          R  = inception_$var_par$R[subsample, ],
-          M  = inception_$var_par$M[subsample, ],
-          S2 = inception_$var_par$S2[subsample, ]
-        )
-
-        ## force some control parameters
-        control$inception = inception_
-        control$penalty_weights = map(self$models, "penalty_weights")
-        control$penalize_diagonal = (sum(diag(inception_$penalty_weights)) != 0)
-        ## the subsamples are fitted as the collection was
-        control$penalty_scale = inception_$penalty_scale
-        control$penalty_scale_implicit = FALSE # the penalties are those of the collection
-        control$latent_floor  = inception_$latent_floor
-        control$trace <- 0
-        control$config_optim$trace <- 0
-        control$ziparam <- inception_$zi_model
-        X0  <- self$covariates0
-        if (nrow(X0) > 0)  X0  <- X0[subsample, , drop = FALSE]
-        data <- list(
-          Y  = self$responses  [subsample, , drop = FALSE],
-          X  = self$covariates [subsample, , drop = FALSE],
-          X0 = X0,
-          O  = self$offsets    [subsample, , drop = FALSE],
-          w  = self$weights    [subsample])
-
-        myPLN <- ZIPLNnetworkfamily$new(self$penalties, data, control)
-        myPLN$optimize(data, control$config_optim)
-
-        nets <- do.call(cbind, lapply(myPLN$models, function(model) {
-          if (is.null(model$model_par$Omega)) {
-            support <- matrix(0, nrow = private$p, ncol = private$p)
-          } else {
-            support <- as.matrix(model$latent_network("support"))
-          }
-          support[upper.tri(diag(private$p))]
-        }))
-        nets
-      }, mc.cores = getOption("mc.cores", 1L))
-
-      prob <- Reduce("+", stabs_out, accumulate = FALSE) / length(subsamples)
-      ## formatting/tyding
-      node_set <- colnames(self$getModel(index = 1)$model_par$B)
-      colnames(prob) <- self$penalties
-      private$stab_path <- prob %>%
-        as.data.frame() %>%
-        mutate(Edge = 1:n()) %>%
-        gather(key = "Penalty", value = "Prob", -Edge) %>%
-        mutate(Penalty = as.numeric(Penalty),
-               Node1   = node_set[edge_to_node(Edge)$node1],
-               Node2   = node_set[edge_to_node(Edge)$node2],
-               Edge    = paste0(Node1, "|", Node2))
-
-      invisible(subsamples)
+      control$ziparam <- self$models[[1]]$zi_model
+      private$compute_stability_path(subsamples, control, ZIPLNnetworkfamily)
+    }
+  ),
+  private = list(
+    subsample_data = function(subsample) {
+      X0 <- self$covariates0
+      if (nrow(X0) > 0) X0 <- X0[subsample, , drop = FALSE]
+      c(super$subsample_data(subsample), list(X0 = X0))
     }
   )
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

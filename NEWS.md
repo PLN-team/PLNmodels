@@ -235,6 +235,10 @@ same computing time. The gain carries over to model selection, less strongly (BI
     positive counts (instead of silently switching every sample to `rowSums`), and scales the whole result by a single global median — so all offsets are on the same scale (median 1). The warning names the affected samples.
   * `compute_offset()` detects empty (all-zero) samples before dispatching, warns
     naming them, computes the offset on the non-empty samples and returns `NA` for the empty ones, instead of a `0` offset (hence `log(0) = -Inf`) or uninformative `NA/NaN/Inf` errors when several methods are called directly.
+* Jackknife and bootstrap estimates of the variance (`config_post = list(jackknife =
+  TRUE, bootstrap = ...)`) failed with a fixed or a `"genpop"` covariance, the fixed
+  precision matrix `Omega` or correlation matrix `C` not being passed to the fits on
+  the resampled data. They now work, also in `PLNnetwork()`.
 
 # PLNmodels 1.3.2
 

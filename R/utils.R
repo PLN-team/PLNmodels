@@ -1,19 +1,15 @@
 available_algorithms_nlopt <- c("CCSAQ", "MMA", "LBFGS", "VAR1", "VAR2")
 available_algorithms_torch <- c("RPROP", "RMSPROP", "ADAM", "ADAGRAD")
 
-## Column-normalize a covariate matrix so that all backends receive a
-## well-conditioned X regardless of covariate magnitudes.  The transformation
-## X_sc = X / scale, B_sc = B * scale satisfies X_sc %*% B_sc = X %*% B
-## exactly, so the PLN model is unchanged.  The pmax(..., 1) guard prevents
-## zero-variance or already-unit-norm columns from being inflated.
+## Scale the columns of X to (at most) unit norm, for the conditioning of the
+## optimizers: X_sc %*% (scales * B) = X %*% B, so the model is unchanged
 normalize_covariates <- function(X) {
   scales <- pmax(sqrt(colSums(X^2)), 1)
   list(X_sc = sweep(X, 2, scales, "/"), scales = scales)
 }
 
-## Residual covariance of the variational means of a PLN or ZIPLN fit,
-## (M - XB)'W(M - XB) / sum(w) + diag of the mean variational variances: the
-## matrix S the graphical Lasso is applied to in PLNnetwork and ZIPLNnetwork.
+## Residual covariance of a PLN or ZIPLN fit, the matrix the graphical Lasso
+## is applied to: (M - XB)'W(M - XB) / sum(w) + diag of the mean variances S2
 residual_covariance <- function(fit, X, w = rep(1, nrow(X))) {
   R <- fit$var_par$M - X %*% fit$model_par$B
   S <- crossprod(sqrt(w) * R) / sum(w)
@@ -21,25 +17,50 @@ residual_covariance <- function(fit, X, w = rep(1, nrow(X))) {
   S
 }
 
-## Penalty matrix of the graphical Lasso: the weighted penalty, on the scale of
-## the entries of the precision matrix ("covariance"), or on the scale of the
-## variables ("correlation"): rho w_ij sqrt(S_ii S_jj), which amounts to
-## applying the graphical Lasso to the correlation matrix of S.
+## Penalty matrix of the graphical Lasso: penalty * weights, times
+## sqrt(S_ii S_jj) on the correlation scale (graphical Lasso on the correlations)
 glasso_penalty <- function(penalty, weights, S, scale = "covariance") {
   rho <- penalty * weights
   if (identical(scale, "correlation")) rho <- rho * tcrossprod(sqrt(diag(as.matrix(S))))
   rho
 }
 
-## Penalties given by the user while the scale of the penalty was left to its
-## default, "correlation" since 1.3.3, where they lie between 0 and 1. Until
-## 1.3.2 they were on the covariance scale: the user is told, and how to get
-## the former behavior back. Penalties above 1 cannot be on the correlation
-## scale: when the residual covariance S is given, they are taken as penalties
-## on the covariance scale and divided by the ratio of the largest off-diagonal
-## residual covariance to the largest residual correlation, so that the penalty
-## giving the empty network on one scale gives it on the other (when all
-## variances are sigma^2, this ratio is sigma^2 and the conversion is exact).
+## Penalty weights of a network fit: all ones by default, symmetric and
+## nonnegative, with a null diagonal unless the diagonal is penalized
+check_penalty_weights <- function(weights, p, penalize_diagonal) {
+  if (is.null(weights)) weights <- matrix(1, p, p)
+  stopifnot(isSymmetric(weights), all(weights >= 0))
+  if (!penalize_diagonal) diag(weights) <- 0
+  weights
+}
+
+check_latent_floor <- function(latent_floor) {
+  if (!is.null(latent_floor))
+    stopifnot("latent_floor must be NULL or a positive number" =
+                is.numeric(latent_floor) && length(latent_floor) == 1L && !is.na(latent_floor) && latent_floor > 0)
+}
+
+## Network in the latent space encoded by a precision matrix: its support, the
+## precision matrix itself or the partial correlations
+#' @importFrom Matrix Matrix
+.latent_network <- function(Omega, type = c("partial_cor", "support", "precision")) {
+  net <- switch(
+    match.arg(type),
+    "support"     = 1 * (Omega != 0 & !diag(TRUE, ncol(Omega))),
+    "precision"   = Omega,
+    "partial_cor" = {
+      tmp <- -Omega / tcrossprod(sqrt(diag(Omega))); diag(tmp) <- 1
+      tmp
+    }
+  )
+  ## sparse encoding: igraph::graph_from_adjacency_matrix fails on dsyMatrix objects
+  Matrix(net, sparse = TRUE)
+}
+
+## Penalties given by the user while the scale was left to its default,
+## "correlation" (it was "covariance" until 1.3.2): the user is told. Penalties
+## above 1 are taken as penalties on the covariance scale and divided by the
+## ratio of the penalties giving the empty network on each scale.
 explicit_penalties_on_correlation_scale <- function(penalties, S = NULL, call = NULL) {
   revert <- "Set {.code penalty_scale = \"covariance\"} in the control parameters to get the former behavior back, or {.code penalty_scale = \"correlation\"} to keep the penalties as they are, without this message."
   if (any(penalties > 1)) {
@@ -48,7 +69,6 @@ explicit_penalties_on_correlation_scale <- function(penalties, S = NULL, call = 
         "!" = "A penalty above 1 was given, while the penalty now applies on the correlation scale by default, where it lies between 0 and 1: the network will be empty.",
         "i" = revert), call = call)
     } else {
-      ## the penalty above which the network is empty, on each scale
       off <- upper.tri(S)
       ratio <- max(abs(S[off])) / max(abs((S / tcrossprod(sqrt(diag(S))))[off]))
       cli::cli_warn(c(
@@ -66,42 +86,40 @@ explicit_penalties_on_correlation_scale <- function(penalties, S = NULL, call = 
 }
 
 ## Variational lower bound of each sample of a PLN model with precision matrix
-## Omega, at given parameters (the formula of DenseOmegaImpl::final_loglik in
-## src/covariance_pln.h).
+## Omega (as DenseOmegaImpl::final_loglik in src/covariance_pln.h)
 elbo_fixed_precision <- function(Y, X, O, B, M, S2, Omega) {
   Omega <- as.matrix(Omega)
   Z <- O + M
   R <- M - X %*% B
-  ## log(Y!) by the approximation of Ramanujan, as logfact() in src/utils.h
-  Y1 <- replace(Y, Y == 0, 1)
-  log_factorial <- Y1 * log(Y1) - Y1 + log(8 * Y1^3 + 4 * Y1^2 + Y1 + 1 / 30) / 6 + log(pi) / 2
-  rowSums(Y * Z - exp(Z + .5 * S2) + .5 * log(S2) - log_factorial) +
+  rowSums(Y * Z - exp(Z + .5 * S2) + .5 * log(S2) - .logfactorial(Y)) +
     .5 * as.numeric(determinant(Omega, logarithm = TRUE)$modulus) -
     .5 * rowSums((R %*% Omega) * R) - .5 * as.vector(S2 %*% diag(Omega)) + .5 * ncol(Y)
 }
 
 ## Optimal variational variance of a cell given its variational mean: the root
-## in s of 1/s - omega - weight * exp(z + s/2), a decreasing function of s, where
-## z = O + M, omega is the diagonal entry of the precision matrix of the species
-## and weight is 1 for PLN, 1 - R for ZIPLN. By bisection on log(s), vectorized.
+## in s of the decreasing function 1/s - omega - weight * exp(z + s/2), with
+## z = O + M, omega the diagonal of the precision matrix and weight = 1 (PLN)
+## or 1 - R (ZIPLN). By bisection on log(s), vectorized.
 optimal_variational_variance <- function(z, omega, weight = 1) {
   lo <- rep(-30, length(z)); hi <- rep(30, length(z))
   for (k in seq_len(60)) {
     mid <- (lo + hi) / 2
+    s   <- exp(mid)
     ## the exponent is capped, so that a null weight (R = 1) gives 0 and not NaN
-    positive <- 1 / exp(mid) - omega - weight * exp(pmin(z + exp(mid) / 2, 700)) > 0
-    lo <- ifelse(positive, mid, lo); hi <- ifelse(positive, hi, mid)
+    positive <- 1 / s - omega - weight * exp(pmin(z + s / 2, 700)) > 0
+    up <- which(positive); down <- which(!positive)
+    lo[up] <- mid[up]; hi[down] <- mid[down]
   }
-  exp((lo + hi) / 2)
+  s <- exp((lo + hi) / 2)
+  s[is.na(z + omega + weight)] <- NA
+  s
 }
 
-## Projection of the output of a VE step on the constraint exp(O + M) >= floor,
-## that is M >= log(floor) - O, for the species in `species` (a logical vector):
-## the means below the bound are set to it, the variational variance of these
-## cells is set to its optimum given M (optimal_variational_variance()), and B,
-## the residual covariance and the lower bound are updated accordingly.
-## `optim_out` is the list returned by the optimizer of a PLNfit_fixedcov, `data`
-## its data (with the normalized covariates), `Omega` the precision matrix.
+## Projection of the output of a VE step (`optim_out`, from the optimizer of a
+## PLNfit_fixedcov) on the constraint M >= log(floor) - O, for the species
+## flagged in `species`: the means below the bound are set to it, their
+## variational variance to its optimum given M, and B, Sigma and the lower bound
+## are updated accordingly.
 project_latent_floor <- function(optim_out, data, Omega, floor, species = rep(TRUE, ncol(data$Y))) {
   bound   <- log(floor) - data$O
   bound[, !species] <- -Inf
@@ -122,28 +140,30 @@ project_latent_floor <- function(optim_out, data, Omega, floor, species = rep(TR
   optim_out
 }
 
-## Latent variance above which a species is reported as degenerate: 100, a
-## standard deviation of 10 on the log scale, unless set through
-## options(PLNmodels.latent_variance_threshold = ).
+## Latent variance above which a species is reported as degenerate
 latent_variance_threshold <- function() {
   getOption("PLNmodels.latent_variance_threshold", 100)
 }
 
-## Names (indices if unnamed) of the species whose latent variance is above
-## the threshold, from the latent covariance matrix of a fit
+## Names (indices if unnamed) of the species flagged in a logical vector
+flagged_species <- function(flagged, names = NULL) {
+  if (is.null(flagged)) return(character(0))
+  if (is.null(names)) names <- as.character(seq_along(flagged))
+  names[which(flagged)]
+}
+
+## Species whose latent variance is above the threshold, from the latent
+## covariance matrix of a fit
 degenerate_species <- function(Sigma) {
   if (!is.numeric(Sigma) && !inherits(Sigma, "Matrix")) return(character(0))
-  variances <- diag(as.matrix(Sigma))
-  species <- if (is.null(colnames(Sigma))) as.character(seq_along(variances)) else colnames(Sigma)
-  species[which(variances > latent_variance_threshold())]
+  flagged_species(diag(as.matrix(Sigma)) > latent_variance_threshold(), colnames(Sigma))
 }
 
 ## Warn, once, about the species with a degenerate latent variance in a fit or
 ## in the fits of a collection
 warn_degenerate_species <- function(fits, call = rlang::caller_env()) {
   if (!is.list(fits)) fits <- list(fits)
-  ## in a network, the species bounded by the latent floor are degenerate too:
-  ## the floor is what keeps their variance under the threshold
+  ## the latent floor is what keeps the variance of a floored species under the threshold
   degenerate <- lapply(fits, function(fit) union(fit$degenerate_species, fit$floored_species))
   species <- unique(unlist(degenerate))
   if (length(species) == 0) return(invisible(character(0)))
@@ -180,9 +200,7 @@ config_default_nlopt <-
     ftol_abs      = 0.0    ,
     xtol_abs      = 0.0    ,
     maxtime       = -1     ,
-    profiled      = TRUE   # PLN, full covariance only: profile B and Omega at every nlopt
-                            # eval instead of the EM loop (see PLNfit-class.R) -- benchmarked
-                            # faster with a better loglik across a wide range of (n,p)
+    profiled      = TRUE   # PLN with full covariance only, see PLN_param()
   )
 
 
@@ -197,8 +215,7 @@ config_default_builtin <-
   )
 
 
-# PLNPCA builtin backend: joint L-BFGS on [vec(B); vec(C); vec(M); vec(ψ)] with strong Wolfe
-# line search (m=10 pairs). Only maxeval and ftol_in are read by the C++ optimizer.
+# PLNPCA builtin backend: only maxeval and ftol_in are read by the C++ optimizer
 config_default_plnpca <-
   list(
     backend = "builtin",
@@ -225,11 +242,8 @@ config_default_torch <-
     device        = "cpu"
   )
 
-## Build the optimizer config list from a backend name and user overrides.
-## `builtin_default` lets PLNPCA pass config_default_plnpca instead of config_default_builtin.
-## `extra` is a named list of additional defaults applied BEFORE user overrides (so the user can
-## still override them), used for outer-loop parameters like ftol_em/maxit_em in PLNnetwork and
-## PLNmixture.
+## Optimizer config: the defaults of the backend, then the model-specific
+## defaults `extra`, then the values given by the user
 make_config_optim <- function(backend, config_optim, trace,
                               builtin_default = config_default_builtin,
                               extra = list()) {
@@ -257,41 +271,11 @@ config_post_default_PLN <-
     sandwich_var    = FALSE
   )
 
-config_post_default_PLNnetwork <-
-  list(
-    jackknife       = FALSE,
-    bootstrap       = 0L,
-    rsquared        = FALSE,
-    variational_var = FALSE,
-    sandwich_var    = FALSE
-  )
+config_post_default_PLNLDA <- config_post_default_PLNPCA <-
+  config_post_default_PLNmixture <- config_post_default_PLN
 
-config_post_default_PLNLDA <-
-  list(
-    jackknife       = FALSE,
-    bootstrap       = 0L,
-    rsquared        = TRUE,
-    variational_var = FALSE,
-    sandwich_var    = FALSE
-  )
-
-config_post_default_PLNPCA <-
-  list(
-    jackknife       = FALSE,
-    bootstrap       = 0L,
-    rsquared        = TRUE,
-    variational_var = FALSE,
-    sandwich_var    = FALSE
-  )
-
-config_post_default_PLNmixture <-
-  list(
-    jackknife       = FALSE,
-    bootstrap       = 0L,
-    rsquared        = TRUE,
-    variational_var = FALSE,
-    sandwich_var    = FALSE
-  )
+config_post_default_PLNnetwork <- config_post_default_PLN
+config_post_default_PLNnetwork$rsquared <- FALSE
 
 .xlogx <- function(x) ifelse(x < .Machine$double.eps, 0, x*log(x))
 
@@ -335,7 +319,6 @@ logLikPoisson <- function(responses, lambda, weights = rep(1, nrow(responses))) 
 
 #' @importFrom stats glm.fit glm.control
 nullModelPoisson <- function(responses, covariates, offsets, weights = rep(1, nrow(responses))) {
-### TODO: use fastglm
   B <- do.call(cbind, parallel::mclapply(1:ncol(responses), function(j)
     coefficients(suppressWarnings(
       glm.fit(covariates, responses[, j], weights = weights, offset = offsets[, j], family = stats::poisson(),
@@ -352,11 +335,25 @@ extract_model <- function(call, envir) {
   ## eval the call in the parent environment
   frame <- do.call(stats::model.frame, call_args, envir = envir)
   ## create the set of matrices to fit the PLN model
+  YOw <- extract_response_offset_weights(frame)
+  X <- model.matrix(terms(frame), frame)
+  ## Save encountered levels for predict methods as attribute of the formula
+  ## (which is a symbol in the call when it was passed as a variable)
+  formula_obj <- if (!inherits(call$formula, "formula")) {
+    eval(call$formula, envir = envir)
+  } else {
+    call$formula
+  }
+  attr(formula_obj, "xlevels") <- .getXlevels(terms(frame), frame)
+  list(Y = YOw$Y, X = X, O = YOw$O, miss = is.na(YOw$Y), w = YOw$w, formula = formula_obj)
+}
+
+## Response matrix, offsets and weights of a model frame
+extract_response_offset_weights <- function(frame) {
   Y <- model.response(frame)
   ## model.response oversimplifies into a numeric when a single variable is involved
   if (is.null(dim(Y))) Y <- matrix(Y, nrow = length(Y), ncol = 1)
   if (ncol(Y) == 1 & is.null(colnames(Y))) colnames(Y) <- "Y"
-  X <- model.matrix(terms(frame), frame)
   O <- model.offset(frame)
   if (is.null(O)) O <- matrix(0, nrow(Y), ncol(Y))
   if (is.vector(O)) O <- O %o% rep(1, ncol(Y))
@@ -366,17 +363,7 @@ extract_model <- function(call, envir) {
   } else {
     stopifnot(all(w > 0) && length(w) == nrow(Y))
   }
-  ## Save encountered levels for predict methods as attribute of the formula.
-  ## Evaluate the formula expression to get the formula object before setting
-  ## attributes — avoids "cannot set an attribute on a 'symbol'" when the
-  ## formula was passed as a variable (e.g. PLN(my_formula, data = d)).
-  formula_obj <- if (!inherits(call$formula, "formula")) {
-    eval(call$formula, envir = envir)
-  } else {
-    call$formula
-  }
-  attr(formula_obj, "xlevels") <- .getXlevels(terms(frame), frame)
-  list(Y = Y, X = X, O = O, miss = is.na(Y), w = w, formula = formula_obj)
+  list(Y = Y, O = O, w = w)
 }
 
 edge_to_node <- function(x, n = max(x)) {

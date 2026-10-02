@@ -79,7 +79,6 @@ ZIPLN <- function(formula, data, subset, zi = c("single", "row", "col"), control
 #' @details See [PLN_param()] for a description of the generic `config_optim` entries (`ftol_rel`, `xtol_rel`, etc.). Like [PLNnetwork_param()], ZIPLN_param() has two parameters controlling the outer EM loop:
 #' * "ftol_out" outer solver stops when an optimization step changes the objective function by less than `ftol_out` multiplied by the absolute value of the parameter. Default is 1e-6
 #' * "maxit_out" outer solver stops when the number of iteration exceeds `maxit_out`. Default is 200 for "builtin", 100 for "nlopt"
-#' and one additional parameter controlling the form of the variational approximation of the zero inflation:
 #'
 #' @export
 ZIPLN_param <- function(
@@ -101,9 +100,7 @@ ZIPLN_param <- function(
   ## was the scale left to its default? (see the handling of user-defined penalties)
   penalty_scale_implicit <- missing(penalty_scale)
   penalty_scale <- match.arg(penalty_scale)
-  if (!is.null(latent_floor))
-    stopifnot("latent_floor must be NULL or a positive number" =
-                is.numeric(latent_floor) && length(latent_floor) == 1L && !is.na(latent_floor) && latent_floor > 0)
+  check_latent_floor(latent_floor)
   if (covariance == "fixed") stopifnot("Omega must be provied for fixed covariance" = inherits(Omega, "matrix") | inherits(Omega, "Matrix")) %>% try()
   if (inherits(Omega, "matrix") | inherits(Omega, "Matrix")) covariance <- "fixed"
   if (covariance == "sparse") stopifnot("You should provide a positive penalty when chosing 'sparse' covariance" = penalty > 0) %>% try()

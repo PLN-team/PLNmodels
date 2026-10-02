@@ -6,23 +6,15 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Builtin Newton VE-step for ZIPLN: joint (M, ψ = log S², R), Omega fixed.
 //
-// Structurally identical to builtin_optimize_pln_impl's inner loop (same
-// B-profiling via null(X') projection, same joint 2x2 Newton step from
-// CovTraitsBase::compute_joint_step_MS), plus:
-//   - R updated to its exact conditional optimum at the top of every outer
-//     iteration: R* = σ(A + logit(Pi)) where Y = 0, else 0. Frozen during
-//     the Newton step + Armijo line search (∂f/∂R = 0 at R*, so updating R
-//     does not invalidate the (M, ψ) gradient/step for that iteration).
-//   - A replaced by A_eff = (1-R) ⊙ A everywhere it enters
-//     compute_joint_step_MS/objective (see covariance_zipln.h for why this
-//     substitution reproduces the ZIPLN formulas exactly).
-//   - w = d.w: ZIPLN carries no per-row weights of its own, but threads the
-//     PlnData convention through (the R caller passes ones(n)).
-//
-// B is taken from the preceding M-step and re-profiled at every Newton step
-// here (unlike PLN's builtin_vestep_pln_impl, where B/Omega are truly fixed):
-// dynamic B-profiling was tested and found necessary for ZIPLN's joint
-// (M, ψ, R) VE step to track the moving optimum.
+// Same as the inner loop of builtin_optimize_pln_impl (B profiled, joint 2x2
+// Newton step), plus:
+//   - R set to its conditional optimum R* = σ(A + logit(Pi)) where Y = 0, else 0,
+//     at the top of every iteration, and frozen during the Newton step and its
+//     line search (∂f/∂R = 0 at R*);
+//   - A replaced by A_eff = (1-R) ⊙ A (see covariance_zipln.h);
+//   - unit weights (ZIPLN has no observation weights).
+// B is re-profiled at every Newton step, which the joint (M, ψ, R) step needs
+// to track the optimum.
 template <typename Traits>
 Rcpp::List builtin_vestep_zipln_impl(
     const PlnData & d,
@@ -96,10 +88,8 @@ Rcpp::List builtin_vestep_zipln_impl(
     return make_zipln_vestep_result(M, S2, R, 3, "newton", objective_vec, iter);
 }
 
-// Thin wrapper: extracts params/config (mirroring builtin_vestep_pln_impl's wrappers)
-// and delegates to builtin_vestep_zipln_impl. One instantiation per covariance structure
-// in wrappers_builtin_optim_zipln.cpp — each export (builtin_optimize_vestep_zipln_<type>)
-// is a one-line call to this template.
+// Extracts params/config and calls builtin_vestep_zipln_impl (one instantiation
+// per covariance structure in wrappers_builtin_optim_zipln.cpp)
 template <typename Traits>
 Rcpp::List builtin_optimize_vestep_zipln_wrapper(
     const Rcpp::List & data, const Rcpp::List & params, const Rcpp::List & config

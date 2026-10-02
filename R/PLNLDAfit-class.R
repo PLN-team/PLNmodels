@@ -6,11 +6,6 @@
 #' See the documentation for the methods inherited by [PLNfit()], the [plot()] method for
 #' LDA visualization and [predict()] method for prediction
 #'
-## Inheritance seems not to work for R6 classes
-# @inheritParams PLNfit
-# @inheritParams PLNLDAfit.predict
-# @inheritParams PLNLDAfit.plot
-#'
 ## Parameters common to many PLNLDAfit methods (shared with PLNfit but inheritance does not work)
 #' @param responses the matrix of responses (called Y in the model). Will usually be extracted from the corresponding field in PLNfamily-class
 #' @param covariates design matrix (called X in the model). Will usually be extracted from the corresponding field in PLNfamily-class
@@ -112,7 +107,6 @@ PLNLDAfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Graphical methods -----------------
     #' @description Plot the factorial map of the LDA
-    # @inheritParams plot.PLNLDAfit
     #' @return a [`ggplot2::ggplot`] graphic
     plot_individual_map = function(axes = 1:min(2,self$rank), main = "Individual Factor Map", plot = TRUE) {
 
@@ -128,7 +122,6 @@ PLNLDAfit <- R6Class(
     },
 
     #' @description Plot the correlation circle of a specified axis for a [`PLNLDAfit`] object
-    # @inheritParams plot.PLNLDAfit
     #' @param cols a character, factor or numeric to define the color associated with the variables. By default, all variables receive the default color of the current palette.
     #' @return a [`ggplot2::ggplot`] graphic
     plot_correlation_map = function(axes=1:min(2,self$rank), main="Variable Factor Map", cols = "default", plot=TRUE) {
@@ -147,7 +140,6 @@ PLNLDAfit <- R6Class(
     },
 
     #' @description Plot a summary of the [`PLNLDAfit`] object
-    # @inheritParams plot.PLNLDAfit
     #' @importFrom gridExtra grid.arrange arrangeGrob
     #' @importFrom grid nullGrob textGrob
     #' @return a [`grob`] object
@@ -177,29 +169,7 @@ PLNLDAfit <- R6Class(
         diag.grobs <- list(textGrob(percentV.text),
                            g_legend(self$plot_individual_map(plot=FALSE) + ggplot2::guides(colour = ggplot2::guide_legend(nrow = 4, title="classification"))),
                            textGrob(criteria.text))
-        if (nb_axes > 3)
-          diag.grobs <- c(diag.grobs, rep(list(nullGrob()), nb_axes - 3))
-
-
-        grobs <- vector("list", nb_axes^2)
-        i.cor <- 1; i.ind <- 1; i.dia <- 1
-        ind <- 0
-        for (i in 1:nb_axes) {
-          for (j in 1:nb_axes) {
-            ind <- ind+1
-            if (j > i) { ## upper triangular  -> cor plot
-              grobs[[ind]] <- cor.plot[[i.ind]]
-              i.ind <- i.ind + 1
-            } else if (i == j) { ## diagonal
-              grobs[[ind]] <- diag.grobs[[i.dia]]
-              i.dia <- i.dia + 1
-            } else {
-              grobs[[ind]] <- ind.plot[[i.cor]]
-              i.cor <- i.cor + 1
-            }
-          }
-        }
-        p <- arrangeGrob(grobs = grobs, ncol = nb_axes)
+        p <- arrange_factor_maps(ind.plot, cor.plot, diag.grobs, nb_axes)
       } else {
         p <- arrangeGrob(grobs = list(
           self$plot_individual_map(plot = FALSE),
@@ -215,7 +185,6 @@ PLNLDAfit <- R6Class(
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ## Prediction methods --------------------
     #' @description Predict group of new samples
-    # @inheritParams predict.PLNLDAfit
     #' @param newdata A data frame in which to look for variables, offsets and counts  with which to predict.
     #' @param type The type of prediction required. The default are posterior probabilities for each group (in either unnormalized log-scale or natural probabilities, see "scale" for details), "response" is the group with maximal posterior probability and "scores" is the average score along each separation axis in the latent space, with weights equal to the posterior probabilities.
     #' @param scale The scale used for the posterior probability. Either log-scale ("log", default) or natural probabilities summing up to 1 ("prob").
@@ -400,7 +369,8 @@ PLNLDAfit <- R6Class(
 #' \dontrun{
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' myPLNLDA <- PLNLDA(Abundance ~ 1, data = trichoptera, control = PLN_param(covariance = "diagonal"))
+#' myPLNLDA <- PLNLDA(Abundance ~ 1, grouping = Group, data = trichoptera,
+#'                    control = PLNLDA_param(covariance = "diagonal"))
 #' class(myPLNLDA)
 #' print(myPLNLDA)
 #' }
@@ -416,43 +386,8 @@ PLNLDAfit_diagonal <- R6Class(
         nlopt_optimize_vestep_diagonal,  builtin_optimize_vestep_diagonal)
     }
   ),
-  private = list(
-    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    ## PRIVATE TORCH METHODS FOR OPTIMIZATION
-    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    torch_elbo = function(data, params, index=torch_tensor(1:self$n)) {
-      S2 <- torch_exp(params$psi[index])
-      Z  <- data$O[index] + params$M[index]
-      res <- .5 * sum(data$w[index]) * sum(torch_log(private$torch_sigma_diag(data, params, index))) +
-        sum(data$w[index,NULL] * (torch_exp(Z + .5 * S2) - data$Y[index] * Z - .5 * params$psi[index]))
-      res
-    },
-
-    torch_sigma_diag = function(data, params, index=torch_tensor(1:self$n)) {
-      M_res <- params$M[index] - torch_mm(data$X[index], params$B)
-      torch_sum(data$w[index,NULL] * (torch_square(M_res) + torch_exp(params$psi[index])), 1) / sum(data$w[index])
-    },
-
-    torch_Sigma = function(data, params, index=torch_tensor(1:self$n)) {
-      torch_diag(private$torch_sigma_diag(data, params, index))
-    },
-
-    torch_vloglik = function(data, params) {
-      S2    <- torch_exp(params$psi)
-      M_res <- params$M - torch_mm(data$X, params$B)
-      omega_diag <- torch_pow(private$torch_sigma_diag(data, params), -1)
-      Ji <- .5 * self$p - rowSums(.logfactorial(as.matrix(data$Y))) + as.numeric(
-        .5 * sum(torch_log(omega_diag)) +
-          torch_sum(data$Y * params$Z - params$A + .5 * params$psi -
-                      .5 * (torch_square(M_res) + S2) * omega_diag[NULL,], dim = 2)
-      )
-      Ji
-    }
-    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    ## END OF TORCH METHODS
-    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  ),
+  ## the torch methods of the diagonal covariance (R6 has no multiple inheritance)
+  private = PLNfit_diagonal$private_methods,
   active = list(
     #' @field vcov_model character: the model used for the residual covariance
     vcov_model = function() {"diagonal"},
@@ -484,14 +419,14 @@ PLNLDAfit_diagonal <- R6Class(
 #' @param formula model formula used for fitting, extracted from the formula in the upper-level call
 #' @param control a list for controlling the optimization. See details.
 #'
-#' @rdname PLNfit_diagonal
 #' @importFrom R6 R6Class
 #'
 #' @examples
 #' \dontrun{
 #' data(trichoptera)
 #' trichoptera <- prepare_data(trichoptera$Abundance, trichoptera$Covariate)
-#' myPLNLDA <- PLNLDA(Abundance ~ 1, data = trichoptera, control = PLN_param(covariance = "spherical"))
+#' myPLNLDA <- PLNLDA(Abundance ~ 1, grouping = Group, data = trichoptera,
+#'                    control = PLNLDA_param(covariance = "spherical"))
 #' class(myPLNLDA)
 #' print(myPLNLDA)
 #' }
@@ -507,42 +442,8 @@ PLNLDAfit_spherical <- R6Class(
         nlopt_optimize_vestep_spherical,  builtin_optimize_vestep_spherical)
     }
   ),
-  private = list(
-
-    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    ## PRIVATE TORCH METHODS FOR OPTIMIZATION
-    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    torch_elbo = function(data, params, index=torch_tensor(1:self$n)) {
-      S2 <- torch_exp(params$psi[index])
-      Z  <- data$O[index] + params$M[index]
-      res <- .5 * sum(data$w[index]) * self$p * torch_log(private$torch_sigma2(data, params, index)) -
-        sum(data$w[index,NULL] * (data$Y[index] * Z - torch_exp(Z + .5 * S2) + .5 * params$psi[index]))
-      res
-    },
-
-    torch_sigma2 = function(data, params, index=torch_tensor(1:self$n)) {
-      M_res <- params$M[index] - torch_mm(data$X[index], params$B)
-      sum(data$w[index, NULL] * (torch_square(M_res) + torch_exp(params$psi[index]))) / (sum(data$w[index]) * self$p)
-    },
-
-    torch_Sigma = function(data, params, index=torch_tensor(1:self$n)) {
-      torch_eye(self$p) * private$torch_sigma2(data, params, index)
-    },
-
-    torch_vloglik = function(data, params) {
-      S2    <- torch_exp(params$psi)
-      M_res <- params$M - torch_mm(data$X, params$B)
-      sigma2 <- private$torch_sigma2(data, params)
-      Ji <- .5 * self$p - rowSums(.logfactorial(as.matrix(data$Y))) + as.numeric(
-        torch_sum(data$Y * params$Z - params$A + .5 * (params$psi - torch_log(sigma2)) -
-                    .5 * (torch_pow(M_res, 2) + S2)/sigma2, dim = 2)
-      )
-      Ji
-    }
-    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    ## END OF TORCH METHODS FOR OPTIMIZATION
-    ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  ),
+  ## the torch methods of the spherical covariance (R6 has no multiple inheritance)
+  private = PLNfit_spherical$private_methods,
   active = list(
     #' @field vcov_model character: the model used for the residual covariance
     vcov_model = function() {"spherical"},

@@ -39,12 +39,8 @@ PLNnetworkfit <- R6Class(
     #' @description Initialize a [`PLNnetworkfit`] object
     initialize = function(data, control) {
       super$initialize(data$Y, data$X, data$O, data$w, data$formula, control)
-      ## Default for penalty weights (if not already set)
-      if (is.null(control$penalty_weights)) control$penalty_weights <- matrix(1, self$p, self$p)
-      stopifnot(isSymmetric(control$penalty_weights), all(control$penalty_weights >= 0))
-      if (!control$penalize_diagonal) diag(control$penalty_weights) <- 0
       private$lambda <- control$penalty
-      private$rho    <- control$penalty_weights
+      private$rho    <- check_penalty_weights(control$penalty_weights, self$p, control$penalize_diagonal)
       if (!is.null(control$penalty_scale)) private$scale <- control$penalty_scale
       private$floor  <- control$latent_floor
     },
@@ -54,8 +50,7 @@ PLNnetworkfit <- R6Class(
     #' @description Call to the C++ optimizer and update of the relevant fields
     #' @param config a list for controlling the optimization
     optimize = function(data, config) {
-      ## Normalize X columns once for the entire EM loop.  The optimizer works
-      ## in (X_sc, B_sc) space throughout; private$B holds B_sc until the end.
+      ## the optimizer works with the normalized covariates: private$B holds B_sc until the end
       nrm  <- normalize_covariates(data$X)
       B_sc <- sweep(private$B, 1, nrm$scales, "*")
 
@@ -64,12 +59,10 @@ PLNnetworkfit <- R6Class(
       convergence <- numeric(config$maxit_em)
       ## start from the standard PLN at initialization
       objective.old <- -self$loglik
-      ## Limit inner VE iterations per outer GLASSO turn (partial E-step, section 44).
-      ## maxit_ve limits maxit_em (builtin) or maxeval (nlopt) of the inner optimizer.
-      ## NULL = no limit = full convergence (default, backward-compatible).
       ## species bounded by the floor so far along the path (see Networkfamily$optimize)
       floored <- if (is.null(config$floored)) rep(FALSE, self$p) else config$floored
       config$floored <- NULL
+      ## partial E-step: maxit_ve, if any, caps the iterations of the inner optimizer
       inner_config <- config
       if (!is.null(config$maxit_ve)) {
         if (config$backend == "builtin") inner_config$maxit_em <- as.integer(config$maxit_ve)
@@ -87,7 +80,7 @@ PLNnetworkfit <- R6Class(
       while (!cond) {
         iter <- iter + 1
         if (config$trace > 1) cat("", iter)
-        ## CALL TO GLASSO TO UPDATE Omega
+        ## M step: graphical Lasso for Omega
         rho <- glasso_penalty(self$penalty, self$penalty_weights, private$Sigma, private$scale)
         glasso_out <- graphical_lasso(private$Sigma, rho = rho)
         if (!glasso_out$converged) glasso_nonconv <- glasso_nonconv + 1L
@@ -101,19 +94,17 @@ PLNnetworkfit <- R6Class(
         previous_Omega <- private$Omega
         private$Omega <- args$params$Omega <- Matrix::symmpart(glasso_out$wi)
 
-        ## CALL TO NLOPT OPTIMIZATION TO UPDATE OTHER PARAMETERS
+        ## VE step and B, at fixed Omega
         optim_out <- do.call(private$optimizer$main, args)
-        ## The floor, if any, applies to the species whose latent variance has
-        ## exceeded the threshold of the degenerate species, from then on: their
-        ## variational means are kept above it
+        ## the floor applies to a species once its latent variance has exceeded
+        ## the threshold of the degenerate species
         if (!is.null(private$floor)) {
           floored <- floored | diag(as.matrix(optim_out$Sigma)) > latent_variance_threshold()
           optim_out <- project_latent_floor(optim_out, args$data, args$params$Omega, private$floor, floored)
           n_floor <- optim_out$n_floor; optim_out$n_floor <- NULL
         }
 
-        ## An iterate with a non-finite objective is not kept: the fit stays at
-        ## the previous one
+        ## an iterate with a non-finite objective is not kept
         new_objective <- -sum(data$w[w_pos] * optim_out$Ji[w_pos])
         if (!is.finite(new_objective)) {
           private$Omega <- previous_Omega
@@ -122,7 +113,7 @@ PLNnetworkfit <- R6Class(
         }
         do.call(self$update, optim_out)  # private$B now holds B_sc
         last_glasso <- glasso_out
-        private$rho_glasso <- rho # the penalty matrix of the iterate kept, for pen_loglik
+        private$rho_glasso <- rho
 
         ## Check convergence
         objective[iter]   <- new_objective
@@ -133,8 +124,7 @@ PLNnetworkfit <- R6Class(
         args$params <- list(B = private$B, M = private$M, S2 = private$S2)
         objective.old <- objective[iter]
       }
-      ## the iterations actually kept
-      if (!is.null(failure)) iter <- iter - 1
+      if (!is.null(failure)) iter <- iter - 1 # the iterations actually kept
 
       ## Restore B to original scale before leaving
       private$B <- sweep(private$B, 1, nrm$scales, "/")
@@ -155,9 +145,7 @@ PLNnetworkfit <- R6Class(
         ## Not a single iterate kept: the fit is marked as failed (its criteria
         ## are NA), with the precision matrix of the empty network
         private$rho_glasso <- glasso_penalty(self$penalty, self$penalty_weights, private$Sigma, private$scale)
-        private$Omega <- diag(1 / (diag(as.matrix(private$Sigma)) +
-                                     diag(glasso_penalty(self$penalty, self$penalty_weights, private$Sigma, private$scale))),
-                              self$p, self$p)
+        private$Omega <- diag(1 / (diag(as.matrix(private$Sigma)) + diag(private$rho_glasso)), self$p, self$p)
         private$Ji    <- rep(NA_real_, self$n)
         warning("The alternating optimization failed at its first iteration for penalty ",
                 format(self$penalty), ": ", failure, ". This fit is marked as failed.", call. = FALSE)
@@ -166,10 +154,7 @@ PLNnetworkfit <- R6Class(
                 " for penalty ", format(self$penalty), ": ", failure,
                 ". The fit is the one of the previous iteration.", call. = FALSE)
       }
-      ## A stalled solve is not worth a warning: the stopping rule could not be
-      ## met (the sweeps settle into a small limit cycle on an ill-conditioned
-      ## covariance) but the solution itself has stopped moving. The other two
-      ## failures are numerical, and do deserve one.
+      ## a stalled solve has stopped moving: only the numerical failures are reported
       if (is.null(failure) && last_glasso$status %in% c("degenerate", "inner_failure", "max_iter"))
         warning("The graphical Lasso failed to converge (", glasso_out$status,
                 ") for penalty ", format(self$penalty),
@@ -183,18 +168,7 @@ PLNnetworkfit <- R6Class(
     #' @importFrom Matrix Matrix
     #' @return a square matrix of size `PLNnetworkfit$n`
     latent_network = function(type = c("partial_cor", "support", "precision")) {
-      net <- switch(
-        match.arg(type),
-        "support"     = 1 * (private$Omega != 0 & !diag(TRUE, ncol(private$Omega))),
-        "precision"   = private$Omega,
-        "partial_cor" = {
-          tmp <- -private$Omega / tcrossprod(sqrt(diag(private$Omega))); diag(tmp) <- 1
-          tmp
-        }
-      )
-      ## Enforce sparse Matrix encoding to avoid downstream problems with igraph::graph_from_adjacency_matrix
-      ## as it fails when given dsyMatrix objects
-      Matrix(net, sparse = TRUE)
+      .latent_network(private$Omega, match.arg(type))
     },
 
     ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -270,12 +244,7 @@ PLNnetworkfit <- R6Class(
     #' @field latent_floor the lower bound on `exp(O + M)` for the species in `floored_species`, `NULL` if none (see [PLNnetwork_param()])
     latent_floor    = function() {private$floor},
     #' @field floored_species names of the species whose variational means are bounded by `latent_floor`: those whose latent variance has exceeded the threshold of `degenerate_species` during the optimization, of this fit or of the previous ones along the penalty path
-    floored_species = function() {
-      floored <- private$monitoring$floored
-      if (is.null(floored)) return(character(0))
-      species <- if (is.null(colnames(private$Sigma))) as.character(seq_along(floored)) else colnames(private$Sigma)
-      species[floored]
-    },
+    floored_species = function() {flagged_species(private$monitoring$floored, colnames(private$Sigma))},
     #' @field n_edges number of edges if the network (non null coefficient of the sparse precision matrix)
     n_edges         = function() {sum(private$Omega[upper.tri(private$Omega, diag = FALSE)] != 0)},
     #' @field nb_param number of parameters in the current PLN model

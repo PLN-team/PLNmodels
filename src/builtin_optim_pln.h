@@ -3,19 +3,12 @@
 #include "utils.h"
 #include "covariance_pln.h"
 
-// M_full parameterization: M is the full variational mean of Z_i (= X_i*B + M_res),
-// consistent with the ZIPLN convention.  M_res = M - X*B is computed locally for KL.
+// M is the full variational mean of Z_i (= X_i*B + M_res), on input and output.
+// B is profiled at every Newton step: B = P_X * M = (X'WX)^{-1} X'W M, and the
+// gradient w.r.t. M is the one w.r.t. M_res = M - X*B (envelope theorem).
 //
-// B is profiled at every Newton step via the envelope theorem:
-//   B = P_X * M = (X'WX)^{-1} X'W M   (closed-form optimum for current M)
-//   M_res = M - X*B                     (projection orthogonal to col(X))
-// The gradient of J_profiled w.r.t. M equals the gradient w.r.t. M_res (envelope theorem).
-//
-// Input/output: M is in M_full format throughout.
-
-// Mirror of nlopt_optimize_em_impl's structure (nlopt_optim_pln.h): outer EM loop (max_em) over an inner VE-step that
-// optimizes (M, ψ) jointly for fixed Omega until convergence (ftol), then one Omega M-step.
-// Joint Newton step per inner iteration: diagonal 2×2 per (i,j) with cross-term H_Mψ.
+// Outer EM loop (max_em) over an inner VE-step optimizing (M, ψ) jointly at fixed
+// Omega (joint Newton step, 2×2 per (i,j)), then one M-step for Omega.
 template<typename Traits>
 Rcpp::List builtin_optimize_pln_impl(
     const PlnData & d,

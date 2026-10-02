@@ -169,9 +169,7 @@ PLNnetwork_param <- function(
   ## was the scale left to its default? (see the handling of user-defined penalties)
   penalty_scale_implicit <- missing(penalty_scale)
   penalty_scale <- match.arg(penalty_scale)
-  if (!is.null(latent_floor))
-    stopifnot("latent_floor must be NULL or a positive number" =
-                is.numeric(latent_floor) && length(latent_floor) == 1L && !is.na(latent_floor) && latent_floor > 0)
+  check_latent_floor(latent_floor)
 
   ## post-treatment config
   config_pst <- config_post_default_PLNnetwork
@@ -181,8 +179,7 @@ PLNnetwork_param <- function(
   ## optimization config
   backend <- match.arg(backend)
   inception_cov <- match.arg(inception_cov)
-  ## default combination for "builtin" (partial E-step + short inception, see ?PLNnetwork_param);
-  ## only fills in values the user did not set explicitly.
+  ## defaults of the builtin backend: partial E-step and short inception
   if (backend == "builtin") {
     if (is.null(maxit_ve))        maxit_ve        <- 1L
     if (is.null(inception_niter) && inception_cov == "full") inception_niter <- 5L

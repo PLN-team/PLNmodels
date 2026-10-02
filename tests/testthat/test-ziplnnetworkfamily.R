@@ -1,4 +1,4 @@
-context("test-plnnetworkfamily")
+context("test-ziplnnetworkfamily")
 
 data(trichoptera)
 ## use a subset t save some time
@@ -32,30 +32,7 @@ test_that("ZIPLNnetwork: main function, fields access and methods", {
 
   expect_equal(myPLN$criteria$BIC, models$criteria$BIC)
 
-  ## S3 methods
-  expect_true(PLNmodels:::isNetworkfamily(myPLN))
-  expect_is(plot(myPLN), "ggplot")
-  expect_is(plot(myPLN, reverse = TRUE), "ggplot")
-  expect_is(plot(myPLN, type = "diagnostic"), "ggplot")
-  expect_is(getBestModel(myPLN), "ZIPLNfit_sparse")
-  expect_is(getModel(myPLN, myPLN$penalties[1]), "ZIPLNfit_sparse")
-
-  ## Field access
-  expect_true(all(myPLN$penalties > 0))
-  expect_null(myPLN$stability_path)
-  expect_true(anyNA(myPLN$stability))
-
-  ## Other R6 methods
-  expect_true(is.data.frame(myPLN$coefficient_path()))
-  subs <- replicate(2,
-                    sample.int(nrow(trichoptera), size = nrow(trichoptera)/2),
-                    simplify = FALSE)
-  myPLN$stability_selection(subsamples = subs)
-  expect_is(plot(myPLN, type = "stability"), "ggplot")
-  expect_true(!is.null(myPLN$stability_path))
-  expect_true(inherits(myPLN$plot(), "ggplot"))
-  expect_true(inherits(myPLN$plot_objective(), "ggplot"))
-  expect_true(inherits(myPLN$plot_stars(), "ggplot"))
+  expect_network_family(myPLN, "ZIPLNfit_sparse")
 })
 
 test_that("ZIPLNnetwork computes the stability path only once.", {
@@ -91,48 +68,25 @@ test_that("ZIPLNnetwork: matrix of penalties work", {
   W[lower.tri(W)] <- t(W)[lower.tri(W)]
   myPLN <- ZIPLNnetwork(Abundance ~ 1, data = trichoptera, control = ZIPLNnetwork_param(penalty_weights = W))
 
-  ## S3 methods
-  expect_true(PLNmodels:::isNetworkfamily(myPLN))
-  expect_is(plot(myPLN), "ggplot")
-  expect_is(plot(myPLN, reverse = TRUE), "ggplot")
-  expect_is(plot(myPLN, type = "diagnostic"), "ggplot")
-  expect_is(getBestModel(myPLN), "ZIPLNfit_sparse")
-  expect_is(getModel(myPLN, myPLN$penalties[1]), "ZIPLNfit_sparse")
-
-  ## Field access
-  expect_true(all(myPLN$penalties > 0))
-  expect_null(myPLN$stability_path)
-  expect_true(anyNA(myPLN$stability))
-
-  ## Other R6 methods
-  expect_true(is.data.frame(myPLN$coefficient_path()))
-  subs <- replicate(2,
-                    sample.int(nrow(trichoptera), size = nrow(trichoptera)/2),
-                    simplify = FALSE)
-  myPLN$stability_selection(subsamples = subs, control = ZIPLNnetwork_param(penalty_weights = W))
-  expect_is(plot(myPLN, type = "stability"), "ggplot")
-  expect_true(!is.null(myPLN$stability_path))
-  expect_true(inherits(myPLN$plot(), "ggplot"))
-  expect_true(inherits(myPLN$plot_objective(), "ggplot"))
-  expect_true(inherits(myPLN$plot_stars(), "ggplot"))
+  expect_network_family(myPLN, "ZIPLNfit_sparse", control = ZIPLNnetwork_param(penalty_weights = W))
 
   ## misspecification of penalty weights should induce errors
   ## not symmetric
   W <- diag(1, p, p)
   W[upper.tri(W)] <- runif(p*(p-1)/2, min = 1, max = 5)
-  expect_error(PLNnetwork(Abundance ~ 1, data = trichoptera, control = PLNnetwork_param(penalty_weights = W)))
+  expect_error(ZIPLNnetwork(Abundance ~ 1, data = trichoptera, control = ZIPLNnetwork_param(penalty_weights = W)))
 
   ## not square
   W <- matrix(1, p + 1, p)
-  expect_error(PLNnetwork(Abundance ~ 1, data = trichoptera, control = PLNnetwork_param(penalty_weights = W)))
+  expect_error(ZIPLNnetwork(Abundance ~ 1, data = trichoptera, control = ZIPLNnetwork_param(penalty_weights = W)))
 
   ## nonpositive entries
   W <- matrix(0, p, p)
-  expect_error(PLNnetwork(Abundance ~ 1, data = trichoptera, control = PLNnetwork_param(penalty_weights = W)))
+  expect_error(ZIPLNnetwork(Abundance ~ 1, data = trichoptera, control = ZIPLNnetwork_param(penalty_weights = W)))
 
 })
 
-test_that("PLNnetwork: list of matrices of penalties work", {
+test_that("ZIPLNnetwork: list of matrices of penalties work", {
 
   p <- ncol(trichoptera$Abundance)
   W <- diag(1, p, p)
@@ -142,30 +96,7 @@ test_that("PLNnetwork: list of matrices of penalties work", {
 
   myPLN <- ZIPLNnetwork(Abundance ~ 1, data = trichoptera, control = ZIPLNnetwork_param(penalty_weights = list_W))
 
-  ## S3 methods
-  expect_true(PLNmodels:::isNetworkfamily(myPLN))
-  expect_is(plot(myPLN), "ggplot")
-  expect_is(plot(myPLN, reverse = TRUE), "ggplot")
-  expect_is(plot(myPLN, type = "diagnostic"), "ggplot")
-  expect_is(getBestModel(myPLN), "ZIPLNfit_sparse")
-  expect_is(getModel(myPLN, myPLN$penalties[1]), "ZIPLNfit_sparse")
-
-  ## Field access
-  expect_true(all(myPLN$penalties > 0))
-  expect_null(myPLN$stability_path)
-  expect_true(anyNA(myPLN$stability))
-
-  ## Other R6 methods
-  expect_true(is.data.frame(myPLN$coefficient_path()))
-  subs <- replicate(2,
-                    sample.int(nrow(trichoptera), size = nrow(trichoptera)/2),
-                    simplify = FALSE)
-  myPLN$stability_selection(subsamples = subs, control = ZIPLNnetwork_param(penalty_weights = W))
-  expect_is(plot(myPLN, type = "stability"), "ggplot")
-  expect_true(!is.null(myPLN$stability_path))
-  expect_true(inherits(myPLN$plot(), "ggplot"))
-  expect_true(inherits(myPLN$plot_objective(), "ggplot"))
-  expect_true(inherits(myPLN$plot_stars(), "ggplot"))
+  expect_network_family(myPLN, "ZIPLNfit_sparse", control = ZIPLNnetwork_param(penalty_weights = W))
 
 })
 

@@ -148,6 +148,22 @@ test_that("Check that variance estimation are coherent in PLNfit",  {
   expect_gt(tr_sandwich  , 0)
 })
 
+test_that("Resampling works with a fixed or a genpop covariance",  {
+  p <- ncol(data$Abundance)
+  config_post <- list(jackknife = TRUE, bootstrap = 5L)
+  for (control in list(
+    PLN_param(covariance = "fixed" , Omega = diag(p), trace = 0, config_post = config_post),
+    PLN_param(covariance = "genpop", C = diag(p)    , trace = 0, config_post = config_post)
+  )) {
+    myPLN <- PLN(Abundance ~ Var_1 + 0 + offset(log(Offset)), data = data, control = control)
+    expect_gt(sum(standard_error(myPLN, "jackknife")^2), 0)
+    expect_gt(sum(standard_error(myPLN, "bootstrap")^2), 0)
+    expect_equal(dim(attr(coef(myPLN), "vcov_jackknife")), c(p, p))
+  }
+  ## the precision matrix is not estimated when the covariance is fixed
+  expect_null(attr(myPLN$model_par$Sigma, "variance_jackknife"))
+})
+
 test_that("Check that variance estimation are coherent in PLNPCA",  {
   myPCAs <- PLNPCA(Abundance ~ Var_1 + 0 + offset(log(Offset)), data = data, ranks = 1:3)
   myPCA <- myPCAs$models[[2]]

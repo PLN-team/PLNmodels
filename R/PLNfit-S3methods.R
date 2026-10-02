@@ -286,17 +286,7 @@ ICL.PLNfit <- function(object, ...) {
 #' @describeIn standard_error Component-wise standard errors of B in [`PLNfit_fixedcov`]
 #' @export
 standard_error.PLNfit_fixedcov <- function(object, type = c("sandwich", "variational", "jackknife", "bootstrap"), parameter = c("B", "Omega")) {
-  type <- match.arg(type)
-  par  <- match.arg(parameter)
-  if (par == "Omega")
+  if (match.arg(parameter) == "Omega")
     stop("Omega is not estimated for fixed covariance model")
-  if (type == "variational" & is.null(attr(object$model_par$B, "variance_variational")))
-    stop("Variational estimation not available: rerun by setting `variational_var = TRUE` in the control list.")
-  if (type == "jackknife" & is.null(attr(object$model_par$B, "variance_jackknife")))
-    stop("Jackknife estimation not available: rerun by setting `jackknife = TRUE` in the control list.")
-  if (type == "bootstrap" & is.null(attr(object$model_par$B, "variance_bootstrap")))
-    stop("Bootstrap estimation not available: rerun by setting `bootstrap > 0` in the control list.")
-  if (type == "sandwich" & is.null(attr(object$model_par$B, "variance_sandwich")))
-    stop("Sandwich estimator not available: rerun by setting `sandwich_var = TRUE` in the control list.")
-  attr(object$model_par[[par]], paste0("variance_", type)) %>% sqrt()
+  standard_error.PLNfit(object, type, parameter)
 }
