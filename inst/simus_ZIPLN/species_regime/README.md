@@ -29,3 +29,24 @@ ajustements diagonaux, battait les deux de 177 sur microcosm (inflation par esp�
 
 Conclusion d'étape : la bascule est un bon mouvement, à condition de la faire espèce par espèce
 et de la refuser quand elle fait baisser la borne. Prochaine étape : recherche gloutonne.
+
+## Recherche gloutonne (`greedy.R`, `control_noop.R`, `greedy_converged.R`)
+
+Bascule d'une espèce à la fois (10 candidates vers l'inflation, 3 vers la variance, dans
+l'ordre de l'indicateur), réajustement, bascule gardée seulement si la borne monte.
+
+- **Piège de convergence** : avec le plafond par défaut `maxit_out = 200`, 6 cas sur 13 ne
+  convergent pas. Un simple réajustement sans bascule gagne alors jusqu'à +167 (microcosm,
+  inflation par espèce), ce qui gonflait les gains de la première recherche (+251). À
+  convergence (jusqu'à 560 itérations), ce témoin ne gagne plus que 0,4 au plus.
+- **Gains propres des bascules, à convergence** : microcosm (par espèce) +78, microcosm (site)
+  +24, oaks (`tree | tree`) +10,6, barents (par espèce) +7,9, oaks (par espèce) +5,4, barents
+  (unique) +3,8, et +0,1 à +2,3 ailleurs. Jamais négatifs par construction.
+- **Effet sur les estimations** : quasi nul en moyenne (π moyen et variance latente médiane
+  inchangés à 2 % près) ; les bascules ne touchent que quelques espèces.
+- **Coût** : environ la moitié d'un ajustement sur microcosm (53 s contre 112 s), 1 à 3 fois
+  l'ajustement sur les petits jeux. L'indicateur ordonne mal les candidates : 76 bascules
+  gardées sur 154 essais, et des essais refusés qui coûtent jusqu'à −160.
+
+Conclusions d'étape : la bascule trouve de meilleurs optima, mais les gains restent modestes
+au regard de la borne et des estimations ; le plafond de convergence de ZIPLN pèse plus lourd.
