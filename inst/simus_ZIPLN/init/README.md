@@ -53,3 +53,14 @@ simulations et 13 jeux réels.
   atteindre la borne de `"lm"`. Sur les 133 cas : résultat identique au meilleur des deux
   ajustements complets, second départ abandonné dans 52 cas, environ un quart des itérations
   économisées (rien quand `"positive"` gagne). **Retenu.**
+- **Ordonner les départs selon un indicateur du scénario** (`order_features.R`,
+  `order_evaluate.R`) : mettre en premier le départ prédit gagnant, pour que l'autre soit
+  abandonné. Meilleur indicateur, calculé sans ajustement : p0, la probabilité moyenne d'un
+  zéro sous le Poisson-lognormal ajusté aux comptages positifs (« positive » en premier si
+  p0 < 0,10). Il prédit le gagnant dans 85 % des cas (11 sur 13 sur données réelles), sans
+  jamais changer le résultat. Mais le gain est minime : 25,5 % d'itérations économisées contre
+  23,7 % avec « lm » toujours en premier, et 31 % au mieux avec un ordre parfait. La limite
+  est ailleurs : le départ perdant tourne une trentaine d'itérations (le minimum de
+  `cannot_beat()`) avant d'être jugé, et l'abaisser fait des erreurs. **Non retenu** ; p0
+  reste un bon descripteur du scénario (zéros bien plus nombreux que ce qu'explique la
+  partie Poisson-lognormal → « positive » gagne).
