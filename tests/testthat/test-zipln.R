@@ -205,3 +205,24 @@ test_that("ZIPLN: a starting point that cannot do better is abandoned",  {
   expect_equal(best$optim_par$abandoned_starts, "positive")
   expect_equal(best$loglik, lm$loglik)
 })
+
+test_that("ZIPLN: the SQUAREM acceleration of the outer loop reaches a better bound in fewer iterations",  {
+  ## on a fixed point map x -> a x + b, one SQUAREM cycle lands on the fixed point
+  state <- list(to_vec = function(par) par$x, from_vec = function(x, par) { par$x <- x; par })
+  step  <- function(par) { x <- .9 * par$x + 1; list(parameters = list(x = x), objective = sum((x - 10)^2)) }
+  cycle <- PLNmodels:::squarem_cycle(step, list(x = c(0, 5)), Inf, state, step_max = 1e3)
+  expect_equal(cycle$new$parameters$x, c(10, 10), tolerance = 1e-6)
+  expect_equal(cycle$evaluations, 3L)
+
+  fits <- lapply(c(plain = FALSE, squarem = TRUE), function(acc)
+    ZIPLN(Abundance ~ 1, data = trichoptera, zi = "single",
+          control = ZIPLN_param(trace = 0, init = "lm", config_optim = list(accelerate = acc))))
+  expect_gte(fits$squarem$loglik, fits$plain$loglik - 1e-6)
+  expect_lt(fits$squarem$optim_par$iterations, fits$plain$optim_par$iterations)
+  expect_equal(fits$squarem$optim_par$message, "converged")
+
+  ## no acceleration for a sparse fit
+  sparse <- ZIPLN(Abundance ~ 1, data = trichoptera, zi = "single",
+                  control = ZIPLN_param(trace = 0, init = "lm", penalty = .2))
+  expect_equal(length(sparse$optim_par$objective), sparse$optim_par$iterations)
+})

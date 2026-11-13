@@ -636,6 +636,56 @@ fit_ZIPLN_multistart <- function(new_fit, data, control, config) {
   best
 }
 
+## SQUAREM acceleration (Varadhan and Roland, 2008, scheme S3, with the adaptive bound on
+## the step length of their package) of the outer loop of ZIPLN. The fixed-point map is one
+## outer iteration; its state is (M, log S2, logit R on the zeros, B0 if any), mapped to and
+## from a vector by squarem_zipln_state().
+squarem_zipln_state <- function(zero, has_B0) {
+  list(
+    to_vec = function(par) c(par$M, log(par$S2),
+                             stats::qlogis(pmin(pmax(par$R[zero], 1e-12), 1 - 1e-12)),
+                             if (has_B0) par$B0),
+    from_vec = function(x, par) {
+      np <- length(par$M)
+      par$M[]  <- x[seq_len(np)]
+      par$S2[] <- exp(x[np + seq_len(np)])
+      par$R[]  <- 0
+      par$R[zero] <- stats::plogis(x[2 * np + seq_len(sum(zero))])
+      if (has_B0) par$B0[] <- utils::tail(x, length(par$B0))
+      par
+    }
+  )
+}
+
+## One SQUAREM cycle: two steps of the map from `parameters`, then one step from the
+## extrapolated state, kept if it does at least as well as the second step. `step_max`
+## bounds the step length: multiplied by 4 when reached and successful, divided by 4 when
+## the extrapolation fails. Returns the new iterate (as returned by `step`), the updated
+## bound and the number of evaluations of the map.
+squarem_cycle <- function(step, parameters, objective, state, step_max) {
+  s1 <- step(parameters)
+  if (!is.finite(s1$objective)) return(list(new = s1, step_max = step_max, evaluations = 1L))
+  s2 <- step(s1$parameters)
+  if (!is.finite(s2$objective)) return(list(new = s1, step_max = step_max, evaluations = 2L))
+  x0 <- state$to_vec(parameters); x1 <- state$to_vec(s1$parameters)
+  r <- x1 - x0; v <- state$to_vec(s2$parameters) - x1 - r
+  alpha <- sqrt(sum(r^2) / sum(v^2))
+  alpha <- if (is.finite(alpha)) max(1, min(step_max, alpha)) else 1
+  if (alpha == 1) {
+    if (step_max == 1) step_max <- 4
+    return(list(new = s2, step_max = step_max, evaluations = 2L))
+  }
+  candidate <- tryCatch(
+    suppressWarnings(step(state$from_vec(x0 + 2 * alpha * r + alpha^2 * v, parameters))),
+    error = function(e) NULL)
+  if (!is.null(candidate) && is.finite(candidate$objective) && candidate$objective <= s2$objective) {
+    if (alpha == step_max) step_max <- 4 * step_max
+    list(new = candidate, step_max = step_max, evaluations = 3L)
+  } else {
+    list(new = s2, step_max = max(1, step_max / 4), evaluations = 3L)
+  }
+}
+
 ## Can an optimization still reach `target`? Its objective (minimized) usually decreases
 ## geometrically: the decreases of the last `window` iterations give the rate, and the
 ## total decrease left up to `maxit` iterations, inflated by `safety`, is extrapolated.

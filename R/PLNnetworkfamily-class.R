@@ -530,7 +530,7 @@ ZIPLNnetworkfamily <- R6Class(
         ## worse optimum that the warm starts then carry down the whole path
         cfg_inception <- modifyList(
           control$config_optim,
-          list(trace = 0, maxit_ve = NULL, maxit_out = 200L)
+          list(trace = 0, maxit_ve = NULL, maxit_out = 500L, accelerate = TRUE)
         )
         ctrl_inc <- control
         ctrl_inc$config_optim <- cfg_inception

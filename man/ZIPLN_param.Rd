@@ -82,6 +82,7 @@ Helper to define list of parameters to control the ZIPLN fit. All arguments have
 See \code{\link[=PLN_param]{PLN_param()}} for a description of the generic \code{config_optim} entries (\code{ftol_rel}, \code{xtol_rel}, etc.). Like \code{\link[=PLNnetwork_param]{PLNnetwork_param()}}, ZIPLN_param() has two parameters controlling the outer EM loop:
 \itemize{
 \item "ftol_out" outer solver stops when an optimization step changes the objective function by less than \code{ftol_out} multiplied by the absolute value of the parameter. Default is 1e-6
-\item "maxit_out" outer solver stops when the number of iteration exceeds \code{maxit_out}. Default is 200 for "builtin", 100 for "nlopt"
+\item "maxit_out" outer solver stops when the number of iteration exceeds \code{maxit_out}. Default is 500 for "builtin", 100 for "nlopt"
+\item "accelerate" logical: should the outer loop be accelerated by SQUAREM (Varadhan and Roland, 2008)? Default is \code{TRUE}. Each cycle makes two outer iterations, then one from the extrapolated state, kept if it does better; \code{maxit_out} counts all of them. Not used with a sparse covariance.
 }
 }

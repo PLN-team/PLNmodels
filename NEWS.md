@@ -31,6 +31,30 @@
   `$optim_par$abandoned_starts`. The fitting time is up to twice the former one;
   `init = "lm"` gives back the former behavior.
 
+## Convergence of ZIPLN
+
+* **The outer loop of `ZIPLN()` is now accelerated by SQUAREM** (Varadhan and Roland, 2008),
+  with the adaptive bound on the step length of the `SQUAREM` package: two outer iterations,
+  then one from the extrapolated variational parameters, kept if it does better
+  (`config_optim = list(accelerate = TRUE)`, the default; not used for sparse fits). The loop
+  converges linearly, with rates up to 0.996 on `microcosm`: most zeros make the latent means
+  of the zero counts poorly determined, as in an EM algorithm with much missing information.
+  At the same tolerance, the accelerated loop reaches a better bound in fewer iterations on
+  all the cases of the benchmark.
+* **The default `maxit_out` of the builtin backend goes from 200 to 500.** With the former
+  defaults, the fit stopped at the maximum number of iterations on the larger data sets,
+  316 below the optimum on `microcosm` (zero inflation depending on the species), 10 on
+  `barents` and 8.5 on `mollusk`; it now stops 88, 2.3 and 0.9 below, for about 10% more
+  VE steps on the 13 cases of the benchmark. Together with the two starting points, the
+  default fit gains 228 on `microcosm` (zero inflation depending on the species), 37 on
+  `microcosm` (zero inflation depending on the site), 8 on `barents` and `mollusk`, for the
+  same total fitting time. A tighter `ftol_out` (`1e-7`) brings `microcosm` within 15 of the
+  optimum, at about 3.5 times the cost.
+* With the accelerated trajectories, the abandonment of the second starting point (see
+  above) missed a better fit once on the 26 orderings of the benchmark (by 0.64 on
+  `mollusk`, where the bound of the second fit stalled before improving again), and saves
+  about 30% of the VE steps of two full fits.
+
 ## Breaking changes in network fits
 
 The defaults of `PLNnetwork()`, `ZIPLNnetwork()` and `ZIPLN()` with a sparse covariance

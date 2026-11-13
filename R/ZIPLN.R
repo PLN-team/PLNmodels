@@ -86,7 +86,8 @@ ZIPLN <- function(formula, data, subset, zi = c("single", "row", "col"), control
 #' @inherit PLN_param details
 #' @details See [PLN_param()] for a description of the generic `config_optim` entries (`ftol_rel`, `xtol_rel`, etc.). Like [PLNnetwork_param()], ZIPLN_param() has two parameters controlling the outer EM loop:
 #' * "ftol_out" outer solver stops when an optimization step changes the objective function by less than `ftol_out` multiplied by the absolute value of the parameter. Default is 1e-6
-#' * "maxit_out" outer solver stops when the number of iteration exceeds `maxit_out`. Default is 200 for "builtin", 100 for "nlopt"
+#' * "maxit_out" outer solver stops when the number of iteration exceeds `maxit_out`. Default is 500 for "builtin", 100 for "nlopt"
+#' * "accelerate" logical: should the outer loop be accelerated by SQUAREM (Varadhan and Roland, 2008)? Default is `TRUE`. Each cycle makes two outer iterations, then one from the extrapolated state, kept if it does better; `maxit_out` counts all of them. Not used with a sparse covariance.
 #'
 #' @export
 ZIPLN_param <- function(
@@ -131,7 +132,8 @@ ZIPLN_param <- function(
   config_opt <- make_config_optim(backend, config_optim, trace,
                                   extra = list(
                                     ftol_out  = 1e-6,
-                                    maxit_out = if (backend == "builtin") 200L else 100L
+                                    maxit_out = if (backend == "builtin") 500L else 100L,
+                                    accelerate = TRUE
                                   ))
 
   structure(list(
