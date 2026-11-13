@@ -63,10 +63,13 @@ which sometimes speeds up the inference.}
 \item{init}{starting point of the optimization: \code{"best"} (default) fits the model from
 the two starting points of \code{\link[=compute_ZIPLN_starting_point]{compute_ZIPLN_starting_point()}} and keeps the one with the
 best variational bound, \code{"lm"} or \code{"positive"} fits it from that starting point only
-(twice as fast). The variational bound has distinct local optima, where the zeros are
+(faster). The variational bound has distinct local optima, where the zeros are
 mostly explained by the latent variance or by the zero inflation: \code{"lm"} tends to reach
-the former, \code{"positive"} the latter. The starting point kept and the bound reached from
-each are given by \verb{$optim_par$init} and \verb{$optim_par$objective_starts}. Ignored when
+the former, \code{"positive"} the latter. With \code{"best"}, the fit from \code{"lm"} comes first, and
+the fit from \code{"positive"} is abandoned as soon as the extrapolation of its objective shows
+that it cannot do better (except for a sparse fit). The starting point kept, the bound
+reached from each and the starting points abandoned are given by \verb{$optim_par$init},
+\verb{$optim_par$objective_starts} and \verb{$optim_par$abandoned_starts}. Ignored when
 \code{inception} is given.}
 }
 \value{

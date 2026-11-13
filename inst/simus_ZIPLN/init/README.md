@@ -33,3 +33,23 @@ local depuis son point de départ.
 Aucun départ ne domine : `ZIPLN()` part désormais des deux (`init = "best"`) et garde la
 meilleure borne. Le temps de calcul est environ doublé ; les temps de ce banc d'essai ont été
 mesurés avec un build de débogage et ne valent qu'en relatif.
+
+## Gagner du temps (13/11/2026)
+
+`trajectories.R` enregistre la trajectoire de l'objectif depuis chaque départ, sur les 120
+simulations et 13 jeux réels.
+
+- **Course précoce** (`analyze_trajectories.R`) : ajuster les deux départs k itérations et
+  garder le meilleur. Inutilisable : 40 décisions fausses sur 133 à k = 5, encore 17 à k = 20,
+  avec des pertes jusqu'à 182 (microcosm) ; l'ordre s'inverse souvent tard.
+- **Choix par espèce sur le modèle diagonal** (`species_start.R`) : l'ELBO diagonale est
+  séparable par espèce. Comme raccourci, il se trompe sur oaks et mollusk (le modèle diagonal
+  ignore les corrélations) et n'est pas moins cher sur de petits p. Comme troisième candidat,
+  il gagne sur 6 jeux réels sur 13 (microcosm +177), mais pas sur les simulations : piste
+  gardée pour plus tard.
+- **Abandon du second départ** (`analyze_extrapolation.R`, puis `validate_abandon.R`) :
+  ajuster `"lm"` jusqu'au bout, puis `"positive"` en l'abandonnant dès que l'extrapolation
+  géométrique de sa trajectoire (fenêtre 10, marge ×3, après 30 itérations) ne peut plus
+  atteindre la borne de `"lm"`. Sur les 133 cas : résultat identique au meilleur des deux
+  ajustements complets, second départ abandonné dans 52 cas, environ un quart des itérations
+  économisées (rien quand `"positive"` gagne). **Retenu.**

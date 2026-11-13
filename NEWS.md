@@ -20,8 +20,15 @@
   On real data it gains 705 on `microcosm` with zero inflation depending on the site, 25 on
   `barents` with species-wise zero inflation, and leaves `oaks`, `mollusk` and `trichoptera`
   unchanged, where the former starting point is better.
-* The fit kept and the bound reached from each starting point are given by
-  `$optim_par$init` and `$optim_par$objective_starts`. The fitting time is about doubled;
+* The fit from `"lm"` comes first. The fit from `"positive"` is then abandoned as soon as
+  the geometric extrapolation of its objective shows that it cannot reach the bound of the
+  first one. On the 133 data sets of the benchmark, this gives exactly the best of the two
+  full fits, abandons the second fit in 52 of them (where `"lm"` wins), and saves about a
+  quarter of the iterations of two full fits. It is not used for sparse fits, whose
+  objective may not decrease monotonically.
+* The fit kept, the bound reached from each starting point and the starting points
+  abandoned are given by `$optim_par$init`, `$optim_par$objective_starts` and
+  `$optim_par$abandoned_starts`. The fitting time is up to twice the former one;
   `init = "lm"` gives back the former behavior.
 
 ## Breaking changes in network fits

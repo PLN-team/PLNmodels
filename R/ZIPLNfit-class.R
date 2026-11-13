@@ -238,6 +238,15 @@ ZIPLNfit <- R6Class(
           convergence <- convergence[1:nb_iter]
           break
         }
+
+        ## competing with a fit from another starting point (see fit_ZIPLN_multistart())
+        if (!is.null(control$objective_to_beat) && comparable &&
+            cannot_beat(criterion[1:nb_iter], control$objective_to_beat, control$maxit_out)) {
+          stop_reason <- "abandoned"
+          criterion   <- criterion[1:nb_iter]
+          convergence <- convergence[1:nb_iter]
+          break
+        }
       }
       parameters <- best$parameters
       vloglik    <- best$vloglik

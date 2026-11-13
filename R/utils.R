@@ -599,15 +599,20 @@ p0_poisson_lognormal <- function(eta, s2, k = 20) {
 
 ## Fit a ZIPLN model from each starting point in `control$init`, and keep the fit with the
 ## best objective. `new_fit(control)` instantiates the fit (an R6 ZIPLNfit*), which is then
-## optimized with `config`. A user-defined inception gives a single starting point.
+## optimized with `config`. A user-defined inception gives a single starting point. The
+## fits are sequential: from the second one on, the optimization is abandoned as soon as
+## it cannot reach the best objective so far (see cannot_beat()), except for a sparse fit,
+## whose objective may not decrease monotonically.
 fit_ZIPLN_multistart <- function(new_fit, data, control, config) {
   starts <- if (isZIPLNfit(control$inception)) "inception"
             else if (control$init != "best") control$init
             else c("lm", "positive")
   objective <- function(fit) if (is.null(fit$pen_loglik)) fit$loglik else fit$pen_loglik
-  ## the warnings of a fit are only given if it is the one kept
-  fits <- lapply(starts, function(start) {
+  fits <- list(); best_value <- -Inf
+  for (start in starts) {
     control$init <- start
+    if (is.finite(best_value) && !identical(control$covariance, "sparse")) config$objective_to_beat <- -best_value
+    ## the warnings of a fit are only given if it is the one kept
     warnings <- list()
     fit <- withCallingHandlers(
       tryCatch({
@@ -616,14 +621,33 @@ fit_ZIPLN_multistart <- function(new_fit, data, control, config) {
         fit
       }, error = function(e) if (length(starts) > 1) e else stop(e)),
       warning = function(w) { warnings[[length(warnings) + 1]] <<- w; invokeRestart("muffleWarning") })
-    list(fit = fit, warnings = warnings)
-  })
+    fits[[start]] <- list(fit = fit, warnings = warnings)
+    if (!inherits(fit, "error")) best_value <- max(best_value, objective(fit))
+  }
   ok <- !vapply(fits, function(f) inherits(f$fit, "error"), logical(1))
   if (!any(ok)) stop(fits[[1]]$fit)
-  values <- setNames(vapply(fits[ok], function(f) objective(f$fit), numeric(1)), starts[ok])
+  values <- vapply(fits[ok], function(f) objective(f$fit), numeric(1))
   kept <- fits[ok][[which.max(values)]]
   for (w in kept$warnings) warning(w)
+  abandoned <- names(fits[ok])[vapply(fits[ok], function(f) identical(f$fit$optim_par$message, "abandoned"), logical(1))]
   best <- kept$fit
-  best$update(monitoring = c(best$optim_par, list(init = names(values)[which.max(values)], objective_starts = values)))
+  best$update(monitoring = c(best$optim_par, list(init = names(values)[which.max(values)],
+                                                  objective_starts = values, abandoned_starts = abandoned)))
   best
+}
+
+## Can an optimization still reach `target`? Its objective (minimized) usually decreases
+## geometrically: the decreases of the last `window` iterations give the rate, and the
+## total decrease left up to `maxit` iterations, inflated by `safety`, is extrapolated.
+## Only decided after `min_iter` iterations. FALSE while in doubt.
+cannot_beat <- function(objective, target, maxit, window = 10, safety = 3, min_iter = 30) {
+  t <- length(objective)
+  if (t <= max(window, min_iter)) return(FALSE)
+  d_now <- objective[t - 1] - objective[t]
+  d_old <- objective[t - window] - objective[t - window + 1]
+  if (d_now < 0 || d_old <= 0) return(FALSE)
+  r <- (d_now / d_old)^(1 / (window - 1))
+  if (!is.finite(r) || r >= 1) return(FALSE)
+  left <- safety * d_now * r * (1 - r^max(maxit - t, 0)) / (1 - r)
+  objective[t] - left > target
 }

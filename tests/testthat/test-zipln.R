@@ -187,3 +187,21 @@ test_that("ZIPLN: the default fit keeps the best of the two starting points",  {
   again <- ZIPLN(Y ~ 1, data = dat, zi = "col", control = ZIPLN_param(trace = 0, inception = fits$best))
   expect_equal(again$optim_par$init, "inception")
 })
+
+test_that("ZIPLN: a starting point that cannot do better is abandoned",  {
+  ## geometric decrease towards 10: cannot reach 5, can reach 10.5
+  obj <- 10 + 100 * 0.8^(0:39)
+  expect_true(PLNmodels:::cannot_beat(obj, target = 5, maxit = 200))
+  expect_false(PLNmodels:::cannot_beat(obj, target = 10.5, maxit = 200))
+  expect_false(PLNmodels:::cannot_beat(obj[1:20], target = 5, maxit = 200))   # too early to tell
+  expect_false(PLNmodels:::cannot_beat(10 + 0 * obj, target = 5, maxit = 200)) # no decrease to extrapolate
+
+  ## on oaks, the "lm" starting point wins and the "positive" one is abandoned, with the
+  ## same result as the "lm" fit alone
+  data(oaks)
+  best <- suppressWarnings(ZIPLN(Abundance ~ 1 + offset(log(Offset)), data = oaks, zi = "col", control = ZIPLN_param(trace = 0)))
+  lm   <- suppressWarnings(ZIPLN(Abundance ~ 1 + offset(log(Offset)), data = oaks, zi = "col", control = ZIPLN_param(trace = 0, init = "lm")))
+  expect_equal(best$optim_par$init, "lm")
+  expect_equal(best$optim_par$abandoned_starts, "positive")
+  expect_equal(best$loglik, lm$loglik)
+})

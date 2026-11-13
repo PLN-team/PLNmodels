@@ -73,10 +73,13 @@ ZIPLN <- function(formula, data, subset, zi = c("single", "row", "col"), control
 #' @param init starting point of the optimization: `"best"` (default) fits the model from
 #'   the two starting points of [compute_ZIPLN_starting_point()] and keeps the one with the
 #'   best variational bound, `"lm"` or `"positive"` fits it from that starting point only
-#'   (twice as fast). The variational bound has distinct local optima, where the zeros are
+#'   (faster). The variational bound has distinct local optima, where the zeros are
 #'   mostly explained by the latent variance or by the zero inflation: `"lm"` tends to reach
-#'   the former, `"positive"` the latter. The starting point kept and the bound reached from
-#'   each are given by `$optim_par$init` and `$optim_par$objective_starts`. Ignored when
+#'   the former, `"positive"` the latter. With `"best"`, the fit from `"lm"` comes first, and
+#'   the fit from `"positive"` is abandoned as soon as the extrapolation of its objective shows
+#'   that it cannot do better (except for a sparse fit). The starting point kept, the bound
+#'   reached from each and the starting points abandoned are given by `$optim_par$init`,
+#'   `$optim_par$objective_starts` and `$optim_par$abandoned_starts`. Ignored when
 #'   `inception` is given.
 #' @return list of parameters used during the fit and post-processing steps
 #'
