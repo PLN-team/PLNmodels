@@ -4,7 +4,14 @@
 \alias{compute_ZIPLN_starting_point}
 \title{Helper function for ZIPLN initialization.}
 \usage{
-compute_ZIPLN_starting_point(Y, X, X0, O, w = NULL)
+compute_ZIPLN_starting_point(
+  Y,
+  X,
+  X0,
+  O,
+  w = NULL,
+  method = c("lm", "positive")
+)
 }
 \arguments{
 \item{Y}{Response count matrix (n × p)}
@@ -16,13 +23,25 @@ compute_ZIPLN_starting_point(Y, X, X0, O, w = NULL)
 \item{O}{Offset matrix in log-scale (n × p)}
 
 \item{w}{Weight vector of length n (defaults to uniform weights)}
+
+\item{method}{character: either \code{"lm"} (default) or \code{"positive"}, see the description.}
 }
 \value{
 Named list: \code{B} (d × p), \code{M} (n × p), \code{S2} (n × p), \code{R} (n × p), \code{B0} (d0 × p)
 }
 \description{
-Fast LM-based starting point for ZIPLN: one multivariate \code{lm.fit} for the PLN
-component and empirical zero rates / binomial GLMs for the ZI component.
-Replaces the previous per-species \code{pscl::zeroinfl} loop. \code{R} is set to the
-empirical zero rate of each species on its zero counts, and to 0 elsewhere.
+Fast starting points for ZIPLN, which mostly differ in how they explain the zeros.
+\itemize{
+\item \code{"lm"}: one multivariate \code{lm.fit} of \code{log((1 + Y) / exp(O))} on \code{X}, zeros included.
+\code{R} is set to the empirical zero rate of each species on its zero counts. The zeros are
+mostly explained by the Poisson-lognormal component.
+\item \code{"positive"}: \code{B} and the latent variances are estimated species by species on the
+positive counts only (as in a hurdle model), and \code{M = XB} on the zeros. \code{R} is the
+posterior probability of a structural zero under a Poisson-lognormal model with these
+parameters, the zero-inflation rate of each species being matched on its observed
+rate of zeros. The zeros are mostly explained by the zero-inflation component.
+}
+
+The two can lead to different local optima of the variational bound, which is why
+\code{\link[=ZIPLN]{ZIPLN()}} tries both by default (see \code{init} in \code{\link[=ZIPLN_param]{ZIPLN_param()}}).
 }

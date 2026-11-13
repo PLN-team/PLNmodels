@@ -86,7 +86,8 @@ ZIPLNfit <- R6Class(
         private$B  <- control$inception$model_par$B
         private$B0 <- control$inception$model_par$B0
       } else {
-        sp <- compute_ZIPLN_starting_point(data$Y, data$X, data$X0, data$O, data$w)
+        method <- if (isTRUE(control$init %in% c("lm", "positive"))) control$init else "lm"
+        sp <- compute_ZIPLN_starting_point(data$Y, data$X, data$X0, data$O, data$w, method = method)
         private$B  <- sp$B
         private$B0 <- sp$B0
         private$M  <- sp$M
@@ -134,30 +135,15 @@ ZIPLNfit <- R6Class(
         list(Omega = NA, B0 = private$B0, B = sweep(private$B, 1, nrm$scales, "*"),
              Pi = private$Pi, M = private$M, S2 = private$S2, R = private$R)
 
-      nb_iter <- 0
-      criterion   <- numeric(control$maxit_out)
-      convergence <- numeric(control$maxit_out)
-
-      vloglik <- -Inf; objective <- Inf
-      nb_increase <- 0L
-      best <- list(parameters = parameters, objective = Inf, vloglik = vloglik)
-      repeat {
-        if (control$maxit_out >= 0 && nb_iter >= control$maxit_out) {
-          stop_reason <- "maximum number of iterations reached"
-          criterion   <- criterion[1:nb_iter]
-          convergence <- convergence[nb_iter]
-          break
-        }
-
+      ## One outer iteration (M step, then VE step joint in (M, S2, R)) from the
+      ## variational parameters M, S2, R and the ZI regression parameters B0
+      step <- function(parameters) {
         ### M Step
         # PLN part: B = P_X M is optimal whatever Omega, which is then computed with it
-        new_B <- private$optimizer$B(
-          M = parameters$M, X = data$X
-        )
+        new_B <- private$optimizer$B(M = parameters$M, X = data$X)
         new_Omega <- private$optimizer$Omega(
           M = parameters$M, X = data$X, B = new_B, S2 = parameters$S2
         )
-
         # ZI part
         optim_new_zipar <- private$optimizer$zi(
           R = parameters$R, init_B0 = parameters$B0, X0 = data$X0, config = control
@@ -183,19 +169,48 @@ ZIPLNfit <- R6Class(
         if (control$backend == "builtin")
           new_B <- private$optimizer$B(M = new_M, X = data$X)
 
-        new_parameters <- list(
-          Omega = new_Omega, B = new_B, B0 = new_B0, Pi = new_Pi,
-          R = new_R, M = new_M, S2 = new_S2
-        )
-        nb_iter <- nb_iter + 1
-
         vloglik <- zipln_vloglik(
           data$Y, data$X, data$O, new_Pi, new_Omega, new_B, new_R, new_M, new_S2
         )
+        list(
+          parameters = list(Omega = new_Omega, B = new_B, B0 = new_B0, Pi = new_Pi,
+                            R = new_R, M = new_M, S2 = new_S2),
+          vloglik    = vloglik,
+          objective  = -sum(vloglik) + private$objective_penalty(new_Omega, nrow(data$Y))
+        )
+      }
 
-        criterion[nb_iter] <- new_objective <-
-          -sum(vloglik) + private$objective_penalty(new_Omega, nrow(data$Y))
-        convergence[nb_iter]  <- abs(new_objective - objective)/abs(new_objective)
+      ## SQUAREM acceleration of the outer loop (see squarem_cycle())
+      accelerate <- isTRUE(control$accelerate) && private$accelerable
+      squarem_state <- if (accelerate) squarem_zipln_state(data$Y == 0, !anyNA(parameters$B0))
+      step_max <- 1
+
+      nb_iter <- 0L  # outer iterations, i.e. VE steps
+      criterion   <- numeric(0)
+      convergence <- numeric(0)
+
+      vloglik <- -Inf; objective <- Inf
+      nb_increase <- 0L
+      best <- list(parameters = parameters, objective = Inf, vloglik = vloglik)
+      repeat {
+        if (control$maxit_out >= 0 && nb_iter >= control$maxit_out) {
+          stop_reason <- "maximum number of iterations reached"
+          break
+        }
+
+        if (accelerate && nb_iter > 0) {
+          cycle <- squarem_cycle(step, parameters, objective, squarem_state, step_max)
+          new <- cycle$new; step_max <- cycle$step_max
+          nb_iter <- nb_iter + cycle$evaluations
+        } else {
+          new <- step(parameters)
+          nb_iter <- nb_iter + 1L
+        }
+        new_parameters <- new$parameters
+        vloglik        <- new$vloglik
+        new_objective  <- new$objective
+        criterion   <- c(criterion, new_objective)
+        convergence <- c(convergence, abs(new_objective - objective)/abs(new_objective))
 
         ## A non-finite objective ends the optimization, on the best iterate so far
         if (!is.finite(new_objective)) {
@@ -203,8 +218,8 @@ ZIPLNfit <- R6Class(
             stop("The objective is not finite at the first iteration of the optimization.",
                  call. = FALSE)
           stop_reason <- "non-finite objective"
-          criterion   <- criterion[seq_len(nb_iter - 1)]
-          convergence <- convergence[seq_len(nb_iter - 1)]
+          criterion   <- utils::head(criterion, -1)
+          convergence <- utils::head(convergence, -1)
           warning("The optimization stopped at iteration ", nb_iter,
                   ": the objective is not finite. The fit is the best iterate so far.",
                   call. = FALSE)
@@ -233,9 +248,18 @@ ZIPLNfit <- R6Class(
 
         if (parameters_converged | objective_converged) {
           stop_reason <- "converged"
-          criterion   <- criterion[1:nb_iter]
-          convergence <- convergence[1:nb_iter]
           break
+        }
+
+        ## competing with a fit from another starting point (see fit_ZIPLN_multistart()):
+        ## the budget left is counted in iterations of the trajectory (cycles if accelerated)
+        if (!is.null(control$objective_to_beat) && comparable) {
+          budget <- length(criterion) +
+            max(control$maxit_out - nb_iter, 0) * length(criterion) / nb_iter
+          if (cannot_beat(criterion, control$objective_to_beat, budget)) {
+            stop_reason <- "abandoned"
+            break
+          }
         }
       }
       parameters <- best$parameters
@@ -521,7 +545,10 @@ ZIPLNfit <- R6Class(
     project_floor = function(M, S2, R, Pi, Omega, data) {NULL},
 
     ## Can the objective of an iterate be compared with the previous ones?
-    objective_is_comparable = function() {TRUE}
+    objective_is_comparable = function() {TRUE},
+
+    ## Can the outer loop be accelerated by SQUAREM? Not for ZIPLNfit_sparse
+    accelerable = TRUE
   ),
   ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ##  ACTIVE BINDINGS ----
@@ -788,6 +815,8 @@ ZIPLNfit_sparse <- R6Class(
     objective_is_comparable = function() {
       private$scale != "correlation" && !private$newly_floored
     },
+    ## The penalty and the floor change the fixed-point map along the iterations
+    accelerable = FALSE,
     n_floor = 0L,   # cells at the floor in the last iteration
     ## As in PLNnetworkfit, the floor applies to a species once its latent
     ## variance has exceeded the threshold of the degenerate species. On the

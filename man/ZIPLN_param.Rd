@@ -16,7 +16,8 @@ ZIPLN_param(
   latent_floor = 0.001,
   config_post = list(),
   config_optim = list(),
-  inception = NULL
+  inception = NULL,
+  init = c("best", "lm", "positive")
 )
 }
 \arguments{
@@ -58,6 +59,18 @@ abundant when present ends up connected to most of the others (see the field \co
 \item{inception}{Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
 log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
 which sometimes speeds up the inference.}
+
+\item{init}{starting point of the optimization: \code{"best"} (default) fits the model from
+the two starting points of \code{\link[=compute_ZIPLN_starting_point]{compute_ZIPLN_starting_point()}} and keeps the one with the
+best variational bound, \code{"lm"} or \code{"positive"} fits it from that starting point only
+(faster). The variational bound has distinct local optima, where the zeros are
+mostly explained by the latent variance or by the zero inflation: \code{"lm"} tends to reach
+the former, \code{"positive"} the latter. With \code{"best"}, the fit from \code{"lm"} comes first, and
+the fit from \code{"positive"} is abandoned as soon as the extrapolation of its objective shows
+that it cannot do better (except for a sparse fit). The starting point kept, the bound
+reached from each and the starting points abandoned are given by \verb{$optim_par$init},
+\verb{$optim_par$objective_starts} and \verb{$optim_par$abandoned_starts}. Ignored when
+\code{inception} is given.}
 }
 \value{
 list of parameters used during the fit and post-processing steps
@@ -69,6 +82,7 @@ Helper to define list of parameters to control the ZIPLN fit. All arguments have
 See \code{\link[=PLN_param]{PLN_param()}} for a description of the generic \code{config_optim} entries (\code{ftol_rel}, \code{xtol_rel}, etc.). Like \code{\link[=PLNnetwork_param]{PLNnetwork_param()}}, ZIPLN_param() has two parameters controlling the outer EM loop:
 \itemize{
 \item "ftol_out" outer solver stops when an optimization step changes the objective function by less than \code{ftol_out} multiplied by the absolute value of the parameter. Default is 1e-6
-\item "maxit_out" outer solver stops when the number of iteration exceeds \code{maxit_out}. Default is 200 for "builtin", 100 for "nlopt"
+\item "maxit_out" outer solver stops when the number of iteration exceeds \code{maxit_out}. Default is 500 for "builtin", 100 for "nlopt"
+\item "accelerate" logical: should the outer loop be accelerated by SQUAREM (Varadhan and Roland, 2008)? Default is \code{TRUE}. Each cycle makes two outer iterations, then one from the extrapolated state, kept if it does better; \code{maxit_out} counts all of them. Not used with a sparse covariance.
 }
 }

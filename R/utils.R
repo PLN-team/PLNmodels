@@ -508,21 +508,32 @@ compute_PLN_starting_point <- function(Y, X, O, w, method = c("LM", "GLM")) {
 #' Helper function for ZIPLN initialization.
 #'
 #' @description
-#' Fast LM-based starting point for ZIPLN: one multivariate `lm.fit` for the PLN
-#' component and empirical zero rates / binomial GLMs for the ZI component.
-#' Replaces the previous per-species `pscl::zeroinfl` loop. `R` is set to the
-#' empirical zero rate of each species on its zero counts, and to 0 elsewhere.
+#' Fast starting points for ZIPLN, which mostly differ in how they explain the zeros.
+#'
+#' * `"lm"`: one multivariate `lm.fit` of `log((1 + Y) / exp(O))` on `X`, zeros included.
+#'   `R` is set to the empirical zero rate of each species on its zero counts. The zeros are
+#'   mostly explained by the Poisson-lognormal component.
+#' * `"positive"`: `B` and the latent variances are estimated species by species on the
+#'   positive counts only (as in a hurdle model), and `M = XB` on the zeros. `R` is the
+#'   posterior probability of a structural zero under a Poisson-lognormal model with these
+#'   parameters, the zero-inflation rate of each species being matched on its observed
+#'   rate of zeros. The zeros are mostly explained by the zero-inflation component.
+#'
+#' The two can lead to different local optima of the variational bound, which is why
+#' [ZIPLN()] tries both by default (see `init` in [ZIPLN_param()]).
 #'
 #' @param Y Response count matrix (n × p)
 #' @param X Design matrix for the PLN component (n × d)
 #' @param X0 Design matrix for the ZI component (n × d0, empty `matrix(NA,0,0)` when unused)
 #' @param O Offset matrix in log-scale (n × p)
 #' @param w Weight vector of length n (defaults to uniform weights)
+#' @param method character: either `"lm"` (default) or `"positive"`, see the description.
 #' @return Named list: `B` (d × p), `M` (n × p), `S2` (n × p), `R` (n × p), `B0` (d0 × p)
 #'
-#' @importFrom stats lm.fit glm.fit binomial
+#' @importFrom stats lm.fit lm.wfit glm.fit binomial
 #' @export
-compute_ZIPLN_starting_point <- function(Y, X, X0, O, w = NULL) {
+compute_ZIPLN_starting_point <- function(Y, X, X0, O, w = NULL, method = c("lm", "positive")) {
+  method <- match.arg(method)
   if (is.null(w)) w <- rep(1.0, nrow(Y))
   n <- nrow(Y); p <- ncol(Y); d0 <- ncol(X0)
   if (ncol(X) == 0) stop("PLN component requires at least one covariate (or an intercept) to fit ZIPLN.")
@@ -545,5 +556,148 @@ compute_ZIPLN_starting_point <- function(Y, X, X0, O, w = NULL) {
     matrix(0.0, 0L, p)
   }
 
-  list(B = sp$B, M = sp$M, S2 = sp$S2, R = R, B0 = B0)
+  if (method == "lm") return(list(B = sp$B, M = sp$M, S2 = sp$S2, R = R, B0 = B0))
+
+  ## "positive": B and the latent variances on the positive counts, species by species
+  ## (the LM estimate is kept for a species with too few positive counts)
+  B <- sp$B; s2 <- rep(1, p)
+  logY <- log(pmax(Y, 1)) - O
+  for (j in seq_len(p)) {
+    pos <- Y[, j] > 0
+    if (sum(pos) <= ncol(X) + 1) next
+    fit <- lm.wfit(X[pos, , drop = FALSE], logY[pos, j], w[pos])
+    if (anyNA(fit$coefficients)) next
+    B[, j] <- fit$coefficients
+    s2[j]  <- max(sum(w[pos] * fit$residuals^2) / sum(w[pos]), 0.05)
+  }
+  XB <- X %*% B
+  S2_bar <- matrix(s2, n, p, byrow = TRUE)
+  ## probability of a zero under the Poisson-lognormal component, and ZI rate matching the
+  ## observed rate of zeros of each species
+  p0  <- p0_poisson_lognormal(O + XB, S2_bar)
+  zero <- Y == 0
+  pi  <- pmin(pmax((colMeans(zero) - colMeans(p0)) / (1 - colMeans(p0)), 0), 0.95)
+  Pi  <- matrix(pi, n, p, byrow = TRUE)
+  list(B  = B,
+       M  = ifelse(zero, XB, logY),
+       S2 = ifelse(zero, S2_bar, 1 / (2 + Y)),
+       R  = zero * Pi / (Pi + (1 - Pi) * p0),
+       B0 = B0)
+}
+
+## P(Y = 0) under a Poisson-lognormal with log-mean eta and latent variance s2 (matrices),
+## by Gauss-Hermite quadrature
+p0_poisson_lognormal <- function(eta, s2, k = 20) {
+  J <- matrix(0, k, k); off <- sqrt(seq_len(k - 1) / 2)
+  J[cbind(1:(k - 1), 2:k)] <- off; J[cbind(2:k, 1:(k - 1))] <- off
+  nodes <- eigen(J, symmetric = TRUE)
+  x <- sqrt(2) * nodes$values; wq <- nodes$vectors[1, ]^2
+  out <- 0 * eta
+  for (q in seq_len(k)) out <- out + wq[q] * exp(-exp(pmin(eta + sqrt(s2) * x[q], 700)))
+  out
+}
+
+## Fit a ZIPLN model from each starting point in `control$init`, and keep the fit with the
+## best objective. `new_fit(control)` instantiates the fit (an R6 ZIPLNfit*), which is then
+## optimized with `config`. A user-defined inception gives a single starting point. The
+## fits are sequential: from the second one on, the optimization is abandoned as soon as
+## it cannot reach the best objective so far (see cannot_beat()), except for a sparse fit,
+## whose objective may not decrease monotonically.
+fit_ZIPLN_multistart <- function(new_fit, data, control, config) {
+  starts <- if (isZIPLNfit(control$inception)) "inception"
+            else if (control$init != "best") control$init
+            else c("lm", "positive")
+  objective <- function(fit) if (is.null(fit$pen_loglik)) fit$loglik else fit$pen_loglik
+  fits <- list(); best_value <- -Inf
+  for (start in starts) {
+    control$init <- start
+    if (is.finite(best_value) && !identical(control$covariance, "sparse")) config$objective_to_beat <- -best_value
+    ## the warnings of a fit are only given if it is the one kept
+    warnings <- list()
+    fit <- withCallingHandlers(
+      tryCatch({
+        fit <- new_fit(control)
+        fit$optimize(data, config)
+        fit
+      }, error = function(e) if (length(starts) > 1) e else stop(e)),
+      warning = function(w) { warnings[[length(warnings) + 1]] <<- w; invokeRestart("muffleWarning") })
+    fits[[start]] <- list(fit = fit, warnings = warnings)
+    if (!inherits(fit, "error")) best_value <- max(best_value, objective(fit))
+  }
+  ok <- !vapply(fits, function(f) inherits(f$fit, "error"), logical(1))
+  if (!any(ok)) stop(fits[[1]]$fit)
+  values <- vapply(fits[ok], function(f) objective(f$fit), numeric(1))
+  kept <- fits[ok][[which.max(values)]]
+  for (w in kept$warnings) warning(w)
+  abandoned <- names(fits[ok])[vapply(fits[ok], function(f) identical(f$fit$optim_par$message, "abandoned"), logical(1))]
+  best <- kept$fit
+  best$update(monitoring = c(best$optim_par, list(init = names(values)[which.max(values)],
+                                                  objective_starts = values, abandoned_starts = abandoned)))
+  best
+}
+
+## SQUAREM acceleration (Varadhan and Roland, 2008, scheme S3, with the adaptive bound on
+## the step length of their package) of the outer loop of ZIPLN. The fixed-point map is one
+## outer iteration; its state is (M, log S2, logit R on the zeros, B0 if any), mapped to and
+## from a vector by squarem_zipln_state().
+squarem_zipln_state <- function(zero, has_B0) {
+  list(
+    to_vec = function(par) c(par$M, log(par$S2),
+                             stats::qlogis(pmin(pmax(par$R[zero], 1e-12), 1 - 1e-12)),
+                             if (has_B0) par$B0),
+    from_vec = function(x, par) {
+      np <- length(par$M)
+      par$M[]  <- x[seq_len(np)]
+      par$S2[] <- exp(x[np + seq_len(np)])
+      par$R[]  <- 0
+      par$R[zero] <- stats::plogis(x[2 * np + seq_len(sum(zero))])
+      if (has_B0) par$B0[] <- utils::tail(x, length(par$B0))
+      par
+    }
+  )
+}
+
+## One SQUAREM cycle: two steps of the map from `parameters`, then one step from the
+## extrapolated state, kept if it does at least as well as the second step. `step_max`
+## bounds the step length: multiplied by 4 when reached and successful, divided by 4 when
+## the extrapolation fails. Returns the new iterate (as returned by `step`), the updated
+## bound and the number of evaluations of the map.
+squarem_cycle <- function(step, parameters, objective, state, step_max) {
+  s1 <- step(parameters)
+  if (!is.finite(s1$objective)) return(list(new = s1, step_max = step_max, evaluations = 1L))
+  s2 <- step(s1$parameters)
+  if (!is.finite(s2$objective)) return(list(new = s1, step_max = step_max, evaluations = 2L))
+  x0 <- state$to_vec(parameters); x1 <- state$to_vec(s1$parameters)
+  r <- x1 - x0; v <- state$to_vec(s2$parameters) - x1 - r
+  alpha <- sqrt(sum(r^2) / sum(v^2))
+  alpha <- if (is.finite(alpha)) max(1, min(step_max, alpha)) else 1
+  if (alpha == 1) {
+    if (step_max == 1) step_max <- 4
+    return(list(new = s2, step_max = step_max, evaluations = 2L))
+  }
+  candidate <- tryCatch(
+    suppressWarnings(step(state$from_vec(x0 + 2 * alpha * r + alpha^2 * v, parameters))),
+    error = function(e) NULL)
+  if (!is.null(candidate) && is.finite(candidate$objective) && candidate$objective <= s2$objective) {
+    if (alpha == step_max) step_max <- 4 * step_max
+    list(new = candidate, step_max = step_max, evaluations = 3L)
+  } else {
+    list(new = s2, step_max = max(1, step_max / 4), evaluations = 3L)
+  }
+}
+
+## Can an optimization still reach `target`? Its objective (minimized) usually decreases
+## geometrically: the decreases of the last `window` iterations give the rate, and the
+## total decrease left up to `maxit` iterations, inflated by `safety`, is extrapolated.
+## Only decided after `min_iter` iterations. FALSE while in doubt.
+cannot_beat <- function(objective, target, maxit, window = 10, safety = 3, min_iter = 30) {
+  t <- length(objective)
+  if (t <= max(window, min_iter)) return(FALSE)
+  d_now <- objective[t - 1] - objective[t]
+  d_old <- objective[t - window] - objective[t - window + 1]
+  if (d_now < 0 || d_old <= 0) return(FALSE)
+  r <- (d_now / d_old)^(1 / (window - 1))
+  if (!is.finite(r) || r >= 1) return(FALSE)
+  left <- safety * d_now * r * (1 - r^max(maxit - t, 0)) / (1 - r)
+  objective[t] - left > target
 }

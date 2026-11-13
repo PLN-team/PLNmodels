@@ -40,20 +40,17 @@ ZIPLN <- function(formula, data, subset, zi = c("single", "row", "col"), control
   data_ <- extract_model_zi(match.call(expand.dots = FALSE), parent.frame())
   control$ziparam <- ifelse((data_$zicovar), "covar", match.arg(zi))
 
-  ## initialization
-  if (control$trace > 0) cat("\n Initialization...")
-  myPLN <- switch(control$covariance,
+  ## initialization and optimization, from each starting point
+  if (control$trace > 0) cat("\n Adjusting a ZI-PLN model with",
+                  control$covariance,"covariance model and",
+                  control$ziparam, "specific parameter(s) in Zero inflation component.")
+  new_fit <- function(control) switch(control$covariance,
                   "diagonal"  = ZIPLNfit_diagonal$new(data_, control),
                   "spherical" = ZIPLNfit_spherical$new(data_, control),
                   "fixed"     = ZIPLNfit_fixed$new(data_, control),
                   "sparse"    = ZIPLNfit_sparse$new(data_, control),
                   ZIPLNfit$new(data_, control)) # default: full covariance
-
-  ## optimization
-  if (control$trace > 0) cat("\n Adjusting a ZI-PLN model with",
-                  control$covariance,"covariance model and",
-                  control$ziparam, "specific parameter(s) in Zero inflation component.")
-  myPLN$optimize(data_, control$config_optim)
+  myPLN <- fit_ZIPLN_multistart(new_fit, data_, control, control$config_optim)
 
   if (control$trace > 0) cat("\n DONE!\n")
   warn_degenerate_species(myPLN)
@@ -73,12 +70,24 @@ ZIPLN <- function(formula, data, subset, zi = c("single", "row", "col"), control
 #' @param backend optimization backend, either `"builtin"` (default, built-in Newton optimizer for the joint VE step) or `"nlopt"` (NLOPT-based CCSAQ).
 #' @param penalty a user-defined penalty to sparsify the residual covariance. Defaults to 0 (no sparsity). With the default `penalty_scale = "correlation"`, it applies on the scale of the correlations and lies between 0 and 1 (a penalty above 1 gives the empty network); `penalty_scale = "covariance"` gives back the behavior of version 1.3.2.
 #' @param latent_floor a positive number (default `1e-3`), or `NULL` for no floor: a floor on the variational means of the degenerate species, as in [PLNnetwork_param()]. Only used with a sparse covariance (`penalty > 0`).
+#' @param init starting point of the optimization: `"best"` (default) fits the model from
+#'   the two starting points of [compute_ZIPLN_starting_point()] and keeps the one with the
+#'   best variational bound, `"lm"` or `"positive"` fits it from that starting point only
+#'   (faster). The variational bound has distinct local optima, where the zeros are
+#'   mostly explained by the latent variance or by the zero inflation: `"lm"` tends to reach
+#'   the former, `"positive"` the latter. With `"best"`, the fit from `"lm"` comes first, and
+#'   the fit from `"positive"` is abandoned as soon as the extrapolation of its objective shows
+#'   that it cannot do better (except for a sparse fit). The starting point kept, the bound
+#'   reached from each and the starting points abandoned are given by `$optim_par$init`,
+#'   `$optim_par$objective_starts` and `$optim_par$abandoned_starts`. Ignored when
+#'   `inception` is given.
 #' @return list of parameters used during the fit and post-processing steps
 #'
 #' @inherit PLN_param details
 #' @details See [PLN_param()] for a description of the generic `config_optim` entries (`ftol_rel`, `xtol_rel`, etc.). Like [PLNnetwork_param()], ZIPLN_param() has two parameters controlling the outer EM loop:
 #' * "ftol_out" outer solver stops when an optimization step changes the objective function by less than `ftol_out` multiplied by the absolute value of the parameter. Default is 1e-6
-#' * "maxit_out" outer solver stops when the number of iteration exceeds `maxit_out`. Default is 200 for "builtin", 100 for "nlopt"
+#' * "maxit_out" outer solver stops when the number of iteration exceeds `maxit_out`. Default is 500 for "builtin", 100 for "nlopt"
+#' * "accelerate" logical: should the outer loop be accelerated by SQUAREM (Varadhan and Roland, 2008)? Default is `TRUE`. Each cycle makes two outer iterations, then one from the extrapolated state, kept if it does better; `maxit_out` counts all of them. Not used with a sparse covariance.
 #'
 #' @export
 ZIPLN_param <- function(
@@ -93,10 +102,12 @@ ZIPLN_param <- function(
     latent_floor      = 1e-3   ,
     config_post   = list(),
     config_optim  = list(),
-    inception     = NULL     # pretrained ZIPLNfit used as initialization
+    inception     = NULL,    # pretrained ZIPLNfit used as initialization
+    init          = c("best", "lm", "positive")
 ) {
 
   covariance <- match.arg(covariance)
+  init <- match.arg(init)
   ## was the scale left to its default? (see the handling of user-defined penalties)
   penalty_scale_implicit <- missing(penalty_scale)
   penalty_scale <- match.arg(penalty_scale)
@@ -121,7 +132,8 @@ ZIPLN_param <- function(
   config_opt <- make_config_optim(backend, config_optim, trace,
                                   extra = list(
                                     ftol_out  = 1e-6,
-                                    maxit_out = if (backend == "builtin") 200L else 100L
+                                    maxit_out = if (backend == "builtin") 500L else 100L,
+                                    accelerate = TRUE
                                   ))
 
   structure(list(
@@ -137,6 +149,7 @@ ZIPLN_param <- function(
     latent_floor      = latent_floor     ,
     config_post   = config_pst,
     config_optim  = config_opt,
-    inception     = inception), class = "PLNmodels_param")
+    inception     = inception ,
+    init          = init      ), class = "PLNmodels_param")
 
 }

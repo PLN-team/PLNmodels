@@ -1,0 +1,8 @@
+Warning message:
+! There is at least one empty sample in `counts`.
+ℹ <4> samples (<134/137/145/146>) in `counts` have been dropped for lack of
+  positive counts. 
+Timing stopped at: 0.939 0.087 1.086
+Timing stopped at: 1.494 0.096 1.72
+[1] "Not a matrix."
+done real 

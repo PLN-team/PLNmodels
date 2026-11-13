@@ -1,5 +1,60 @@
 # PLNmodels (development version)
 
+## Starting point of ZIPLN
+
+* **`ZIPLN()` and the inception of `ZIPLNnetwork()` now fit the model from two starting
+  points and keep the best variational bound** (`init = "best"`, new argument of
+  `ZIPLN_param()` and `ZIPLNnetwork_param()`). The bound has distinct local optima, where the
+  zeros are mostly explained either by the latent variance or by the zero inflation. The
+  former starting point (`init = "lm"`, a linear model on `log(1 + Y)`, zeros included)
+  tends to reach the first; the new one (`init = "positive"`, see
+  `compute_ZIPLN_starting_point()`) estimates the regression coefficients and the latent
+  variances on the positive counts only, sets the latent means of the zeros to their fitted
+  values and the probabilities of a structural zero from a Poisson-lognormal model matched
+  on the observed rate of zeros, and tends to reach the second.
+* On simulated data with abundant species and true zero inflation, the former starting
+  point ended 100 to 200 below the optimum reached from the true parameters, with the
+  zero-inflation rates underestimated (error 0.25 for rates between 0.3 and 0.6) and the
+  latent variances inflated 2 to 2.5 times. Keeping the best of the two starting points
+  reaches the optimum of the true parameters in these settings, and is neutral elsewhere.
+  On real data it gains 705 on `microcosm` with zero inflation depending on the site, 25 on
+  `barents` with species-wise zero inflation, and leaves `oaks`, `mollusk` and `trichoptera`
+  unchanged, where the former starting point is better.
+* The fit from `"lm"` comes first. The fit from `"positive"` is then abandoned as soon as
+  the geometric extrapolation of its objective shows that it cannot reach the bound of the
+  first one. On the 133 data sets of the benchmark, this gives exactly the best of the two
+  full fits, abandons the second fit in 52 of them (where `"lm"` wins), and saves about a
+  quarter of the iterations of two full fits. It is not used for sparse fits, whose
+  objective may not decrease monotonically.
+* The fit kept, the bound reached from each starting point and the starting points
+  abandoned are given by `$optim_par$init`, `$optim_par$objective_starts` and
+  `$optim_par$abandoned_starts`. The fitting time is up to twice the former one;
+  `init = "lm"` gives back the former behavior.
+
+## Convergence of ZIPLN
+
+* **The outer loop of `ZIPLN()` is now accelerated by SQUAREM** (Varadhan and Roland, 2008),
+  with the adaptive bound on the step length of the `SQUAREM` package: two outer iterations,
+  then one from the extrapolated variational parameters, kept if it does better
+  (`config_optim = list(accelerate = TRUE)`, the default; not used for sparse fits). The loop
+  converges linearly, with rates up to 0.996 on `microcosm`: most zeros make the latent means
+  of the zero counts poorly determined, as in an EM algorithm with much missing information.
+  At the same tolerance, the accelerated loop reaches a better bound in fewer iterations on
+  all the cases of the benchmark.
+* **The default `maxit_out` of the builtin backend goes from 200 to 500.** With the former
+  defaults, the fit stopped at the maximum number of iterations on the larger data sets,
+  316 below the optimum on `microcosm` (zero inflation depending on the species), 10 on
+  `barents` and 8.5 on `mollusk`; it now stops 88, 2.3 and 0.9 below, for about 10% more
+  VE steps on the 13 cases of the benchmark. Together with the two starting points, the
+  default fit gains 228 on `microcosm` (zero inflation depending on the species), 37 on
+  `microcosm` (zero inflation depending on the site), 8 on `barents` and `mollusk`, for the
+  same total fitting time. A tighter `ftol_out` (`1e-7`) brings `microcosm` within 15 of the
+  optimum, at about 3.5 times the cost.
+* With the accelerated trajectories, the abandonment of the second starting point (see
+  above) missed a better fit once on the 26 orderings of the benchmark (by 0.64 on
+  `mollusk`, where the bound of the second fit stalled before improving again), and saves
+  about 30% of the VE steps of two full fits.
+
 ## Breaking changes in network fits
 
 The defaults of `PLNnetwork()`, `ZIPLNnetwork()` and `ZIPLN()` with a sparse covariance

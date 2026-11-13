@@ -530,19 +530,18 @@ ZIPLNnetworkfamily <- R6Class(
         ## worse optimum that the warm starts then carry down the whole path
         cfg_inception <- modifyList(
           control$config_optim,
-          list(trace = 0, maxit_ve = NULL, maxit_out = 200L)
+          list(trace = 0, maxit_ve = NULL, maxit_out = 500L, accelerate = TRUE)
         )
         ctrl_inc <- control
         ctrl_inc$config_optim <- cfg_inception
 
-        myPLN <- switch(
-          control$inception_cov,
-          "spherical" = ZIPLNfit_spherical$new(data, ctrl_inc),
-          "diagonal" = ZIPLNfit_diagonal$new(data, ctrl_inc),
-          ZIPLNfit$new(data, ctrl_inc) # defaults to full
+        new_fit <- function(ctrl) switch(
+          ctrl$inception_cov,
+          "spherical" = ZIPLNfit_spherical$new(data, ctrl),
+          "diagonal" = ZIPLNfit_diagonal$new(data, ctrl),
+          ZIPLNfit$new(data, ctrl) # defaults to full
         )
-        myPLN$optimize(data, cfg_inception)
-        control$inception <- myPLN
+        control$inception <- fit_ZIPLN_multistart(new_fit, data, ctrl_inc, cfg_inception)
       }
 
       ## Initialize fields shared by the super class
