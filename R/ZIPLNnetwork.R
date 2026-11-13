@@ -46,6 +46,7 @@ ZIPLNnetwork <- function(formula, data, subset, weights, zi = c("single", "row",
 #' Helper to define list of parameters to control the ZIPLNnetwork fit. All arguments have defaults.
 #'
 #' @inheritParams PLNnetwork_param
+#' @param init starting point of the inception, see [ZIPLN_param()].
 #' @param inception_cov Covariance structure used for the inception ZIPLN, which starts the
 #'   penalty path and sets its top: `"full"` (default), `"diagonal"` or `"spherical"`. The top of
 #'   the grid of penalties is computed as in [PLNnetwork_param()]. Unlike for [PLNnetwork()], a
@@ -75,7 +76,8 @@ ZIPLNnetwork_param <- function(
     latent_floor      = 1e-3   ,
     config_post       = list(),
     config_optim      = list(),
-    inception         = NULL
+    inception         = NULL,
+    init              = c("best", "lm", "positive")
 ) {
 
   if (!is.null(inception)) stopifnot(isZIPLNfit(inception))
@@ -88,6 +90,7 @@ ZIPLNnetwork_param <- function(
   ## optimization config
   backend <- match.arg(backend)
   inception_cov <- match.arg(inception_cov)
+  init <- match.arg(init)
   ## was the scale left to its default? (see the handling of user-defined penalties)
   penalty_scale_implicit <- missing(penalty_scale)
   penalty_scale <- match.arg(penalty_scale)
@@ -111,5 +114,6 @@ ZIPLNnetwork_param <- function(
     variance          = FALSE            ,
     config_post       = config_pst       ,
     config_optim      = config_opt       ,
-    inception         = inception       ), class = "ZIPLNmodels_param")
+    inception         = inception        ,
+    init              = init            ), class = "ZIPLNmodels_param")
 }

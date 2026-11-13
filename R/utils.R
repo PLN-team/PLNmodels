@@ -508,21 +508,32 @@ compute_PLN_starting_point <- function(Y, X, O, w, method = c("LM", "GLM")) {
 #' Helper function for ZIPLN initialization.
 #'
 #' @description
-#' Fast LM-based starting point for ZIPLN: one multivariate `lm.fit` for the PLN
-#' component and empirical zero rates / binomial GLMs for the ZI component.
-#' Replaces the previous per-species `pscl::zeroinfl` loop. `R` is set to the
-#' empirical zero rate of each species on its zero counts, and to 0 elsewhere.
+#' Fast starting points for ZIPLN, which mostly differ in how they explain the zeros.
+#'
+#' * `"lm"`: one multivariate `lm.fit` of `log((1 + Y) / exp(O))` on `X`, zeros included.
+#'   `R` is set to the empirical zero rate of each species on its zero counts. The zeros are
+#'   mostly explained by the Poisson-lognormal component.
+#' * `"positive"`: `B` and the latent variances are estimated species by species on the
+#'   positive counts only (as in a hurdle model), and `M = XB` on the zeros. `R` is the
+#'   posterior probability of a structural zero under a Poisson-lognormal model with these
+#'   parameters, the zero-inflation rate of each species being matched on its observed
+#'   rate of zeros. The zeros are mostly explained by the zero-inflation component.
+#'
+#' The two can lead to different local optima of the variational bound, which is why
+#' [ZIPLN()] tries both by default (see `init` in [ZIPLN_param()]).
 #'
 #' @param Y Response count matrix (n × p)
 #' @param X Design matrix for the PLN component (n × d)
 #' @param X0 Design matrix for the ZI component (n × d0, empty `matrix(NA,0,0)` when unused)
 #' @param O Offset matrix in log-scale (n × p)
 #' @param w Weight vector of length n (defaults to uniform weights)
+#' @param method character: either `"lm"` (default) or `"positive"`, see the description.
 #' @return Named list: `B` (d × p), `M` (n × p), `S2` (n × p), `R` (n × p), `B0` (d0 × p)
 #'
-#' @importFrom stats lm.fit glm.fit binomial
+#' @importFrom stats lm.fit lm.wfit glm.fit binomial
 #' @export
-compute_ZIPLN_starting_point <- function(Y, X, X0, O, w = NULL) {
+compute_ZIPLN_starting_point <- function(Y, X, X0, O, w = NULL, method = c("lm", "positive")) {
+  method <- match.arg(method)
   if (is.null(w)) w <- rep(1.0, nrow(Y))
   n <- nrow(Y); p <- ncol(Y); d0 <- ncol(X0)
   if (ncol(X) == 0) stop("PLN component requires at least one covariate (or an intercept) to fit ZIPLN.")
@@ -545,5 +556,74 @@ compute_ZIPLN_starting_point <- function(Y, X, X0, O, w = NULL) {
     matrix(0.0, 0L, p)
   }
 
-  list(B = sp$B, M = sp$M, S2 = sp$S2, R = R, B0 = B0)
+  if (method == "lm") return(list(B = sp$B, M = sp$M, S2 = sp$S2, R = R, B0 = B0))
+
+  ## "positive": B and the latent variances on the positive counts, species by species
+  ## (the LM estimate is kept for a species with too few positive counts)
+  B <- sp$B; s2 <- rep(1, p)
+  logY <- log(pmax(Y, 1)) - O
+  for (j in seq_len(p)) {
+    pos <- Y[, j] > 0
+    if (sum(pos) <= ncol(X) + 1) next
+    fit <- lm.wfit(X[pos, , drop = FALSE], logY[pos, j], w[pos])
+    if (anyNA(fit$coefficients)) next
+    B[, j] <- fit$coefficients
+    s2[j]  <- max(sum(w[pos] * fit$residuals^2) / sum(w[pos]), 0.05)
+  }
+  XB <- X %*% B
+  S2_bar <- matrix(s2, n, p, byrow = TRUE)
+  ## probability of a zero under the Poisson-lognormal component, and ZI rate matching the
+  ## observed rate of zeros of each species
+  p0  <- p0_poisson_lognormal(O + XB, S2_bar)
+  zero <- Y == 0
+  pi  <- pmin(pmax((colMeans(zero) - colMeans(p0)) / (1 - colMeans(p0)), 0), 0.95)
+  Pi  <- matrix(pi, n, p, byrow = TRUE)
+  list(B  = B,
+       M  = ifelse(zero, XB, logY),
+       S2 = ifelse(zero, S2_bar, 1 / (2 + Y)),
+       R  = zero * Pi / (Pi + (1 - Pi) * p0),
+       B0 = B0)
+}
+
+## P(Y = 0) under a Poisson-lognormal with log-mean eta and latent variance s2 (matrices),
+## by Gauss-Hermite quadrature
+p0_poisson_lognormal <- function(eta, s2, k = 20) {
+  J <- matrix(0, k, k); off <- sqrt(seq_len(k - 1) / 2)
+  J[cbind(1:(k - 1), 2:k)] <- off; J[cbind(2:k, 1:(k - 1))] <- off
+  nodes <- eigen(J, symmetric = TRUE)
+  x <- sqrt(2) * nodes$values; wq <- nodes$vectors[1, ]^2
+  out <- 0 * eta
+  for (q in seq_len(k)) out <- out + wq[q] * exp(-exp(pmin(eta + sqrt(s2) * x[q], 700)))
+  out
+}
+
+## Fit a ZIPLN model from each starting point in `control$init`, and keep the fit with the
+## best objective. `new_fit(control)` instantiates the fit (an R6 ZIPLNfit*), which is then
+## optimized with `config`. A user-defined inception gives a single starting point.
+fit_ZIPLN_multistart <- function(new_fit, data, control, config) {
+  starts <- if (isZIPLNfit(control$inception)) "inception"
+            else if (control$init != "best") control$init
+            else c("lm", "positive")
+  objective <- function(fit) if (is.null(fit$pen_loglik)) fit$loglik else fit$pen_loglik
+  ## the warnings of a fit are only given if it is the one kept
+  fits <- lapply(starts, function(start) {
+    control$init <- start
+    warnings <- list()
+    fit <- withCallingHandlers(
+      tryCatch({
+        fit <- new_fit(control)
+        fit$optimize(data, config)
+        fit
+      }, error = function(e) if (length(starts) > 1) e else stop(e)),
+      warning = function(w) { warnings[[length(warnings) + 1]] <<- w; invokeRestart("muffleWarning") })
+    list(fit = fit, warnings = warnings)
+  })
+  ok <- !vapply(fits, function(f) inherits(f$fit, "error"), logical(1))
+  if (!any(ok)) stop(fits[[1]]$fit)
+  values <- setNames(vapply(fits[ok], function(f) objective(f$fit), numeric(1)), starts[ok])
+  kept <- fits[ok][[which.max(values)]]
+  for (w in kept$warnings) warning(w)
+  best <- kept$fit
+  best$update(monitoring = c(best$optim_par, list(init = names(values)[which.max(values)], objective_starts = values)))
+  best
 }

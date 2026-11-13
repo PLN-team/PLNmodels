@@ -1,0 +1,20 @@
+Timing stopped at: 0.028 0.004 0.03
+Timing stopped at: 0.093 0.066 0.16
+Timing stopped at: 0.691 0.077 0.804
+Timing stopped at: 0.016 0.003 0.018
+Timing stopped at: 0.855 0.065 1.01
+Timing stopped at: 0.829 0.063 1.142
+Timing stopped at: 1.405 0.064 1.707
+Timing stopped at: 0.197 0.052 0.249
+Timing stopped at: 0.112 0.024 0.136
+Timing stopped at: 0.242 0.043 0.348
+Timing stopped at: 0.273 0.039 0.312
+Warning message:
+! There is at least one empty sample in `counts`.
+ℹ <4> samples (<134/137/145/146>) in `counts` have been dropped for lack of
+  positive counts. 
+11 errors:
+[1] "inner loop 1; cannot correct step size"
+[2] "Not a matrix."                         
+[3] "NAs in V(mu)"                          
+done real 31 rows

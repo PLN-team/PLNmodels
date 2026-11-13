@@ -16,7 +16,8 @@ ZIPLN_param(
   latent_floor = 0.001,
   config_post = list(),
   config_optim = list(),
-  inception = NULL
+  inception = NULL,
+  init = c("best", "lm", "positive")
 )
 }
 \arguments{
@@ -58,6 +59,15 @@ abundant when present ends up connected to most of the others (see the field \co
 \item{inception}{Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
 log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
 which sometimes speeds up the inference.}
+
+\item{init}{starting point of the optimization: \code{"best"} (default) fits the model from
+the two starting points of \code{\link[=compute_ZIPLN_starting_point]{compute_ZIPLN_starting_point()}} and keeps the one with the
+best variational bound, \code{"lm"} or \code{"positive"} fits it from that starting point only
+(twice as fast). The variational bound has distinct local optima, where the zeros are
+mostly explained by the latent variance or by the zero inflation: \code{"lm"} tends to reach
+the former, \code{"positive"} the latter. The starting point kept and the bound reached from
+each are given by \verb{$optim_par$init} and \verb{$optim_par$objective_starts}. Ignored when
+\code{inception} is given.}
 }
 \value{
 list of parameters used during the fit and post-processing steps

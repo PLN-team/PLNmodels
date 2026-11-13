@@ -86,7 +86,8 @@ ZIPLNfit <- R6Class(
         private$B  <- control$inception$model_par$B
         private$B0 <- control$inception$model_par$B0
       } else {
-        sp <- compute_ZIPLN_starting_point(data$Y, data$X, data$X0, data$O, data$w)
+        method <- if (isTRUE(control$init %in% c("lm", "positive"))) control$init else "lm"
+        sp <- compute_ZIPLN_starting_point(data$Y, data$X, data$X0, data$O, data$w, method = method)
         private$B  <- sp$B
         private$B0 <- sp$B0
         private$M  <- sp$M

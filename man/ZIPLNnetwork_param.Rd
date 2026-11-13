@@ -16,7 +16,8 @@ ZIPLNnetwork_param(
   latent_floor = 0.001,
   config_post = list(),
   config_optim = list(),
-  inception = NULL
+  inception = NULL,
+  init = c("best", "lm", "positive")
 )
 }
 \arguments{
@@ -69,6 +70,8 @@ variances from diverging. It leaves a fit without degenerate species exactly as 
 \item{inception}{Set up the parameters initialization: by default, the model is initialized with a multivariate linear model applied on
 log-transformed data, and with the same formula as the one provided by the user. However, the user can provide a PLNfit (typically obtained from a previous fit),
 which sometimes speeds up the inference.}
+
+\item{init}{starting point of the inception, see \code{\link[=ZIPLN_param]{ZIPLN_param()}}.}
 }
 \value{
 list of parameters configuring the fit.

@@ -153,3 +153,37 @@ test_that("ZIPLN: the objective of a sparse fit includes the penalty and decreas
   expect_equal(tail(obj, 1),
                -zi$loglik + .5 * zi$n * zi$penalty * sum(abs(zi$penalty_weights * zi$model_par$Omega)))
 })
+
+test_that("compute_ZIPLN_starting_point: the 'positive' starting point is consistent",  {
+  Y <- as.matrix(trichoptera$Abundance); X <- matrix(1, nrow(Y), 1); O <- log(trichoptera$Offset) %o% rep(1, ncol(Y))
+  sp <- compute_ZIPLN_starting_point(Y, X, matrix(NA, 0, 0), O, method = "positive")
+  expect_equal(dim(sp$M), dim(Y)); expect_equal(dim(sp$B), c(1, ncol(Y)))
+  expect_true(all(sp$R >= 0 & sp$R <= 1))
+  expect_true(all(sp$R[Y > 0] == 0))
+  expect_true(all(sp$S2 > 0))
+  ## on the zeros, the variational means are the fitted latent means
+  expect_equal(sp$M[Y == 0], (X %*% sp$B)[Y == 0])
+})
+
+test_that("ZIPLN: the default fit keeps the best of the two starting points",  {
+  ## counts of abundant species with many structural zeros: the "lm" starting point
+  ## explains them by the latent variance, a poorer optimum
+  set.seed(81)
+  n <- 100; p <- 15
+  pi <- runif(p, .3, .6)
+  Z <- matrix(rnorm(p, 2, .5), n, p, byrow = TRUE) + matrix(rnorm(n * p, sd = .9), n, p)
+  Y <- (1 - matrix(rbinom(n * p, 1, rep(pi, each = n)), n, p)) * matrix(rpois(n * p, exp(Z)), n, p)
+  dat <- data.frame(row.names = 1:n); dat$Y <- Y
+  fits <- lapply(c(best = "best", lm = "lm", positive = "positive"), function(init)
+    ZIPLN(Y ~ 1, data = dat, zi = "col", control = ZIPLN_param(trace = 0, init = init)))
+  expect_equal(fits$best$loglik, max(fits$lm$loglik, fits$positive$loglik))
+  expect_equal(fits$best$optim_par$init, "positive")
+  expect_equal(unname(fits$best$optim_par$objective_starts), c(fits$lm$loglik, fits$positive$loglik))
+  expect_gt(fits$positive$loglik - fits$lm$loglik, 50)
+  ## the zero-inflation rates are recovered from the "positive" starting point only
+  expect_lt(sqrt(mean((fits$best$model_par$Pi[1, ] - pi)^2)), .1)
+
+  ## a user-defined inception gives a single starting point
+  again <- ZIPLN(Y ~ 1, data = dat, zi = "col", control = ZIPLN_param(trace = 0, inception = fits$best))
+  expect_equal(again$optim_par$init, "inception")
+})
