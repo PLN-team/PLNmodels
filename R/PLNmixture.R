@@ -75,10 +75,15 @@ PLNmixture <- function(formula, data, subset, clusters = 1:5,  control = PLNmixt
 #' @return list of parameters configuring the fit.
 #' @inherit PLN_param details
 #' @section Outer-loop optimization parameters:
-#' `PLNmixture_param()` adds parameters controlling the EM and smoothing outer loops:
-#' * "ftol_em" outer EM solver stops when the objective changes by less than ftol_em (relative). Default is 1e-3
-#' * "maxit_em" outer EM solver stops when the number of iterations exceeds maxit_em. Default is 50
+#' `PLNmixture_param()` adds parameters controlling the EM loop of the mixture and the smoothing; the other
+#' entries of `config_optim` (`ftol_em`, `maxit_em`, `ftol_in`, ...) control the fits of the PLN components,
+#' with the defaults of [PLN_param()]:
+#' * "ftol_out" EM loop of the mixture stops when the objective changes by less than ftol_out (relative). Default is 1e-3
+#' * "maxit_out" EM loop of the mixture stops when the number of iterations exceeds maxit_out. Default is 50
 #' * "it_smooth" number of the iterations of the smoothing procedure. Default is 1.
+#'
+#' Until version 1.3.2, the EM loop of the mixture was controlled by `ftol_em` and `maxit_em`, which the PLN
+#' components then shared (loose tolerances that stopped the EM loops of the components early).
 #'
 #' @seealso [PLN_param()]
 #' @export
@@ -102,7 +107,8 @@ PLNmixture_param <- function(
   ## optimization config
   backend <- match.arg(backend)
   config_opt <- make_config_optim(backend, config_optim, trace,
-                                  extra = list(ftol_em = 1e-3, maxit_em = 50, it_smooth = 1))
+                                  builtin_default = config_default_builtin_pln,
+                                  extra = list(ftol_out = 1e-3, maxit_out = 50, it_smooth = 1))
 
   structure(list(
     backend       = backend    ,

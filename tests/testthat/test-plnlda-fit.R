@@ -37,7 +37,9 @@ test_that("PLNLDA fit: check classes, getters and field access",  {
   expect_equal(dim(model$var_par$S), c(n, p))
   expect_equal(sum(model$loglik_vec), model$loglik)
   expect_lt(model$BIC, model$loglik)
-  expect_lt(model$ICL, model$loglik)
+  ## the entropy of the Gaussian variational distribution may be negative (small variational
+  ## variances), and the ICL above the loglik
+  expect_equal(model$ICL, model$BIC - model$entropy)
   expect_gt(model$R_squared, 0)
   expect_equal(model$nb_param, p * g + p * (p + 1)/2)
   expect_equal(dim(model$group_means), c(p, g))

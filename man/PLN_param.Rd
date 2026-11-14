@@ -5,7 +5,7 @@
 \title{Control of a PLN fit}
 \usage{
 PLN_param(
-  backend = c("nlopt", "builtin", "torch"),
+  backend = c("builtin", "nlopt", "torch"),
   trace = 1,
   covariance = c("full", "diagonal", "spherical", "fixed", "genpop"),
   Omega = NULL,
@@ -17,11 +17,13 @@ PLN_param(
 )
 }
 \arguments{
-\item{backend}{optimization backend, either \code{"nlopt"} (default), \code{"builtin"} or \code{"torch"}.
-\code{"nlopt"} (CCSAQ, with \code{config_optim$profiled = TRUE}) is consistently faster than \code{"builtin"}.
-\code{"builtin"} is the built-in envelope-theorem Newton optimizer; it can reach a slightly better
-optimum, an advantage that tends to grow with p — prefer it when the last bit of ELBO matters
-more than speed, typically for large p.
+\item{backend}{optimization backend, either \code{"builtin"} (default), \code{"nlopt"} or \code{"torch"}.
+\code{"builtin"} is the built-in Newton optimizer: EM loop accelerated by SQUAREM, VE steps by Newton on
+the variational means and log-variances, convergence tests on the bound with its constants (see
+details). Since version 1.3.3 it reaches a better bound than \code{"nlopt"} on every benchmark data set,
+in about the same time (and much better on large data sets: +235 on a data set with n = 880 and
+p = 259 with full covariance). \code{"nlopt"} (CCSAQ, with \code{config_optim$profiled = TRUE}), the default
+until version 1.3.2, optimizes the variational parameters jointly with B and Omega profiled.
 \code{"torch"} is \strong{experimental}: it may converge to suboptimal solutions or fail on some datasets.}
 
 \item{trace}{a integer for verbosity.}
@@ -82,12 +84,27 @@ When "torch" backend is used (only for PLN and PLNLDA for now), the following en
 \item "centered" if TRUE, compute the centered RMSProp where the gradient is normalized by an estimation of its variance weight_decay (L2 penalty). Default to FALSE. Only used in RMSPROP
 }
 
-When "builtin" backend is used, the following entries are relevant
+When "builtin" backend is used, the following entries are relevant (defaults of \code{\link[=PLN]{PLN()}}, \code{\link[=PLNLDA]{PLNLDA()}}, and of the
+PLN fits within \code{\link[=PLNmixture]{PLNmixture()}} and \code{\link[=PLNnetwork]{PLNnetwork()}})
 \itemize{
-\item "maxeval" stop when the number of Newton steps in the inner loop exceeds maxeval. Default is 10000
-\item "ftol_in" stop the inner loop when the objective changes by less than ftol_in (relative). Default is 1e-8
-\item "maxit_em" stop the EM outer loop when the number of EM iterations exceeds maxit_em. Default is 50
-\item "ftol_em" stop the EM outer loop when the ELBO changes by less than ftol_em (relative). Default is 1e-8
+\item "maxeval" stop a VE step when its number of Newton steps exceeds maxeval. Default is 10000
+\item "ftol_in" stop a VE step of the EM loop when the objective changes by less than ftol_in (relative). Default is 1e-4:
+the VE steps need not be precise within the EM loop. A VE step solved on its own (fixed covariance,
+predictions) stops at the tighter of ftol_in and ftol_em
+\item "maxit_em" stop the EM loop when the number of EM iterations exceeds maxit_em. Default is 1000
+\item "ftol_em" stop the EM loop when the ELBO changes by less than ftol_em (relative). Default is 1e-7
+\item "accelerate" if TRUE, accelerate the EM loop by SQUAREM (Varadhan and Roland, 2008): two EM iterations, then an
+extrapolated point, kept when it does better. The EM loop of the PLN model converges linearly, slowly when the
+latent means of small counts are poorly determined. Default is TRUE
+\item "objective_constant" if TRUE, the relative convergence tests are made on the bound with its constant term,
+\eqn{\sum_i w_i \sum_j \log(Y_{ij}!)}, which the objectives of the optimizers omit. On large counts this
+term dominates them, and the relative tests are then much looser than they read. Default is TRUE (this
+entry also applies to the "nlopt" backend, where it is FALSE by default)
+\item "cg_max" maximal number of conjugate gradient iterations of the Newton step of the VE step. With 1, the Newton
+step is computed cell-wise, ignoring the coupling of the variational means through Omega and the covariates;
+above 1, it is a truncated Newton step computed by conjugate gradients preconditioned by the cell-wise
+step. Default is 1, and 5 with \code{covariance = "fixed"}, where the VE step is the whole optimization
+\item "cg_tol" relative tolerance of the conjugate gradients. Default is 0.1
 }
 
 The list of parameters \code{config_post} controls the post-treatment processing (for most \verb{PLN*()} functions), with the following entries (defaults may vary depending on the specific function, check \verb{config_post_default_*} for defaults values):

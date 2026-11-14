@@ -55,18 +55,19 @@ PLNnetworkfit <- R6Class(
       B_sc <- sweep(private$B, 1, nrm$scales, "*")
 
       cond <- FALSE; iter <- 0
-      objective   <- numeric(config$maxit_em)
-      convergence <- numeric(config$maxit_em)
+      objective   <- numeric(config$maxit_out)
+      convergence <- numeric(config$maxit_out)
       ## start from the standard PLN at initialization
       objective.old <- -self$loglik
       ## species bounded by the floor so far along the path (see Networkfamily$optimize)
       floored <- if (is.null(config$floored)) rep(FALSE, self$p) else config$floored
       config$floored <- NULL
       ## partial E-step: maxit_ve, if any, caps the iterations of the inner optimizer
+      ## (Newton steps of the VE step at fixed Omega for "builtin")
       inner_config <- config
       if (!is.null(config$maxit_ve)) {
-        if (config$backend == "builtin") inner_config$maxit_em <- as.integer(config$maxit_ve)
-        else                             inner_config$maxeval  <- as.integer(config$maxit_ve) * 10L
+        if (config$backend == "builtin") inner_config$maxeval <- as.integer(config$maxit_ve)
+        else                             inner_config$maxeval <- as.integer(config$maxit_ve) * 10L
       }
       args <- list(data   = list(Y = data$Y, X = nrm$X_sc, O = data$O, w = data$w),
                    params = list(B = B_sc, M = private$M, S2 = private$S2),
@@ -120,7 +121,7 @@ PLNnetworkfit <- R6Class(
         ## Check convergence
         objective[iter]   <- new_objective
         convergence[iter] <- abs(objective[iter] - objective.old)/abs(objective[iter])
-        if ((convergence[iter] < config$ftol_em) | (iter >= config$maxit_em)) cond <- TRUE
+        if ((convergence[iter] < config$ftol_out) | (iter >= config$maxit_out)) cond <- TRUE
 
         ## Prepare next iterate (private$B = B_sc from self$update above)
         args$params <- list(B = private$B, M = private$M, S2 = private$S2)

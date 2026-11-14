@@ -102,8 +102,8 @@ PLNmixturefit <-
         ## ===========================================
         ## INITIALISATION
         cond <- FALSE; iter <- 1
-        objective   <- numeric(config$maxit_em); objective[iter]   <- Inf
-        convergence <- numeric(config$maxit_em); convergence[iter] <- NA
+        objective   <- numeric(config$maxit_out); objective[iter]   <- Inf
+        convergence <- numeric(config$maxit_out); convergence[iter] <- NA
         ## ===========================================
         ## OPTIMISATION
         while (!cond) {
@@ -135,7 +135,7 @@ PLNmixturefit <-
           ## Assess convergence
           objective[iter]   <- -self$loglik
           convergence[iter] <- abs(objective[iter-1] - objective[iter]) /abs(objective[iter])
-          if ((convergence[iter] < config$ftol_em) | (iter >= config$maxit_em)) cond <- TRUE
+          if ((convergence[iter] < config$ftol_out) | (iter >= config$maxit_out)) cond <- TRUE
 
         }
 
@@ -186,8 +186,8 @@ PLNmixturefit <-
         ## ===========================================
         ## INITIALISATION
         cond <- FALSE; iter <- 1
-        objective   <- numeric(control$config_optim$maxit_em); objective[iter]   <- Inf
-        convergence <- numeric(control$config_optim$maxit_em); convergence[iter] <- NA
+        objective   <- numeric(control$config_optim$maxit_out); objective[iter]   <- Inf
+        convergence <- numeric(control$config_optim$maxit_out); convergence[iter] <- NA
 
         ## ===========================================
         ## OPTIMISATION
@@ -218,7 +218,7 @@ PLNmixturefit <-
           rowSums(tau * J_ik) - rowSums(.xlogx(tau)) + tau %*% log(colMeans(tau))
           objective[iter]   <- -sum(J_ik)
           convergence[iter] <- abs(objective[iter-1] - objective[iter]) /abs(objective[iter])
-          if ((convergence[iter] < control$config_optim$ftol_em) | (iter >= control$config_optim$maxit_em)) cond <- TRUE
+          if ((convergence[iter] < control$config_optim$ftol_out) | (iter >= control$config_optim$maxit_out)) cond <- TRUE
 
         }
 

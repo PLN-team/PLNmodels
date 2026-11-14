@@ -60,6 +60,58 @@ species), and from 0.27 to 0.78 with species absent from part of the samples, fo
 same computing time. The gain carries over to model selection, less strongly (BIC:
 0.47 to 0.56; StARS: 0.59 to 0.71). See `inst/simus_PLNnetwork/penalty_scale/`.
 
+## Breaking changes in the optimization of PLN models (#202)
+
+* **`PLN()` now uses the `"builtin"` backend by default** (it used `"nlopt"`), and the
+  builtin backend has new defaults, shared by `PLN()`, `PLNLDA()`, the components of
+  `PLNmixture()` and the inception and VE steps of `PLNnetwork()`:
+  - the EM loop is accelerated by SQUAREM (`accelerate = TRUE`, Varadhan and Roland,
+    2008): the EM loop of the PLN model converges linearly, and slowly when the latent
+    means of small counts are poorly determined;
+  - the VE steps within the EM loop are loose (`ftol_in = 1e-4`), the EM loop stops at
+    `ftol_em = 1e-7` (at most `maxit_em = 1000` iterations);
+  - the relative convergence tests are made on the bound with its constant term
+    \(\sum_i w_i \sum_j \log(Y_{ij}!)\) (`objective_constant = TRUE`), which the
+    objectives of the optimizers omit: on large counts it dominates them, and the tests
+    were much looser than they read (up to 250 times on the `microcosm` data);
+  - with `covariance = "fixed"`, where the VE step is the whole optimization, the Newton
+    step of the VE step is computed by conjugate gradients (`cg_max = 5`).
+  A VE step solved on its own (fixed covariance, predictions) stops at the tighter of
+  `ftol_in` and `ftol_em`.
+
+  On the benchmark data sets (`trichoptera`, `barents`, `mollusk`, `oaks` with and
+  without covariate, `microcosm`), the full covariance model reaches a better bound than
+  with `"nlopt"` on all of them, in the same total time: +0.1 to +0.6 on the small ones,
+  +4.6 on `oaks`, +14 on `oaks` with the tree covariate, +235 on `microcosm` (n = 880,
+  p = 259). The diagonal and spherical models do better and faster (`microcosm`: +52 and
+  +43). `PLNLDA()`: +36 on `microcosm` in 11 s instead of 48 s, and mostly faster
+  elsewhere, at the same bound. See `inst/benchmark/pln_builtin/`.
+  **To get the former behavior back**, use `PLN_param(backend = "nlopt")`, and for the
+  builtin backend `config_optim = list(accelerate = FALSE, objective_constant = FALSE,
+  ftol_in = 1e-8, ftol_em = 1e-8, maxit_em = 200)`.
+* **The EM loop of `PLNmixture()` is controlled by `ftol_out` and `maxit_out`** (defaults
+  1e-3 and 50), instead of `ftol_em` and `maxit_em`, which the PLN components shared:
+  the components stopped their own EM loops at a relative change of 1e-3. They now have
+  the defaults of `PLN()`. Sum of the log-likelihoods over 1 to 4 clusters: +25 on
+  `mollusk` in 21 s instead of 124 s, +89 on `oaks`, +3.5 on `trichoptera`, −9 on
+  `barents` (another local optimum of the mixture); see `inst/benchmark/pln_mixture/`.
+* **The alternating loop of `PLNnetwork()` is controlled by `ftol_out` and `maxit_out`**
+  (defaults 1e-5 and 20), instead of `ftol_em` and `maxit_em`, which the inception PLN
+  shared: the inception stopped its EM loop after 20 iterations at most. It now has the
+  defaults of `PLN()`.
+* **`maxit_ve` now caps the Newton steps of the VE step of `PLNnetwork()` with the
+  builtin backend.** It used to cap `maxit_em`, which the VE step at fixed Omega ignores:
+  the default `maxit_ve = 1` had no effect, the VE steps running to convergence.
+  With these changes, the default `PLNnetwork()` reaches a better penalized bound along
+  the path on every benchmark data set (sum over the path: +21 on `trichoptera`, +187 on
+  `barents`, +145 on `mollusk`, +893 on `oaks`), in the same time or faster; the models
+  selected may differ (BIC: 37 edges instead of 19 on `mollusk`). In simulations with a
+  known network (`inst/simus_PLNnetwork/optim_settings/`), partial or complete VE steps,
+  and an alternating loop run to 1e-7, all recover the network as well as before
+  (F1 and AUPR within 0.003): the alternation looks for a fixed point (the weights of
+  the penalty on the correlation scale depend on the residual covariance), and running
+  it further doubles the time for no gain.
+
 ## Scale of the penalty in network fits
 
 * **New `penalty_scale`** in `PLNnetwork_param()`, `ZIPLNnetwork_param()` and

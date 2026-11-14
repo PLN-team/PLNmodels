@@ -64,6 +64,9 @@ struct NewtonConfig {
         if (cfg.containsElementNamed("cg_tol"))     opts.cg_tol     = Rcpp::as<double>(cfg["cg_tol"]);
         if (cfg.containsElementNamed("accelerate")) opts.accelerate = Rcpp::as<bool>(cfg["accelerate"]);
     }
+    // tolerance of a VE step solved on its own (prediction, fixed covariance): the final
+    // tolerance, the tighter of ftol_in (inner VE steps of the EM loop) and ftol_em
+    double ve_tol() const { return std::min(ftol, em_tol); }
 };
 
 // ---- PLN data extraction: Y, X, O, w from the R-side `data` list ----

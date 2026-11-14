@@ -31,7 +31,7 @@ PLNmixturefamily <-
       best_candidate = function(tau_candidates, control) {
         control$trace <- FALSE
         config_fast <- control$config_optim
-        config_fast$maxit_em <- 2
+        config_fast$maxit_out <- 2
         loglik_candidates <- parallel::mclapply(tau_candidates, function(tau_) {
           model <- PLNmixturefit$new(self$responses, self$covariates, self$offsets, tau_, private$formula, control)
           model$optimize(self$responses, self$covariates, self$offsets, config_fast)

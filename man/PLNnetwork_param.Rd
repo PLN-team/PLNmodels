@@ -24,11 +24,9 @@ PLNnetwork_param(
 }
 \arguments{
 \item{backend}{optimization backend, either \code{"builtin"} (Newton, default) or
-\code{"nlopt"} (CCSAQ) or \code{"torch"}. The default combines \code{"builtin"} with \code{maxit_ve = 1} and
-\code{inception_niter = 5} (see \code{maxit_ve} and \code{inception_backend}): this consistently finds a
-better ELBO than plain \code{"nlopt"}, at essentially the same speed. Without a good inception,
-\code{"builtin"} alone (\code{maxit_ve = NULL}) can converge to a poor basin on large datasets — use
-\code{"nlopt"} if you want to opt out of the whole combination.}
+\code{"nlopt"} (CCSAQ) or \code{"torch"}. With \code{"builtin"}, the VE steps are partial by default
+(\code{maxit_ve = 1}), and the inception has the defaults of \code{\link[=PLN]{PLN()}} (with \code{inception_niter = 5} for a full
+inception).}
 
 \item{inception_cov}{Covariance structure used for the inception PLN, which starts the
 penalty path and sets its top: \code{"diagonal"} (default), \code{"full"} or \code{"spherical"}. The top
@@ -50,12 +48,15 @@ from over-converging toward the unconstrained optimum, which would make it harde
 warm-start the sparse penalty models (values above ~20 typically hurt); a diagonal inception
 is the empty network, which is better converged.}
 
-\item{maxit_ve}{integer or \code{NULL}. Maximum number of inner VE-step iterations
-per outer GLASSO alternation turn. Default is \code{1L} when \code{backend = "builtin"} (\code{NULL}, i.e.
-full convergence — \code{maxit_em} for \code{"builtin"}, \code{maxeval} for \code{"nlopt"} — otherwise).
-\code{maxit_ve = 1} implements a \strong{partial E-step} (generalized EM): one Newton step per outer
-turn prevents over-convergence that causes oscillations with the GLASSO M-step — see
-\code{backend} for the full default combination and its benchmark.}
+\item{maxit_ve}{integer or \code{NULL}. Maximum number of inner VE-step iterations per turn of the
+alternating loop (graphical Lasso, then VE step at fixed Omega): Newton steps for \code{"builtin"},
+function evaluations / 10 for \code{"nlopt"}, \code{NULL} for a VE step to convergence. Default is \code{1L} when
+\code{backend = "builtin"}, \code{NULL} otherwise. \code{maxit_ve = 1} implements a \strong{partial E-step}
+(generalized EM). Until version 1.3.2, \code{maxit_ve} capped \code{maxit_em} with \code{"builtin"}, which the VE
+step at fixed Omega ignores: the VE steps ran to convergence. In simulations with a known network,
+the partial and complete VE steps recover the network equally well, in about the same time, and
+so does an alternating loop run to a tighter tolerance, in twice the time
+(see \verb{inst/simus_PLNnetwork/optim_settings/}).}
 
 \item{trace}{a integer for verbosity.}
 
@@ -138,12 +139,27 @@ When "torch" backend is used (only for PLN and PLNLDA for now), the following en
 \item "centered" if TRUE, compute the centered RMSProp where the gradient is normalized by an estimation of its variance weight_decay (L2 penalty). Default to FALSE. Only used in RMSPROP
 }
 
-When "builtin" backend is used, the following entries are relevant
+When "builtin" backend is used, the following entries are relevant (defaults of \code{\link[=PLN]{PLN()}}, \code{\link[=PLNLDA]{PLNLDA()}}, and of the
+PLN fits within \code{\link[=PLNmixture]{PLNmixture()}} and \code{\link[=PLNnetwork]{PLNnetwork()}})
 \itemize{
-\item "maxeval" stop when the number of Newton steps in the inner loop exceeds maxeval. Default is 10000
-\item "ftol_in" stop the inner loop when the objective changes by less than ftol_in (relative). Default is 1e-8
-\item "maxit_em" stop the EM outer loop when the number of EM iterations exceeds maxit_em. Default is 50
-\item "ftol_em" stop the EM outer loop when the ELBO changes by less than ftol_em (relative). Default is 1e-8
+\item "maxeval" stop a VE step when its number of Newton steps exceeds maxeval. Default is 10000
+\item "ftol_in" stop a VE step of the EM loop when the objective changes by less than ftol_in (relative). Default is 1e-4:
+the VE steps need not be precise within the EM loop. A VE step solved on its own (fixed covariance,
+predictions) stops at the tighter of ftol_in and ftol_em
+\item "maxit_em" stop the EM loop when the number of EM iterations exceeds maxit_em. Default is 1000
+\item "ftol_em" stop the EM loop when the ELBO changes by less than ftol_em (relative). Default is 1e-7
+\item "accelerate" if TRUE, accelerate the EM loop by SQUAREM (Varadhan and Roland, 2008): two EM iterations, then an
+extrapolated point, kept when it does better. The EM loop of the PLN model converges linearly, slowly when the
+latent means of small counts are poorly determined. Default is TRUE
+\item "objective_constant" if TRUE, the relative convergence tests are made on the bound with its constant term,
+\eqn{\sum_i w_i \sum_j \log(Y_{ij}!)}, which the objectives of the optimizers omit. On large counts this
+term dominates them, and the relative tests are then much looser than they read. Default is TRUE (this
+entry also applies to the "nlopt" backend, where it is FALSE by default)
+\item "cg_max" maximal number of conjugate gradient iterations of the Newton step of the VE step. With 1, the Newton
+step is computed cell-wise, ignoring the coupling of the variational means through Omega and the covariates;
+above 1, it is a truncated Newton step computed by conjugate gradients preconditioned by the cell-wise
+step. Default is 1, and 5 with \code{covariance = "fixed"}, where the VE step is the whole optimization
+\item "cg_tol" relative tolerance of the conjugate gradients. Default is 0.1
 }
 
 The list of parameters \code{config_post} controls the post-treatment processing (for most \verb{PLN*()} functions), with the following entries (defaults may vary depending on the specific function, check \verb{config_post_default_*} for defaults values):
@@ -157,11 +173,15 @@ The list of parameters \code{config_post} controls the post-treatment processing
 }
 \section{Outer-loop optimization parameters}{
 
-\code{PLNnetwork_param()} adds two parameters controlling the alternating GLASSO/VEM loop:
+\code{PLNnetwork_param()} adds two parameters controlling the alternating GLASSO/VEM loop; the other
+entries of \code{config_optim} control the inception PLN and the VE steps, with the defaults of \code{\link[=PLN_param]{PLN_param()}}:
 \itemize{
-\item "ftol_em" outer alternating solver stops when the objective changes by less than ftol_em (relative). Default is 1e-5
-\item "maxit_em" outer alternating solver stops when the number of iterations exceeds maxit_em. Default is 20
+\item "ftol_out" outer alternating solver stops when the objective changes by less than ftol_out (relative). Default is 1e-5
+\item "maxit_out" outer alternating solver stops when the number of iterations exceeds maxit_out. Default is 20
 }
+
+Until version 1.3.2, the alternating loop was controlled by \code{ftol_em} and \code{maxit_em}, which the inception
+PLN then shared.
 }
 
 \section{Scale of the penalty}{

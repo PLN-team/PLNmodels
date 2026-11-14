@@ -38,6 +38,9 @@ Rcpp::List builtin_optimize_pln_impl(
 
     std::vector<double> objective_vec;
     int last_status  = 5;
+    // tolerance of the VE steps: ftol, or the final one (the tighter of ftol and em_tol)
+    // when the VE step is the whole optimization (fixed covariance)
+    double ve_tol = Traits::has_em ? ftol : std::min(ftol, em_tol);
 
     // ── VE step: optimize (M, ψ) at the current Omega/state, to ftol (relative change of
     // the objective, shifted by f_shift). M_res = M - X*B is carried along: B is implicitly
@@ -92,7 +95,7 @@ Rcpp::List builtin_optimize_pln_impl(
 
             const double obj = Traits::objective(M_res, Z, S2, psi, MresO, state, d.Y, d.w, A);
             objective_vec.push_back(obj);
-            if (it > 0 && converged(obj + f_shift, inner_prev + f_shift, ftol)) break;
+            if (it > 0 && converged(obj + f_shift, inner_prev + f_shift, ve_tol)) break;
             inner_prev = obj;
         }
     };

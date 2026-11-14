@@ -145,7 +145,10 @@ sep="\n"
                 fixed = TRUE)
 })
 
-test_that("PLNmixture fit: the ICL is below the loglikelihood", {
+test_that("PLNmixture fit: the ICL is the BIC minus the entropy", {
+  ## the entropy of the Gaussian variational distribution may be negative (small variational
+  ## variances), and the ICL above the loglik
   model <- getModel(models_cov$full, k)
-  expect_lt(model$ICL, model$loglik)
+  expect_equal(model$ICL, model$BIC - model$entropy)
+  expect_equal(model$entropy, model$entropy_latent + model$entropy_clustering)
 })

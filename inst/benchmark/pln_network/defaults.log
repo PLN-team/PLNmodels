@@ -1,0 +1,8 @@
+17:48:30 legacy trichoptera sum pen_loglik -32922.2 sum loglik -32499.6 max penalty 0.3985 BIC edges 0 time 0.13 
+17:48:31 legacy barents sum pen_loglik -154155.4 sum loglik -149795.3 max penalty 0.603 BIC edges 126 time 0.65 
+17:48:32 legacy mollusk sum pen_loglik -118491.4 sum loglik -115405.8 max penalty 0.4866 BIC edges 19 time 0.98 
+17:48:37 legacy oaks sum pen_loglik -1130676 sum loglik -1097089 max penalty 0.8342 BIC edges 1183 time 4.05 
+17:48:41 new trichoptera sum pen_loglik -32901.1 sum loglik -32478.1 max penalty 0.3942 BIC edges 1 time 0.18 
+17:48:42 new barents sum pen_loglik -153968.2 sum loglik -149625.3 max penalty 0.6033 BIC edges 161 time 0.58 
+17:48:42 new mollusk sum pen_loglik -118346.7 sum loglik -115318.7 max penalty 0.4866 BIC edges 37 time 0.61 
+17:48:46 new oaks sum pen_loglik -1129783 sum loglik -1096134 max penalty 0.8343 BIC edges 1168 time 3.64 
