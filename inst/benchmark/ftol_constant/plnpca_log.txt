@@ -1,0 +1,25 @@
+11:13:18 trichoptera nlopt_default -1148.18 -995.75 0.15 
+11:13:18 trichoptera nlopt_shift_8 -1147.52 -999.4 0.17 
+11:13:18 trichoptera nlopt_shift_7 -1147.62 -999.59 0.11 
+11:13:18 trichoptera builtin_default -1145.95 -994.17 0.09 
+11:13:19 trichoptera builtin_shift_8 -1145.95 -994.17 0.1 
+11:13:20 barents nlopt_default -19412.52 -5644.08 -4810.46 0.97 
+11:13:23 barents nlopt_shift_8 -19402.52 -5632.27 -4817.5 3.03 
+11:13:26 barents nlopt_shift_7 -19402.52 -5632.27 -4817.5 3.04 
+11:13:27 barents builtin_default -19228.68 -5561.7 -4624.89 1.21 
+11:13:29 barents builtin_shift_8 -19228.68 -5561.7 -4624.89 1.33 
+11:13:43 mollusk nlopt_default -5177.79 -3656.51 -3460.29 13.8 
+11:14:05 mollusk nlopt_shift_8 -5188.77 -3631.93 -3458.48 22.1 
+11:14:16 mollusk nlopt_shift_7 -5188.77 -3631.93 -3458.48 9.6 
+11:14:21 mollusk builtin_default -5909.78 -3804.56 -3470.06 5.41 
+11:14:27 mollusk builtin_shift_8 -5909.78 -3804.56 -3470.06 5.31 
+11:14:29 oaks nlopt_default -144190.8 -83808.39 -53942.39 1.96 
+11:14:35 oaks nlopt_shift_8 -144121.6 -83753.3 -53917.45 5.94 
+11:14:38 oaks nlopt_shift_7 -144191.4 -83779.52 -53918.03 3.06 
+11:14:42 oaks builtin_default -151343.1 -83714.01 -54015.63 3.58 
+11:14:46 oaks builtin_shift_8 -151343.1 -83714.01 -54015.63 3.79 
+11:16:46 microcosm nlopt_default -12475152 -7053726 -3936799 120.39 
+11:18:28 microcosm nlopt_shift_8 -12427224 -7048392 -3944335 101.83 
+11:20:10 microcosm nlopt_shift_7 -12427224 -7048392 -3944335 101.69 
+11:22:00 microcosm builtin_default -12545808 -7092861 -3887423 110.22 
+11:23:49 microcosm builtin_shift_8 -12545808 -7092861 -3887423 108.32 

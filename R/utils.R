@@ -217,6 +217,21 @@ config_default_builtin <-
     ftol_em             = 1e-8
   )
 
+## builtin backend of PLN, PLNLDA and of the components of PLNmixture: EM loop accelerated
+## by SQUAREM, loose VE steps, convergence tests on the bound with its constants (see the
+## benchmarks in inst/benchmark/pln_builtin)
+config_default_builtin_pln <-
+  list(
+    algorithm           = "NEWTON",
+    backend             = "builtin",
+    maxeval             = 10000,
+    ftol_in             = 1e-4,
+    maxit_em            = 1000,
+    ftol_em             = 1e-7,
+    accelerate          = TRUE,
+    objective_constant  = TRUE
+  )
+
 
 # PLNPCA builtin backend: only maxeval and ftol_in are read by the C++ optimizer
 config_default_plnpca <-

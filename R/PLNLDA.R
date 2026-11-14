@@ -62,7 +62,7 @@ PLNLDA <- function(formula, data, subset, weights, grouping, control = PLNLDA_pa
 #'
 #' Helper to define list of parameters to control the PLNLDA fit. All arguments have defaults.
 #'
-#' @param backend optimization back used, either "nlopt" or "torch". Default is "nlopt"
+#' @param backend optimization backend, either "builtin" (default), "nlopt" or "torch". See [PLN_param()].
 #' @param covariance character setting the model for the covariance matrix. Either "full", "diagonal" or "spherical". Default is "full".
 #' @inheritParams PLN_param trace config_optim config_post inception
 #'
@@ -87,7 +87,8 @@ PLNLDA_param <- function(
   config_pst$trace <- trace
 
   ## optimization config
-  config_opt <- make_config_optim(backend, config_optim, trace)
+  config_opt <- make_config_optim(backend, config_optim, trace,
+                                  builtin_default = config_default_builtin_pln)
 
   structure(list(
     backend       = backend   ,

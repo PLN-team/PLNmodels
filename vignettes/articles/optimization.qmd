@@ -63,17 +63,18 @@ Three backends are available, selected through the `backend` argument of each
 
 | Model | Imposed structure | Backends | Default | builtin optimizer |
 |---|---|---|---|---|
-| `PLN` | $\boldsymbol\Sigma$ full / diagonal / spherical / fixed / genetic | nlopt, builtin, torch | **nlopt** | joint coordinate Newton (§3.1) |
-| `PLNLDA` | PLN with per-group means | (via `PLN`) | **nlopt** | as `PLN` |
+| `PLN` | $\boldsymbol\Sigma$ full / diagonal / spherical / fixed / genetic | builtin, nlopt, torch | **builtin** | joint coordinate Newton, EM loop accelerated by SQUAREM (§3.1) |
+| `PLNLDA` | PLN with per-group means | (via `PLN`) | **builtin** | as `PLN` |
 | `PLNPCA` | rank-$q$ $\boldsymbol\Sigma=\mathbf C\mathbf C^\top$ | nlopt, builtin, torch | **nlopt** | profiled trust-region Newton (§3.4) |
 | `PLNnetwork` | sparse $\boldsymbol\Omega$ ($\ell_1$) | builtin, nlopt | **builtin** | Newton VE + graphical-lasso M-step (§3.2) |
 | `PLNmixture` | mixture of $K$ PLN | builtin, nlopt, torch | **builtin** | outer mixture-EM + per-component builtin (§3.5) |
 | `ZIPLN` | zero-inflation + $\boldsymbol\Sigma$ structure | builtin, nlopt | **builtin** | joint Newton on $(\mathbf M,\boldsymbol\psi,\mathbf R)$ (§3.3) |
 | `ZIPLNnetwork` | zero-inflation + sparse $\boldsymbol\Omega$ | builtin, nlopt | **builtin** | as `ZIPLN` + graphical-lasso |
 
-The default is `nlopt` for `PLN`/`PLNPCA` (conservative, well tested) and
-`builtin` for the penalised / structured models, where the second-order steps pay
-off most.
+The default is `builtin` everywhere but `PLNPCA`, which keeps `nlopt` (conservative,
+well tested). `PLN` and `PLNLDA` switched to `builtin` in version 1.3.3, once its EM
+loop was accelerated (§3.1): it then reaches a better bound than `nlopt` on every
+benchmark data set, in the same total time.
 
 # The `builtin` backend: mathematical principles
 
@@ -116,6 +117,33 @@ genetic $\sigma^2(\rho\mathbf C+(1-\rho)\mathbf I)$ solved by 1-D bisection on
 $\rho$). All variants share one templated implementation (`CovTraitsBase`), each
 supplying only its covariance-specific primitives.
 
+**The EM loop.** Alternating VE-steps and M-steps converges linearly, and slowly when
+the latent means of small counts are poorly determined (an observed rate of 0.994 per
+iteration on the `microcosm` data, n = 880, p = 259). The default builtin settings
+therefore
+
+- accelerate the EM loop by **SQUAREM** (Varadhan and Roland, 2008, scheme S3): the map
+  $F$ is one EM iteration (VE-step, then M-step) on the state $(\mathbf M,\boldsymbol\psi)$,
+  $\mathbf B$ being profiled; from two iterations, the point
+  $x - 2\alpha r + \alpha^2 v$ with $r = F(x) - x$, $v = F(F(x)) - 2F(x) + x$ and
+  $\alpha = -\lVert r\rVert/\lVert v\rVert$ is mapped once more by $F$ and kept when
+  its bound is better (`accelerate = TRUE`), the bound on $|\alpha|$ adapting along the
+  iterations;
+- stop the VE-steps of the EM loop early (`ftol_in = 1e-4`): they need not be precise
+  until the end, and a VE-step solved on its own (fixed covariance, predictions) stops
+  at the tighter of `ftol_in` and `ftol_em`;
+- make the relative convergence tests on the bound **with its constant term**
+  $\sum_i w_i\sum_j\log(Y_{ij}!)$ (`objective_constant = TRUE`). The objectives of the
+  optimizers omit it, and on large counts it dominates them: a relative tolerance on
+  the objective without it was up to 250 times looser than it read.
+
+The cell-wise Newton step ignores the coupling of the variational means through
+$\boldsymbol\Omega$ and through the profiled $\mathbf B$, which slows it down when the VE-step
+is the whole optimization. With `cg_max > 1`, the Newton step is computed by
+**conjugate gradients preconditioned by the $2\times2$ blocks** (a truncated Newton
+step, the Hessian-vector product $w\odot(A\odot v + Q v\boldsymbol\Omega)$ being cheap). It
+is the default with `covariance = "fixed"` (`cg_max = 5`).
+
 ## PLNnetwork — Newton VE-step + graphical-lasso M-step {#sec-network}
 
 `PLNnetwork` adds an $\ell_1$ penalty on the precision $\boldsymbol\Omega$ to
@@ -129,9 +157,15 @@ $$
 
 solved along the penalty path $\lambda$ with the package's own graphical Lasso
 (`graphical_lasso()`, a C++ port of GLASSOFAST that always terminates). Successive
-penalties are warm-started, and the inception model is only *partially* converged
-(`maxit_ve = 1`, `inception_niter = 5`) so that the latent means do not
-over-fit the unpenalised optimum before the sparse grid begins.
+penalties are warm-started from the previous model, the path starting from a
+diagonal inception (the empty network). Each turn of the alternating loop makes a
+*partial* VE-step at fixed $\boldsymbol\Omega$, one Newton step (`maxit_ve = 1`), and the loop
+stops at a relative change of `ftol_out = 1e-5` or after `maxit_out = 20` turns. With
+the penalty on the correlation scale, $\lambda\sqrt{S_{ii}S_{jj}}$, the weights depend on the
+residual covariance: the alternation looks for a fixed point rather than maximizing a
+fixed criterion. In simulations with a known network, complete VE-steps or a loop run
+to a tighter tolerance recover the network equally well, for up to three times the
+computing time (`inst/simus_PLNnetwork/optim_settings/`).
 
 ## ZIPLN — joint Newton on $(\mathbf M,\boldsymbol\psi,\mathbf R)$ {#sec-zi}
 
@@ -216,6 +250,5 @@ are the column means of $\boldsymbol\tau$.
   $(\text{mean},\text{variance})$ Newton VE-step everywhere, closed-form or
   graphical-lasso covariance M-steps, and — for `PLNPCA` — a profiled,
   saddle-aware **trust-region Newton** on the loadings.
-- `nlopt` remains the default for `PLN`/`PLNPCA` for its robustness; `builtin` is
-  the default for the penalised and structured variants, where its second-order
-  steps and better optima matter most. `torch` is experimental.
+- `builtin` is the default everywhere but `PLNPCA`, where `nlopt` remains the
+  default for its robustness. `torch` is experimental.

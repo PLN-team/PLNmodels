@@ -51,11 +51,9 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #' Helper to define list of parameters to control the PLN fit. All arguments have defaults.
 #'
 #' @param backend optimization backend, either `"builtin"` (Newton, default) or
-#'   `"nlopt"` (CCSAQ) or `"torch"`. The default combines `"builtin"` with `maxit_ve = 1` and
-#'   `inception_niter = 5` (see `maxit_ve` and `inception_backend`): this consistently finds a
-#'   better ELBO than plain `"nlopt"`, at essentially the same speed. Without a good inception,
-#'   `"builtin"` alone (`maxit_ve = NULL`) can converge to a poor basin on large datasets — use
-#'   `"nlopt"` if you want to opt out of the whole combination.
+#'   `"nlopt"` (CCSAQ) or `"torch"`. With `"builtin"`, the VE steps are partial by default
+#'   (`maxit_ve = 1`), and the inception has the defaults of [PLN()] (with `inception_niter = 5` for a full
+#'   inception).
 #' @param inception_cov Covariance structure used for the inception PLN, which starts the
 #'   penalty path and sets its top: `"diagonal"` (default), `"full"` or `"spherical"`. The top
 #'   of the grid of penalties is the largest off-diagonal entry of the residual covariance of the
@@ -73,12 +71,15 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #'   from over-converging toward the unconstrained optimum, which would make it harder to
 #'   warm-start the sparse penalty models (values above ~20 typically hurt); a diagonal inception
 #'   is the empty network, which is better converged.
-#' @param maxit_ve integer or `NULL`. Maximum number of inner VE-step iterations
-#'   per outer GLASSO alternation turn. Default is `1L` when `backend = "builtin"` (`NULL`, i.e.
-#'   full convergence — `maxit_em` for `"builtin"`, `maxeval` for `"nlopt"` — otherwise).
-#'   `maxit_ve = 1` implements a **partial E-step** (generalized EM): one Newton step per outer
-#'   turn prevents over-convergence that causes oscillations with the GLASSO M-step — see
-#'   `backend` for the full default combination and its benchmark.
+#' @param maxit_ve integer or `NULL`. Maximum number of inner VE-step iterations per turn of the
+#'   alternating loop (graphical Lasso, then VE step at fixed Omega): Newton steps for `"builtin"`,
+#'   function evaluations / 10 for `"nlopt"`, `NULL` for a VE step to convergence. Default is `1L` when
+#'   `backend = "builtin"`, `NULL` otherwise. `maxit_ve = 1` implements a **partial E-step**
+#'   (generalized EM). Until version 1.3.2, `maxit_ve` capped `maxit_em` with `"builtin"`, which the VE
+#'   step at fixed Omega ignores: the VE steps ran to convergence. In simulations with a known network,
+#'   the partial and complete VE steps recover the network equally well, in about the same time, and
+#'   so does an alternating loop run to a tighter tolerance, in twice the time
+#'   (see `inst/simus_PLNnetwork/optim_settings/`).
 #' @param n_penalties an integer that specifies the number of values for the penalty grid when internally generated. Ignored when penalties is non `NULL`
 #' @param min_ratio the penalty grid ranges from the minimal value that produces a sparse to this value multiplied by `min_ratio`. Default is 0.1.
 #' @param penalize_diagonal boolean: should the diagonal terms be penalized in the graphical-Lasso? Default is \code{FALSE}.
@@ -110,9 +111,13 @@ PLNnetwork <- function(formula, data, subset, weights, penalties = NULL, control
 #' @return list of parameters configuring the fit.
 #' @inherit PLN_param details
 #' @section Outer-loop optimization parameters:
-#' `PLNnetwork_param()` adds two parameters controlling the alternating GLASSO/VEM loop:
-#' * "ftol_em" outer alternating solver stops when the objective changes by less than ftol_em (relative). Default is 1e-5
-#' * "maxit_em" outer alternating solver stops when the number of iterations exceeds maxit_em. Default is 20
+#' `PLNnetwork_param()` adds two parameters controlling the alternating GLASSO/VEM loop; the other
+#' entries of `config_optim` control the inception PLN and the VE steps, with the defaults of [PLN_param()]:
+#' * "ftol_out" outer alternating solver stops when the objective changes by less than ftol_out (relative). Default is 1e-5
+#' * "maxit_out" outer alternating solver stops when the number of iterations exceeds maxit_out. Default is 20
+#'
+#' Until version 1.3.2, the alternating loop was controlled by `ftol_em` and `maxit_em`, which the inception
+#' PLN then shared.
 #'
 #' @section Scale of the penalty:
 #' With `penalty_scale = "correlation"`, the penalty on the pair \eqn{(i, j)} is \eqn{\lambda w_{ij} \sqrt{S_{ii} S_{jj}}},
@@ -186,7 +191,8 @@ PLNnetwork_param <- function(
   }
   if (!is.null(maxit_ve)) config_optim$maxit_ve <- as.integer(maxit_ve)
   config_opt <- make_config_optim(backend, config_optim, trace,
-                                  extra = list(ftol_em = 1e-5, maxit_em = 20))
+                                  builtin_default = config_default_builtin_pln,
+                                  extra = list(ftol_out = 1e-5, maxit_out = 20))
 
   structure(list(
     backend           = backend          ,

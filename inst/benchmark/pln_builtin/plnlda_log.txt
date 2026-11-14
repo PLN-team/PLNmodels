@@ -1,0 +1,8 @@
+17:43:28 PLNLDA trichoptera legacy -801.17 0.2 
+17:43:28 PLNLDA trichoptera default -800.86 0.43 
+17:43:30 PLNLDA oaks legacy -31386.63 1.4 
+17:43:31 PLNLDA oaks default -31388.45 0.84 
+17:43:37 PLNLDA mollusk legacy -2902.19 5.63 
+17:43:38 PLNLDA mollusk default -2902.16 0.86 
+17:44:26 PLNLDA microcosm legacy -214999.8 47.76 
+17:44:38 PLNLDA microcosm default -214963.7 11.12 

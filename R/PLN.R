@@ -56,11 +56,13 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 #'
 #' Helper to define list of parameters to control the PLN fit. All arguments have defaults.
 #'
-#' @param backend optimization backend, either `"nlopt"` (default), `"builtin"` or `"torch"`.
-#'   `"nlopt"` (CCSAQ, with `config_optim$profiled = TRUE`) is consistently faster than `"builtin"`.
-#'   `"builtin"` is the built-in envelope-theorem Newton optimizer; it can reach a slightly better
-#'   optimum, an advantage that tends to grow with p — prefer it when the last bit of ELBO matters
-#'   more than speed, typically for large p.
+#' @param backend optimization backend, either `"builtin"` (default), `"nlopt"` or `"torch"`.
+#'   `"builtin"` is the built-in Newton optimizer: EM loop accelerated by SQUAREM, VE steps by Newton on
+#'   the variational means and log-variances, convergence tests on the bound with its constants (see
+#'   details). Since version 1.3.3 it reaches a better bound than `"nlopt"` on every benchmark data set,
+#'   in about the same time (and much better on large data sets: +235 on a data set with n = 880 and
+#'   p = 259 with full covariance). `"nlopt"` (CCSAQ, with `config_optim$profiled = TRUE`), the default
+#'   until version 1.3.2, optimizes the variational parameters jointly with B and Omega profiled.
 #'   `"torch"` is **experimental**: it may converge to suboptimal solutions or fail on some datasets.
 #' @param covariance character setting the model for the covariance matrix. Either "full", "diagonal", "spherical", "fixed" or "genpop". Default is "full".
 #' @param Omega precision matrix of the latent variables. Inverse of Sigma. Must be specified if `covariance` is "fixed"
@@ -104,11 +106,26 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 #' * "etas" pair of multiplicative increase and decrease factors. Default is (0.5, 1.2). Only used in RPROP
 #' * "centered" if TRUE, compute the centered RMSProp where the gradient is normalized by an estimation of its variance weight_decay (L2 penalty). Default to FALSE. Only used in RMSPROP
 #'
-#' When "builtin" backend is used, the following entries are relevant
-#' * "maxeval" stop when the number of Newton steps in the inner loop exceeds maxeval. Default is 10000
-#' * "ftol_in" stop the inner loop when the objective changes by less than ftol_in (relative). Default is 1e-8
-#' * "maxit_em" stop the EM outer loop when the number of EM iterations exceeds maxit_em. Default is 50
-#' * "ftol_em" stop the EM outer loop when the ELBO changes by less than ftol_em (relative). Default is 1e-8
+#' When "builtin" backend is used, the following entries are relevant (defaults of [PLN()], [PLNLDA()], and of the
+#' PLN fits within [PLNmixture()] and [PLNnetwork()])
+#' * "maxeval" stop a VE step when its number of Newton steps exceeds maxeval. Default is 10000
+#' * "ftol_in" stop a VE step of the EM loop when the objective changes by less than ftol_in (relative). Default is 1e-4:
+#'   the VE steps need not be precise within the EM loop. A VE step solved on its own (fixed covariance,
+#'   predictions) stops at the tighter of ftol_in and ftol_em
+#' * "maxit_em" stop the EM loop when the number of EM iterations exceeds maxit_em. Default is 1000
+#' * "ftol_em" stop the EM loop when the ELBO changes by less than ftol_em (relative). Default is 1e-7
+#' * "accelerate" if TRUE, accelerate the EM loop by SQUAREM (Varadhan and Roland, 2008): two EM iterations, then an
+#'   extrapolated point, kept when it does better. The EM loop of the PLN model converges linearly, slowly when the
+#'   latent means of small counts are poorly determined. Default is TRUE
+#' * "objective_constant" if TRUE, the relative convergence tests are made on the bound with its constant term,
+#'   \eqn{\sum_i w_i \sum_j \log(Y_{ij}!)}, which the objectives of the optimizers omit. On large counts this
+#'   term dominates them, and the relative tests are then much looser than they read. Default is TRUE (this
+#'   entry also applies to the "nlopt" backend, where it is FALSE by default)
+#' * "cg_max" maximal number of conjugate gradient iterations of the Newton step of the VE step. With 1, the Newton
+#'   step is computed cell-wise, ignoring the coupling of the variational means through Omega and the covariates;
+#'   above 1, it is a truncated Newton step computed by conjugate gradients preconditioned by the cell-wise
+#'   step. Default is 1, and 5 with `covariance = "fixed"`, where the VE step is the whole optimization
+#' * "cg_tol" relative tolerance of the conjugate gradients. Default is 0.1
 #'
 #' The list of parameters `config_post` controls the post-treatment processing (for most `PLN*()` functions), with the following entries (defaults may vary depending on the specific function, check `config_post_default_*` for defaults values):
 #' * jackknife boolean indicating whether jackknife should be performed to evaluate bias and variance of the model parameters. Default is FALSE.
@@ -119,7 +136,7 @@ PLN <- function(formula, data, subset, weights, control = PLN_param()) {
 #'
 #' @export
 PLN_param <- function(
-    backend       = c("nlopt", "builtin", "torch"),
+    backend       = c("builtin", "nlopt", "torch"),
     trace         = 1,
     covariance    = c("full", "diagonal", "spherical", "fixed", "genpop"),
     Omega         = NULL,
@@ -145,7 +162,11 @@ PLN_param <- function(
   backend <- match.arg(backend)
   if (backend == "torch")
     message("torch backend is experimental: may converge to suboptimal solutions or fail on some datasets.")
-  config_opt <- make_config_optim(backend, config_optim, trace)
+  ## fixed covariance: the VE step is the whole optimization, where the Newton-CG step
+  ## pays off (the cell-wise step stalls on the coupling through Omega)
+  config_opt <- make_config_optim(backend, config_optim, trace,
+                                  builtin_default = config_default_builtin_pln,
+                                  extra = if (backend == "builtin" && covariance == "fixed") list(cg_max = 5L) else list())
 
   structure(list(
     backend       = backend    ,

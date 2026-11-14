@@ -1,0 +1,96 @@
+09:47:42 trichoptera nlopt full current -1051.75481914334 327 0.02 
+09:47:42 trichoptera nlopt full shift_1e6 -1051.81386563607 280 0.08 
+09:47:42 trichoptera nlopt full shift_1e7 -1051.6941947143 499 0.03 
+09:47:42 trichoptera nlopt full shift_1e8 -1051.67401010748 631 0.03 
+09:47:43 trichoptera nlopt diagonal current -1109.65343874817 367 0.02 
+09:47:43 trichoptera nlopt diagonal shift_1e6 -1109.73904364152 272 0.02 
+09:47:43 trichoptera nlopt diagonal shift_1e7 -1109.57542149087 579 0.02 
+09:47:43 trichoptera nlopt diagonal shift_1e8 -1109.4489066079 1317 0.04 
+09:47:43 trichoptera builtin full current -1051.75717846032 828 0.04 
+09:47:43 trichoptera builtin full shift_1e6 -1051.79682209104 530 0.02 
+09:47:44 trichoptera builtin full shift_1e7 -1051.75621823912 1007 0.04 
+09:47:44 trichoptera builtin full shift_1e8 -1051.75080809746 1999 0.07 
+09:47:44 trichoptera builtin diagonal current -1109.71324448753 572 0.02 
+09:47:44 trichoptera builtin diagonal shift_1e6 -1109.7160663219 479 0.02 
+09:47:44 trichoptera builtin diagonal shift_1e7 -1109.7109780033 700 0.03 
+09:47:44 trichoptera builtin diagonal shift_1e8 -1109.70531823793 1434 0.05 
+09:47:45 barents nlopt full current -4614.67040339801 674 0.1 
+09:47:45 barents nlopt full shift_1e6 -4614.96593363936 593 0.08 
+09:47:45 barents nlopt full shift_1e7 -4614.16631479792 1053 0.14 
+09:47:45 barents nlopt full shift_1e8 -4614.09414498519 1474 0.19 
+09:47:46 barents nlopt diagonal current -5208.79466968364 380 0.05 
+09:47:46 barents nlopt diagonal shift_1e6 -5209.07962258813 306 0.04 
+09:47:46 barents nlopt diagonal shift_1e7 -5208.29461684675 485 0.06 
+09:47:46 barents nlopt diagonal shift_1e8 -5208.23803907382 697 0.08 
+09:47:46 barents builtin full current -4614.25317778335 1000 0.14 
+09:47:47 barents builtin full shift_1e6 -4614.34026161049 810 0.11 
+09:47:47 barents builtin full shift_1e7 -4614.14613575258 1710 0.22 
+09:47:48 barents builtin full shift_1e8 -4614.11071241907 3334 0.41 
+09:47:48 barents builtin diagonal current -5208.2988879398 429 0.06 
+09:47:48 barents builtin diagonal shift_1e6 -5208.3482105751 351 0.05 
+09:47:48 barents builtin diagonal shift_1e7 -5208.24340874012 768 0.1 
+09:47:49 barents builtin diagonal shift_1e8 -5208.23232324356 1481 0.18 
+09:47:49 mollusk nlopt full current -3595.4383517904 1801 0.36 
+09:47:49 mollusk nlopt full shift_1e6 -3596.87720722359 712 0.15 
+09:47:50 mollusk nlopt full shift_1e7 -3595.75451340879 1208 0.25 
+09:47:50 mollusk nlopt full shift_1e8 -3595.39612280109 2327 0.46 
+09:47:51 mollusk nlopt diagonal current -3983.52447694934 1066 0.19 
+09:47:51 mollusk nlopt diagonal shift_1e6 -3984.39186026272 586 0.11 
+09:47:51 mollusk nlopt diagonal shift_1e7 -3983.53938517872 892 0.16 
+09:47:51 mollusk nlopt diagonal shift_1e8 -3983.47384351164 1105 0.2 
+09:47:52 mollusk builtin full current -3595.25066013944 4348 0.83 
+09:47:53 mollusk builtin full shift_1e6 -3595.43881189314 1518 0.31 
+09:47:54 mollusk builtin full shift_1e7 -3595.26924807099 3183 0.62 
+09:47:55 mollusk builtin full shift_1e8 -3595.22851753059 6133 1.18 
+09:47:55 mollusk builtin diagonal current -3983.56849137214 1898 0.35 
+09:47:56 mollusk builtin diagonal shift_1e6 -3983.77736553868 669 0.14 
+09:47:56 mollusk builtin diagonal shift_1e7 -3983.57282737026 1577 0.29 
+09:47:57 mollusk builtin diagonal shift_1e8 -3983.5560817926 3130 0.56 
+09:47:57 oaks nlopt full current -32032.4828914585 380 0.32 
+09:47:58 oaks nlopt full shift_1e6 -32034.7911897636 354 0.3 
+09:47:59 oaks nlopt full shift_1e7 -32028.4857245883 842 0.72 
+09:48:00 oaks nlopt full shift_1e8 -32027.840645858 1350 1.13 
+09:48:00 oaks nlopt diagonal current -38407.8034332544 142 0.11 
+09:48:00 oaks nlopt diagonal shift_1e6 -38408.1671688494 127 0.1 
+09:48:01 oaks nlopt diagonal shift_1e7 -38407.7243025386 182 0.12 
+09:48:01 oaks nlopt diagonal shift_1e8 -38407.6377074471 242 0.15 
+09:48:01 oaks builtin full current -32028.4716072336 652 0.47 
+09:48:02 oaks builtin full shift_1e6 -32029.3732294384 444 0.33 
+09:48:03 oaks builtin full shift_1e7 -32027.9868993412 976 0.66 
+09:48:04 oaks builtin full shift_1e8 -32027.8745880015 1782 1.15 
+09:48:04 oaks builtin diagonal current -38407.6659239394 108 0.09 
+09:48:04 oaks builtin diagonal shift_1e6 -38407.7561874444 83 0.08 
+09:48:05 oaks builtin diagonal shift_1e7 -38407.6410336981 139 0.11 
+09:48:05 oaks builtin diagonal shift_1e8 -38407.6268596696 224 0.14 
+09:48:05 oaks tree nlopt full current -31402.5162113435 500 0.43 
+09:48:06 oaks tree nlopt full shift_1e6 -31404.1881939065 428 0.38 
+09:48:07 oaks tree nlopt full shift_1e7 -31390.9276741877 1603 1.3 
+09:48:10 oaks tree nlopt full shift_1e8 -31388.0655414845 2770 2.11 
+09:48:10 oaks tree nlopt diagonal current -35997.0680918784 253 0.15 
+09:48:10 oaks tree nlopt diagonal shift_1e6 -35999.337082639 179 0.12 
+09:48:11 oaks tree nlopt diagonal shift_1e7 -35993.9102901618 482 0.25 
+09:48:11 oaks tree nlopt diagonal shift_1e8 -35992.4466692597 1162 0.54 
+09:48:12 oaks tree builtin full current -31386.6282765338 836 0.53 
+09:48:12 oaks tree builtin full shift_1e6 -31388.8319744424 518 0.35 
+09:48:13 oaks tree builtin full shift_1e7 -31385.4067280057 1301 0.79 
+09:48:15 oaks tree builtin full shift_1e8 -31384.3186554356 3154 1.83 
+09:48:16 oaks tree builtin diagonal current -35993.1283842442 450 0.24 
+09:48:16 oaks tree builtin diagonal shift_1e6 -35994.3318324894 265 0.15 
+09:48:16 oaks tree builtin diagonal shift_1e7 -35992.4175064316 771 0.37 
+09:48:18 oaks tree builtin diagonal shift_1e8 -35991.7700398806 2356 1.05 
+09:48:29 microcosm nlopt full current -215198.686075565 604 11.19 
+09:48:43 microcosm nlopt full shift_1e6 -215100.810166818 829 13.62 
+09:49:11 microcosm nlopt full shift_1e7 -214978.759179554 1759 27.89 
+09:50:07 microcosm nlopt full shift_1e8 -214965.010383944 3475 56.37 
+09:50:12 microcosm nlopt diagonal current -240691.671531076 503 5 
+09:50:18 microcosm nlopt diagonal shift_1e6 -240670.534548266 575 5.68 
+09:50:28 microcosm nlopt diagonal shift_1e7 -240643.63066218 979 9.35 
+09:50:41 microcosm nlopt diagonal shift_1e8 -240639.845687597 1411 13.38 
+09:51:03 microcosm builtin full current -214999.825109634 1290 21.5 
+09:51:54 microcosm builtin full shift_1e6 -214968.726350256 3205 50.74 
+09:54:15 microcosm builtin full shift_1e7 -214962.14988159 9060 140.85 
+10:01:13 microcosm builtin full shift_1e8 -214960.836728254 27420 418.64 
+10:01:21 microcosm builtin diagonal current -240660.097311446 627 7.31 
+10:01:44 microcosm builtin diagonal shift_1e6 -240640.90599944 2112 23.4 
+10:02:59 microcosm builtin diagonal shift_1e7 -240638.358802247 6811 74.95 
+10:06:56 microcosm builtin diagonal shift_1e8 -240637.84331413 21728 236.59 

@@ -60,7 +60,7 @@ test_that("PLN: Check consistency of observation weights - fully parameterized c
   ## equivalent weigths
   expect_output(model2 <- PLN(Abundance ~ 1, data = trichoptera, weights = rep(1.0, nrow(trichoptera))),
                 paste("\n Initialization...",
-                      "Adjusting a full covariance PLN model with nlopt optimizer",
+                      "Adjusting a full covariance PLN model with builtin optimizer",
                       "Post-treatments...",
                       "DONE!", sep = "\n "), fixed = TRUE)
 
@@ -180,4 +180,47 @@ test_that("PLN: singular covariate model matrix is handled gracefully",  {
   expect_no_error(PLN(Y ~ X_singular))
   expect_no_error(PLN(Y ~ f1 + f2))
 
+})
+
+test_that("PLN builtin: SQUAREM, Newton-CG VE step and tests on the bound with its constants", {
+  tr <- trichoptera
+  ctrl <- function(...) PLN_param(trace = 0, backend = "builtin", config_optim = list(...))
+  ## the default of PLN() is the builtin backend, accelerated, with loose VE steps and tests on the bound
+  expect_identical(PLN_param()$backend, "builtin")
+  expect_true(all(unlist(PLN_param()$config_optim[c("accelerate", "objective_constant")])))
+  expect_equal(PLN_param()$config_optim[c("ftol_in", "ftol_em")], list(ftol_in = 1e-4, ftol_em = 1e-7))
+  expect_null(PLN_param()$config_optim$cg_max)
+  expect_identical(PLN_param(covariance = "fixed", Omega = diag(2))$config_optim$cg_max, 5L)
+  expect_null(PLN_param(backend = "nlopt")$config_optim$accelerate)
+  ## at least as good as the plain EM loop of version 1.3.2, for every covariance model
+  legacy <- list(objective_constant = FALSE, accelerate = FALSE, ftol_in = 1e-8, ftol_em = 1e-8, maxit_em = 200L)
+  for (cov in c("full", "diagonal", "spherical")) {
+    ref <- PLN(Abundance ~ 1 + Wind, data = tr,
+               control = PLN_param(trace = 0, covariance = cov, config_optim = legacy))
+    fit <- PLN(Abundance ~ 1 + Wind, data = tr, control = PLN_param(trace = 0, covariance = cov))
+    expect_gte(fit$loglik, ref$loglik - 1e-3)
+  }
+  ## Newton-CG VE steps
+  ref <- PLN(Abundance ~ 1 + Wind, data = tr, control = ctrl(ftol_em = 1e-8))
+  fit <- PLN(Abundance ~ 1 + Wind, data = tr, control = ctrl(ftol_em = 1e-8, cg_max = 5L))
+  expect_gte(fit$loglik, ref$loglik - 1e-2)
+  ## fixed covariance: the VE step alone, to the final tolerance; Newton-CG by default
+  Omega <- as.matrix(ref$model_par$Omega)
+  fixed <- lapply(c(cellwise = 1L, cg = 5L), function(k)
+    PLN(Abundance ~ 1 + Wind, data = tr, control = PLN_param(trace = 0, covariance = "fixed", Omega = Omega,
+                                                              config_optim = list(cg_max = k))))
+  expect_gte(fixed$cg$loglik, fixed$cellwise$loglik - 1e-3)
+  expect_equal(fixed$cg$loglik, PLN(Abundance ~ 1 + Wind, data = tr,
+                                    control = PLN_param(trace = 0, covariance = "fixed", Omega = Omega))$loglik)
+
+  ## Newton-CG VE step, B and Omega fixed: same optimum as the cell-wise step, fewer iterations
+  Y <- as.matrix(tr$Abundance); n <- nrow(Y)
+  data <- list(Y = Y, X = matrix(1, n, 1), O = matrix(0, n, ncol(Y)), w = rep(1, n))
+  full <- PLN(Abundance ~ 1, data = tr, control = PLN_param(trace = 0, backend = "builtin"))
+  params <- list(M = log(1 + Y), S2 = matrix(.1, n, ncol(Y)),
+                 B = matrix(colMeans(log(1 + Y)), 1), Omega = as.matrix(full$model_par$Omega))
+  ve <- lapply(c(cellwise = 1L, cg = 5L), function(k)
+    PLNmodels:::builtin_optimize_vestep_full(data, params, list(cg_max = k, ftol_in = 1e-12, maxeval = 10000L)))
+  expect_equal(sum(ve$cg$Ji), sum(ve$cellwise$Ji), tolerance = 1e-6)
+  expect_lt(length(ve$cg$monitoring$objective), length(ve$cellwise$monitoring$objective))
 })

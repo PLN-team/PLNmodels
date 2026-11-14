@@ -38,6 +38,7 @@ Rcpp::List builtin_optimize_rank(
     const double gtol      = config.containsElementNamed("gtol")      ? Rcpp::as<double>(config["gtol"]) : 1e-4;
     double       Delta     = config.containsElementNamed("delta0")    ? Rcpp::as<double>(config["delta0"]) : 1.0;
     const int    trace     = config.containsElementNamed("trace")     ? Rcpp::as<int>(config["trace"]) : 0;
+    const double f_shift   = objective_shift(config, d);   // tests on the bound with its constants (option)
 
     const arma::uword n = d.Y.n_rows, q = C.n_cols;
     const mat Xw = d.X.each_col() % d.w;
@@ -151,7 +152,7 @@ Rcpp::List builtin_optimize_rank(
             double df = f - f_new; f = f_new;
             objective_vec.push_back(f);
             recompute = true;
-            if (std::abs(df) <= ftol_out * std::abs(f)) { status = 3; break; }
+            if (std::abs(df) <= ftol_out * std::abs(f + f_shift)) { status = 3; break; }
         }
         // trust-region radius update (in the P-norm): shrink to a fraction of the failed step,
         // grow only on strong agreement at the boundary.
