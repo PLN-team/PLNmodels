@@ -25,6 +25,7 @@ Rcpp::List nlopt_optimize_rank(
 ) {
     // Conversion from R, prepare optimization
     const PlnData d(data);
+    const double f_shift = objective_shift(config, d);   // nlopt's ftol_rel on the bound with its constants (option)
     const auto init_B   = Rcpp::as<arma::mat>(params["B"]);  // (d,p)
     const auto init_C   = Rcpp::as<arma::mat>(params["C"]);  // (p,q)
     const auto init_M   = Rcpp::as<arma::mat>(params["M"]);  // (n,q)
@@ -47,7 +48,7 @@ Rcpp::List nlopt_optimize_rank(
 
     const arma::mat Xw = d.X.each_col() % d.w;   // precomputed once
 
-    auto objective_and_grad = [&metadata, &d, &Xw, &objective_vec](const double * params, double * grad) -> double {
+    auto objective_and_grad = [&metadata, &d, &Xw, &objective_vec, f_shift](const double * params, double * grad) -> double {
         const arma::mat B   = metadata.map<B_ID>  (params);
         const arma::mat C   = metadata.map<C_ID>  (params);
         const arma::mat M   = metadata.map<M_ID>  (params);
@@ -61,7 +62,7 @@ Rcpp::List nlopt_optimize_rank(
         metadata.map<PSI_ID>(grad) = gPS;
 
         objective_vec.push_back(objective);
-        return objective;
+        return objective + f_shift;
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
 
@@ -94,6 +95,7 @@ Rcpp::List nlopt_optimize_vestep_rank(
 ) {
     // Conversion from R, prepare optimization
     const PlnData d(data);
+    const double f_shift = objective_shift(config, d);   // nlopt's ftol_rel on the bound with its constants (option)
     const auto init_M        = Rcpp::as<arma::mat>(params["M"]);  // (n,q)
     const arma::mat init_S2  = Rcpp::as<arma::mat>(params["S2"]); // (n,q) variance
     const arma::mat init_psi = arma::log(init_S2);                // ψ = log(S²)
@@ -114,7 +116,7 @@ Rcpp::List nlopt_optimize_vestep_rank(
     const arma::mat C2 = C % C;
     const arma::mat XB = d.X * B;
 
-    auto objective_and_grad = [&metadata, &d, &XB, &C, &C2, &objective_vec](const double * params, double * grad) -> double {
+    auto objective_and_grad = [&metadata, &d, &XB, &C, &C2, &objective_vec, f_shift](const double * params, double * grad) -> double {
         const arma::mat M   = metadata.map<M_ID>  (params);
         const arma::mat psi = metadata.map<PSI_ID>(params);
 
@@ -124,7 +126,7 @@ Rcpp::List nlopt_optimize_vestep_rank(
         metadata.map<PSI_ID>(grad) = gPS;
 
         objective_vec.push_back(objective);
-        return objective;
+        return objective + f_shift;
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
 
