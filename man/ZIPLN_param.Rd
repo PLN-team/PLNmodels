@@ -85,4 +85,11 @@ See \code{\link[=PLN_param]{PLN_param()}} for a description of the generic \code
 \item "maxit_out" outer solver stops when the number of iteration exceeds \code{maxit_out}. Default is 500 for "builtin", 100 for "nlopt"
 \item "accelerate" logical: should the outer loop be accelerated by SQUAREM (Varadhan and Roland, 2008)? Default is \code{TRUE}. Each cycle makes two outer iterations, then one from the extrapolated state, kept if it does better; \code{maxit_out} counts all of them. Not used with a sparse covariance.
 }
+
+and, for the "builtin" backend, two parameters controlling the VE step (a Newton method in the variational parameters):
+\itemize{
+\item "cg_max" integer: the Newton system is solved by at most \code{cg_max} conjugate gradient iterations, preconditioned by the cell-wise 2x2 Newton step (truncated Newton, or Newton-CG), which takes into account the coupling of the variational parameters through the covariance and through the regression coefficients. \code{cg_max = 1} gives the cell-wise step, which ignores it and converges slowly on the zero counts. Default is 5, 1 with a sparse covariance.
+\item "cg_tol" relative residual at which the conjugate gradient iterations stop. Default is 0.1
+\item "ftol_in" the VE step stops when a Newton step changes the variational bound (constants included when \code{cg_max > 1}) by less than \code{ftol_in} times its absolute value. Default is 1e-6, 1e-8 with a sparse covariance.
+}
 }

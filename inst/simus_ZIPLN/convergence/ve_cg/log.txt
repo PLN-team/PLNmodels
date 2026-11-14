@@ -1,0 +1,20 @@
+21:44:11 trichoptera col start state ready 
+21:44:11 barents col start state ready 
+21:44:12 oaks col start state ready 
+21:44:12 trichoptera col cg_max 1 : newton 697 products 1394 time 0.6 gain 0.0039 
+21:44:12 trichoptera col cg_max 5 : newton 37 products 222 time 0 gain 0.0039 
+21:44:12 trichoptera col cg_max 20 : newton 8 products 104 time 0 gain 0.0039 
+21:44:13 oaks col cg_max 1 : newton 202 products 404 time 1.3 gain 0.0703 
+21:44:14 oaks col cg_max 5 : newton 13 products 78 time 0.2 gain 0.0703 
+21:44:14 mollusk col start state ready 
+21:44:14 oaks col cg_max 20 : newton 5 products 62 time 0.1 gain 0.0703 
+21:44:17 barents col cg_max 1 : newton 4070 products 8140 time 4.9 gain 0.0502 
+21:44:17 barents col cg_max 5 : newton 225 products 1350 time 0.4 gain 0.0502 
+21:44:18 barents col cg_max 20 : newton 11 products 231 time 0.1 gain 0.0502 
+21:44:21 mollusk col cg_max 1 : newton 3164 products 6328 time 6.7 gain 0.017 
+21:44:22 mollusk col cg_max 5 : newton 184 products 1104 time 0.7 gain 0.017 
+21:44:22 mollusk col cg_max 20 : newton 15 products 312 time 0.2 gain 0.017 
+21:45:25 microcosm site col start state ready 
+22:00:26 microcosm site col cg_max 1 : newton 4368 products 8736 time 900.2 gain 42.3377 
+22:15:26 microcosm site col cg_max 5 : newton 2334 products 14004 time 900.2 gain 44.0964 
+22:30:27 microcosm site col cg_max 20 : newton 1000 products 20997 time 900.2 gain 44.2768 
