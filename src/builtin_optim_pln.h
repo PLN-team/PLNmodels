@@ -14,7 +14,7 @@ Rcpp::List builtin_optimize_pln_impl(
     const PlnData & d,
     arma::mat B, arma::mat M, arma::mat S2,
     typename Traits::State state,
-    int maxiter, double ftol, int max_em, double em_tol
+    int maxiter, double ftol, int max_em, double em_tol, double f_shift = 0.0
 ) {
     const int n          = d.Y.n_rows;
     const arma::uword p  = d.Y.n_cols;
@@ -76,7 +76,7 @@ Rcpp::List builtin_optimize_pln_impl(
 
             double obj = Traits::objective(M_res, Z, S2, psi, MresO, state, d.Y, d.w, A);
             objective_vec.push_back(obj);
-            if (it > 0 && converged(obj, inner_prev, ftol)) break;
+            if (it > 0 && converged(obj + f_shift, inner_prev + f_shift, ftol)) break;
             inner_prev = obj;
         }
 
@@ -90,7 +90,7 @@ Rcpp::List builtin_optimize_pln_impl(
         // ── Outer ELBO for convergence ──
         double elbo = arma::accu(d.w.t() * (d.Y % Z - A + 0.5 * psi))
                     + Traits::elbo_cov(state, w_bar, p);
-        if (em_iter > 0 && converged(elbo, elbo_prev, em_tol)) { last_status = 3; break; }
+        if (em_iter > 0 && converged(elbo - f_shift, elbo_prev - f_shift, em_tol)) { last_status = 3; break; }
         elbo_prev = elbo;
     }
 
@@ -109,7 +109,7 @@ Rcpp::List builtin_vestep_pln_impl(
     const PlnData & d,
     arma::mat M, arma::mat S2,
     const arma::mat & B, const typename Traits::State & state,
-    int maxiter, double ftol
+    int maxiter, double ftol, double f_shift = 0.0
 ) {
     const double c1 = 1e-4;
     const arma::mat XB = d.X * B;
@@ -160,7 +160,7 @@ Rcpp::List builtin_vestep_pln_impl(
         objective_vec.push_back(obj);
         total_iter++;
 
-        if (it > 0 && converged(obj, obj_prev, ftol)) break;
+        if (it > 0 && converged(obj + f_shift, obj_prev + f_shift, ftol)) break;
         obj_prev = obj;
     }
 

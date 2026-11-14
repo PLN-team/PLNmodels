@@ -41,6 +41,7 @@ struct NewtonConfig {
     double ftol;
     int    max_em;
     double em_tol;
+    bool   objective_constant = false;   // see objective_shift()
     explicit NewtonConfig(const Rcpp::List & cfg,
                            int default_maxiter = 200, double default_ftol = 1e-8,
                            int default_max_em = 50,    double default_em_tol = 1e-8)
@@ -49,6 +50,7 @@ struct NewtonConfig {
         if (cfg.containsElementNamed("ftol_in"))  ftol    = Rcpp::as<double>(cfg["ftol_in"]);
         if (cfg.containsElementNamed("maxit_em")) max_em  = Rcpp::as<int>(cfg["maxit_em"]);
         if (cfg.containsElementNamed("ftol_em"))  em_tol  = Rcpp::as<double>(cfg["ftol_em"]);
+        if (cfg.containsElementNamed("objective_constant")) objective_constant = Rcpp::as<bool>(cfg["objective_constant"]);
     }
 };
 
@@ -63,6 +65,18 @@ struct PlnData {
         O(Rcpp::as<arma::mat>(data["O"])),
         w(Rcpp::as<arma::vec>(data["w"])) {}
 };
+
+// ---- Constant omitted by the PLN objectives ----
+// The objectives and ELBOs of the optimizers omit sum_i w_i sum_j log(Y_ij!), which dominates
+// them on large counts and makes their relative convergence tests looser than they read. With
+// config$objective_constant = TRUE, the tests are made on the objective shifted back by it
+// (the values returned are unchanged).
+inline double objective_shift(bool objective_constant, const PlnData & d) {
+    return objective_constant ? arma::accu(d.w.t() * arma::lgamma(d.Y + 1.0)) : 0.0;
+}
+inline double objective_shift(const Rcpp::List & cfg, const PlnData & d) {
+    return objective_shift(cfg.containsElementNamed("objective_constant") && Rcpp::as<bool>(cfg["objective_constant"]), d);
+}
 
 // ---- Result assembly for PLN optimizers ----
 // Centralises the two Rcpp::List::create shapes replicated across all PLN optimizers.
