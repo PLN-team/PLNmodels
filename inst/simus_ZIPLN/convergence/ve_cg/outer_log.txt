@@ -1,0 +1,35 @@
+21:47:50 trichoptera col current_plain : loglik -1054.04 outer 219 products 2682 time 0.1 
+21:47:51 trichoptera col current_squarem : loglik -1053.95 outer 207 products 1652 time 0.1 
+21:47:51 barents col current_plain : loglik -4598.27 outer 500 products 4806 time 0.7 
+21:47:51 oaks col current_plain : loglik -32051.18 outer 119 products 1234 time 1 
+21:47:52 barents col current_squarem : loglik -4597.56 outer 387 products 2926 time 0.6 
+21:47:52 trichoptera col cg20_plain : loglik -1054.03 outer 212 products 5946 time 1.2 
+21:47:52 oaks col current_squarem : loglik -32048.63 outer 92 products 1302 time 1 
+21:47:53 trichoptera col cg20_squarem : loglik -1053.95 outer 93 products 3339 time 0.5 
+21:47:53 oaks tree|tree current_plain : loglik -31371.16 outer 131 products 1872 time 2.3 
+21:47:54 trichoptera col cg5_squarem : loglik -1053.97 outer 90 products 3310 time 0.6 
+21:47:55 oaks tree|tree current_squarem : loglik -31369.96 outer 73 products 1592 time 1.6 
+21:47:56 mollusk col current_plain : loglik -3649.08 outer 500 products 18592 time 5.8 
+21:47:59 oaks col cg20_plain : loglik -32050.63 outer 108 products 3549 time 6.3 
+21:48:00 barents col cg20_plain : loglik -4595.66 outer 500 products 23166 time 8.2 
+21:48:00 mollusk col current_squarem : loglik -3645.46 outer 501 products 10488 time 4 
+21:48:03 oaks col cg20_squarem : loglik -32049.82 outer 51 products 1735 time 3.4 
+21:48:04 barents col cg20_squarem : loglik -4593.66 outer 144 products 10006 time 3.7 
+21:48:05 oaks tree|tree cg20_plain : loglik -31369.76 outer 113 products 5534 time 9.9 
+21:48:06 oaks col cg5_squarem : loglik -32049.77 outer 54 products 1421 time 3.2 
+21:48:08 barents col cg5_squarem : loglik -4595.46 outer 192 products 8831 time 3.8 
+21:48:11 oaks tree|tree cg20_squarem : loglik -31368.65 outer 66 products 3602 time 6 
+21:48:15 mollusk col cg20_plain : loglik -3648.04 outer 500 products 18827 time 14.7 
+21:48:17 oaks tree|tree cg5_squarem : loglik -31368.79 outer 54 products 2653 time 5.6 
+21:48:21 mollusk col cg20_squarem : loglik -3644.67 outer 159 products 8120 time 5.1 
+21:48:26 mollusk col cg5_squarem : loglik -3641.55 outer 270 products 6242 time 5.2 
+21:48:39 microcosm site|site current_plain : loglik -197699.4 outer 210 products 1678 time 47.3 
+21:49:15 microcosm site|site current_squarem : loglik -197663.6 outer 154 products 1196 time 35.7 
+21:49:21 microcosm site col current_plain : loglik -203466.5 outer 500 products 3900 time 90.9 
+21:50:33 microcosm site col current_squarem : loglik -203400.2 outer 315 products 3298 time 72 
+21:59:33 microcosm site|site cg20_plain : loglik -197650.8 outer 146 products 12020 time 617 
+22:06:13 microcosm site|site cg20_squarem : loglik -197644.2 outer 77 products 8163 time 399.1 
+22:13:23 microcosm site col cg20_plain : loglik -203368 outer 241 products 25173 time 1369.7 
+22:14:35 microcosm site|site cg5_squarem : loglik -197641.8 outer 109 products 7615 time 501.3 
+22:29:47 microcosm site col cg20_squarem : loglik -203331.9 outer 166 products 21524 time 983.1 
+22:41:39 microcosm site col cg5_squarem : loglik -203332.1 outer 210 products 13688 time 712.4 

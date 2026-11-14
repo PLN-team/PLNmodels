@@ -55,6 +55,32 @@
   `mollusk`, where the bound of the second fit stalled before improving again), and saves
   about 30% of the VE steps of two full fits.
 
+## VE step of ZIPLN by Newton-CG
+
+* **The VE step of `ZIPLN()` (builtin backend) is now a truncated Newton method**: the Newton
+  system in the variational means and log-variances is solved by at most 5 conjugate
+  gradient iterations (`config_optim = list(cg_max = 5)`, new; `cg_tol`, relative residual,
+  0.1), preconditioned by the former cell-wise 2x2 Newton step. The cell-wise step ignores
+  the coupling of the cells through the off-diagonal terms of the precision matrix and
+  through the regression coefficients, profiled in the VE step; on the zero counts, where
+  the Poisson term vanishes, this coupling dominates and the cell-wise step converges
+  slowly, which made most of the slowness of the outer loop. On the frozen VE problem of
+  `microcosm`, the Newton-CG step reaches with 1,000 products by the precision matrix the
+  bound the cell-wise step reaches with 8,000.
+* **The default `ftol_in` of `ZIPLN()` goes from 1e-8 to 1e-6, and the VE step now tests it
+  on the bound with its constants.** The objective of the VE step omits `sum(log(Y!))`, which
+  dominates it on large counts (5.6e7 against a bound of 2e5 on `microcosm`), so that the
+  former relative tolerance was in effect up to 250 times looser than it reads.
+* On the 13 cases of the benchmark, the default fit is faster on all of them (181 s instead
+  of 205 s in total) and better on 11: +40 on `microcosm` (zero inflation depending on the
+  species), +9 on `microcosm` (depending on the site), +9 on `oaks` (single zero inflation),
+  +5 and +4 on `oaks` (species-wise zero inflation, with and without covariate), +4 on
+  `mollusk`, +2 on `barents`; it loses 0.2 and 0.9 on `mollusk` (single and site-wise zero
+  inflation). A tighter `ftol_in` (`3e-7`) gains 55 and 17 on `microcosm` for 20 to 35% more
+  time there.
+* `cg_max = 1, ftol_in = 1e-8` gives back the former VE step. Not used with a sparse
+  covariance nor in `ZIPLNnetwork()`, whose VE steps are partial.
+
 ## Breaking changes in network fits
 
 The defaults of `PLNnetwork()`, `ZIPLNnetwork()` and `ZIPLN()` with a sparse covariance
