@@ -36,11 +36,21 @@ inline bool converged(double val, double prev, double tol) {
 // and builtin_optim_plnpca.cpp. Defaults are constructor arguments (not in-class initializers)
 // so callers with different historical defaults (e.g. PLNPCA's 10000/1e-9) can opt in without
 // changing behavior for the rest of the codebase.
+// Options of the builtin PLN solver beyond the tolerances: Newton-CG VE step (cg_max > 1,
+// see CovTraitsBase::newton_cg_step) and SQUAREM acceleration of the EM loop (accelerate).
+struct SolverOptions {
+    int    cg_max     = 1;
+    double cg_tol     = 0.1;
+    bool   accelerate = false;
+};
+
 struct NewtonConfig {
     int    maxiter;
     double ftol;
     int    max_em;
     double em_tol;
+    bool   objective_constant = false;   // see objective_shift()
+    SolverOptions opts;
     explicit NewtonConfig(const Rcpp::List & cfg,
                            int default_maxiter = 200, double default_ftol = 1e-8,
                            int default_max_em = 50,    double default_em_tol = 1e-8)
@@ -49,6 +59,10 @@ struct NewtonConfig {
         if (cfg.containsElementNamed("ftol_in"))  ftol    = Rcpp::as<double>(cfg["ftol_in"]);
         if (cfg.containsElementNamed("maxit_em")) max_em  = Rcpp::as<int>(cfg["maxit_em"]);
         if (cfg.containsElementNamed("ftol_em"))  em_tol  = Rcpp::as<double>(cfg["ftol_em"]);
+        if (cfg.containsElementNamed("objective_constant")) objective_constant = Rcpp::as<bool>(cfg["objective_constant"]);
+        if (cfg.containsElementNamed("cg_max"))     opts.cg_max     = Rcpp::as<int>(cfg["cg_max"]);
+        if (cfg.containsElementNamed("cg_tol"))     opts.cg_tol     = Rcpp::as<double>(cfg["cg_tol"]);
+        if (cfg.containsElementNamed("accelerate")) opts.accelerate = Rcpp::as<bool>(cfg["accelerate"]);
     }
 };
 
@@ -63,6 +77,18 @@ struct PlnData {
         O(Rcpp::as<arma::mat>(data["O"])),
         w(Rcpp::as<arma::vec>(data["w"])) {}
 };
+
+// ---- Constant omitted by the PLN objectives ----
+// The objectives and ELBOs of the optimizers omit sum_i w_i sum_j log(Y_ij!), which dominates
+// them on large counts and makes their relative convergence tests looser than they read. With
+// config$objective_constant = TRUE, the tests are made on the objective shifted back by it
+// (the values returned are unchanged).
+inline double objective_shift(bool objective_constant, const PlnData & d) {
+    return objective_constant ? arma::accu(d.w.t() * arma::lgamma(d.Y + 1.0)) : 0.0;
+}
+inline double objective_shift(const Rcpp::List & cfg, const PlnData & d) {
+    return objective_shift(cfg.containsElementNamed("objective_constant") && Rcpp::as<bool>(cfg["objective_constant"]), d);
+}
 
 // ---- Result assembly for PLN optimizers ----
 // Centralises the two Rcpp::List::create shapes replicated across all PLN optimizers.

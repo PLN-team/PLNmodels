@@ -181,3 +181,38 @@ test_that("PLN: singular covariate model matrix is handled gracefully",  {
   expect_no_error(PLN(Y ~ f1 + f2))
 
 })
+
+test_that("PLN builtin: SQUAREM, Newton-CG VE step and tests on the bound with its constants", {
+  tr <- trichoptera
+  ctrl <- function(...) PLN_param(trace = 0, backend = "builtin", config_optim = list(...))
+  ref <- PLN(Abundance ~ 1 + Wind, data = tr, control = ctrl())
+  ## the options are off by default
+  expect_equal(PLN(Abundance ~ 1 + Wind, data = tr,
+                   control = ctrl(objective_constant = FALSE, accelerate = FALSE, cg_max = 1L))$loglik, ref$loglik)
+  ## accelerated EM loop, loose VE steps, tests on the bound: at least as good as the default
+  for (cg in c(1L, 5L)) {
+    fit <- PLN(Abundance ~ 1 + Wind, data = tr,
+               control = ctrl(objective_constant = TRUE, accelerate = TRUE, ftol_in = 1e-6,
+                              ftol_em = 1e-8, maxit_em = 2000L, cg_max = cg))
+    expect_gte(fit$loglik, ref$loglik - 1e-3)
+  }
+  for (cov in c("diagonal", "spherical")) {
+    ref <- PLN(Abundance ~ 1, data = tr, control = PLN_param(trace = 0, backend = "builtin", covariance = cov))
+    fit <- PLN(Abundance ~ 1, data = tr,
+               control = PLN_param(trace = 0, backend = "builtin", covariance = cov,
+                                   config_optim = list(objective_constant = TRUE, accelerate = TRUE, ftol_in = 1e-6,
+                                                       ftol_em = 1e-8, maxit_em = 2000L, cg_max = 5L)))
+    expect_gte(fit$loglik, ref$loglik - 1e-3)
+  }
+
+  ## Newton-CG VE step, B and Omega fixed: same optimum as the cell-wise step, fewer iterations
+  Y <- as.matrix(tr$Abundance); n <- nrow(Y)
+  data <- list(Y = Y, X = matrix(1, n, 1), O = matrix(0, n, ncol(Y)), w = rep(1, n))
+  full <- PLN(Abundance ~ 1, data = tr, control = PLN_param(trace = 0, backend = "builtin"))
+  params <- list(M = log(1 + Y), S2 = matrix(.1, n, ncol(Y)),
+                 B = matrix(colMeans(log(1 + Y)), 1), Omega = as.matrix(full$model_par$Omega))
+  ve <- lapply(c(cellwise = 1L, cg = 5L), function(k)
+    PLNmodels:::builtin_optimize_vestep_full(data, params, list(cg_max = k, ftol_in = 1e-12, maxeval = 10000L)))
+  expect_equal(sum(ve$cg$Ji), sum(ve$cellwise$Ji), tolerance = 1e-6)
+  expect_lt(length(ve$cg$monitoring$objective), length(ve$cellwise$monitoring$objective))
+})

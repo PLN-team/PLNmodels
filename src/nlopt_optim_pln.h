@@ -25,6 +25,7 @@ Rcpp::List nlopt_optimize_em_impl(
     const arma::uword p = d.Y.n_cols;
     const double w_bar  = arma::accu(d.w);
     const NewtonConfig cfg(config);
+    const double f_shift = objective_shift(cfg.objective_constant, d);
 
     const arma::mat Xw  = d.X.each_col() % d.w;
     const arma::mat P_X = (d.X.n_cols > 0) ? arma::solve(d.X.t() * Xw, Xw.t()) : arma::mat(0, d.Y.n_rows);
@@ -59,7 +60,7 @@ Rcpp::List nlopt_optimize_em_impl(
             metadata.map<M_ID>(grad) = gM;
             metadata.map<S_ID>(grad) = gS;
             objective_vec.push_back(obj);
-            return obj;
+            return obj + f_shift;
         };
 
         OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
@@ -77,7 +78,7 @@ Rcpp::List nlopt_optimize_em_impl(
             arma::mat Z = d.O + M_full;
             arma::mat A = arma::exp(Z + 0.5 * S2);
             double elbo = arma::accu(d.w.t() * (d.Y % Z - A + 0.5 * logS2)) + CovTraits::elbo_cov(state, w_bar, p);
-            if (em_iter > 0 && converged(elbo, elbo_prev, cfg.em_tol)) break;
+            if (em_iter > 0 && converged(elbo - f_shift, elbo_prev - f_shift, cfg.em_tol)) break;
             elbo_prev = elbo;
         } else {
             break;  // fixed covariance: single inner pass, no M-step
@@ -111,6 +112,7 @@ Rcpp::List nlopt_joint_profiled_impl(
     const Rcpp::List & config
 ) {
     const PlnData d(data);
+    const double f_shift = objective_shift(config, d);   // convergence tests of nlopt on the bound with its constants
     const auto init_M   = Rcpp::as<arma::mat>(params["M"]);
     const auto init_S2  = Rcpp::as<arma::mat>(params["S2"]);
 
@@ -149,7 +151,7 @@ Rcpp::List nlopt_joint_profiled_impl(
         metadata.map<M_ID>(grad) = gM;
         metadata.map<S_ID>(grad) = gS;
         objective_vec.push_back(obj);
-        return obj;
+        return obj + f_shift;
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
 
@@ -181,6 +183,7 @@ Rcpp::List nlopt_vestep_impl(
     const Rcpp::List & config
 ) {
     const PlnData d(data);
+    const double f_shift = objective_shift(config, d);
     const auto init_M   = Rcpp::as<arma::mat>(params["M"]);
     const auto init_S2  = Rcpp::as<arma::mat>(params["S2"]);
     const auto B        = Rcpp::as<arma::mat>(params["B"]);
@@ -210,7 +213,7 @@ Rcpp::List nlopt_vestep_impl(
         metadata.map<M_ID>(grad) = gM;
         metadata.map<S_ID>(grad) = gS;
         objective_vec.push_back(obj);
-        return obj;
+        return obj + f_shift;
     };
     OptimizerResult result = minimize_objective_on_parameters(optimizer.get(), objective_and_grad, parameters);
 
