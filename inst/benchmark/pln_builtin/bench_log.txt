@@ -1,0 +1,144 @@
+10:59:25 trichoptera full default -1051.75717846032 828 0.04 
+10:59:26 trichoptera full sq_ve4_em7 -1051.67058770247 316 0.08 
+10:59:26 trichoptera full sq_ve6_em7 -1051.67279591176 508 0.03 
+10:59:26 trichoptera full sq_ve4_em8 -1051.65043832148 970 0.05 
+10:59:26 trichoptera full sq_ve6_em8 -1051.65078942749 1093 0.05 
+10:59:26 trichoptera full sq_cg5_ve4_em8 -1051.6485932801 1359 0.1 
+10:59:27 trichoptera full sq_cg5_ve6_em8 -1051.64808826082 1379 0.1 
+10:59:27 trichoptera full plain_ve6_em8 -1051.6553523166 3128 0.12 
+10:59:27 barents full default -4614.25317778335 1000 0.15 
+10:59:27 barents full sq_ve4_em7 -4614.08583940023 219 0.05 
+10:59:27 barents full sq_ve6_em7 -4614.09525148003 504 0.08 
+10:59:28 barents full sq_ve4_em8 -4614.08401383666 267 0.05 
+10:59:28 barents full sq_ve6_em8 -4614.08409239918 576 0.09 
+10:59:28 barents full sq_cg5_ve4_em8 -4614.08318334842 155 0.06 
+10:59:28 barents full sq_cg5_ve6_em8 -4614.08276515212 195 0.07 
+10:59:29 barents full plain_ve6_em8 -4614.08631499553 1394 0.21 
+10:59:30 mollusk full default -3595.25066013944 4348 0.84 
+10:59:30 mollusk full sq_ve4_em7 -3594.91360343927 515 0.14 
+10:59:30 mollusk full sq_ve6_em7 -3594.9330298274 1024 0.22 
+10:59:31 mollusk full sq_ve4_em8 -3594.90916108504 599 0.16 
+10:59:31 mollusk full sq_ve6_em8 -3594.91024730084 1104 0.24 
+10:59:31 mollusk full sq_cg5_ve4_em8 -3594.90924531706 605 0.26 
+10:59:32 mollusk full sq_cg5_ve6_em8 -3594.90923717118 667 0.28 
+10:59:33 mollusk full plain_ve6_em8 -3594.91361526488 3226 0.73 
+10:59:33 oaks full default -32028.4716072336 652 0.45 
+10:59:34 oaks full sq_ve4_em7 -32027.9055474629 250 0.25 
+10:59:34 oaks full sq_ve6_em7 -32027.8725893188 406 0.33 
+10:59:35 oaks full sq_ve4_em8 -32027.7339823816 450 0.42 
+10:59:35 oaks full sq_ve6_em8 -32027.7353241308 530 0.42 
+10:59:36 oaks full sq_cg5_ve4_em8 -32027.7182903941 194 0.34 
+10:59:36 oaks full sq_cg5_ve6_em8 -32027.7175052723 318 0.53 
+10:59:37 oaks full plain_ve6_em8 -32027.7637992861 988 0.81 
+10:59:38 oaks tree full default -31386.6282765338 836 0.65 
+10:59:39 oaks tree full sq_ve4_em7 -31388.4533987946 320 0.36 
+10:59:39 oaks tree full sq_ve6_em7 -31387.3637261746 495 0.42 
+10:59:41 oaks tree full sq_ve4_em8 -31385.4641618406 1428 1.55 
+10:59:44 oaks tree full sq_ve6_em8 -31384.7203511315 2673 3 
+10:59:46 oaks tree full sq_cg5_ve4_em8 -31383.755718454 1001 1.86 
+10:59:48 oaks tree full sq_cg5_ve6_em8 -31383.750070533 973 1.78 
+10:59:49 oaks tree full plain_ve6_em8 -31386.3318115858 1332 1.31 
+11:00:21 microcosm full default -214999.825109634 1290 31.74 
+11:00:33 microcosm full sq_ve4_em7 -214963.661075572 410 11.44 
+11:01:14 microcosm full sq_ve6_em7 -214962.129513387 1807 40.64 
+11:01:30 microcosm full sq_ve4_em8 -214961.457955285 584 16.12 
+11:02:16 microcosm full sq_ve6_em8 -214961.397941965 1974 45.72 
+11:02:43 microcosm full sq_cg5_ve4_em8 -214960.546630374 439 27.17 
+11:03:23 microcosm full sq_cg5_ve6_em8 -214960.506903863 597 39.44 
+11:05:00 microcosm full plain_ve6_em8 -214961.95629847 4393 97.46 
+11:05:00 trichoptera diagonal default -1109.71324448753 572 0.03 
+11:05:01 trichoptera diagonal sq_ve4_em7 -1109.39853483624 529 0.03 
+11:05:01 trichoptera diagonal sq_ve6_em7 -1109.40715452893 493 0.02 
+11:05:01 trichoptera diagonal sq_ve4_em8 -1109.37204513362 1003 0.04 
+11:05:01 trichoptera diagonal sq_ve6_em8 -1109.37011662314 1079 0.06 
+11:05:01 trichoptera diagonal sq_cg5_ve4_em8 -1109.37065801385 2254 0.14 
+11:05:02 trichoptera diagonal sq_cg5_ve6_em8 -1109.3681418372 2623 0.16 
+11:05:02 trichoptera diagonal plain_ve6_em8 -1109.38998209877 4079 0.15 
+11:05:02 barents diagonal default -5208.2988879398 429 0.07 
+11:05:02 barents diagonal sq_ve4_em7 -5208.23582540771 109 0.03 
+11:05:03 barents diagonal sq_ve6_em7 -5208.23081742592 221 0.04 
+11:05:03 barents diagonal sq_ve4_em8 -5208.23030535676 139 0.03 
+11:05:03 barents diagonal sq_ve6_em8 -5208.23079343423 227 0.04 
+11:05:03 barents diagonal sq_cg5_ve4_em8 -5208.23119893194 65 0.03 
+11:05:03 barents diagonal sq_cg5_ve6_em8 -5208.23120167664 74 0.03 
+11:05:03 barents diagonal plain_ve6_em8 -5208.23211286846 573 0.09 
+11:05:04 mollusk diagonal default -3983.56849137214 1898 0.36 
+11:05:04 mollusk diagonal sq_ve4_em7 -3983.43612005181 328 0.09 
+11:05:04 mollusk diagonal sq_ve6_em7 -3983.43477851716 459 0.11 
+11:05:05 mollusk diagonal sq_ve4_em8 -3983.40500962012 478 0.12 
+11:05:05 mollusk diagonal sq_ve6_em8 -3983.39316876144 704 0.16 
+11:05:06 mollusk diagonal sq_cg5_ve4_em8 -3983.39850085076 1960 0.67 
+11:05:06 mollusk diagonal sq_cg5_ve6_em8 -3983.40291511821 1639 0.58 
+11:05:07 mollusk diagonal plain_ve6_em8 -3983.42184354638 2749 0.6 
+11:05:07 oaks diagonal default -38407.6659239394 108 0.1 
+11:05:08 oaks diagonal sq_ve4_em7 -38407.6252448839 51 0.07 
+11:05:08 oaks diagonal sq_ve6_em7 -38407.6256476087 69 0.08 
+11:05:08 oaks diagonal sq_ve4_em8 -38407.6252306003 57 0.07 
+11:05:08 oaks diagonal sq_ve6_em8 -38407.6253613371 75 0.08 
+11:05:08 oaks diagonal sq_cg5_ve4_em8 -38407.6252328819 39 0.07 
+11:05:09 oaks diagonal sq_cg5_ve6_em8 -38407.6252352407 45 0.08 
+11:05:09 oaks diagonal plain_ve6_em8 -38407.6269950052 125 0.1 
+11:05:09 oaks tree diagonal default -35993.1283842442 450 0.24 
+11:05:10 oaks tree diagonal sq_ve4_em7 -35992.0198506356 221 0.17 
+11:05:10 oaks tree diagonal sq_ve6_em7 -35991.847874886 407 0.25 
+11:05:10 oaks tree diagonal sq_ve4_em8 -35991.6125573375 575 0.41 
+11:05:11 oaks tree diagonal sq_ve6_em8 -35991.6561433824 617 0.38 
+11:05:11 oaks tree diagonal sq_cg5_ve4_em8 -35991.4755512541 170 0.21 
+11:05:12 oaks tree diagonal sq_cg5_ve6_em8 -35991.487857588 123 0.16 
+11:05:13 oaks tree diagonal plain_ve6_em8 -35991.8539051621 2103 1.12 
+11:05:23 microcosm diagonal default -240660.097311446 627 10.23 
+11:05:29 microcosm diagonal sq_ve4_em7 -240639.52952115 272 5.27 
+11:05:45 microcosm diagonal sq_ve6_em7 -240638.353947836 992 16.09 
+11:05:53 microcosm diagonal sq_ve4_em8 -240638.182383133 429 8.26 
+11:06:11 microcosm diagonal sq_ve6_em8 -240638.159982754 1077 17.86 
+11:06:19 microcosm diagonal sq_cg5_ve4_em8 -240637.688743858 181 7.79 
+11:06:29 microcosm diagonal sq_cg5_ve6_em8 -240637.687549754 229 9.94 
+11:07:11 microcosm diagonal plain_ve6_em8 -240638.58464524 2657 42.1 
+11:07:12 trichoptera spherical default -1158.43911686531 143 0.01 
+11:07:12 trichoptera spherical sq_ve4_em7 -1158.43837210509 48 0.01 
+11:07:12 trichoptera spherical sq_ve6_em7 -1158.43837149679 89 0.01 
+11:07:12 trichoptera spherical sq_ve4_em8 -1158.43837210509 48 0.01 
+11:07:12 trichoptera spherical sq_ve6_em8 -1158.43836991734 95 0.01 
+11:07:12 trichoptera spherical sq_cg5_ve4_em8 -1158.43836991927 28 0.01 
+11:07:12 trichoptera spherical sq_cg5_ve6_em8 -1158.43836992202 33 0.01 
+11:07:13 trichoptera spherical plain_ve6_em8 -1158.43840367402 134 0.01 
+11:07:13 barents spherical default -5336.67517465603 171 0.03 
+11:07:13 barents spherical sq_ve4_em7 -5336.6705805268 54 0.02 
+11:07:13 barents spherical sq_ve6_em7 -5336.6705708801 125 0.03 
+11:07:13 barents spherical sq_ve4_em8 -5336.67057143956 60 0.02 
+11:07:13 barents spherical sq_ve6_em8 -5336.6705708801 125 0.03 
+11:07:14 barents spherical sq_cg5_ve4_em8 -5336.67057065634 29 0.02 
+11:07:14 barents spherical sq_cg5_ve6_em8 -5336.67057065665 36 0.02 
+11:07:14 barents spherical plain_ve6_em8 -5336.67065664162 173 0.03 
+11:07:14 mollusk spherical default -4061.72275825028 887 0.17 
+11:07:14 mollusk spherical sq_ve4_em7 -4061.72187361933 88 0.03 
+11:07:15 mollusk spherical sq_ve6_em7 -4061.72181272527 253 0.06 
+11:07:15 mollusk spherical sq_ve4_em8 -4061.72183395377 94 0.03 
+11:07:15 mollusk spherical sq_ve6_em8 -4061.72180677186 259 0.06 
+11:07:15 mollusk spherical sq_cg5_ve4_em8 -4061.7218050532 35 0.03 
+11:07:15 mollusk spherical sq_cg5_ve6_em8 -4061.7218051044 53 0.03 
+11:07:15 mollusk spherical plain_ve6_em8 -4061.72215718587 442 0.1 
+11:07:16 oaks spherical default -39450.2348246837 54 0.07 
+11:07:16 oaks spherical sq_ve4_em7 -39450.2317528981 25 0.06 
+11:07:16 oaks spherical sq_ve6_em7 -39450.2317512173 49 0.06 
+11:07:16 oaks spherical sq_ve4_em8 -39450.2317512177 31 0.06 
+11:07:16 oaks spherical sq_ve6_em8 -39450.2317512173 49 0.07 
+11:07:17 oaks spherical sq_cg5_ve4_em8 -39450.2317512169 20 0.06 
+11:07:17 oaks spherical sq_cg5_ve6_em8 -39450.2317512189 23 0.06 
+11:07:17 oaks spherical plain_ve6_em8 -39450.2319443369 51 0.06 
+11:07:17 oaks tree spherical default -36731.9395444562 293 0.17 
+11:07:18 oaks tree spherical sq_ve4_em7 -36730.8185295547 175 0.14 
+11:07:18 oaks tree spherical sq_ve6_em7 -36730.7849659392 291 0.19 
+11:07:18 oaks tree spherical sq_ve4_em8 -36730.6987109308 247 0.18 
+11:07:19 oaks tree spherical sq_ve6_em8 -36730.6592451613 398 0.25 
+11:07:19 oaks tree spherical sq_cg5_ve4_em8 -36730.5454991997 57 0.1 
+11:07:19 oaks tree spherical sq_cg5_ve6_em8 -36730.54423892 110 0.15 
+11:07:20 oaks tree spherical plain_ve6_em8 -36730.7719093303 1369 0.74 
+11:07:29 microcosm spherical default -240957.883743749 554 9.06 
+11:07:34 microcosm spherical sq_ve4_em7 -240944.857207717 237 4.71 
+11:07:47 microcosm spherical sq_ve6_em7 -240944.745169015 810 13.27 
+11:07:54 microcosm spherical sq_ve4_em8 -240944.376329939 322 6.28 
+11:08:13 microcosm spherical sq_ve6_em8 -240944.112554995 1107 19.16 
+11:08:18 microcosm spherical sq_cg5_ve4_em8 -240943.836390792 97 4.42 
+11:08:25 microcosm spherical sq_cg5_ve6_em8 -240943.841732178 156 6.89 
+11:08:57 microcosm spherical plain_ve6_em8 -240944.710471455 2048 32.24 
