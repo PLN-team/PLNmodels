@@ -1,0 +1,28 @@
+07:58:50 trichoptera col cg5_ftol3e7 : loglik -1053.96 outer 99 products 2199 time 0.5 
+07:58:50 trichoptera col cg5_ftol7 : loglik -1053.98 outer 87 products 2470 time 0.6 
+07:58:52 trichoptera col cg10_ftol7 : loglik -1053.95 outer 93 products 2698 time 1.2 
+07:58:54 barents col cg5_ftol7 : loglik -4592.65 outer 201 products 5605 time 4.2 
+07:58:54 barents col cg5_ftol3e7 : loglik -4595.35 outer 252 products 4322 time 4.3 
+07:58:55 mollusk col cg5_ftol3e7 : loglik -3642.31 outer 197 products 2964 time 5.1 
+07:58:55 barents col cg10_ftol7 : loglik -4595.43 outer 192 products 6536 time 5 
+07:58:55 oaks col cg5_ftol7 : loglik -32049.64 outer 57 products 1131 time 4.1 
+07:58:56 mollusk col cg5_ftol7 : loglik -3644.28 outer 201 products 3766 time 6.6 
+07:58:57 mollusk col cg10_ftol7 : loglik -3643.58 outer 141 products 4333 time 6.9 
+07:58:57 barents col current : loglik -4597.56 outer 387 products 3700 time 1 
+07:58:58 trichoptera col current : loglik -1053.95 outer 207 products 2066 time 0.2 
+07:58:58 oaks col cg5_ftol3e7 : loglik -32049.75 outer 54 products 984 time 5.1 
+07:59:00 oaks col current : loglik -32048.63 outer 92 products 1486 time 1.9 
+07:59:01 mollusk col current : loglik -3645.46 outer 501 products 11490 time 3.2 
+07:59:01 oaks col cg10_ftol7 : loglik -32049.65 outer 57 products 1438 time 5.8 
+07:59:01 oaks tree|tree cg5_ftol7 : loglik -31369.15 outer 57 products 1377 time 5.6 
+07:59:01 oaks tree|tree current : loglik -31369.96 outer 73 products 1738 time 2.6 
+07:59:02 oaks tree|tree cg5_ftol3e7 : loglik -31369.29 outer 57 products 1117 time 6.1 
+07:59:03 oaks tree|tree cg10_ftol7 : loglik -31368.84 outer 67 products 1810 time 7 
+08:00:02 microcosm site|site current : loglik -197663.6 outer 154 products 1504 time 70.3 
+08:00:31 microcosm site col current : loglik -203400.2 outer 315 products 3928 time 101.6 
+08:03:16 microcosm site|site cg5_ftol3e7 : loglik -197645.3 outer 112 products 2585 time 264.2 
+08:04:02 microcosm site|site cg10_ftol7 : loglik -197646.1 outer 107 products 3615 time 310.3 
+08:04:46 microcosm site|site cg5_ftol7 : loglik -197645.8 outer 106 products 3589 time 354.1 
+08:07:10 microcosm site col cg5_ftol3e7 : loglik -203345 outer 184 products 5924 time 500.1 
+08:09:18 microcosm site col cg5_ftol7 : loglik -203348.9 outer 190 products 7981 time 628.9 
+08:09:58 microcosm site col cg10_ftol7 : loglik -203332.9 outer 167 products 10532 time 668 

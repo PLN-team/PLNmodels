@@ -89,6 +89,11 @@ ZIPLN <- function(formula, data, subset, zi = c("single", "row", "col"), control
 #' * "maxit_out" outer solver stops when the number of iteration exceeds `maxit_out`. Default is 500 for "builtin", 100 for "nlopt"
 #' * "accelerate" logical: should the outer loop be accelerated by SQUAREM (Varadhan and Roland, 2008)? Default is `TRUE`. Each cycle makes two outer iterations, then one from the extrapolated state, kept if it does better; `maxit_out` counts all of them. Not used with a sparse covariance.
 #'
+#' and, for the "builtin" backend, two parameters controlling the VE step (a Newton method in the variational parameters):
+#' * "cg_max" integer: the Newton system is solved by at most `cg_max` conjugate gradient iterations, preconditioned by the cell-wise 2x2 Newton step (truncated Newton, or Newton-CG), which takes into account the coupling of the variational parameters through the covariance and through the regression coefficients. `cg_max = 1` gives the cell-wise step, which ignores it and converges slowly on the zero counts. Default is 5, 1 with a sparse covariance.
+#' * "cg_tol" relative residual at which the conjugate gradient iterations stop. Default is 0.1
+#' * "ftol_in" the VE step stops when a Newton step changes the variational bound (constants included when `cg_max > 1`) by less than `ftol_in` times its absolute value. Default is 1e-6, 1e-8 with a sparse covariance.
+#'
 #' @export
 ZIPLN_param <- function(
     backend       = c("builtin", "nlopt"),
@@ -130,11 +135,14 @@ ZIPLN_param <- function(
   if (backend == "torch")
     message("torch backend is experimental: may converge to suboptimal solutions or fail on some datasets.")
   config_opt <- make_config_optim(backend, config_optim, trace,
-                                  extra = list(
+                                  extra = c(list(
                                     ftol_out  = 1e-6,
                                     maxit_out = if (backend == "builtin") 500L else 100L,
                                     accelerate = TRUE
-                                  ))
+                                  ),
+                                  ## Newton-CG VE step, for the builtin backend and a non-sparse covariance
+                                  if (backend == "builtin" && covariance != "sparse")
+                                    list(cg_max = 5L, ftol_in = 1e-6)))
 
   structure(list(
     backend       = backend   ,

@@ -226,3 +226,26 @@ test_that("ZIPLN: the SQUAREM acceleration of the outer loop reaches a better bo
                   control = ZIPLN_param(trace = 0, init = "lm", penalty = .2))
   expect_equal(length(sparse$optim_par$objective), sparse$optim_par$iterations)
 })
+
+test_that("ZIPLN: the Newton-CG VE step reaches a better bound than the cell-wise step in fewer iterations",  {
+  fit <- ZIPLN(Abundance ~ 1 + Wind, data = trichoptera, zi = "col",
+               control = ZIPLN_param(trace = 0, init = "lm"))
+  Y <- as.matrix(trichoptera$Abundance); X <- cbind(1, scale(trichoptera$Wind)); n <- nrow(Y)
+  data <- list(Y = Y, X = X, O = matrix(0, n, ncol(Y)), w = rep(1, n))
+  ## a perturbed start, B profiled as in the outer loop
+  set.seed(1)
+  M0 <- fit$var_par$M + matrix(rnorm(length(Y), sd = .5), n)
+  params <- list(M = M0, S2 = fit$var_par$S2, Pi = fit$model_par$Pi,
+                 B = solve(crossprod(X), crossprod(X, M0)), Omega = fit$model_par$Omega)
+  ve <- lapply(c(cellwise = 1L, cg = 5L), function(k)
+    PLNmodels:::builtin_optimize_vestep_zipln_full(data, params, list(cg_max = k, ftol_in = 1e-8, maxeval = 10000L)))
+  ## (the objective keeps decreasing slowly on these data: a latent mean drifts to -Inf)
+  expect_lt(tail(ve$cg$monitoring$objective, 1), tail(ve$cellwise$monitoring$objective, 1))
+  expect_lt(ve$cg$monitoring$iterations, ve$cellwise$monitoring$iterations)
+
+  ## default: Newton-CG for a non-sparse covariance with the builtin backend only
+  expect_equal(ZIPLN_param()$config_optim$cg_max, 5L)
+  expect_null(ZIPLN_param(backend = "nlopt")$config_optim$cg_max)
+  expect_null(suppressMessages(ZIPLN_param(penalty = .2))$config_optim$cg_max)
+  expect_null(ZIPLNnetwork_param()$config_optim$cg_max)
+})

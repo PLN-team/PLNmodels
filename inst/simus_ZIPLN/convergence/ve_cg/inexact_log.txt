@@ -1,0 +1,56 @@
+07:24:12 microcosm site|site current : loglik -197663.6 outer 154 products 1504 time 152.9 
+07:24:23 barents col cg20_exact : loglik -4593.66 outer 144 products 10006 time 10 
+07:24:33 barents col cg5_exact : loglik -4595.46 outer 192 products 8831 time 9.4 
+07:24:39 barents col cg20_ftol6 : loglik -4595.37 outer 237 products 5842 time 4.5 
+07:24:45 barents col cg5_ftol6 : loglik -4595.43 outer 288 products 3802 time 5 
+07:24:50 barents col cg20_newton3 : loglik -4593.56 outer 147 products 5097 time 3.7 
+07:24:56 barents col cg5_newton3 : loglik -4594.97 outer 213 products 3427 time 5.3 
+07:25:01 barents col cg20_newton1 : loglik -4594.93 outer 294 products 2918 time 4 
+07:25:13 mollusk col cg20_exact : loglik -3644.67 outer 159 products 8120 time 11.4 
+07:25:32 mollusk col cg5_exact : loglik -3641.55 outer 270 products 6242 time 17.2 
+07:25:41 mollusk col cg20_ftol6 : loglik -3641.18 outer 190 products 3817 time 8.5 
+07:25:50 mollusk col cg5_ftol6 : loglik -3641.15 outer 228 products 2574 time 7.4 
+07:26:00 microcosm site col current : loglik -203400.2 outer 315 products 3928 time 262.4 
+07:26:10 mollusk col cg20_newton3 : loglik -3639.83 outer 195 products 6560 time 19.1 
+07:26:17 mollusk col cg20_newton1 : loglik -3637.05 outer 286 products 1931 time 6 
+07:26:18 mollusk col cg5_newton3 : loglik -3639.74 outer 309 products 4482 time 17 
+07:26:19 trichoptera col cg20_exact : loglik -1053.95 outer 93 products 3339 time 1.1 
+07:26:21 trichoptera col cg5_exact : loglik -1053.97 outer 90 products 3310 time 1.6 
+07:26:21 trichoptera col cg20_ftol6 : loglik -1053.98 outer 87 products 1975 time 1.1 
+07:26:23 trichoptera col cg5_ftol6 : loglik -1053.97 outer 111 products 1815 time 1.1 
+07:26:23 trichoptera col cg20_newton3 : loglik -1053.97 outer 84 products 1961 time 0.9 
+07:26:25 trichoptera col cg20_newton1 : loglik -1053.97 outer 102 products 897 time 0.7 
+07:26:25 trichoptera col cg5_newton3 : loglik -1053.97 outer 99 products 1433 time 1.4 
+07:26:35 oaks col cg20_exact : loglik -32049.82 outer 51 products 1735 time 8.9 
+07:26:36 oaks col cg5_exact : loglik -32049.77 outer 54 products 1421 time 9.2 
+07:26:40 oaks col cg20_ftol6 : loglik -32044.45 outer 57 products 1047 time 4.3 
+07:26:43 oaks col cg5_ftol6 : loglik -32041.24 outer 66 products 873 time 6.1 
+07:26:48 oaks col cg5_newton3 : loglik -32044.38 outer 60 products 897 time 3.9 
+07:26:48 oaks col cg20_newton3 : loglik -32037.66 outer 60 products 1420 time 6.2 
+07:26:52 oaks col cg20_newton1 : loglik -32048.21 outer 72 products 526 time 3.1 
+07:27:03 oaks tree|tree cg20_exact : loglik -31368.65 outer 66 products 3602 time 14.3 
+07:27:08 oaks tree|tree cg5_exact : loglik -31368.79 outer 54 products 2653 time 14.8 
+07:27:13 oaks tree|tree cg20_ftol6 : loglik -31369.03 outer 56 products 1392 time 8.3 
+07:27:15 oaks tree|tree cg5_ftol6 : loglik -31369.4 outer 69 products 984 time 5.6 
+07:27:23 oaks tree|tree cg20_newton3 : loglik -31369.52 outer 56 products 2512 time 9 
+07:27:27 oaks tree|tree cg5_newton3 : loglik -31369.37 outer 68 products 1136 time 11.1 
+07:27:29 oaks tree|tree cg20_newton1 : loglik -31369.64 outer 67 products 746 time 4.2 
+07:27:31 barents col current : loglik -4597.56 outer 387 products 3700 time 2.5 
+07:27:32 trichoptera col current : loglik -1053.95 outer 207 products 2066 time 0.4 
+07:27:36 mollusk col current : loglik -3645.46 outer 501 products 11490 time 6.1 
+07:27:37 oaks col current : loglik -32048.63 outer 92 products 1486 time 3.7 
+07:27:40 oaks tree|tree current : loglik -31369.96 outer 73 products 1738 time 2.9 
+07:28:24 microcosm site|site cg5_newton3 : loglik -197639.6 outer 106 products 1549 time 404.5 
+07:29:15 microcosm site|site cg20_newton1 : loglik -197599.8 outer 288 products 1806 time 455.3 
+07:30:16 microcosm site|site cg5_ftol6 : loglik -197645.6 outer 139 products 1787 time 514.3 
+07:30:22 microcosm site|site cg20_ftol6 : loglik -197646.6 outer 107 products 2545 time 521.8 
+07:31:14 microcosm site|site cg20_newton3 : loglik -197642.2 outer 104 products 3872 time 573 
+07:33:05 microcosm site col cg20_newton1 : loglik -204179.1 outer 502 products 3933 time 688.4 
+07:34:28 microcosm site col cg5_ftol6 : loglik -203362 outer 195 products 4393 time 770.3 
+07:36:59 microcosm site|site cg20_exact : loglik -197644.2 outer 77 products 8163 time 917.6 
+07:37:43 microcosm site col cg20_ftol6 : loglik -203377 outer 216 products 7559 time 966 
+07:38:53 microcosm site|site cg5_exact : loglik -197641.8 outer 109 products 7615 time 1032.6 
+07:39:35 microcosm site col cg5_newton3 : loglik -204203.8 outer 499 products 7010 time 1078 
+07:43:10 microcosm site col cg20_newton3 : loglik -204236.3 outer 359 products 14628 time 1293.1 
+07:48:14 microcosm site col cg5_exact : loglik -203332.1 outer 210 products 13688 time 1596.8 
+07:55:28 microcosm site col cg20_exact : loglik -203331.9 outer 166 products 21524 time 2031.2 
