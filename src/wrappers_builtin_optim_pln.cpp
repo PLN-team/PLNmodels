@@ -25,7 +25,7 @@ Rcpp::List builtin_optimize_full(
     const NewtonConfig cfg(config);
     const double w_bar = arma::accu(d.w);
     FullCovTraits::State state(M - d.X * B, S2, d.w, w_bar);
-    return builtin_optimize_pln_impl<FullCovTraits>(d, B, M, S2, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol, objective_shift(cfg.objective_constant, d));
+    return builtin_optimize_pln_impl<FullCovTraits>(d, B, M, S2, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol, objective_shift(cfg.objective_constant, d), cfg.opts);
 }
 
 // [[Rcpp::export]]
@@ -41,7 +41,7 @@ Rcpp::List builtin_optimize_vestep_full(
     arma::mat Omega = Rcpp::as<arma::mat>(params["Omega"]);
     const NewtonConfig cfg(config);
     FullCovTraits::State state(Omega);
-    return builtin_vestep_pln_impl<FullCovTraits>(d, M, S2, B, state, cfg.maxiter, cfg.ftol, objective_shift(cfg.objective_constant, d));
+    return builtin_vestep_pln_impl<FullCovTraits>(d, M, S2, B, state, cfg.maxiter, cfg.ftol, objective_shift(cfg.objective_constant, d), cfg.opts);
 }
 
 // ===== DIAGONAL COVARIANCE =====
@@ -59,7 +59,7 @@ Rcpp::List builtin_optimize_diagonal(
     const NewtonConfig cfg(config);
     const double w_bar = arma::accu(d.w);
     DiagonalCovTraits::State state(M - d.X * B, S2, d.w, w_bar);
-    return builtin_optimize_pln_impl<DiagonalCovTraits>(d, B, M, S2, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol, objective_shift(cfg.objective_constant, d));
+    return builtin_optimize_pln_impl<DiagonalCovTraits>(d, B, M, S2, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol, objective_shift(cfg.objective_constant, d), cfg.opts);
 }
 
 // [[Rcpp::export]]
@@ -75,7 +75,7 @@ Rcpp::List builtin_optimize_vestep_diagonal(
     arma::mat Omega = Rcpp::as<arma::mat>(params["Omega"]);
     const NewtonConfig cfg(config);
     DiagonalCovTraits::State state(Omega);
-    return builtin_vestep_pln_impl<DiagonalCovTraits>(d, M, S2, B, state, cfg.maxiter, cfg.ftol, objective_shift(cfg.objective_constant, d));
+    return builtin_vestep_pln_impl<DiagonalCovTraits>(d, M, S2, B, state, cfg.maxiter, cfg.ftol, objective_shift(cfg.objective_constant, d), cfg.opts);
 }
 
 // ===== SPHERICAL COVARIANCE =====
@@ -93,7 +93,7 @@ Rcpp::List builtin_optimize_spherical(
     const NewtonConfig cfg(config);
     const double w_bar = arma::accu(d.w);
     SphericalCovTraits::State state(M - d.X * B, S2, d.w, w_bar);
-    return builtin_optimize_pln_impl<SphericalCovTraits>(d, B, M, S2, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol, objective_shift(cfg.objective_constant, d));
+    return builtin_optimize_pln_impl<SphericalCovTraits>(d, B, M, S2, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol, objective_shift(cfg.objective_constant, d), cfg.opts);
 }
 
 // [[Rcpp::export]]
@@ -109,7 +109,7 @@ Rcpp::List builtin_optimize_vestep_spherical(
     arma::mat Omega = Rcpp::as<arma::mat>(params["Omega"]);
     const NewtonConfig cfg(config);
     SphericalCovTraits::State state(Omega);
-    return builtin_vestep_pln_impl<SphericalCovTraits>(d, M, S2, B, state, cfg.maxiter, cfg.ftol, objective_shift(cfg.objective_constant, d));
+    return builtin_vestep_pln_impl<SphericalCovTraits>(d, M, S2, B, state, cfg.maxiter, cfg.ftol, objective_shift(cfg.objective_constant, d), cfg.opts);
 }
 
 // ===== FIXED COVARIANCE (Omega provided externally, no VE step exported) =====
@@ -127,7 +127,7 @@ Rcpp::List builtin_optimize_fixed(
     arma::mat Omega = Rcpp::as<arma::mat>(params["Omega"]);
     const NewtonConfig cfg(config);
     FixedCovTraits::State state(Omega);
-    return builtin_optimize_pln_impl<FixedCovTraits>(d, B, M, S2, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol, objective_shift(cfg.objective_constant, d));
+    return builtin_optimize_pln_impl<FixedCovTraits>(d, B, M, S2, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol, objective_shift(cfg.objective_constant, d), cfg.opts);
 }
 
 // ===== GENETIC / HERITABILITY COVARIANCE (C provided externally, fixed) =====
@@ -147,7 +147,7 @@ Rcpp::List builtin_optimize_genetic(
     const double w_bar = arma::accu(d.w);
     GeneticCovTraits::State state = GeneticCovTraits::State::from_correlation(C);
     state.update(M - d.X * B, S2, d.w, w_bar);
-    return builtin_optimize_pln_impl<GeneticCovTraits>(d, B, M, S2, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol, objective_shift(cfg.objective_constant, d));
+    return builtin_optimize_pln_impl<GeneticCovTraits>(d, B, M, S2, state, cfg.maxiter, cfg.ftol, cfg.max_em, cfg.em_tol, objective_shift(cfg.objective_constant, d), cfg.opts);
 }
 
 // [[Rcpp::export]]
@@ -163,5 +163,5 @@ Rcpp::List builtin_optimize_vestep_genetic(
     arma::mat Omega = Rcpp::as<arma::mat>(params["Omega"]);
     const NewtonConfig cfg(config);
     GeneticCovTraits::State state(Omega);
-    return builtin_vestep_pln_impl<GeneticCovTraits>(d, M, S2, B, state, cfg.maxiter, cfg.ftol, objective_shift(cfg.objective_constant, d));
+    return builtin_vestep_pln_impl<GeneticCovTraits>(d, M, S2, B, state, cfg.maxiter, cfg.ftol, objective_shift(cfg.objective_constant, d), cfg.opts);
 }

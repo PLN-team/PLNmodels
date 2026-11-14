@@ -78,6 +78,22 @@ struct CovTraitsBase {
         arma::mat & grad_psi, arma::mat & step_psi,
         arma::mat & MO)
     {
+        arma::mat h_mm, h_mp, h_pp, det;
+        joint_blocks(M, s, A, S2, Y, w, grad_M, grad_psi, MO, h_mm, h_mp, h_pp, det);
+        solve_blocks(h_mm, h_mp, h_pp, det, grad_M, grad_psi, step_M, step_psi);
+    }
+
+    // Gradient in (M, ψ) and the cell-wise 2×2 diagonal blocks of the Hessian
+    // (h_mm, h_mp, h_pp, with det their clamped determinant), used by the joint
+    // Newton step and as the preconditioner of the Newton-CG step.
+    template <typename State>
+    static void joint_blocks(
+        const arma::mat & M, const State & s,
+        const arma::mat & A, const arma::mat & S2,
+        const arma::mat & Y, const arma::vec & w,
+        arma::mat & grad_M, arma::mat & grad_psi, arma::mat & MO,
+        arma::mat & h_mm, arma::mat & h_mp, arma::mat & h_pp, arma::mat & det)
+    {
         MO = Derived::times_Omega(M, s);
         const arma::mat AS2      = A % S2;
         const arma::mat diag_AS2 = Derived::diag_scale(S2, s);
@@ -85,14 +101,76 @@ struct CovTraitsBase {
         grad_M   = MO + A - Y;                   grad_M.each_col()   %= w;
         grad_psi = 0.5 * (AS2 + diag_AS2 - 1.0); grad_psi.each_col() %= w;
 
-        arma::mat h_pp = 0.5 * (S2 % Derived::add_diag(A % (1.0 + 0.5*S2), s)); h_pp.each_col() %= w;
-        arma::mat h_mp = 0.5 * AS2;                                             h_mp.each_col() %= w;
-        arma::mat h_mm = Derived::add_diag(A, s);                               h_mm.each_col() %= w;
+        h_pp = 0.5 * (S2 % Derived::add_diag(A % (1.0 + 0.5*S2), s)); h_pp.each_col() %= w;
+        h_mp = 0.5 * AS2;                                             h_mp.each_col() %= w;
+        h_mm = Derived::add_diag(A, s);                               h_mm.each_col() %= w;
 
-        arma::mat det = h_mm % h_pp - h_mp % h_mp;
+        det = h_mm % h_pp - h_mp % h_mp;
         det.clamp(1e-20, arma::datum::inf);
-        step_M   = (h_pp % grad_M   - h_mp % grad_psi) / det;
-        step_psi = (h_mm % grad_psi - h_mp % grad_M  ) / det;
+    }
+
+    // Solves the cell-wise 2×2 systems [h_mm h_mp; h_mp h_pp] (out_M, out_psi) = (r_M, r_psi)
+    static void solve_blocks(
+        const arma::mat & h_mm, const arma::mat & h_mp, const arma::mat & h_pp, const arma::mat & det,
+        const arma::mat & r_M, const arma::mat & r_psi,
+        arma::mat & out_M, arma::mat & out_psi)
+    {
+        out_M   = (h_pp % r_M   - h_mp % r_psi) / det;
+        out_psi = (h_mm % r_psi - h_mp % r_M  ) / det;
+    }
+
+    // Truncated Newton step (Newton-CG) in (M, ψ = log S²), Omega fixed, B profiled.
+    // The cell-wise 2×2 step ignores the coupling of the cells through Omega (off its
+    // diagonal) and through the profiling of B; on small counts (A ≈ 0) the diagonal of the
+    // Hessian is far from dominant and that step converges slowly. Here the Newton system
+    //   H_mm v = w ⊙ (A ⊙ v + Q v Omega),  H_mp = h_mp,  H_pp = h_pp  (cell-wise)
+    // is solved by at most cg_max conjugate gradient iterations preconditioned by the 2×2
+    // blocks (the first iterate is the cell-wise step, up to its length), stopped at a
+    // relative residual cg_tol. Q is the projection of the profiling of B (`project`,
+    // V -> V - X P_X V, with P_X = (X'WX)^{-1} X'W, for which Q'WQ = WQ). Each iteration
+    // costs one product by Omega; the step, Q step and Q step Omega are accumulated along
+    // the iterations, so that the line search needs no further product.
+    // Outputs: the gradient (grad_M, grad_psi), MO = M Omega, the step and its projections.
+    template <typename State, typename Project>
+    static void newton_cg_step(
+        const arma::mat & M, const State & s,
+        const arma::mat & A, const arma::mat & S2,
+        const arma::mat & Y, const arma::vec & w,
+        Project && project, int cg_max, double cg_tol,
+        arma::mat & grad_M, arma::mat & grad_psi, arma::mat & MO,
+        arma::mat & step_M, arma::mat & step_psi,
+        arma::mat & Q_step, arma::mat & QstepO)
+    {
+        arma::mat h_mm, h_mp, h_pp, det;
+        joint_blocks(M, s, A, S2, Y, w, grad_M, grad_psi, MO, h_mm, h_mp, h_pp, det);
+        step_M.zeros(arma::size(grad_M)); step_psi.zeros(arma::size(grad_M));
+        Q_step.zeros(arma::size(grad_M)); QstepO.zeros(arma::size(grad_M));
+        arma::mat r_M = grad_M, r_psi = grad_psi, z_M, z_psi;
+        solve_blocks(h_mm, h_mp, h_pp, det, r_M, r_psi, z_M, z_psi);
+        arma::mat s_M = z_M, s_psi = z_psi;
+        double rz = arma::accu(r_M % z_M) + arma::accu(r_psi % z_psi);
+        const double tol = cg_tol * std::sqrt(arma::accu(arma::square(grad_M)) + arma::accu(arma::square(grad_psi)));
+        for (int k = 0; k < cg_max; k++) {
+            const arma::mat Qs  = project(s_M);
+            const arma::mat QsO = Derived::times_Omega(Qs, s);
+            arma::mat H_M = A % s_M + QsO;  H_M.each_col() %= w;  H_M += h_mp % s_psi;
+            const arma::mat H_psi = h_mp % s_M + h_pp % s_psi;
+            const double curv = arma::accu(s_M % H_M) + arma::accu(s_psi % H_psi);
+            if (curv <= 0.0) {
+                // negative curvature: keep the iterate, or the preconditioned gradient
+                if (k == 0) { step_M = s_M; step_psi = s_psi; Q_step = Qs; QstepO = QsO; }
+                break;
+            }
+            const double a = rz / curv;
+            step_M += a * s_M; step_psi += a * s_psi; Q_step += a * Qs; QstepO += a * QsO;
+            r_M -= a * H_M; r_psi -= a * H_psi;
+            if (std::sqrt(arma::accu(arma::square(r_M)) + arma::accu(arma::square(r_psi))) <= tol) break;
+            solve_blocks(h_mm, h_mp, h_pp, det, r_M, r_psi, z_M, z_psi);
+            const double rz_new = arma::accu(r_M % z_M) + arma::accu(r_psi % z_psi);
+            s_M   = z_M   + (rz_new / rz) * s_M;
+            s_psi = z_psi + (rz_new / rz) * s_psi;
+            rz = rz_new;
+        }
     }
 
 private:
